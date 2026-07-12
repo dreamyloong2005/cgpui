@@ -10,6 +10,9 @@ namespace cgpui {
 class WindowRuntime::RuntimeTaskGroupStore {
  public:
   [[nodiscard]] TaskGroupId create(WindowRuntime& runtime);
+  [[nodiscard]] TaskGroupId create_child(
+      WindowRuntime& runtime,
+      TaskGroupId parent_id);
   [[nodiscard]] TaskHandle spawn_task(
       WindowRuntime& runtime,
       TaskGroupId group_id,
@@ -38,9 +41,27 @@ class WindowRuntime::RuntimeTaskGroupStore {
  private:
   struct Record {
     TaskGroupId id;
+    TaskGroupId parent_id{};
+    std::vector<TaskGroupId> child_ids;
     std::vector<TaskId> task_ids;
     bool cancelled = false;
   };
+
+  [[nodiscard]] Record* find(TaskGroupId id);
+  [[nodiscard]] const Record* find(TaskGroupId id) const;
+  [[nodiscard]] std::size_t task_count_locked(
+      const WindowRuntime& runtime,
+      const Record& group) const;
+  [[nodiscard]] std::size_t active_task_count_locked(
+      const WindowRuntime& runtime,
+      const Record& group) const;
+  [[nodiscard]] bool complete_locked(
+      const WindowRuntime& runtime,
+      const Record& group) const;
+  void cancel_locked(
+      WindowRuntime& runtime,
+      Record& group,
+      std::vector<TaskId>& cancelled_ids);
 
   std::vector<Record> records_;
   std::uint64_t next_id_ = 1;

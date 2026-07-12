@@ -66,6 +66,7 @@ outside this freeze.
 - `TestContextCapability`
 - `TaskPriority::{low, normal, high}`
 - `TaskGroup`
+- `TaskGroup::create_child_group()`
 - `try_spawn_task(...) -> Result<TaskHandle>`
 - `try_spawn_background_task(...) -> Result<TaskHandle>`
 - `run_until_parked()`

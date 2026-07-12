@@ -3088,7 +3088,23 @@
       "xmake.lua"
     ],
     "phase_g_step_637_remaining_gap": "Step 638 task cancellation propagation production behavior",
-    "phase_f_current_handoff": "Step 638 task cancellation propagation production behavior"
+    "phase_g_step_638_surface": "Phase G Step 638 adds parent/child task groups with recursive subtree observability, descendant cancellation and destructor propagation, child/sibling isolation, and cancelled-ancestor spawn rejection. Step 639 async I/O hook production behavior is next.",
+    "phase_g_step_638_sources": [
+      "include/cgpui/ui/task_group.hpp",
+      "src/ui/runtime_task_group_internal.hpp",
+      "src/ui/runtime_task_group.cpp",
+      "src/ui/runtime_task_group_propagation.cpp",
+      "src/ui/task_group.cpp",
+      "src/ui/runtime_tasks.cpp",
+      "tests/async/runtime_task_cancellation_propagation_test.cpp",
+      "tests/architecture/phase_g_runtime_task_cancellation_propagation_structure_test.cpp",
+      "tests/architecture/phase_g_runtime_task_group_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_638_remaining_gap": "Step 639 async I/O hook production behavior",
+    "phase_f_current_handoff": "Step 639 async I/O hook production behavior"
   },
   "categories": [
     "application_and_app_context",

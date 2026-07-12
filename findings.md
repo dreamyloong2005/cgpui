@@ -11165,3 +11165,19 @@
   token signalling, completion suppression, all three creation surfaces, and
   the Step 638 handoff.
 - Phase G Step 637 adds move-only structured task groups with runtime-owned membership, normal and explicit-priority spawning, active and total task observability, explicit bulk cancellation, and destructor cancellation that signals background tokens and suppresses cancelled completions. Step 638 task cancellation propagation production behavior is next.
+
+## 2026-07-12 Phase G Step 638 Task Cancellation Propagation Design
+
+- Step 638 adds parent/child task groups through `TaskGroup::create_child_group()`.
+  Parent cancellation propagates through every descendant; child cancellation
+  remains isolated from its parent and siblings.
+- Parent `task_count()`, `active_task_count()`, and `complete()` describe the
+  full descendant subtree so a structured parent is a real observation and
+  lifetime boundary rather than only a cancellation broadcast handle.
+- A cancelled group rejects new tasks and new child groups. Destroying an
+  ancestor uses the existing move-only ownership rule and recursively signals
+  background tokens while the established completion path suppresses callbacks.
+- Propagation belongs in a new focused `runtime_task_group_propagation.cpp` leaf.
+  The existing group source remains responsible for record creation and task
+  membership/spawning; the public handle source only forwards child creation.
+- Phase G Step 638 adds parent/child task groups with recursive subtree observability, descendant cancellation and destructor propagation, child/sibling isolation, and cancelled-ancestor spawn rejection. Step 639 async I/O hook production behavior is next.

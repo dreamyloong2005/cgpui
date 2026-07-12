@@ -19,6 +19,7 @@ class TaskGroup {
   TaskGroup& operator=(TaskGroup&& other) noexcept;
 
   [[nodiscard]] TaskGroupId id() const { return id_; }
+  [[nodiscard]] TaskGroup create_child_group() const;
   [[nodiscard]] std::size_t task_count() const;
   [[nodiscard]] std::size_t active_task_count() const;
   [[nodiscard]] bool complete() const;

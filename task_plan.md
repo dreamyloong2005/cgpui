@@ -1283,6 +1283,11 @@ Windows/Linux core API is stable enough for parity work.
   destructor cancellation, background token signalling, callback suppression,
   state/count queries, move transfer, and all three creation surfaces; dedicated
   structure coverage freezes public/private ownership and line budgets.
+- Completed: Phase G Step 638 adds parent/child task groups with recursive subtree observability, descendant cancellation and destructor propagation, child/sibling isolation, and cancelled-ancestor spawn rejection. Step 639 async I/O hook production behavior is next.
+- Step 638 evidence: focused behavior proves recursive subtree counts, child and
+  sibling isolation, ancestor explicit/destructor cancellation, deepest token
+  signalling, callback suppression, and cancelled-ancestor rejection; focused
+  structure coverage freezes the propagation leaf and parent/child records.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1298,6 +1303,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The Step 638 dedicated structure guard exited 10 after all API, parent/child ownership, recursive state/cancellation, behavior, inventory, Xmake, and line-cap assertions passed | Step 638 authority-document RED | Synchronize the five authority documents, public vocabulary/core parity, and Step 639 handoff |
+| Step 638 focused regression passed 6/7 because the historical Step 637 guard still required completion aggregation in the membership source after the propagation split | Step 638 structure regression | Require `std::ranges::all_of` in the focused propagation leaf while preserving Step 637 membership and cancellation evidence |
+| The first Step 638 behavior build failed because `TaskGroup::create_child_group()` does not exist | Step 638 behavior RED | Add parent/child records and recursive subtree state/cancellation in a focused propagation leaf |
 | The first Step 637 84-target handoff run passed 82/84 because the Step 635/636 guards split the old current-handoff phrase across two source lines | Step 637 dynamic handoff chain | Advance the two split-string assertions explicitly, then rerun the complete chain rather than weakening the historical guards |
 | The first Step 637 handoff rewrite covered `tests/architecture` but left three API-parity closeout guards on Step 637 | Step 637 dynamic handoff update | Scan all `tests/**/*.cpp`, update the three API-parity guards, and derive the complete 84-target list from every current-handoff consumer |
 | A Step 637 handoff count used an over-escaped fixed string and reported zero new matches despite green structure tests | Step 637 handoff audit | Use `Select-String` over resolved test files and match the current-handoff field plus step text directly |

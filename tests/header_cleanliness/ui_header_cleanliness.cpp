@@ -272,6 +272,8 @@ class TestView final : public cgpui::View {
     (void)background_task.cancel();
     (void)background_task.cancelled();
     cgpui::TaskGroup task_group = context.runtime.create_task_group();
+    cgpui::TaskGroup child_task_group = task_group.create_child_group();
+    (void)child_task_group.id();
     (void)task_group.id();
     (void)task_group.task_count();
     (void)task_group.active_task_count();

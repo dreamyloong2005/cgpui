@@ -56,7 +56,7 @@ int main() {
       line_count(wayland_lifecycle) > 25) return 3;
   if (!contains(pointer_guard, "runtime_window_input_state.cpp") ||
       !contains(pointer_guard, "pointer_position_for(event)") ||
-      !contains(child_guard, "Step 638 task cancellation propagation production behavior")) return 4;
+      !contains(child_guard, "Step 639 async I/O hook production behavior")) return 4;
   if (!contains(xmake, "target(\"phase_f_windows_full_debug_verification_structure_test\")")) return 5;
   constexpr const char* completion =
       "Phase F Step 611 completes Windows full-debug verification at 338/338 after restoring deferred child-window fixtures, child renderer result coverage, extracted pointer-input ownership, and existing source caps. Step 612 WSL full-debug verification is next.";
@@ -64,6 +64,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 6;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 638 task cancellation propagation production behavior\"")) return 7;
+                "\"phase_f_current_handoff\": \"Step 639 async I/O hook production behavior\"")) return 7;
   return 0;
 }

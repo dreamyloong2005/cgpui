@@ -41,6 +41,8 @@ int main() {
       read_source("src/ui/runtime_task_group_internal.hpp");
   const std::string group_source =
       read_source("src/ui/runtime_task_group.cpp");
+  const std::string propagation_source =
+      read_source("src/ui/runtime_task_group_propagation.cpp");
   const std::string handle_source = read_source("src/ui/task_group.cpp");
   const std::string context_source =
       read_source("src/ui/runtime_context_task_group.cpp");
@@ -72,6 +74,7 @@ int main() {
   const std::string* required[]{
       &public_header, &ids_header, &runtime_header, &context_header,
       &async_header, &aggregate, &group_internal, &group_source,
+      &propagation_source,
       &handle_source, &context_source, &async_source, &tasks_source,
       &runtime_internal, &behavior, &header_cleanliness, &ui_structure,
       &previous, &xmake, &vocabulary, &core_parity, &roadmap, &ledger_md,
@@ -109,11 +112,11 @@ int main() {
       !contains(group_source, "task_pool_->submit(") ||
       !contains(group_source, ".group_id = group_id") ||
       !contains(group_source, "runtime.tasks_mutex_") ||
-      !contains(group_source, "std::ranges::all_of")) return 7;
-  if (!contains(group_source, "cancellation_requested->store(true)") ||
-      !contains(group_source, "task->cancelled = true") ||
-      !contains(group_source, "task->queued = false") ||
-      !contains(group_source, "std::erase_if(runtime.task_completion_queue_") ||
+      !contains(propagation_source, "std::ranges::all_of")) return 7;
+  if (!contains(propagation_source, "cancellation_requested->store(true)") ||
+      !contains(propagation_source, "task->cancelled = true") ||
+      !contains(propagation_source, "task->queued = false") ||
+      !contains(propagation_source, "std::erase_if(runtime.task_completion_queue_") ||
       !contains(tasks_source, "task->completed || task->cancelled")) return 8;
   if (!contains(handle_source, "TaskGroup::~TaskGroup() { (void)cancel(); }") ||
       !contains(handle_source, "std::exchange(other.runtime_, nullptr)") ||
@@ -130,6 +133,7 @@ int main() {
   const char* source_paths[]{
       "src/ui/runtime_task_group_internal.hpp",
       "src/ui/runtime_task_group.cpp",
+      "src/ui/runtime_task_group_propagation.cpp",
       "src/ui/task_group.cpp",
       "src/ui/runtime_context_task_group.cpp",
       "src/ui/async_context_task_group.cpp"};
@@ -143,7 +147,8 @@ int main() {
     return 12;
   }
   if (line_count(public_header) > 80 || line_count(group_internal) > 70 ||
-      line_count(group_source) > 220 || line_count(handle_source) > 160 ||
+      line_count(group_source) > 220 || line_count(propagation_source) > 220 ||
+      line_count(handle_source) > 160 ||
       line_count(context_source) > 30 || line_count(async_source) > 30 ||
       line_count(runtime_internal) > 260 || line_count(behavior) > 200) {
     return 13;
@@ -165,8 +170,8 @@ int main() {
       contains(core_parity, "priorities, structured task groups, pooled") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 638 task cancellation "
-          "propagation production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 639 async I/O hook "
+          "production behavior\"")) {
     return 15;
   }
   return 0;

@@ -22,6 +22,13 @@ TaskGroup& TaskGroup::operator=(TaskGroup&& other) noexcept {
   return *this;
 }
 
+TaskGroup TaskGroup::create_child_group() const {
+  if (runtime_ == nullptr) return {};
+  const TaskGroupId child_id =
+      runtime_->task_group_store_->create_child(*runtime_, id_);
+  return child_id.value == 0 ? TaskGroup{} : TaskGroup(*runtime_, child_id);
+}
+
 std::size_t TaskGroup::task_count() const {
   return runtime_ == nullptr ? 0 :
       runtime_->task_group_store_->task_count(*runtime_, id_);

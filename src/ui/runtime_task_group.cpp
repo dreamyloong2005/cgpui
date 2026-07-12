@@ -5,24 +5,8 @@
 #include <algorithm>
 #include <atomic>
 #include <memory>
-#include <ranges>
 
 namespace cgpui {
-namespace {
-
-auto find_group(auto& records, TaskGroupId id) {
-  return std::find_if(records.begin(), records.end(), [id](const auto& record) {
-    return record.id == id;
-  });
-}
-
-auto find_task(auto& tasks, TaskId id) {
-  return std::find_if(tasks.begin(), tasks.end(), [id](const auto& task) {
-    return task.id == id;
-  });
-}
-
-} // namespace
 
 TaskGroupId WindowRuntime::RuntimeTaskGroupStore::create(
     WindowRuntime& runtime) {
@@ -41,8 +25,8 @@ TaskHandle WindowRuntime::RuntimeTaskGroupStore::spawn_task(
   TaskId id;
   {
     std::lock_guard lock(runtime.tasks_mutex_);
-    const auto group = find_group(records_, group_id);
-    if (group == records_.end() || group->cancelled) return {};
+    Record* group = find(group_id);
+    if (group == nullptr || group->cancelled) return {};
     id = TaskId{runtime.next_task_id_++};
     runtime.tasks_.push_back(WindowRuntime::RuntimeTask{
         .id = id,
@@ -66,8 +50,8 @@ TaskHandle WindowRuntime::RuntimeTaskGroupStore::spawn_background_task(
   TaskId id;
   {
     std::lock_guard lock(runtime.tasks_mutex_);
-    const auto group = find_group(records_, group_id);
-    if (group == records_.end() || group->cancelled) return {};
+    Record* group = find(group_id);
+    if (group == nullptr || group->cancelled) return {};
     id = TaskId{runtime.next_task_id_++};
     runtime.tasks_.push_back(WindowRuntime::RuntimeTask{
         .id = id,
@@ -95,73 +79,6 @@ TaskHandle WindowRuntime::RuntimeTaskGroupStore::spawn_background_task(
     return {};
   }
   return runtime.make_task_handle(id);
-}
-
-std::size_t WindowRuntime::RuntimeTaskGroupStore::task_count(
-    const WindowRuntime& runtime,
-    TaskGroupId group_id) const {
-  std::lock_guard lock(runtime.tasks_mutex_);
-  const auto group = find_group(records_, group_id);
-  return group == records_.end() ? 0 : group->task_ids.size();
-}
-
-std::size_t WindowRuntime::RuntimeTaskGroupStore::active_task_count(
-    const WindowRuntime& runtime,
-    TaskGroupId group_id) const {
-  std::lock_guard lock(runtime.tasks_mutex_);
-  const auto group = find_group(records_, group_id);
-  if (group == records_.end()) return 0;
-  std::size_t count = 0;
-  for (const TaskId id : group->task_ids) {
-    const auto task = find_task(runtime.tasks_, id);
-    count += task != runtime.tasks_.end() && !task->completed && !task->cancelled;
-  }
-  return count;
-}
-
-bool WindowRuntime::RuntimeTaskGroupStore::complete(
-    const WindowRuntime& runtime,
-    TaskGroupId group_id) const {
-  std::lock_guard lock(runtime.tasks_mutex_);
-  const auto group = find_group(records_, group_id);
-  if (group == records_.end()) return false;
-  return std::ranges::all_of(group->task_ids, [&](TaskId id) {
-    const auto task = find_task(runtime.tasks_, id);
-    return task != runtime.tasks_.end() && (task->completed || task->cancelled);
-  });
-}
-
-bool WindowRuntime::RuntimeTaskGroupStore::cancelled(
-    const WindowRuntime& runtime,
-    TaskGroupId group_id) const {
-  std::lock_guard lock(runtime.tasks_mutex_);
-  const auto group = find_group(records_, group_id);
-  return group != records_.end() && group->cancelled;
-}
-
-bool WindowRuntime::RuntimeTaskGroupStore::cancel(
-    WindowRuntime& runtime,
-    TaskGroupId group_id) {
-  std::lock_guard lock(runtime.tasks_mutex_);
-  const auto group = find_group(records_, group_id);
-  if (group == records_.end() || group->cancelled) return false;
-  group->cancelled = true;
-  for (const TaskId id : group->task_ids) {
-    const auto task = find_task(runtime.tasks_, id);
-    if (task == runtime.tasks_.end() || task->completed || task->cancelled) {
-      continue;
-    }
-    if (task->cancellation_requested != nullptr) {
-      task->cancellation_requested->store(true);
-    }
-    task->cancelled = true;
-    task->queued = false;
-  }
-  std::erase_if(runtime.task_completion_queue_, [&](const auto& completion) {
-    return std::ranges::find(group->task_ids, completion.id) !=
-        group->task_ids.end();
-  });
-  return true;
 }
 
 TaskGroup WindowRuntime::create_task_group() {

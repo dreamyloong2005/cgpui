@@ -56,6 +56,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 638 task cancellation propagation production behavior")) return 9;
+                "\"phase_f_current_handoff\": \"Step 639 async I/O hook production behavior")) return 9;
   return 0;
 }

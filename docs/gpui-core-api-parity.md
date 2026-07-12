@@ -122,8 +122,9 @@ desktop integration surfaces remain separate future work.
   but real DirectWrite/fontconfig discovery is not complete.
 - Threaded async now has a bounded reusable pool, low/normal/high scheduling,
   main-runtime completion dispatch, and move-only structured task groups with
-  bulk/destructor cancellation. Cancellation propagation depth, async I/O
-  integration, and cross-thread entity access remain incomplete.
+  recursive parent/child observability plus descendant bulk/destructor
+  cancellation. Async I/O integration and cross-thread entity access remain
+  incomplete.
 
 ## Missing
 

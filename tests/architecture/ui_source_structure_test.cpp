@@ -1975,6 +1975,7 @@ int main() {
       "src/ui/runtime_task_priority.cpp",
       "src/ui/runtime_task_group_internal.hpp",
       "src/ui/runtime_task_group.cpp",
+      "src/ui/runtime_task_group_propagation.cpp",
       "src/ui/task_group.cpp",
       "src/ui/runtime_task_results.cpp",
       "src/ui/runtime_task_state.cpp",

@@ -23245,3 +23245,30 @@
   runtime header, behavior test, and structure guard are
   61/49/180/126/9/11/260/172/173 lines; and `git diff --check` succeeds.
 - Phase G Step 637 adds move-only structured task groups with runtime-owned membership, normal and explicit-priority spawning, active and total task observability, explicit bulk cancellation, and destructor cancellation that signals background tokens and suppresses cancelled completions. Step 638 task cancellation propagation production behavior is next.
+
+## 2026-07-12 Phase G Step 638 Task Cancellation Propagation
+
+- Started from committed Step 637 at `a1ab4e21` with only unrelated untracked
+  `.vscode/` present.
+- Chosen boundary adds parent/child groups, recursive subtree observability and
+  ancestor cancellation, child/sibling isolation, and cancelled-parent spawn
+  rejection in a focused propagation leaf.
+- Added the focused propagation behavior target. Its first build reaches the
+  expected RED because `TaskGroup::create_child_group()` does not yet exist.
+- Added parent/child records, recursive subtree state and cancellation, child
+  creation forwarding, and the focused propagation leaf. The behavior target
+  passes; the first seven-target regression passes 6/7, with only the Step 637
+  guard still looking for completion aggregation in its former source.
+- The corrected seven-target regression passes 7/7. Added the dedicated Step
+  638 structure guard; it exits 10 at the expected authority-document RED after
+  all code, behavior, ownership, inventory, Xmake, and line-cap checks pass.
+- Final Step 638 verification passes Windows 13/13, Arch Linux WSL 13/13, and
+  the complete Windows dynamic-handoff chain 85/85.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 85 current-handoff consumers plus the JSON
+  ledger point to Step 639 with zero stale Step 638 current handoffs; JSON
+  parses with 12 Step 638 source entries; public group header, private store
+  header, membership source, propagation source, handle source, behavior test,
+  propagation structure guard, and historical group guard are
+  62/70/97/145/133/140/131/178 lines; and `git diff --check` succeeds.
+- Phase G Step 638 adds parent/child task groups with recursive subtree observability, descendant cancellation and destructor propagation, child/sibling isolation, and cancelled-ancestor spawn rejection. Step 639 async I/O hook production behavior is next.
