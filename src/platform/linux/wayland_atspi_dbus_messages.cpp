@@ -1,5 +1,6 @@
 #include "wayland_atspi_dbus_messages_internal.hpp"
 #include "wayland_atspi_dbus_navigation_internal.hpp"
+#include "wayland_atspi_role_state_internal.hpp"
 
 #include <array>
 #include <string_view>
@@ -19,6 +20,10 @@ constexpr std::string_view introspection_xml = R"xml(<node>
     <method name="GetChildren"><arg direction="out" type="a(so)"/></method>
     <method name="GetIndexInParent"><arg direction="out" type="i"/></method>
     <method name="GetApplication"><arg direction="out" type="(so)"/></method>
+    <method name="GetRole"><arg direction="out" type="u"/></method>
+    <method name="GetRoleName"><arg direction="out" type="s"/></method>
+    <method name="GetLocalizedRoleName"><arg direction="out" type="s"/></method>
+    <method name="GetState"><arg direction="out" type="au"/></method>
   </interface>
   <interface name="org.a11y.atspi.Component"/>
 </node>)xml";
@@ -80,8 +85,10 @@ WaylandAtspiDbusReply wayland_atspi_dbus_reply_for(
           request, "org.a11y.atspi.Accessible", "GetInterfaces")) {
     return {.handled = true, .message = interface_reply(request)};
   }
-  return wayland_atspi_navigation_reply_for(
+  WaylandAtspiDbusReply navigation = wayland_atspi_navigation_reply_for(
       request, object, bus_name, root_object_path);
+  if (navigation.handled) return navigation;
+  return wayland_atspi_role_state_reply_for(request, object);
 }
 
 } // namespace cgpui

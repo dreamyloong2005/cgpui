@@ -75,7 +75,7 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 40;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 629 Linux AT-SPI roles and states "
+                "\"phase_f_current_handoff\": \"Step 630 Linux AT-SPI text and value event "
                 "production behavior\"") ||
       !contains(task_plan,
                 "- Status: complete\n- Authoritative scope: Phase F")) return 50;

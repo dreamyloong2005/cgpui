@@ -22987,3 +22987,15 @@
   source/structure/ledger regression passes 7/7, and all 75 dynamic handoff
   guards pass after advancing the nested aggregate chain.
 - Phase G Step 628 adds Linux AT-SPI Accessible tree navigation with Parent and ChildCount properties, ordered child lookup and enumeration, parent indexes, application roots, and standard D-Bus object references. Step 629 Linux AT-SPI roles and states production behavior is next.
+
+## 2026-07-12 Phase G Step 629 AT-SPI Roles And States
+
+- Started from committed Step 628 at `6f01ce01` with only unrelated untracked
+  `.vscode/` present.
+- Added a focused role/state leaf covering every current platform role plus
+  standard visible/showing, enabled/sensitive, focusable/focused/active,
+  checkable/checked, and editable state bits serialized as `au`.
+- The WSL role/state behavior test passes direct protocol ids and bit positions;
+  Windows structure/ledger regression passes 6/6, WSL behavior/structure group
+  passes 9/9, and all 76 dynamic handoff guards pass.
+- Phase G Step 629 maps Linux accessibility nodes to standard AT-SPI roles, role names, and two-word state sets covering visibility, enablement, sensitivity, focus, checkability, checked state, and editability. Step 630 Linux AT-SPI text and value event production behavior is next.

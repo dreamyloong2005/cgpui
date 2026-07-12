@@ -124,7 +124,7 @@ int main() {
     if (!contains(*document, completion)) return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 629 Linux AT-SPI roles and states "
+                "\"phase_f_current_handoff\": \"Step 630 Linux AT-SPI text and value event "
                 "production behavior\"")) return 9;
   return 0;
 }

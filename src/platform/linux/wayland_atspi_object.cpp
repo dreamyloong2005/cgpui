@@ -30,6 +30,7 @@ std::vector<WaylandAtspiObjectNode> build_wayland_atspi_object_nodes(
         .name = node.name,
         .text = node.text,
         .value = node.value,
+        .patterns = node.patterns,
         .enabled = node.enabled,
         .focusable = node.focusable,
         .focused = node.focused,

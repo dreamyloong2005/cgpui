@@ -1878,6 +1878,7 @@ apps rather than only demo windows.
 - [x] Phase G Step 626 audits and closes the Win32 UIA production band, freezing provider objects, navigation, patterns, live events, runtime change integration, provider lifetime, diagnostics, and stress evidence. Step 627 Linux AT-SPI D-Bus object exposure production behavior is next.
 - [x] Phase G Step 627 exposes Linux AT-SPI accessibility objects on an attached D-Bus connection with deterministic object-path registration, introspection, interface discovery, removal, teardown, and diagnostics. Step 628 Linux AT-SPI tree navigation production behavior is next.
 - [x] Phase G Step 628 adds Linux AT-SPI Accessible tree navigation with Parent and ChildCount properties, ordered child lookup and enumeration, parent indexes, application roots, and standard D-Bus object references. Step 629 Linux AT-SPI roles and states production behavior is next.
+- [x] Phase G Step 629 maps Linux accessibility nodes to standard AT-SPI roles, role names, and two-word state sets covering visibility, enablement, sensitivity, focus, checkability, checked state, and editability. Step 630 Linux AT-SPI text and value event production behavior is next.
 - [x] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
 - [ ] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree

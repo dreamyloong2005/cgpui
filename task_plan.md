@@ -1239,7 +1239,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 628 evidence: object snapshots precompute ordered child paths and parent
   indexes; the focused navigation serializer returns standard variant, `(so)`,
   and `a(so)` replies using the connection unique name and adapter root path.
-- In progress: Step 629 Linux AT-SPI roles and states production behavior.
+- Completed: Phase G Step 629 maps Linux accessibility nodes to standard AT-SPI roles, role names, and two-word state sets covering visibility, enablement, sensitivity, focus, checkability, checked state, and editability. Step 630 Linux AT-SPI text and value event production behavior is next.
+- Step 629 evidence: a focused role/state leaf maps every current platform role
+  to stable AT-SPI ids/names and returns the standard two-word `au` state set;
+  tests assert protocol ids and state-bit positions directly.
+- In progress: Step 630 Linux AT-SPI text and value event production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1255,6 +1259,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A Step 629 structure assertion placed the closing quote before `.id != 79` during initial authoring | Step 629 structure guard review | Correct the assertion before compiling so it matches the complete behavior-test expression |
 | The first Step 628 75-guard handoff run passed 74/75 because the Windows/WSL/cross-platform nested aggregate chain still required Step 628 | Step 628 dynamic handoff gate | Advance all three nested assertions together to Step 629 while preserving their frozen Phase F completion sentences |
 | The first Step 628 structure RED stopped at exit 4 because the guard expected the full `a(so)` signature in the libdbus serializer | Step 628 structure RED | Require `DBUS_TYPE_ARRAY` plus element signature `(so)` in serialization and reserve full `a(so)` for the introspection XML assertion |
 | A combined Step 628 path-lifetime fix omitted the `task_plan.md` patch header and was rejected atomically | Step 628 behavior fix | Split the production and error-record contexts under explicit file headers before retrying |

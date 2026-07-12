@@ -11001,3 +11001,16 @@
   snapshot. Message serialization consumes that immutable metadata; the D-Bus
   registry only supplies the connection unique name and root path.
 - Phase G Step 628 adds Linux AT-SPI Accessible tree navigation with Parent and ChildCount properties, ordered child lookup and enumeration, parent indexes, application roots, and standard D-Bus object references. Step 629 Linux AT-SPI roles and states production behavior is next.
+
+## 2026-07-12 Phase G Step 629 AT-SPI Roles And States Design
+
+- Step 629 belongs in a focused role/state serializer leaf, not the navigation
+  serializer. It maps every current `PlatformAccessibilityRole` to stable
+  AT-SPI role ids and returns role name/localized-name strings.
+- `GetState` uses the standard `au` two-word bitset. Present snapshot nodes are
+  visible/showing; enabled nodes are enabled/sensitive; focus metadata maps to
+  focusable/focused/active; toggles map to checkable/checked; editable text and
+  value controls map to editable.
+- The focused test must assert protocol numeric ids and bit positions directly,
+  not merely compare against implementation enums.
+- Phase G Step 629 maps Linux accessibility nodes to standard AT-SPI roles, role names, and two-word state sets covering visibility, enablement, sensitivity, focus, checkability, checked state, and editability. Step 630 Linux AT-SPI text and value event production behavior is next.
