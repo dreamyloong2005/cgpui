@@ -1892,6 +1892,7 @@ apps rather than only demo windows.
 - [x] Phase G Step 640 integrates runtime timers with platform monotonic clocks and nearest-deadline delayed wakeups on Win32 and Wayland, preserving deterministic time advancement, cancellation, repeating cadence, and zero-delay compatibility. Step 641 cross-thread entity access production behavior is next.
 - [x] Phase G Step 641 adds explicit CrossThreadEntity<T> read and update queueing through AsyncContextCapability, executing FIFO worker-thread submissions on the owning runtime thread with context isolation, missing-entity status, concurrent safety, and shutdown detachment. Step 642 async runtime production closeout audit is next.
 - [x] Phase G Step 642 audits and closes the async runtime production band, freezing bounded priority scheduling, structured cancellation, async I/O, platform timers, cross-thread entity access, diagnostics, shutdown behavior, and modular source evidence. Step 643 animation transition production behavior is next.
+- [x] Phase G Step 643 adds typed scalar animation transitions over existing runtime, runtime-context, and async-context scheduling, with eased from/to value snapshots, runtime-thread callbacks, zero-duration final delivery, invalid-callback rejection, and handle observability. Step 644 element lifecycle animation production behavior is next.
 - [x] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
 - [x] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree

@@ -45,7 +45,8 @@ desktop integration surfaces remain separate future work.
   task handles with main-thread completion dispatch, cancellable background
   task execution through a small threaded executor, task cancellation tokens,
   task diagnostics counters, and platform wakeup hooks for timers, tasks, and
-  deferred work.
+  deferred work, plus typed scalar animation transitions with eased from/to
+  value snapshots across runtime, runtime-context, and async-context surfaces.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -132,7 +133,9 @@ desktop integration surfaces remain separate future work.
 
 ## Missing
 
-- Full upstream GPUI animation and easing system.
+- Full upstream GPUI animation and easing system beyond typed scalar animation transitions,
+  including element lifecycle ownership, repeat/chaining, springs, frame
+  pacing, broad style interpolation, and official examples.
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.
 - Asset, image, SVG, and texture upload pipelines.

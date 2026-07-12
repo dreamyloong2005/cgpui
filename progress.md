@@ -23467,3 +23467,54 @@
   16 Step 642 source entries; the closeout guard is 123 lines; no `include/`,
   `src/`, or `examples/` production file changed; and `git diff --check`
   succeeds.
+
+## 2026-07-13 Phase G Step 643 Animation Transition
+
+- Started from committed Step 642 at `a4bcad41` with only unrelated untracked
+  `.vscode/` present.
+- Audited the existing runtime animation leaves, style tween primitives,
+  scheduling tests, source-structure guards, and pinned upstream animation and
+  opacity examples. Chosen ownership is a focused public transition leaf plus
+  a focused implementation over the existing animation scheduler; element
+  lifecycle wrapping remains Step 644.
+- Added the focused Step 643 behavior target first. It requires direct runtime,
+  runtime-context, and async-context transition starts; typed current-value
+  snapshots; runtime-thread callbacks; exact eased quarter/half/final values;
+  zero-duration final delivery; and invalid-callback rejection.
+- The first focused build reached the expected RED because the planned public
+  `animation_transition.hpp` leaf did not yet exist.
+- Added the focused public transition vocabulary and implementation over the
+  three existing animation scheduling surfaces. The existing animation start
+  leaf now synchronously invokes a zero-duration callback with its complete
+  snapshot so immediate transitions cannot omit their destination value.
+- The first six-target transition/style/scheduling/header regression passes
+  6/6. Registered the new public/source leaves in the global UI and header
+  inventories and added a dedicated Step 643 structure guard with frozen
+  modular ownership and line caps.
+- The dedicated structure guard exits 8 at the expected authority-document RED
+  after every API, implementation, zero-duration, behavior, inventory, Xmake,
+  historical handoff, and line-cap assertion passes.
+- Synchronized the Step 643 public vocabulary, core parity boundary, roadmap,
+  Markdown/JSON ledgers, task plan, and findings. The remaining animation gap
+  is explicitly element lifecycle behavior and later Steps 645-650 depth.
+- Advanced all existing dynamic current-handoff consumers to Step 644 while
+  preserving the historical Step 642 closeout sentence that names Step 643 as
+  its former next step.
+- Final code review tightened zero-duration lifetime behavior: after synchronous
+  final delivery, the completed runtime record clears its callback. The focused
+  test uses a weak capture to prove callback-owned resources are released.
+- The behavior target consumes `AnimationTransition` through the public
+  `cgpui/prelude.hpp` authoring boundary; standalone leaf compilation remains
+  covered by `ui_header_cleanliness`.
+- Final Step 643 focused verification passes Windows 8/8 and Arch Linux WSL
+  8/8 across transition behavior/structure, existing animation and frame
+  scheduling, async-context capability, style tweening, global UI inventory,
+  and header cleanliness. The complete Windows dynamic handoff chain passes
+  90/90 after the final lifetime and prelude review.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 90 current-handoff guard files plus the JSON
+  ledger point to Step 644 with zero stale Step 643 dynamic handoffs; JSON
+  parses with 12 Step 643 sources; public header, implementation, animation
+  start leaf, behavior, and structure guard are 83/97/56/169/131 lines;
+  public/private broad runtime headers remain 259/260 lines; and
+  `git diff --check` succeeds.

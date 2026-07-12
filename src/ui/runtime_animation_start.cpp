@@ -23,7 +23,17 @@ AnimationHandle WindowRuntime::start_animation(
       .complete = options.duration_ms == 0,
   });
 
-  if (options.duration_ms != 0) {
+  if (options.duration_ms == 0) {
+    const std::optional<AnimationSnapshot> snapshot = animation_snapshot(id);
+    AnimationCallback immediate_callback = animations_.back().callback;
+    if (snapshot.has_value() && immediate_callback) {
+      immediate_callback(context(), *snapshot);
+    }
+    const auto completed = std::find_if(
+        animations_.begin(), animations_.end(),
+        [id](const RuntimeAnimation& animation) { return animation.id == id; });
+    if (completed != animations_.end()) completed->callback = {};
+  } else {
     const TimerId timer_id = schedule_repeating_timer(
         options.tick_interval_ms,
         [this, id](const WindowRuntimeContext&) {

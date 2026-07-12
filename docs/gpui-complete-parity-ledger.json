@@ -3194,7 +3194,23 @@
       "xmake.lua"
     ],
     "phase_g_step_642_remaining_gap": "Step 643 animation transition production behavior",
-    "phase_f_current_handoff": "Step 643 animation transition production behavior"
+    "phase_g_step_643_surface": "Phase G Step 643 adds typed scalar animation transitions over existing runtime, runtime-context, and async-context scheduling, with eased from/to value snapshots, runtime-thread callbacks, zero-duration final delivery, invalid-callback rejection, and handle observability. Step 644 element lifecycle animation production behavior is next.",
+    "phase_g_step_643_sources": [
+      "include/cgpui/ui/animation_transition.hpp",
+      "include/cgpui/ui/ui.hpp",
+      "include/cgpui/ui/runtime_handles.hpp",
+      "src/ui/animation_transition.cpp",
+      "src/ui/runtime_animation_start.cpp",
+      "tests/animation/runtime_animation_transition_test.cpp",
+      "tests/architecture/phase_g_animation_transition_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "docs/gpui-public-authoring-vocabulary.md",
+      "docs/gpui-core-api-parity.md",
+      "xmake.lua"
+    ],
+    "phase_g_step_643_remaining_gap": "Step 644 element lifecycle animation production behavior",
+    "phase_f_current_handoff": "Step 644 element lifecycle animation production behavior"
   },
   "categories": [
     "application_and_app_context",

@@ -11272,3 +11272,30 @@
   timer, and cross-thread entity behavior/structure targets plus global source,
   header, build registration, shutdown, and authority-document evidence.
 - Phase G Step 642 audits and closes the async runtime production band, freezing bounded priority scheduling, structured cancellation, async I/O, platform timers, cross-thread entity access, diagnostics, shutdown behavior, and modular source evidence. Step 643 animation transition production behavior is next.
+
+## 2026-07-13 Phase G Step 643 Animation Transition Design
+
+- The pinned upstream `elements/animation.rs` separates animation timing from
+  element lifecycle ownership: `Animation` carries duration/repeat/easing,
+  while `AnimationElement` stores per-element start/index state and requests
+  another animation frame during layout. The official animation example uses
+  that wrapper; the opacity example manually requests animation frames.
+- CGPUI already has deterministic runtime timing, `AnimationHandle`,
+  `AnimationSnapshot`, easing, and scalar/style tween primitives, but callers
+  must manually combine snapshots with values and callbacks. There is no
+  typed from/to transition snapshot or reusable transition handle.
+- Step 643 should add a focused `animation_transition.hpp` public leaf and
+  focused implementation rather than adding another method to the 259-line
+  `window_runtime.hpp`. Free start functions can compose the existing public
+  scheduling surfaces for `WindowRuntime`, `WindowRuntimeContext`, and
+  `AsyncContextCapability` without new runtime storage.
+- A transition snapshot should preserve the underlying animation snapshot and
+  expose exact from/to/current scalar values. The handle should preserve id,
+  active, complete, progress, and cancellation behavior through the existing
+  animation handle. Zero-duration starts must deliver the final value once;
+  otherwise a production transition can complete without ever applying its
+  destination.
+- Element lifecycle state, repeated/chained animation, spring variants, frame
+  pacing, broad style interpolation, and official examples remain their later
+  Steps 644-650.
+- Phase G Step 643 adds typed scalar animation transitions over existing runtime, runtime-context, and async-context scheduling, with eased from/to value snapshots, runtime-thread callbacks, zero-duration final delivery, invalid-callback rejection, and handle observability. Step 644 element lifecycle animation production behavior is next.

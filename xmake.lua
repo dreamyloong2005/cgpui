@@ -3673,6 +3673,18 @@ target("phase_g_async_runtime_closeout_test")
     add_files("tests/api_parity/phase_g_async_runtime_closeout_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_animation_transition_test")
+    set_kind("binary")
+    add_files("tests/animation/runtime_animation_transition_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs, "tests/ui")
+    add_tests("default")
+
+target("phase_g_animation_transition_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_animation_transition_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 target("window_runtime_frame_scheduling_test")
     set_kind("binary")
     set_rundir(os.projectdir())

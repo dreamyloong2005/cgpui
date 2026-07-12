@@ -1311,6 +1311,19 @@ Windows/Linux core API is stable enough for parity work.
   behavior targets, seven dedicated structure guards, both platform timer
   targets, global UI/platform inventories, header cleanliness, Xmake
   registrations, and the closed Steps 635-642 roadmap band.
+- Completed: Phase G Step 643 adds typed scalar animation transitions over existing runtime, runtime-context, and async-context scheduling, with eased from/to value snapshots, runtime-thread callbacks, zero-duration final delivery, invalid-callback rejection, and handle observability. Step 644 element lifecycle animation production behavior is next.
+- Step 643 boundary: add a focused public animation-transition leaf with
+  from/to value semantics, typed transition snapshots and a handle over the
+  existing deterministic `AnimationHandle`; implement runtime, runtime-context,
+  and async-context start surfaces in a focused source. A zero-duration
+  transition must synchronously deliver its exact final value. Element-owned
+  animation state, repeat/chaining, and lifecycle reconciliation remain Step
+  644 rather than being folded into this slice.
+- Step 643 evidence: focused behavior covers direct runtime, runtime-context,
+  and async-context starts, eased 10-to-20 quarter/half/final values,
+  runtime-thread delivery, zero-duration synchronous final values, invalid
+  callbacks, and handle observability; dedicated structure coverage freezes
+  the public/source leaf boundary, inventories, registrations, and line caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1326,6 +1339,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first three-file Step 643 prelude-evidence patch had an empty hunk separator and was atomically rejected | Step 643 public authoring boundary review | Reissue the exact include, structure assertion, progress, and error-row edits as valid contiguous hunks |
+| Sandboxed `Invoke-WebRequest` calls for the pinned upstream animation sources failed with an authentication exception | Step 643 upstream semantic audit | Re-run the same read-only pinned raw URLs with approved network access; inspect `examples/animation.rs`, `src/elements/animation.rs`, and `examples/opacity.rs` without moving the revision pin |
 | A final Step 642 JSON audit queried the nonexistent top-level `summary` object and raised a Node `TypeError` | Step 642 final evidence query | Inspect the JSON top-level keys and query the established `phase_d_text_evidence` evidence container; handoff, 16 sources, and remaining gap then validated |
 | The first runnable Step 642 closeout guard returned 2 because it guessed `cancel_group_subtree` instead of the established recursive `cancel_locked(runtime, *child, ...)` marker | Step 642 aggregated structure assertion | Match the exact recursive cancellation marker already frozen by the Step 638 guard |
 | The first Step 642 closeout build could not create Xmake's cached Ninja package lock, so no test binary was produced | Step 642 closeout RED attempt | Confirm no live Xmake/Ninja process owns the cache, avoid deleting persistent lock metadata, and retry the focused target after the prior build sessions have fully exited |

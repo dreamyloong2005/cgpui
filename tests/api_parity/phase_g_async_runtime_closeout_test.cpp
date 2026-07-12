@@ -115,8 +115,8 @@ int main() {
     if (!contains(*document, completion)) return 6;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 643 animation "
-                "transition production behavior\"")) {
+                "\"phase_f_current_handoff\": \"Step 644 element "
+                "lifecycle animation production behavior\"")) {
     return 7;
   }
   return 0;

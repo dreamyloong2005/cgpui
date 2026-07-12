@@ -13,6 +13,7 @@
 #include "cgpui/ui/button_builder.hpp"
 #include "cgpui/ui/label_builder.hpp"
 #include "cgpui/ui/layout.hpp"
+#include "cgpui/ui/animation_transition.hpp"
 #include "cgpui/ui/async_context.hpp"
 #include "cgpui/ui/async_io_hook.hpp"
 #include "cgpui/ui/cross_thread_entity.hpp"

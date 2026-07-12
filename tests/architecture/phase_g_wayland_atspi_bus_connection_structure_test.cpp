@@ -153,7 +153,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 643 animation transition production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 644 element lifecycle animation production behavior\"")) {
     return 12;
   }
   return 0;

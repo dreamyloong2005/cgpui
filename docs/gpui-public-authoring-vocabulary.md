@@ -85,6 +85,18 @@ adds prioritized spawning, move-only structured task groups, and one-shot
 cross-thread async-I/O completion hooks; upstream test macro equivalents
 remain outside this freeze.
 
+## Animation vocabulary
+
+- `AnimationTransition`
+- `AnimationTransitionSnapshot`
+- `AnimationTransitionHandle`
+- `start_animation_transition(...)`
+
+Phase G Step 643 adds typed scalar from/to transitions over the existing
+deterministic animation scheduler. Direct runtime, runtime-context, and
+async-context starts share the same value snapshot and handle vocabulary;
+element lifecycle animation wrappers and repeat/chaining remain later work.
+
 ## Platform service vocabulary
 
 - `NativeMenuModel`

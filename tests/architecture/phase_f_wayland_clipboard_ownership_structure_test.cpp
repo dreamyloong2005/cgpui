@@ -100,7 +100,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 643 animation transition production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 644 element lifecycle animation production behavior")) {
     return 11;
   }
   return 0;
