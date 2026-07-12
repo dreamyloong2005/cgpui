@@ -1418,7 +1418,8 @@ int main() {
   }
   if (read_source("src/ui/animation_curve.cpp").empty() ||
       read_source("src/ui/element_tree.cpp").empty() ||
-      read_source("src/ui/style_tween.cpp").empty()) {
+      read_source("src/ui/style_tween.cpp").empty() ||
+      read_source("src/ui/style_tween_geometry.cpp").empty()) {
     return 104;
   }
   const std::vector<const char*> element_style_sources{

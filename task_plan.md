@@ -1378,6 +1378,15 @@ Windows/Linux core API is stable enough for parity work.
   16/16/32ms animations, a 20ms late delivery, drift-free 32ms continuation,
   mutation-safe co-delivery, cancellation teardown, and exact diagnostics;
   lifecycle and sequence regressions freeze `{16,14}` and `{16,13,4}` cadence.
+- Completed: Phase G Step 649 broadens production style interpolation across layout geometry, percentage sizing, spacing, borders, shadows, clipping, flex, inset, typography, colors, opacity, and transforms, preserves discrete and one-sided optional values until the endpoint, and avoids NaNs for unchanged non-finite dimensions. Step 650 official animation and opacity examples is next.
+- Step 649 boundary: public authoring remains in the thin
+  `style_animation.hpp` leaf. Field composition lives in `style_tween.cpp`,
+  while geometry and non-finite interpolation policy live in the private
+  `style_tween_geometry` source/header pair.
+- Step 649 evidence: focused behavior covers layout and box fields, paint
+  geometry, optional and discrete endpoint policy, and unchanged infinite max
+  dimensions; dedicated structure coverage freezes ownership, registration,
+  authority evidence, and line caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.

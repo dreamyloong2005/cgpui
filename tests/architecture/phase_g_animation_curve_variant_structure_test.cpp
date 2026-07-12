@@ -115,7 +115,7 @@ int main() {
       line_count(runtime_handles) > 125 || line_count(runtime_state) > 100 ||
       line_count(element_header) > 140 || line_count(element_state) > 160 ||
       line_count(sequence_state) > 140 || line_count(style_header) > 30 ||
-      line_count(style_source) > 40 || line_count(behavior) > 190) return 7;
+      line_count(style_source) > 80 || line_count(behavior) > 190) return 7;
 
   constexpr const char* completion =
       "Phase G Step 646 adds zero-allocation animation curve variants with "
@@ -131,7 +131,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationCurve`") ||
       !contains(core_parity, "parameterized spring curves") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 649 style interpolation "
-                "production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 650 official animation and opacity examples\"")) return 9;
   return 0;
 }

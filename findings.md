@@ -11445,3 +11445,19 @@
   element deadline and cancels the shared one-shot timer only when no work is
   left.
 - Phase G Step 648 coalesces ordinary and element animations onto one deadline-driven frame timer, preserves cadence across late frames, delivers mutation-safe due callbacks without a per-frame allocation, tears down cancelled participation, and reports pending, scheduled, delivered, coalesced, and late-frame diagnostics. Step 649 style interpolation production behavior is next.
+
+## 2026-07-13 Phase G Step 649 Style Interpolation Baseline
+
+- Existing `StyleTween` interpolated only colors, opacity, and transforms;
+  layout dimensions, percentage sizes, spacing, borders, shadows, clipping,
+  flex values, inset, and font size jumped at the endpoint.
+- Production interpolation keeps discrete properties and one-sided optional
+  values at the start value until completion, then adopts the destination.
+  This avoids inventing intermediate enum, font, token, or absent-value state.
+- Equal infinite max dimensions require an equality/non-finite guard before
+  arithmetic because `infinity - infinity` produces NaN. Unequal non-finite
+  endpoints use the same endpoint-switch policy instead of undefined geometry.
+- Geometry interpolation is private implementation policy rather than new
+  public API. Keeping it in a focused source/header pair leaves the public
+  style animation leaf thin and the field-composition source readable.
+- Phase G Step 649 broadens production style interpolation across layout geometry, percentage sizing, spacing, borders, shadows, clipping, flex, inset, typography, colors, opacity, and transforms, preserves discrete and one-sided optional values until the endpoint, and avoids NaNs for unchanged non-finite dimensions. Step 650 official animation and opacity examples is next.

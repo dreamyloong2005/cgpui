@@ -123,8 +123,7 @@ int main() {
       contains(core_parity, "Cancellation propagation depth") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 649 style interpolation "
-          "production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 650 official animation and opacity examples\"")) {
     return 11;
   }
   return 0;

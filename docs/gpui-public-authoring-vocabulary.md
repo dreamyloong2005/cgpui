@@ -102,6 +102,8 @@ remain outside this freeze.
 - `start_animation_transition(...)`
 - `AnimationCancellationDiagnostic`
 - `AnimationFramePacingSnapshot`
+- `StyleTween`
+- `tween(const Style&, const Style&, float)` broad style interpolation
 - `ElementAnimationSnapshot`
 - `ElementAnimationFrameResult`
 - `ElementAnimationStateStore`

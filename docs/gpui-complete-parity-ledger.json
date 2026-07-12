@@ -3319,7 +3319,19 @@
       "xmake.lua"
     ],
     "phase_g_step_648_remaining_gap": "Step 649 style interpolation production behavior",
-    "phase_f_current_handoff": "Step 649 style interpolation production behavior"
+    "phase_g_step_649_surface": "Phase G Step 649 broadens production style interpolation across layout geometry, percentage sizing, spacing, borders, shadows, clipping, flex, inset, typography, colors, opacity, and transforms, preserves discrete and one-sided optional values until the endpoint, and avoids NaNs for unchanged non-finite dimensions. Step 650 official animation and opacity examples is next.",
+    "phase_g_step_649_sources": [
+      "include/cgpui/ui/style_animation.hpp",
+      "src/ui/style_tween_geometry_internal.hpp",
+      "src/ui/style_tween_geometry.cpp",
+      "src/ui/style_tween.cpp",
+      "tests/animation/style_interpolation_test.cpp",
+      "tests/architecture/phase_g_style_interpolation_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_649_remaining_gap": "Step 650 official animation and opacity examples",
+    "phase_f_current_handoff": "Step 650 official animation and opacity examples"
   },
   "categories": [
     "application_and_app_context",

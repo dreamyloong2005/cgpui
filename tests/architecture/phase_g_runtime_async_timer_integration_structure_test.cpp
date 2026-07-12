@@ -162,8 +162,7 @@ int main() {
   if (contains(core_parity, "timer integration and cross-thread entity access") ||
       contains(core_parity, "complete async timer integration") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 649 style interpolation "
-                "production behavior\"")) {
+                "\"phase_f_current_handoff\": \"Step 650 official animation and opacity examples\"")) {
     return 11;
   }
   return 0;

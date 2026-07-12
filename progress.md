@@ -23721,3 +23721,36 @@
   13/13. The complete current-handoff chain passes 95/95 including the native-
   menu target-name exception. Arch Linux WSL still returns
   `WSL_E_DISTRO_NOT_FOUND`, so no WSL result is claimed for this slice.
+
+## 2026-07-13 Phase G Step 649 Style Interpolation
+
+- Committed Step 648 as `3dc7ff44 feat: add animation frame pacing`; staged
+  scope contained 122 intended files and excluded untracked `.vscode/`.
+- Added the focused style interpolation behavior test. The first direct
+  `xmake test` used the target name before reconfiguration and reported
+  `nothing to test`; after `xmake f -c -m debug`, the full
+  `phase_g_style_interpolation_test/default` target produced the expected RED.
+- Implemented broad style interpolation in focused composition and private
+  geometry sources. The behavior target then passed 1/1.
+- Added the dedicated structure guard. Its first source-evidence run exited 6
+  because the prior guard split the Step 649 phrase across adjacent literals;
+  matching both source fragments corrected the guard without weakening it.
+- The corrected guard reached the expected authority-document RED at exit 8.
+  Synchronized the five authority files, public vocabulary, core parity,
+  global source inventory, JSON sources, and Step 650 handoff.
+- This Xmake build command accepts only one target; passing seven target names
+  produced an argument error before compilation. Serial single-target builds
+  succeeded for all seven focused targets and avoid Ninja file-lock races.
+- The first 96-target handoff run exposed two stale structural dependencies.
+  Windows/WSL/cross-platform closeout guards still inspected child source for
+  the Step 649 phrase, and the Step 646 curve guard still capped the now-
+  modular `style_tween.cpp` at 40 lines. Tight direct-executable repros were
+  deterministic; advancing the three parent-child assertions and synchronizing
+  the old cap to the Step 649 guard's 80-line budget fixed both causes.
+- Final Windows focused behavior/structure/style/curve/source/header/ledger
+  verification passes 7/7. The complete dynamic current-handoff chain passes
+  96/96, including the native-menu replacement target-name exception.
+- Final audits pass: the exact Step 649 completion sentence appears once in
+  each authority file, JSON parses with 8 present evidence sources, key files
+  are 19/28/90/57/157/124 lines, no `[DEBUG-*]` markers remain, and
+  `git diff --check` reports no whitespace errors.
