@@ -1819,6 +1819,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 613 audits cross-platform test execution by requiring repository-inspection targets to run from the project root with CGPUI_SOURCE_ROOT, preserving identical Windows and Linux path semantics. Step 614 platform production-path audit is next.
 - [x] Phase F Step 614 audits the Win32/Wayland production path across lifecycle, input, clipboard, drag/drop, menus, services, multi-window ownership, diagnostics, and final host verification without widening platform entry files. Step 615 final closeout guard is next.
 - [x] Phase F Step 615 adds `phase_f_final_closeout_test` as the audit-only guard for Steps 539-614, freezing all production bands, host verification, cross-platform test execution, platform entry caps, and the Phase G handoff boundary. Step 616 ledger closeout is next.
+- [x] Phase F Step 616 closes the active platform production ledger for Win32 and Wayland, records all Phase F closeout guards, and moves the handoff to the final dual-host gate without claiming deferred macOS/Cocoa/Metal work. Step 617 final Windows/WSL gate is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.

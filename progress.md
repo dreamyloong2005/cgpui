@@ -22672,3 +22672,12 @@
 - Phase F Step 615 adds `phase_f_final_closeout_test` as the audit-only guard for Steps 539-614, freezing all production bands, host verification, cross-platform test execution, platform entry caps, and the Phase G handoff boundary. Step 616 ledger closeout is next.
 - Final Windows and WSL final-band verification passes 5/5 with the closeout
   guard included; Step 616 handoffs and diff hygiene pass.
+
+## 2026-07-12 Phase F Step 616 Ledger Closeout
+
+- Started from committed Step 615 at `8f305aef`.
+- Synchronized the active platform ledger across Markdown, JSON, roadmap,
+  planning, and findings while preserving the deferred macOS boundary.
+- Phase F Step 616 closes the active platform production ledger for Win32 and Wayland, records all Phase F closeout guards, and moves the handoff to the final dual-host gate without claiming deferred macOS/Cocoa/Metal work. Step 617 final Windows/WSL gate is next.
+- Final Windows and WSL ledger/final-band verification passes 6/6; JSON parsing,
+  65 Step 617 handoffs, and diff hygiene pass.

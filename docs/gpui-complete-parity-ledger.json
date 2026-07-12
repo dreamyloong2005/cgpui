@@ -2788,7 +2788,14 @@
       "xmake.lua"
     ],
     "phase_f_step_615_remaining_gap": "Step 616 ledger closeout",
-    "phase_f_current_handoff": "Step 616 ledger closeout"
+    "phase_f_step_616_surface": "Phase F Step 616 closes the active platform production ledger for Win32 and Wayland, records all Phase F closeout guards, and moves the handoff to the final dual-host gate without claiming deferred macOS/Cocoa/Metal work. Step 617 final Windows/WSL gate is next.",
+    "phase_f_step_616_sources": [
+      "docs/gpui-complete-parity-ledger.md",
+      "docs/gpui-complete-parity-ledger.json",
+      "tests/api_parity/phase_f_final_closeout_test.cpp"
+    ],
+    "phase_f_step_616_remaining_gap": "Step 617 final Windows/WSL gate",
+    "phase_f_current_handoff": "Step 617 final Windows/WSL gate"
   },
   "categories": [
     "application_and_app_context",

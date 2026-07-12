@@ -100,7 +100,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 616 ledger closeout")) {
+                "\"phase_f_current_handoff\": \"Step 617 final Windows/WSL gate")) {
     return 11;
   }
   return 0;

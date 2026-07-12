@@ -1167,7 +1167,8 @@ Windows/Linux core API is stable enough for parity work.
 - Completed: Phase F Step 613 audits cross-platform test execution by requiring repository-inspection targets to run from the project root with CGPUI_SOURCE_ROOT, preserving identical Windows and Linux path semantics. Step 614 platform production-path audit is next.
 - Completed: Phase F Step 614 audits the Win32/Wayland production path across lifecycle, input, clipboard, drag/drop, menus, services, multi-window ownership, diagnostics, and final host verification without widening platform entry files. Step 615 final closeout guard is next.
 - Completed: Phase F Step 615 adds `phase_f_final_closeout_test` as the audit-only guard for Steps 539-614, freezing all production bands, host verification, cross-platform test execution, platform entry caps, and the Phase G handoff boundary. Step 616 ledger closeout is next.
-- In progress: Step 616 ledger closeout.
+- Completed: Phase F Step 616 closes the active platform production ledger for Win32 and Wayland, records all Phase F closeout guards, and moves the handoff to the final dual-host gate without claiming deferred macOS/Cocoa/Metal work. Step 617 final Windows/WSL gate is next.
+- In progress: Step 617 final Windows/WSL gate.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
