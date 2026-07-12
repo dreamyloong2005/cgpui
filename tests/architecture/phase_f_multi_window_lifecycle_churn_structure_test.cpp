@@ -51,7 +51,7 @@ int main() {
   if (!contains(records, "retired_native_windows_.push_back(") ||
       !contains(records, "request_platform_wakeup()") ||
       !contains(private_header, "runtime_window_reclamation_internal.hpp")) return 4;
-  if (!contains(behavior, "index < 12") ||
+  if (!contains(behavior, "index < 64") ||
       !contains(behavior, "closing_window.has_value()") ||
       !contains(behavior, "window_runtime_records().size() != 1") ||
       !contains(behavior, "window_theme(opened.runtime_id) != nullptr") ||
@@ -68,6 +68,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 9;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 603 window churn diagnostics and stress production behavior\"")) return 10;
+                "\"phase_f_current_handoff\": \"Step 604 clipboard ownership diagnostics and stress production behavior\"")) return 10;
   return 0;
 }

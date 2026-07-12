@@ -10638,3 +10638,16 @@
   modules, behavior targets, and the 603 diagnostics/stress handoff without
   adding another production ownership path.
 - Phase F Step 602 audits and closes the Steps 595-601 multi-window event-loop band, freezing deferred native ownership, per-window geometry/input/routing/theme/accessibility isolation, close-callback observability, and bounded child-window churn. Step 603 window churn diagnostics and stress production behavior is next.
+
+## 2026-07-12 Phase F Step 603 Window Churn Diagnostics And Stress
+
+- Runtime diagnostics previously exposed entity, rendering, platform-service,
+  and task state but not the window ownership populations needed to distinguish
+  active children, deferred native retirement, and completed reclamation.
+- The existing `runtime_diagnostic_snapshot.cpp` leaf owns snapshot assembly;
+  lifecycle counting belongs there and must remain observational, without
+  collecting retired windows or mutating reclamation state.
+- A 64-cycle stress run now observes `{1,1,0,0,0}` at root baseline,
+  `{2,2,1,1,0}` while a child is active, `{2,1,1,0,1}` after close, and the
+  root-only baseline again after the root wakeup performs deferred collection.
+- Phase F Step 603 exposes bounded window lifecycle diagnostics for runtime records, active windows, opened windows, active native children, and retired native children, and verifies 64 churn cycles return to the root-only baseline. Step 604 clipboard ownership diagnostics and stress production behavior is next.

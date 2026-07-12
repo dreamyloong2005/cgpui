@@ -23,6 +23,10 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       connected_subscription_count += 1;
     }
   }
+  std::size_t active_runtime_window_count = 0;
+  for (const WindowRuntimeRecord& record : window_runtime_records_) {
+    active_runtime_window_count += record.active ? 1U : 0U;
+  }
   const RuntimeTaskDiagnostics task_counts = task_diagnostics();
 
   return RuntimeDiagnosticsSnapshot{
@@ -33,6 +37,11 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       .window_observer_count = window_observers_.size(),
       .view_observer_count = view_observers_.size(),
       .connected_subscription_count = connected_subscription_count,
+      .runtime_window_record_count = window_runtime_records_.size(),
+      .active_runtime_window_count = active_runtime_window_count,
+      .opened_window_count = app_opened_windows_.size(),
+      .active_native_child_window_count = native_additional_windows_.size(),
+      .retired_native_child_window_count = retired_native_windows_.size(),
       .invalidation = invalidation_state_,
       .frame_index = frame_index_,
       .last_render_record = last_render_record_,

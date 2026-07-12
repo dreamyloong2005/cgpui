@@ -1126,7 +1126,11 @@ Windows/Linux core API is stable enough for parity work.
 - Completed: Phase F Step 602 audits and closes the Steps 595-601 multi-window event-loop band, freezing deferred native ownership, per-window geometry/input/routing/theme/accessibility isolation, close-callback observability, and bounded child-window churn. Step 603 window churn diagnostics and stress production behavior is next.
 - Step 602 evidence: the audit-only guard freezes all seven step guards,
   focused runtime leaves, and behavior targets for the completed 595-602 band.
-- In progress: Step 603 window churn diagnostics and stress production behavior.
+- Completed: Phase F Step 603 exposes bounded window lifecycle diagnostics for runtime records, active windows, opened windows, active native children, and retired native children, and verifies 64 churn cycles return to the root-only baseline. Step 604 clipboard ownership diagnostics and stress production behavior is next.
+- Step 603 evidence: the public snapshot reports all five lifecycle counts at
+  root-only, active-child, deferred-retirement, and reclaimed baselines while
+  the existing focused churn target remains within its 210-line budget.
+- In progress: Step 604 clipboard ownership diagnostics and stress production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1144,6 +1148,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 603 structure build hit a transient Ninja package file lock | Step 603 structure RED | Confirm no xmake/ninja process remained, then rebuild through the existing generated configuration |
+| The first Step 603 WSL unified session exited at 65% without a compiler diagnostic | Step 603 WSL focused gate | Confirm no process remained and resume the same cached target set with `-j 2`; the gate passed 10/10 |
 | Step 596 root-redraw synchronization patch assumed one declaration per line in the compact frame-scheduling include | Step 596 root record consistency | Patch the existing comma-combined declaration format exactly and keep the helper in the focused scheduling leaf |
 | Step 596 structure-cap search again passed a wildcard path directly to `rg` on Windows | Step 596 public-record audit | Search the concrete architecture directory or exact structure file without shell wildcard arguments |
 | A Step 595 `rg` command passed a PowerShell wildcard path directly and Windows rejected it | Step 595 multi-window test inventory | Search the concrete `tests/ui` directory and filter filenames/results with `rg` instead of shell glob syntax |

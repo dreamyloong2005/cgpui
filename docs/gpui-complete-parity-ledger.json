@@ -2666,7 +2666,16 @@
       "xmake.lua"
     ],
     "phase_f_step_602_remaining_gap": "Step 603 window churn diagnostics and stress production behavior",
-    "phase_f_current_handoff": "Step 603 window churn diagnostics and stress production behavior"
+    "phase_f_step_603_surface": "Phase F Step 603 exposes bounded window lifecycle diagnostics for runtime records, active windows, opened windows, active native children, and retired native children, and verifies 64 churn cycles return to the root-only baseline. Step 604 clipboard ownership diagnostics and stress production behavior is next.",
+    "phase_f_step_603_sources": [
+      "include/cgpui/ui/runtime_diagnostics.hpp",
+      "src/ui/runtime_diagnostic_snapshot.cpp",
+      "tests/ui/window_runtime_multi_window_churn_test.cpp",
+      "tests/architecture/phase_f_window_churn_diagnostics_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_603_remaining_gap": "Step 604 clipboard ownership diagnostics and stress production behavior",
+    "phase_f_current_handoff": "Step 604 clipboard ownership diagnostics and stress production behavior"
   },
   "categories": [
     "application_and_app_context",

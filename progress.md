@@ -22381,3 +22381,26 @@
 - JSON parsing, five-document unique phrase, 74-line closeout guard, zero stale
   Step 602 handoffs, and `git diff --check` pass. `.vscode/` remains unrelated
   and untracked; WSL full debug remains batched.
+
+## 2026-07-12 Phase F Step 603 Window Churn Diagnostics And Stress
+
+- Started from committed Step 602 at `f5553f1b`; only unrelated untracked
+  `.vscode/` remains.
+- Added behavior RED for five missing lifecycle counters across root, active,
+  deferred-retirement, and reclaimed states, and raised the stress loop from
+  twelve to sixty-four cycles.
+- Added the five compatible public snapshot fields and populated them in the
+  existing focused diagnostic snapshot leaf without changing ownership state.
+- Kept the churn behavior target at its historical 210-line cap and added the
+  dedicated Step 603 structure guard; its intended document RED follows all
+  production, behavior, ownership, and line-budget checks.
+- Phase F Step 603 exposes bounded window lifecycle diagnostics for runtime records, active windows, opened windows, active native children, and retired native children, and verifies 64 churn cycles return to the root-only baseline. Step 604 clipboard ownership diagnostics and stress production behavior is next.
+- Final Windows focused verification passes 10/10 across churn behavior,
+  diagnostics consumers, public-header cleanliness, lifecycle/closeout/new
+  structure guards, UI structure, and the parity ledger.
+- The first WSL `-j 1` unified session ended without a compiler diagnostic at
+  65%; no process or lock remained. Reusing the completed D-drive objects with
+  `-j 2` completed the same focused gate at 10/10.
+- JSON parsing, five-document unique completion phrase, 52 Step 604 dynamic
+  handoffs, zero stale Step 603 handoffs, 87/210/64/260 line budgets, and
+  `git diff --check` pass. WSL full debug remains batched.

@@ -1,5 +1,6 @@
 #include "cgpui/cgpui.hpp"
 
+#include <array>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -106,6 +107,14 @@ class ChurnView final : public cgpui::View {
   int* destruction_count_;
 };
 
+bool has_window_counts(const cgpui::RuntimeDiagnosticsSnapshot& snapshot,
+    std::array<std::size_t, 5> expected) {
+  return std::array{snapshot.runtime_window_record_count,
+      snapshot.active_runtime_window_count, snapshot.opened_window_count,
+      snapshot.active_native_child_window_count,
+      snapshot.retired_native_child_window_count} == expected;
+}
+
 } // namespace
 
 int main() {
@@ -126,9 +135,13 @@ int main() {
   const cgpui::ThemeTokenId accent = cgpui::theme_token("churn-accent");
   cgpui::App app{runtime};
   int failure = 0;
-
   application.on_run = [&] {
-    for (int index = 0; index < 12 && failure == 0; ++index) {
+    const auto baseline = runtime.diagnostics_snapshot();
+    if (!has_window_counts(baseline, {1, 1, 0, 0, 0})) {
+      failure = 1;
+      return;
+    }
+    for (int index = 0; index < 64 && failure == 0; ++index) {
       auto child_view =
           std::make_unique<ChurnView>(child_view_destruction_count);
       const cgpui::AppOpenedWindow opened = runtime.open_window(
@@ -138,7 +151,11 @@ int main() {
       cgpui::Theme child_theme;
       child_theme.set_color(accent, cgpui::rgb(10, 20, 30));
       runtime.set_window_theme(opened.runtime_id, std::move(child_theme));
-
+      const auto active = runtime.diagnostics_snapshot();
+      if (!has_window_counts(active, {2, 2, 1, 1, 0})) {
+        failure = 2;
+        return;
+      }
       child->emit(cgpui::WindowCloseRequested{});
       const cgpui::WindowRuntimeRecord* closing =
           runtime.window_runtime_record(opened.runtime_id);
@@ -148,10 +165,14 @@ int main() {
           closing->window != nullptr || !closing_window.has_value() ||
           closing_window->active() || child->destroyed ||
           child_view_destruction_count != index + 1) {
-        failure = 1;
+        failure = 3;
         return;
       }
-
+      const auto closing_diagnostics = runtime.diagnostics_snapshot();
+      if (!has_window_counts(closing_diagnostics, {2, 1, 1, 0, 1})) {
+        failure = 4;
+        return;
+      }
       application.root->emit(cgpui::WindowWakeupRequested{});
       child->emit(cgpui::KeyboardKey{
           .key_code = 65,
@@ -165,7 +186,12 @@ int main() {
           runtime.find_view(opened.root_view_id) != nullptr ||
           runtime.is_view_id_allocated(opened.root_view_id) ||
           runtime.window_theme(opened.runtime_id) != nullptr) {
-        failure = 2;
+        failure = 5;
+        return;
+      }
+      const auto reclaimed = runtime.diagnostics_snapshot();
+      if (!has_window_counts(reclaimed, {1, 1, 0, 0, 0})) {
+        failure = 6;
         return;
       }
     }
@@ -177,8 +203,8 @@ int main() {
           .size = {.width = 640.0F, .height = 480.0F}},
       cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
   return result == 0 && failure == 0 &&
-          child_view_destruction_count == 12 &&
-          renderer_factory_count == 13 && application.wakeup_requests == 12
+          child_view_destruction_count == 64 &&
+          renderer_factory_count == 65 && application.wakeup_requests == 64
       ? 0
       : failure == 0 ? 3 : failure;
 }
