@@ -1254,8 +1254,13 @@ Windows/Linux core API is stable enough for parity work.
   Object StateChanged signals with `focused` detail, 1/0 state values, empty
   variant payloads, stable source references, and a dedicated publication count;
   text/value and focus tests share a focused event-payload parser.
-- In progress: Step 632 Linux AT-SPI accessibility bus discovery and connection
-  production behavior.
+- Completed: Phase G Step 632 discovers the Linux AT-SPI accessibility bus through org.a11y.Bus, opens and registers an owned private connection, attaches it lazily on first accessibility update, and reports discovery/connection lifecycle diagnostics. Step 633 Linux AT-SPI disconnect and reconnect production behavior is next.
+- Step 632 evidence: a focused noncopyable connection owner performs structured
+  GetAddress discovery, private open/register, exit policy, close/unref, and
+  failure cleanup; focused adapter coordination attaches registry/events, and
+  the Wayland window triggers discovery once before its first tree update.
+- In progress: Step 633 Linux AT-SPI disconnect and reconnect production
+  behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1271,6 +1276,11 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A Step 632 historical-guard search again passed a Windows wildcard path directly to `rg` and failed with OS error 123 | Step 632 historical structure diagnosis | Search the explicit architecture directory with `--glob 'phase_g_wayland_atspi_*_structure_test.cpp'` |
+| The first Step 632 historical structure group failed because Step 630 still expected event attach/detach in the old adapter source | Step 632 ownership regression gate | Read `wayland_accessibility_bus.cpp` in the Step 630 guard and preserve the existing adapter/event line caps |
+| The first Step 632 structure run exited 11 after implementation and layout assertions passed | Step 632 structure RED | Synchronize the five authority documents and advance the current handoff to Step 633 before rerunning GREEN |
+| The first Step 632 bus-connection build failed because the planned bus ownership leaf did not exist | Step 632 behavior RED | Add focused bus ownership and adapter coordination leaves, then wire one-time discovery from the Wayland accessibility update path |
+| A Step 632 window-constructor search passed a Windows wildcard path directly to `rg` and failed with OS error 123 | Step 632 integration audit | Search the explicit Linux source directory with `--glob 'wayland_window*.cpp'` rather than a wildcard path operand |
 | The first Step 631 structure run exited 9 after implementation and layout assertions passed | Step 631 structure RED | Synchronize the five authority documents and advance the current handoff to Step 632 before rerunning GREEN |
 | The first Step 631 focus-event build failed because the planned shared event-payload test helper did not exist | Step 631 behavior RED | Add the focused helper, reuse it from Step 630, and implement standard focused StateChanged publication in the existing event publisher |
 | A Step 631 resume search again passed a Windows wildcard path directly to `rg` and failed with OS error 123 | Step 631 focus-event audit | Search the explicit `tests/platform` directory with `--glob 'wayland_atspi*'` instead of a wildcard path operand |

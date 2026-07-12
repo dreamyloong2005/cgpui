@@ -34,6 +34,8 @@ int main() {
       "src/platform/linux/wayland_accessibility_internal.hpp");
   const std::string adapter_source = read_source(
       "src/platform/linux/wayland_accessibility.cpp");
+  const std::string adapter_bus = read_source(
+      "src/platform/linux/wayland_accessibility_bus.cpp");
   const std::string support = read_source(
       "tests/platform/wayland_atspi_dbus_test_support.hpp");
   const std::string behavior = read_source(
@@ -50,8 +52,9 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &event_header, &event_source, &adapter_header, &adapter_source, &support,
-      &behavior, &previous, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &event_header, &event_source, &adapter_header, &adapter_source,
+      &adapter_bus, &support, &behavior, &previous, &xmake, &roadmap,
+      &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -84,8 +87,8 @@ int main() {
       !contains(adapter_source, "dbus_registry_.synchronize(atspi_object_nodes_);") ||
       !contains(adapter_source,
                 "event_publisher_.publish(atspi_object_nodes_, live_updates_);") ||
-      !contains(adapter_source, "event_publisher_.attach(connection, operations)") ||
-      !contains(adapter_source, "event_publisher_.detach()")) {
+      !contains(adapter_bus, "event_publisher_.attach(connection, operations)") ||
+      !contains(adapter_bus, "event_publisher_.detach()")) {
     return 5;
   }
   if (!contains(support, "std::vector<DBusMessage*> sent_messages") ||
@@ -108,7 +111,8 @@ int main() {
   }
   if (line_count(event_header) > 50 || line_count(event_source) > 150 ||
       line_count(adapter_header) > 60 || line_count(adapter_source) > 110 ||
-      line_count(support) > 250 || line_count(behavior) > 210) {
+      line_count(adapter_bus) > 100 || line_count(support) > 250 ||
+      line_count(behavior) > 210) {
     return 9;
   }
 
@@ -125,7 +129,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 633 Linux AT-SPI disconnect and reconnect production behavior\"")) {
     return 11;
   }
   return 0;

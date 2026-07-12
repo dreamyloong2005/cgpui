@@ -104,7 +104,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 633 Linux AT-SPI disconnect and reconnect production behavior")) {
     return 10;
   }
   return 0;

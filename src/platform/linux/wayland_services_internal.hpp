@@ -24,6 +24,8 @@ using WaylandAtspiAccessibilityAdapterPtr = std::unique_ptr<
     WaylandAtspiAccessibilityAdapter,
     WaylandAtspiAccessibilityAdapterDeleter>;
 WaylandAtspiAccessibilityAdapterPtr create_wayland_atspi_accessibility_adapter();
+bool wayland_atspi_ensure_dbus_connection(
+    WaylandAtspiAccessibilityAdapter& adapter);
 void wayland_atspi_update_accessibility_tree(
     WaylandAtspiAccessibilityAdapter& adapter,
     PlatformAccessibilityTreeUpdate update);

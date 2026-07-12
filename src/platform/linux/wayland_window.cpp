@@ -92,6 +92,7 @@ void WaylandWindow::set_title(std::string_view title) {
 
 void WaylandWindow::update_accessibility_tree(
     PlatformAccessibilityTreeUpdate update) {
+  (void)wayland_atspi_ensure_dbus_connection(*atspi_accessibility_);
   wayland_atspi_update_accessibility_tree(
       *atspi_accessibility_,
       std::move(update));

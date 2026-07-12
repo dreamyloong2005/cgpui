@@ -25,23 +25,6 @@ void WaylandAtspiAccessibilityAdapter::update(
   event_publisher_.publish(atspi_object_nodes_, live_updates_);
 }
 
-void WaylandAtspiAccessibilityAdapter::attach_dbus(
-    DBusConnection* connection, WaylandAtspiDbusOperations operations) {
-  dbus_registry_.attach(connection, operations);
-  event_publisher_.attach(connection, operations);
-  dbus_registry_.synchronize(atspi_object_nodes_);
-}
-
-void WaylandAtspiAccessibilityAdapter::detach_dbus() {
-  event_publisher_.detach();
-  dbus_registry_.detach();
-}
-
-WaylandAtspiDbusDiagnostics
-WaylandAtspiAccessibilityAdapter::dbus_diagnostics() const {
-  return dbus_registry_.diagnostics();
-}
-
 WaylandAtspiEventDiagnostics
 WaylandAtspiAccessibilityAdapter::event_diagnostics() const {
   return event_publisher_.diagnostics();
@@ -72,22 +55,6 @@ void wayland_atspi_update_accessibility_tree(
     WaylandAtspiAccessibilityAdapter& adapter,
     PlatformAccessibilityTreeUpdate update) {
   adapter.update(std::move(update));
-}
-
-void wayland_atspi_attach_dbus(
-    WaylandAtspiAccessibilityAdapter& adapter,
-    DBusConnection* connection,
-    WaylandAtspiDbusOperations operations) {
-  adapter.attach_dbus(connection, operations);
-}
-
-void wayland_atspi_detach_dbus(WaylandAtspiAccessibilityAdapter& adapter) {
-  adapter.detach_dbus();
-}
-
-WaylandAtspiDbusDiagnostics wayland_atspi_dbus_diagnostics(
-    const WaylandAtspiAccessibilityAdapter& adapter) {
-  return adapter.dbus_diagnostics();
 }
 
 WaylandAtspiEventDiagnostics wayland_atspi_event_diagnostics(

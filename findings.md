@@ -11042,3 +11042,19 @@
   successful focus-event count. Text/value and focus tests will share a focused
   event-payload reader outside the already capped D-Bus recorder.
 - Phase G Step 631 publishes Linux AT-SPI focused state changes for focus gain and loss with standard Object StateChanged signals, source references, and publication diagnostics. Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior is next.
+
+## 2026-07-12 Phase G Step 632 AT-SPI Bus Discovery Design
+
+- Production AT-SPI discovery must query `org.a11y.Bus.GetAddress` on the
+  session bus, copy the returned address, open a private connection, register
+  it as a bus connection, disable exit-on-disconnect, and own close/unref.
+- Connection ownership belongs in a focused `wayland_atspi_bus.*` leaf. Adapter
+  coordination belongs in a separate `wayland_accessibility_bus.cpp`; the broad
+  accessibility implementation and window entry remain thin.
+- The Wayland window should trigger discovery once, lazily on its first
+  accessibility-tree update. Existing injected-connection tests remain
+  deterministic and bypass production discovery.
+- Diagnostics need separate discovery/connection attempts and failures plus
+  connected/disconnect state. Step 633 can build reconnect policy on this
+  explicit lifecycle boundary.
+- Phase G Step 632 discovers the Linux AT-SPI accessibility bus through org.a11y.Bus, opens and registers an owned private connection, attaches it lazily on first accessibility update, and reports discovery/connection lifecycle diagnostics. Step 633 Linux AT-SPI disconnect and reconnect production behavior is next.

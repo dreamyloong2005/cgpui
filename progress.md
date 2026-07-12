@@ -23050,3 +23050,31 @@
   structure guard are 36/134/40/136/83/112 lines; and `git diff --check`
   succeeds.
 - Phase G Step 631 publishes Linux AT-SPI focused state changes for focus gain and loss with standard Object StateChanged signals, source references, and publication diagnostics. Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior is next.
+
+## 2026-07-12 Phase G Step 632 AT-SPI Bus Discovery
+
+- Started from committed Step 631 at `3f274583` with only unrelated untracked
+  `.vscode/` present.
+- Chosen ownership separates private accessibility-bus discovery/connection
+  lifetime from adapter coordination and the Wayland window trigger.
+- The focused behavior target reached the expected RED compile because the
+  planned accessibility-bus ownership header did not yet exist.
+- Added structured GetAddress discovery, owned private connection lifetime,
+  focused adapter coordination, and lazy window integration. The WSL behavior
+  target passes discovery, attach/register, close, discovery failure, open
+  failure, and registration failure cleanup.
+- The Step 632 structure guard reached the expected authority-document RED at
+  exit 11 after all implementation, integration, inventory, Xmake, and line-cap
+  checks passed.
+- Final Step 632 verification passes the Arch Linux WSL AT-SPI behavior,
+  structure, source, and ledger regression group 15/15; the Windows
+  structure, source, ledger, and historical closeout group 6/6; and the
+  complete dynamic handoff chain 79/79, including the historical native-menu
+  replacement target whose target name differs from its source filename.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 79 handoff guards plus the ledger point to
+  Step 633 with zero stale Step 632 current handoffs; JSON parses; the bus
+  header/source, adapter header/source/coordination leaf, service header,
+  window source, behavior test, and structure guard are
+  52/145/60/65/75/102/175/166/151 lines; and `git diff --check` succeeds.
+- Phase G Step 632 discovers the Linux AT-SPI accessibility bus through org.a11y.Bus, opens and registers an owned private connection, attaches it lazily on first accessibility update, and reports discovery/connection lifecycle diagnostics. Step 633 Linux AT-SPI disconnect and reconnect production behavior is next.
