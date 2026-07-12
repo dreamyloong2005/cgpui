@@ -22681,3 +22681,20 @@
 - Phase F Step 616 closes the active platform production ledger for Win32 and Wayland, records all Phase F closeout guards, and moves the handoff to the final dual-host gate without claiming deferred macOS/Cocoa/Metal work. Step 617 final Windows/WSL gate is next.
 - Final Windows and WSL ledger/final-band verification passes 6/6; JSON parsing,
   65 Step 617 handoffs, and diff hygiene pass.
+
+## 2026-07-12 Phase F Step 617 Final Windows/WSL Gate
+
+- Started from committed Step 616 at `13458223` with only unrelated untracked
+  `.vscode/` present.
+- The first parallel Windows complete suite passed 341/343; only
+  `clipboard_test/default` and `win32_clipboard_unicode_test/default` failed
+  while contending for the global system clipboard. Both pass 2/2 alone.
+- A Windows `-j 1` retry still overlapped the WSL clipboard suite and passed
+  342/343. After WSL completed, the host-isolated Windows serial suite passed
+  343/343.
+- The complete WSL Arch Linux suite passes 325/325, including active-display
+  Wayland frame pixel capture and real Wayland clipboard lifecycle coverage.
+- Phase F Step 617 passes the final Windows and WSL gates: Windows full debug passes 343/343 and WSL Arch Linux passes 325/325, including active-display Wayland frame pixel capture, with JSON, structure, line-count, phrase, handoff, and diff hygiene audits green. Step 618 Phase F final closeout is next.
+- Final Windows and WSL final-band plus ledger verification passes 6/6; JSON
+  parsing, five-document phrase uniqueness, 65 Step 618 dynamic handoffs, zero
+  stale Step 617 handoffs, 68/169/114 line caps, and `git diff --check` pass.

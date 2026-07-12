@@ -1168,7 +1168,11 @@ Windows/Linux core API is stable enough for parity work.
 - Completed: Phase F Step 614 audits the Win32/Wayland production path across lifecycle, input, clipboard, drag/drop, menus, services, multi-window ownership, diagnostics, and final host verification without widening platform entry files. Step 615 final closeout guard is next.
 - Completed: Phase F Step 615 adds `phase_f_final_closeout_test` as the audit-only guard for Steps 539-614, freezing all production bands, host verification, cross-platform test execution, platform entry caps, and the Phase G handoff boundary. Step 616 ledger closeout is next.
 - Completed: Phase F Step 616 closes the active platform production ledger for Win32 and Wayland, records all Phase F closeout guards, and moves the handoff to the final dual-host gate without claiming deferred macOS/Cocoa/Metal work. Step 617 final Windows/WSL gate is next.
-- In progress: Step 617 final Windows/WSL gate.
+- Completed: Phase F Step 617 passes the final Windows and WSL gates: Windows full debug passes 343/343 and WSL Arch Linux passes 325/325, including active-display Wayland frame pixel capture, with JSON, structure, line-count, phrase, handoff, and diff hygiene audits green. Step 618 Phase F final closeout is next.
+- Step 617 evidence: the two system-clipboard targets pass 2/2 in isolation;
+  after avoiding cross-host clipboard overlap, the final Windows serial suite
+  passes 343/343 and the WSL Arch Linux suite passes 325/325.
+- In progress: Step 618 Phase F final closeout.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1186,6 +1190,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 617 parallel Windows gate passed 341/343 because both system-clipboard targets contended for the global clipboard, and a Windows serial retry still overlapped the WSL clipboard suite | Step 617 final dual-host gate | Verify the two targets alone at 2/2, let WSL finish at 325/325, then run the complete Windows suite alone with `-j 1` for 343/343 |
 | The first Step 603 structure build hit a transient Ninja package file lock | Step 603 structure RED | Confirm no xmake/ninja process remained, then rebuild through the existing generated configuration |
 | The first Step 603 WSL unified session exited at 65% without a compiler diagnostic | Step 603 WSL focused gate | Confirm no process remained and resume the same cached target set with `-j 2`; the gate passed 10/10 |
 | The new Step 604 structure target hit the Ninja package lock twice inside the read-only user-cache sandbox | Step 604 structure RED | Run the approved `xmake build` outside the sandbox; the guard built and reached intended document RED exit 8 |

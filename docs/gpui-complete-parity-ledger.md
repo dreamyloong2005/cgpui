@@ -743,6 +743,7 @@ consume C: drive space again.
 - Phase F Step 614 audits the Win32/Wayland production path across lifecycle, input, clipboard, drag/drop, menus, services, multi-window ownership, diagnostics, and final host verification without widening platform entry files. Step 615 final closeout guard is next.
 - Phase F Step 615 adds `phase_f_final_closeout_test` as the audit-only guard for Steps 539-614, freezing all production bands, host verification, cross-platform test execution, platform entry caps, and the Phase G handoff boundary. Step 616 ledger closeout is next.
 - Phase F Step 616 closes the active platform production ledger for Win32 and Wayland, records all Phase F closeout guards, and moves the handoff to the final dual-host gate without claiming deferred macOS/Cocoa/Metal work. Step 617 final Windows/WSL gate is next.
+- Phase F Step 617 passes the final Windows and WSL gates: Windows full debug passes 343/343 and WSL Arch Linux passes 325/325, including active-display Wayland frame pixel capture, with JSON, structure, line-count, phrase, handoff, and diff hygiene audits green. Step 618 Phase F final closeout is next.
 
 ## Categories
 

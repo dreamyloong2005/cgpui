@@ -10779,3 +10779,11 @@
 ## 2026-07-12 Phase F Step 616 Ledger Closeout
 
 - Phase F Step 616 closes the active platform production ledger for Win32 and Wayland, records all Phase F closeout guards, and moves the handoff to the final dual-host gate without claiming deferred macOS/Cocoa/Metal work. Step 617 final Windows/WSL gate is next.
+
+## 2026-07-12 Phase F Step 617 Final Windows/WSL Gate
+
+- The Windows and WSL suites must not overlap because both can reach the host
+  clipboard through Win32/WSLg. The two Windows clipboard targets pass 2/2
+  alone, the final Windows serial suite passes 343/343, and the WSL Arch Linux
+  suite passes 325/325.
+- Phase F Step 617 passes the final Windows and WSL gates: Windows full debug passes 343/343 and WSL Arch Linux passes 325/325, including active-display Wayland frame pixel capture, with JSON, structure, line-count, phrase, handoff, and diff hygiene audits green. Step 618 Phase F final closeout is next.
