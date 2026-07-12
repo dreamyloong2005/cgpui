@@ -1264,7 +1264,11 @@ Windows/Linux core API is stable enough for parity work.
   adapter coordination detaches stale registrations before releasing the old
   connection; retry state survives a failed reconnect; recovery resynchronizes
   retained objects; injected connections continue to bypass automatic discovery.
-- In progress: Step 634 Linux AT-SPI production closeout audit.
+- Completed: Phase G Step 634 audits and closes the Linux AT-SPI production band, freezing D-Bus object exposure, navigation, roles/states, text/value/focus events, accessibility-bus discovery, reconnect behavior, diagnostics, and modular source evidence. Step 635 async task pool production depth is next.
+- Step 634 evidence: the audit-only closeout guard aggregates seven Linux
+  AT-SPI behavior targets, seven modular structure guards, the Wayland source
+  inventory, Xmake registrations, and the closed Steps 627-634 roadmap band.
+- In progress: Step 635 async task pool production depth.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1280,6 +1284,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 634 closeout run exited 5 after all 14 behavior/structure target registrations and source-inventory assertions passed | Step 634 audit RED | Mark the Steps 627-634 roadmap band closed, synchronize the five authority documents, and advance the current handoff to Step 635 |
+| A Step 634 async-boundary search included the nonexistent `tests/async` directory and `rg` returned OS error 2 after reporting other matches | Step 634 handoff reconnaissance | Search existing UI/API test roots now; create the focused async test directory from Step 635 when its ownership boundary is defined |
 | The first Step 633 structure run exited 9 after behavior, ownership, ordering, inventory, Xmake, and line-cap assertions passed | Step 633 structure RED | Synchronize the five authority documents and advance the current handoff to Step 634 before rerunning GREEN |
 | The first shared Step 632/633 structure regression passed platform and Wayland inventories but failed the Step 632 guard because disconnect accounting moved to the new health leaf | Step 633 modular extraction | Make the historical Step 632 guard read the focused health leaf and freeze its inventory/line budget |
 | A Step 633 Xmake source search used a regex whose PowerShell quoting produced an unclosed-group parse error | Step 633 source ownership check | Use fixed-string `rg -F` searches for Xmake target/source literals |

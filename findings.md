@@ -11075,3 +11075,14 @@
   success, and reconnect-failure counts in addition to Step 632 lifecycle
   totals.
 - Phase G Step 633 detects owned Linux AT-SPI bus connection loss, detaches stale object and event registrations, retries discovery and registration until recovery, resynchronizes the accessibility tree, and reports reconnect lifecycle diagnostics. Step 634 Linux AT-SPI production closeout audit is next.
+
+## 2026-07-12 Phase G Step 634 Linux AT-SPI Closeout Design
+
+- Steps 627-633 already provide focused behavior and structure evidence for
+  D-Bus object exposure, navigation, roles/states, text/value/focus events,
+  accessibility-bus discovery/ownership, disconnect detection, retry, and
+  object resynchronization.
+- Step 634 should remain audit-only: one API-parity guard can aggregate the
+  seven behavior targets, seven structure guards, source inventories, Xmake
+  registrations, and the closed roadmap band without modifying production.
+- Phase G Step 634 audits and closes the Linux AT-SPI production band, freezing D-Bus object exposure, navigation, roles/states, text/value/focus events, accessibility-bus discovery, reconnect behavior, diagnostics, and modular source evidence. Step 635 async task pool production depth is next.

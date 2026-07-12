@@ -1883,9 +1883,10 @@ apps rather than only demo windows.
 - [x] Phase G Step 631 publishes Linux AT-SPI focused state changes for focus gain and loss with standard Object StateChanged signals, source references, and publication diagnostics. Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior is next.
 - [x] Phase G Step 632 discovers the Linux AT-SPI accessibility bus through org.a11y.Bus, opens and registers an owned private connection, attaches it lazily on first accessibility update, and reports discovery/connection lifecycle diagnostics. Step 633 Linux AT-SPI disconnect and reconnect production behavior is next.
 - [x] Phase G Step 633 detects owned Linux AT-SPI bus connection loss, detaches stale object and event registrations, retries discovery and registration until recovery, resynchronizes the accessibility tree, and reports reconnect lifecycle diagnostics. Step 634 Linux AT-SPI production closeout audit is next.
+- [x] Phase G Step 634 audits and closes the Linux AT-SPI production band, freezing D-Bus object exposure, navigation, roles/states, text/value/focus events, accessibility-bus discovery, reconnect behavior, diagnostics, and modular source evidence. Step 635 async task pool production depth is next.
 - [x] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
-- [ ] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree
+- [x] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree
   navigation, roles/states, text/value events, focus events, and bus lifecycle.
 - [ ] Steps 635-642: Complete async runtime: task pool, priorities, structured
   groups, cancellation propagation, async I/O hooks, timer integration, and

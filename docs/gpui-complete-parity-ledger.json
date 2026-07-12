@@ -3019,7 +3019,22 @@
       "xmake.lua"
     ],
     "phase_g_step_633_remaining_gap": "Step 634 Linux AT-SPI production closeout audit",
-    "phase_f_current_handoff": "Step 634 Linux AT-SPI production closeout audit"
+    "phase_g_step_634_surface": "Phase G Step 634 audits and closes the Linux AT-SPI production band, freezing D-Bus object exposure, navigation, roles/states, text/value/focus events, accessibility-bus discovery, reconnect behavior, diagnostics, and modular source evidence. Step 635 async task pool production depth is next.",
+    "phase_g_step_634_sources": [
+      "tests/api_parity/phase_g_wayland_atspi_closeout_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_dbus_object_structure_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_tree_navigation_structure_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_role_state_structure_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_text_value_event_structure_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_focus_event_structure_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_bus_connection_structure_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_bus_reconnect_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/architecture/wayland_window_source_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_634_remaining_gap": "Step 635 async task pool production depth",
+    "phase_f_current_handoff": "Step 635 async task pool production depth"
   },
   "categories": [
     "application_and_app_context",

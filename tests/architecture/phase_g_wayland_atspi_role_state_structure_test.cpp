@@ -122,7 +122,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 634 Linux AT-SPI production closeout audit\"")) {
+          "\"phase_f_current_handoff\": \"Step 635 async task pool production depth\"")) {
     return 11;
   }
   return 0;

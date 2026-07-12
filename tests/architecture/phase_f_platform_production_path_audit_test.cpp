@@ -64,6 +64,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 31;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 634 Linux AT-SPI production closeout audit\"")) return 32;
+                "\"phase_f_current_handoff\": \"Step 635 async task pool production depth\"")) return 32;
   return 0;
 }

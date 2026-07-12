@@ -23106,3 +23106,23 @@
   guard are 59/139/34/60/80/110/76/73/161/138 lines; and
   `git diff --check` succeeds.
 - Phase G Step 633 detects owned Linux AT-SPI bus connection loss, detaches stale object and event registrations, retries discovery and registration until recovery, resynchronizes the accessibility tree, and reports reconnect lifecycle diagnostics. Step 634 Linux AT-SPI production closeout audit is next.
+
+## 2026-07-12 Phase G Step 634 Linux AT-SPI Closeout
+
+- Started from committed Step 633 at `8493223f` with only unrelated untracked
+  `.vscode/` present.
+- Added an audit-only closeout guard aggregating the seven Linux AT-SPI
+  behavior targets, seven structure guards, source inventories, Xmake
+  registrations, and authority-document closeout state.
+- The first closeout run exited 5 at the expected roadmap-band RED after all
+  behavior/structure target registrations and source-inventory assertions
+  passed.
+- Final Step 634 verification passes the Windows dynamic handoff chain 81/81
+  and the Arch Linux WSL Linux AT-SPI behavior, structure, source, ledger, and
+  closeout group 18/18.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 81 handoff guards plus the ledger point to
+  Step 635 with zero stale Step 634 current handoffs; JSON parses; the audit
+  guard is 121 lines; `git diff --check` succeeds; and no production source
+  file changed in this closeout slice.
+- Phase G Step 634 audits and closes the Linux AT-SPI production band, freezing D-Bus object exposure, navigation, roles/states, text/value/focus events, accessibility-bus discovery, reconnect behavior, diagnostics, and modular source evidence. Step 635 async task pool production depth is next.
