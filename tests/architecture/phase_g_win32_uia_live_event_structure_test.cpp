@@ -31,6 +31,8 @@ int main() {
       "src/platform/win32/win32_uia_events.cpp");
   const std::string updates = read_source(
       "src/platform/win32/win32_uia_updates.cpp");
+  const std::string lifetime = read_source(
+      "src/platform/win32/win32_uia_lifetime.cpp");
   const std::string adapter_header = read_source(
       "src/platform/win32/win32_accessibility_internal.hpp");
   const std::string adapter = read_source(
@@ -49,7 +51,8 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &event_header, &events, &updates, &adapter_header, &adapter, &behavior,
+      &event_header, &events, &updates, &lifetime, &adapter_header, &adapter,
+      &behavior,
       &test_support, &source_guard, &xmake, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
@@ -68,7 +71,7 @@ int main() {
       !contains(events, "missing_provider_count") ||
       !contains(events, "failure_count")) return 3;
   if (!contains(updates, "previous_nodes") ||
-      !contains(updates, "create_win32_uia_provider_tree(") ||
+      !contains(lifetime, "create_win32_uia_provider_tree(") ||
       !contains(updates, "publish_win32_uia_live_updates(") ||
       !contains(adapter_header, "set_event_operations(") ||
       !contains(adapter_header, "last_event_publication() const") ||
@@ -102,7 +105,7 @@ int main() {
     if (!contains(*document, completion)) return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 624 Win32 UIA provider lifetime "
+                "\"phase_f_current_handoff\": \"Step 625 Win32 UIA lifecycle stress "
                 "production behavior\"")) return 9;
   return 0;
 }

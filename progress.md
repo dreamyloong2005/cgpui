@@ -22896,3 +22896,30 @@
   transient `WSL_E_DISTRO_NOT_FOUND`; no recovery or installation was attempted.
 - Resume audit reran the focused Win32 UIA behavior, runtime-action, and
   structure group at 12/12; `git diff --check` remains green before staging.
+
+## 2026-07-12 Phase G Step 624 Provider Lifetime
+
+- Started from committed Step 623 at `e47308d3` with only unrelated untracked
+  `.vscode/` present.
+- The existing adapter recreates its tree and every COM provider on every
+  update. Step 624 will add focused reconciliation, retained-provider state
+  refresh, removed-provider invalidation, and external-reference safety.
+- The focused lifetime behavior test reached the expected RED result at exit 2
+  because a stable element id received a different provider pointer after the
+  second tree update.
+- Added focused lifecycle, provider-state, tree-state, and range-pattern leaves.
+  Stable ids now retain COM identity, provider snapshots refresh under a mutex,
+  removed providers unregister and return `UIA_E_ELEMENTNOTAVAILABLE`, and
+  adapter destruction invalidates externally retained references.
+- The first implementation exceeded three historical caps. Extracting tree
+  replacement from navigation, RangeValue methods from the pattern leaf, and
+  host-provider state from the provider leaf restored navigation/provider/
+  patterns to 189/186/88 lines against 230/190/130 caps.
+- Win32 UIA behavior plus historical structure/source verification passes
+  12/12. The new Step 624 behavior/structure pair passes 2/2, the expanded
+  accessibility/UIA regression passes 17/17, and all current dynamic handoff
+  guards pass 71/71 after advancing to Step 625.
+- Existing Arch Linux WSL is available without recovery and passes the seven
+  shared Step 619-624 UIA/source structure targets using the established
+  D-drive build/cache directories and `/dev/shm/cgpui` transient temp.
+- Phase G Step 624 preserves Win32 UIA provider COM identity across stable element updates, refreshes provider state in place, and retires removed or destroyed providers with element-unavailable semantics. Step 625 Win32 UIA lifecycle stress production behavior is next.

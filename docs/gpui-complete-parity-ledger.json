@@ -2883,7 +2883,19 @@
       "xmake.lua"
     ],
     "phase_g_step_623_remaining_gap": "Step 624 Win32 UIA provider lifetime production behavior",
-    "phase_f_current_handoff": "Step 624 Win32 UIA provider lifetime production behavior"
+    "phase_g_step_624_surface": "Phase G Step 624 preserves Win32 UIA provider COM identity across stable element updates, refreshes provider state in place, and retires removed or destroyed providers with element-unavailable semantics. Step 625 Win32 UIA lifecycle stress production behavior is next.",
+    "phase_g_step_624_sources": [
+      "src/platform/win32/win32_uia_lifetime_internal.hpp",
+      "src/platform/win32/win32_uia_lifetime.cpp",
+      "src/platform/win32/win32_uia_provider_state.cpp",
+      "src/platform/win32/win32_uia_tree_state_internal.hpp",
+      "src/platform/win32/win32_uia_tree_state.cpp",
+      "tests/platform/win32_uia_provider_lifetime_test.cpp",
+      "tests/architecture/phase_g_win32_uia_provider_lifetime_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_624_remaining_gap": "Step 625 Win32 UIA lifecycle stress production behavior",
+    "phase_f_current_handoff": "Step 625 Win32 UIA lifecycle stress production behavior"
   },
   "categories": [
     "application_and_app_context",

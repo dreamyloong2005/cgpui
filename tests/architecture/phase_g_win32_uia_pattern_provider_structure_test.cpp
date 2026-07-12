@@ -49,6 +49,8 @@ int main() {
       "src/platform/win32/win32_window_accessibility.cpp");
   const std::string win32_patterns = read_source(
       "src/platform/win32/win32_uia_patterns.cpp");
+  const std::string range_pattern = read_source(
+      "src/platform/win32/win32_uia_range_pattern.cpp");
   const std::string pattern_properties_header = read_source(
       "src/platform/win32/win32_uia_pattern_properties_internal.hpp");
   const std::string pattern_properties = read_source(
@@ -77,7 +79,8 @@ int main() {
   const std::string* required[]{
       &event, &patterns, &element, &platform, &runtime, &runtime_header,
       &root_events, &window_events, &object, &provider, &win32_actions,
-      &window_accessibility, &win32_patterns, &pattern_properties_header,
+      &window_accessibility, &win32_patterns, &range_pattern,
+      &pattern_properties_header,
       &pattern_properties,
       &slider_accessibility, &text_accessibility, &element_behavior,
       &runtime_behavior, &provider_behavior, &core_headers, &ui_headers,
@@ -109,7 +112,7 @@ int main() {
       !contains(win32_patterns, "Win32UiaProvider::Invoke()") ||
       !contains(win32_patterns, "Win32UiaProvider::Toggle()") ||
       !contains(win32_patterns, "Win32UiaProvider::SetValue(LPCWSTR value)") ||
-      !contains(win32_patterns, "Win32UiaProvider::SetValue(double value)") ||
+      !contains(range_pattern, "Win32UiaProvider::SetValue(double value)") ||
       !contains(pattern_properties_header,
                 "set_win32_uia_pattern_availability_property(") ||
       !contains(pattern_properties,
@@ -152,7 +155,7 @@ int main() {
     if (!contains(*document, completion)) return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 624 Win32 UIA provider lifetime "
+                "\"phase_f_current_handoff\": \"Step 625 Win32 UIA lifecycle stress "
                 "production behavior\"")) return 9;
   return 0;
 }

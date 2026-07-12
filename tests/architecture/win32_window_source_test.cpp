@@ -43,10 +43,12 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_message_internal.hpp",
       "src/platform/win32/win32_window_internal.hpp",
       "src/platform/win32/win32_window_display_internal.hpp",
+      "src/platform/win32/win32_uia_lifetime_internal.hpp",
       "src/platform/win32/win32_uia_navigation_internal.hpp",
       "src/platform/win32/win32_uia_pattern_properties_internal.hpp",
       "src/platform/win32/win32_uia_provider_internal.hpp",
       "src/platform/win32/win32_uia_provider_object_internal.hpp",
+      "src/platform/win32/win32_uia_tree_state_internal.hpp",
       "src/platform/win32/win32_accessibility.cpp",
       "src/platform/win32/win32_uia_actions.cpp",
       "src/platform/win32/win32_uia_events.cpp",
@@ -90,10 +92,14 @@ std::string read_win32_source() {
       "src/platform/win32/win32_text_input_internal.hpp",
       "src/platform/win32/win32_text_input.cpp",
       "src/platform/win32/win32_uia_fragment.cpp",
+      "src/platform/win32/win32_uia_lifetime.cpp",
       "src/platform/win32/win32_uia_navigation.cpp",
       "src/platform/win32/win32_uia_pattern_properties.cpp",
       "src/platform/win32/win32_uia_patterns.cpp",
       "src/platform/win32/win32_uia_provider.cpp",
+      "src/platform/win32/win32_uia_provider_state.cpp",
+      "src/platform/win32/win32_uia_range_pattern.cpp",
+      "src/platform/win32/win32_uia_tree_state.cpp",
       "src/platform/win32/win32_window.cpp",
       "src/platform/win32/win32_window_accessibility.cpp",
       "src/platform/win32/win32_window_chrome.cpp",
@@ -370,6 +376,12 @@ int main() {
       "src/platform/win32/win32_uia_provider_object_internal.hpp");
   const std::string win32_uia_navigation_internal = read_source(
       "src/platform/win32/win32_uia_navigation_internal.hpp");
+  const std::string win32_uia_lifetime =
+      read_source("src/platform/win32/win32_uia_lifetime.cpp");
+  const std::string win32_uia_provider_state =
+      read_source("src/platform/win32/win32_uia_provider_state.cpp");
+  const std::string win32_uia_tree_state_internal = read_source(
+      "src/platform/win32/win32_uia_tree_state_internal.hpp");
   const std::string win32_drag_drop_internal =
       read_source("src/platform/win32/win32_drag_drop_internal.hpp");
   const std::string win32_native_internal =
@@ -467,7 +479,9 @@ int main() {
       win32_uia_events_internal.empty() ||
       win32_uia_provider_internal.empty() ||
       win32_uia_provider_object_internal.empty() ||
-      win32_uia_navigation_internal.empty() || win32_uia_provider.empty() ||
+      win32_uia_navigation_internal.empty() || win32_uia_lifetime.empty() ||
+      win32_uia_provider_state.empty() ||
+      win32_uia_tree_state_internal.empty() || win32_uia_provider.empty() ||
       win32_uia_fragment.empty() || win32_uia_navigation.empty() ||
       win32_drag_drop_internal.empty() || win32_native_internal.empty() ||
       win32_window_message_internal.empty() ||
@@ -719,7 +733,7 @@ int main() {
     return 80;
   }
   if (!contains(win32_uia_updates, "Win32UiaAccessibilityAdapter::update(") ||
-      !contains(win32_uia_updates, "create_win32_uia_provider(") ||
+      !contains(win32_uia_updates, "reconcile_win32_uia_provider_lifetime(") ||
       !contains(win32_accessibility, "provider_for_element(") ||
       !contains(win32_uia_updates, "text_input_node_count_") ||
       line_count(win32_accessibility) > 120 ||
@@ -730,7 +744,7 @@ int main() {
   }
   if (line_count(win32_uia_provider) > 190 ||
       !contains(win32_uia_provider, "Win32UiaProvider::QueryInterface(") ||
-      !contains(win32_uia_provider, "UiaHostProviderFromHwnd(") ||
+      !contains(win32_uia_provider_state, "UiaHostProviderFromHwnd(") ||
       !contains(win32_uia_provider, "UIA_AutomationIdPropertyId") ||
       !contains(win32_uia_provider, "UIA_ControlTypePropertyId") ||
       !contains(win32_uia_provider, "UIA_BoundingRectanglePropertyId")) return 97;
@@ -739,7 +753,8 @@ int main() {
       !contains(win32_uia_fragment, "Win32UiaProvider::GetRuntimeId(") ||
       !contains(win32_uia_fragment, "Win32UiaProvider::GetFocus(") ||
       line_count(win32_uia_navigation) > 230 ||
-      !contains(win32_uia_navigation, "class Win32UiaProviderTree") ||
+      !contains(win32_uia_tree_state_internal, "class Win32UiaProviderTree") ||
+      !contains(win32_uia_lifetime, "replace_win32_uia_provider_node(") ||
       !contains(win32_uia_navigation, "NavigateDirection_FirstChild") ||
       !contains(win32_uia_navigation, "get_win32_uia_provider_from_point(")) {
     return 100;

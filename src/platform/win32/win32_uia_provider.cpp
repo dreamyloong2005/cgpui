@@ -85,8 +85,7 @@ Win32UiaProvider::Win32UiaProvider(
 }
 
 Win32UiaProvider::~Win32UiaProvider() {
-  unregister_win32_uia_fragment(
-      tree_, node_.element_id, static_cast<IRawElementProviderFragment*>(this));
+  retire();
 }
 
 HRESULT STDMETHODCALLTYPE Win32UiaProvider::QueryInterface(
@@ -99,18 +98,20 @@ HRESULT STDMETHODCALLTYPE Win32UiaProvider::QueryInterface(
     *object = static_cast<IRawElementProviderSimple*>(this);
   } else if (IsEqualIID(iid, IID_IRawElementProviderFragment)) {
     *object = static_cast<IRawElementProviderFragment*>(this);
-  } else if (is_root_ &&
+  } else if (const auto state = snapshot(); state.has_value() &&
+             state->is_root &&
              IsEqualIID(iid, IID_IRawElementProviderFragmentRoot)) {
     *object = static_cast<IRawElementProviderFragmentRoot*>(this);
-  } else if (node_.patterns.invokable && IsEqualIID(iid, IID_IInvokeProvider)) {
+  } else if (state.has_value() && state->node.patterns.invokable &&
+             IsEqualIID(iid, IID_IInvokeProvider)) {
     *object = static_cast<IInvokeProvider*>(this);
-  } else if (node_.patterns.value_settable &&
+  } else if (state.has_value() && state->node.patterns.value_settable &&
              IsEqualIID(iid, IID_IValueProvider)) {
     *object = static_cast<IValueProvider*>(this);
-  } else if (node_.patterns.toggled.has_value() &&
+  } else if (state.has_value() && state->node.patterns.toggled.has_value() &&
              IsEqualIID(iid, IID_IToggleProvider)) {
     *object = static_cast<IToggleProvider*>(this);
-  } else if (node_.patterns.range.has_value() &&
+  } else if (state.has_value() && state->node.patterns.range.has_value() &&
              IsEqualIID(iid, IID_IRangeValueProvider)) {
     *object = static_cast<IRangeValueProvider*>(this);
   } else {
@@ -142,41 +143,36 @@ HRESULT STDMETHODCALLTYPE Win32UiaProvider::GetPropertyValue(
     VARIANT* value) {
   if (value == nullptr) return E_POINTER;
   VariantInit(value);
-  if (set_win32_uia_pattern_availability_property(node_, property, value)) {
+  const auto state = snapshot();
+  if (!state.has_value()) return UIA_E_ELEMENTNOTAVAILABLE;
+  const Win32UiaProviderNode& node = state->node;
+  if (set_win32_uia_pattern_availability_property(node, property, value)) {
     return S_OK;
   }
   if (property == UIA_AutomationIdPropertyId) {
-    return set_bstr(value, L"cgpui-" + std::to_wstring(node_.element_id));
+    return set_bstr(value, L"cgpui-" + std::to_wstring(node.element_id));
   }
   if (property == UIA_ControlTypePropertyId) {
     value->vt = VT_I4;
-    value->lVal = control_type_for(node_.role);
+    value->lVal = control_type_for(node.role);
   } else if (property == UIA_NamePropertyId) {
-    return set_bstr(value, widen(node_.name));
+    return set_bstr(value, widen(node.name));
   } else if (property == UIA_ValueValuePropertyId) {
-    return set_bstr(value, widen(node_.value));
+    return set_bstr(value, widen(node.value));
   } else if (property == UIA_IsEnabledPropertyId) {
     value->vt = VT_BOOL;
-    value->boolVal = node_.enabled ? VARIANT_TRUE : VARIANT_FALSE;
+    value->boolVal = node.enabled ? VARIANT_TRUE : VARIANT_FALSE;
   } else if (property == UIA_IsKeyboardFocusablePropertyId) {
     value->vt = VT_BOOL;
-    value->boolVal = node_.focusable ? VARIANT_TRUE : VARIANT_FALSE;
+    value->boolVal = node.focusable ? VARIANT_TRUE : VARIANT_FALSE;
   } else if (property == UIA_HasKeyboardFocusPropertyId) {
     value->vt = VT_BOOL;
-    value->boolVal = node_.focused ? VARIANT_TRUE : VARIANT_FALSE;
+    value->boolVal = node.focused ? VARIANT_TRUE : VARIANT_FALSE;
   } else if (property == UIA_BoundingRectanglePropertyId) {
     return set_bounding_rect(
-        value, win32_uia_provider_tree_hwnd(tree_), node_.bounds);
+        value, win32_uia_provider_tree_hwnd(tree_), node.bounds);
   }
   return S_OK;
-}
-
-HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_HostRawElementProvider(
-    IRawElementProviderSimple** provider) {
-  if (provider == nullptr) return E_POINTER;
-  *provider = nullptr;
-  const HWND hwnd = win32_uia_provider_tree_hwnd(tree_);
-  return hwnd == nullptr ? S_OK : UiaHostProviderFromHwnd(hwnd, provider);
 }
 
 IRawElementProviderSimple* create_win32_uia_provider(

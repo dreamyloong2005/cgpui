@@ -75,7 +75,7 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 40;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 624 Win32 UIA provider lifetime "
+                "\"phase_f_current_handoff\": \"Step 625 Win32 UIA lifecycle stress "
                 "production behavior\"") ||
       !contains(task_plan,
                 "- Status: complete\n- Authoritative scope: Phase F")) return 50;

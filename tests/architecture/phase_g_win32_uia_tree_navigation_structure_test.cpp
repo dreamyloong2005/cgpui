@@ -31,6 +31,10 @@ int main() {
       "src/platform/win32/win32_uia_navigation_internal.hpp");
   const std::string navigation = read_source(
       "src/platform/win32/win32_uia_navigation.cpp");
+  const std::string tree_state_header = read_source(
+      "src/platform/win32/win32_uia_tree_state_internal.hpp");
+  const std::string lifetime = read_source(
+      "src/platform/win32/win32_uia_lifetime.cpp");
   const std::string fragment = read_source(
       "src/platform/win32/win32_uia_fragment.cpp");
   const std::string adapter_header = read_source(
@@ -59,7 +63,8 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &object_header, &navigation_header, &navigation, &fragment,
+      &object_header, &navigation_header, &navigation, &tree_state_header,
+      &lifetime, &fragment,
       &adapter_header, &adapter, &updates, &window, &proc_header, &proc,
       &main_proc,
       &navigation_behavior, &message_behavior, &xmake, &roadmap, &ledger_md,
@@ -74,14 +79,14 @@ int main() {
       !contains(fragment, "Win32UiaProvider::ElementProviderFromPoint(") ||
       !contains(fragment, "Win32UiaProvider::GetFocus(")) return 2;
   if (!contains(navigation_header, "navigate_win32_uia_fragment(") ||
-      !contains(navigation, "class Win32UiaProviderTree") ||
+      !contains(tree_state_header, "class Win32UiaProviderTree") ||
       !contains(navigation, "NavigateDirection_Parent") ||
       !contains(navigation, "NavigateDirection_FirstChild") ||
       !contains(navigation, "NavigateDirection_NextSibling") ||
       !contains(navigation, "get_win32_uia_provider_from_point(") ||
       !contains(navigation, "get_win32_uia_focus(")) return 3;
   if (!contains(adapter_header, "handle_get_object(") ||
-      !contains(updates, "create_win32_uia_provider_tree(") ||
+      !contains(lifetime, "create_win32_uia_provider_tree(") ||
       !contains(adapter, "UiaReturnRawElementProvider(") ||
       !contains(window, "Win32Window::accessibility_object(") ||
       !contains(proc_header, "class Win32AccessibilityMessageTarget") ||
@@ -119,7 +124,7 @@ int main() {
     if (!contains(*document, completion)) return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 624 Win32 UIA provider lifetime "
+                "\"phase_f_current_handoff\": \"Step 625 Win32 UIA lifecycle stress "
                 "production behavior\"")) return 9;
   return 0;
 }

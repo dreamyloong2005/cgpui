@@ -106,6 +106,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 10;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 624 Win32 UIA provider lifetime production behavior")) return 11;
+                "\"phase_f_current_handoff\": \"Step 625 Win32 UIA lifecycle stress production behavior")) return 11;
   return 0;
 }

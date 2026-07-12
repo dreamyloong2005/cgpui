@@ -14,8 +14,6 @@ void Win32UiaAccessibilityAdapter::update(
   node_count_ = last_update_.node_count;
   focused_node_count_ = last_update_.focused_node_count;
   text_input_node_count_ = 0;
-  release_providers();
-  provider_tree_.reset();
   provider_nodes_.clear();
   provider_nodes_.reserve(last_update_.nodes.size());
   for (const PlatformAccessibilityNodeUpdate& node : last_update_.nodes) {
@@ -37,13 +35,9 @@ void Win32UiaAccessibilityAdapter::update(
         .child_count = node.child_count,
     });
   }
-  provider_tree_ = create_win32_uia_provider_tree(
-      hwnd_, root_element_id_, provider_nodes_, action_callback_);
-  providers_.reserve(provider_nodes_.size());
-  for (const Win32UiaProviderNode& node : provider_nodes_) {
-    providers_.push_back(create_win32_uia_provider(
-        provider_tree_, node, node.element_id == root_element_id_));
-  }
+  reconcile_win32_uia_provider_lifetime(
+      provider_tree_, hwnd_, root_element_id_, previous_nodes,
+      provider_nodes_, action_callback_, providers_);
   last_event_publication_ = publish_win32_uia_live_updates(
       live_updates_, previous_nodes, provider_nodes_, providers_,
       event_operations_);

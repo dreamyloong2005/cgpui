@@ -1216,7 +1216,12 @@ Windows/Linux core API is stable enough for parity work.
 - Step 623 evidence: a Windows-only runtime integration test forwards the exact
   platform accessibility updates through the Win32 adapter and observes focus,
   value, and text UIA calls using a shared test-only event recorder.
-- In progress: Step 624 Win32 UIA provider lifetime production behavior.
+- Completed: Phase G Step 624 preserves Win32 UIA provider COM identity across stable element updates, refreshes provider state in place, and retires removed or destroyed providers with element-unavailable semantics. Step 625 Win32 UIA lifecycle stress production behavior is next.
+- Step 624 evidence: a focused lifecycle reconciler retains COM objects by
+  stable element id, mutex-protected provider snapshots refresh in place,
+  retired providers unregister from navigation and return
+  `UIA_E_ELEMENTNOTAVAILABLE`, and adapter teardown invalidates external refs.
+- In progress: Step 625 Win32 UIA lifecycle stress production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1232,6 +1237,12 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Step 624 initially pushed `win32_uia_provider.cpp`, `win32_uia_navigation.cpp`, and `win32_uia_patterns.cpp` past their frozen 190/230/130-line caps | Step 624 first GREEN structure audit | Extract host state, tree-state replacement, and RangeValue behavior into focused leaves; restored the files to 186/189/88 lines |
+| Step 622 live-event structure guard still required provider-tree creation in `win32_uia_updates.cpp` after Step 624 moved ownership | Step 624 historical regression group | Read the focused lifecycle leaf and require creation there while preserving the Step 622 completion sentence |
+| A combined historical-guard patch missed one exact context block | Step 624 modular structure repair | Split the patch by guard file and apply the ownership updates independently |
+| PowerShell parsed regex tokens inside an inline Node handoff-rewrite command | Step 624 dynamic handoff update | Run the same bounded mechanical replacement from a temporary `.mjs` file, then delete the script with `apply_patch` |
+| A Windows wildcard path was passed directly to `rg` while auditing Phase G structure caps | Step 624 structure audit | Enumerate matching files with `Get-ChildItem -Filter` and run `Select-String` on the resolved paths |
+| Initial Step 624 inventory guessed nonexistent `win32_uia_tree_internal.hpp` and `win32_uia_tree.cpp` paths | Step 624 ownership audit | Use the actual `win32_uia_navigation_internal.hpp` and `win32_uia_navigation.cpp` tree-state leaves found with `rg --files` |
 | A Step 623 target inventory query used PowerShell double quotes around a regex containing C++ quotes | Step 623 resume audit | Re-run `rg` with a single-quoted literal regex; the target inventory was returned correctly |
 | Step 623 new structure-target build again hit the sandboxed user-level Ninja package lock | Step 623 structure RED | Use the approved `xmake build` permission for the new Step 623 guard and affected historical structure targets |
 | The first Step 623 GREEN compile could not see UIA property/event ids through the shared recorder | Step 623 integration compile | Make the recorder self-contained by including the Windows SDK id owner `UIAutomationClient.h` |

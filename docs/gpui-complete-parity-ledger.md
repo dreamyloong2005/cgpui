@@ -750,6 +750,7 @@ consume C: drive space again.
 - Phase G Step 621 adds production Win32 UIA Invoke, Value, Toggle, and RangeValue pattern providers routed through runtime accessibility actions to real elements. Step 622 Win32 UIA live event production behavior is next.
 - Phase G Step 622 publishes production Win32 UIA value-property, text-change, and focus notifications from runtime accessibility live updates with listener, missing-provider, and HRESULT diagnostics. Step 623 Win32 UIA focus, value, and text change integration is next.
 - Phase G Step 623 integrates runtime-generated Win32 UIA focus, value, and text changes end to end through the platform window and adapter event publisher. Step 624 Win32 UIA provider lifetime production behavior is next.
+- Phase G Step 624 preserves Win32 UIA provider COM identity across stable element updates, refreshes provider state in place, and retires removed or destroyed providers with element-unavailable semantics. Step 625 Win32 UIA lifecycle stress production behavior is next.
 
 ## Categories
 

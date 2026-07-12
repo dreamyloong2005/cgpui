@@ -37,5 +37,10 @@ IRawElementProviderSimple* create_win32_uia_provider(
     Win32UiaProviderTreeHandle tree,
     Win32UiaProviderNode node,
     bool is_root);
+void replace_win32_uia_provider_node(
+    IRawElementProviderSimple* provider,
+    Win32UiaProviderNode node,
+    bool is_root);
+void retire_win32_uia_provider(IRawElementProviderSimple* provider);
 
 } // namespace cgpui

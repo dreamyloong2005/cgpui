@@ -10929,3 +10929,22 @@
   and focus event followed by the value property and text event with correct
   old/new BSTR values.
 - Phase G Step 623 integrates runtime-generated Win32 UIA focus, value, and text changes end to end through the platform window and adapter event publisher. Step 624 Win32 UIA provider lifetime production behavior is next.
+
+## 2026-07-12 Phase G Step 624 Provider Lifetime Design
+
+- The adapter currently destroys and recreates every provider and provider tree
+  on each accessibility snapshot, so stable element ids do not retain COM
+  identity and externally retained providers keep stale copied node state.
+- Provider lifetime reconciliation belongs in a focused Win32 UIA lifetime
+  leaf. The adapter should keep one provider tree, replace its node/navigation
+  snapshot, reuse providers by element id, update retained provider snapshots,
+  and create or retire only changed identities.
+- A retired provider must unregister from tree navigation and return
+  `UIA_E_ELEMENTNOTAVAILABLE` from stateful UIA operations. Adapter destruction
+  must retire its owned providers before releasing them so external COM
+  references cannot continue reading the final tree snapshot.
+- Provider node and availability state require a small internal mutex because
+  UIA may query providers independently of the runtime update thread. Existing
+  navigation tree state already serializes its maps and should remain the
+  authority for current relationships and action availability.
+- Phase G Step 624 preserves Win32 UIA provider COM identity across stable element updates, refreshes provider state in place, and retires removed or destroyed providers with element-unavailable semantics. Step 625 Win32 UIA lifecycle stress production behavior is next.

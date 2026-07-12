@@ -13,6 +13,7 @@ HRESULT STDMETHODCALLTYPE Win32UiaProvider::GetPatternProvider(
     IUnknown** provider) {
   if (provider == nullptr) return E_POINTER;
   *provider = nullptr;
+  if (!snapshot().has_value()) return UIA_E_ELEMENTNOTAVAILABLE;
   const IID* iid = nullptr;
   if (pattern == UIA_InvokePatternId) {
     iid = &IID_IInvokeProvider;
@@ -29,24 +30,31 @@ HRESULT STDMETHODCALLTYPE Win32UiaProvider::GetPatternProvider(
 }
 
 HRESULT STDMETHODCALLTYPE Win32UiaProvider::Invoke() {
+  const auto state = snapshot();
+  if (!state.has_value()) return UIA_E_ELEMENTNOTAVAILABLE;
   return request_win32_uia_action(tree_, AccessibilityActionRequested{
       .kind = AccessibilityActionKind::invoke,
-      .element_id = node_.element_id,
+      .element_id = state->node.element_id,
   });
 }
 
 HRESULT STDMETHODCALLTYPE Win32UiaProvider::SetValue(LPCWSTR value) {
   if (value == nullptr) return E_INVALIDARG;
+  const auto state = snapshot();
+  if (!state.has_value()) return UIA_E_ELEMENTNOTAVAILABLE;
   return request_win32_uia_action(tree_, AccessibilityActionRequested{
       .kind = AccessibilityActionKind::set_value,
-      .element_id = node_.element_id,
+      .element_id = state->node.element_id,
       .value = utf8_from_utf16(value),
   });
 }
 
 HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_Value(BSTR* result) {
   if (result == nullptr) return E_POINTER;
-  const std::wstring value = widen(node_.value);
+  *result = nullptr;
+  const auto state = snapshot();
+  if (!state.has_value()) return UIA_E_ELEMENTNOTAVAILABLE;
+  const std::wstring value = widen(state->node.value);
   *result = SysAllocStringLen(value.data(), static_cast<UINT>(value.size()));
   return *result != nullptr || value.empty() ? S_OK : E_OUTOFMEMORY;
 }
@@ -54,70 +62,27 @@ HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_Value(BSTR* result) {
 HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_IsReadOnly(BOOL* result) {
   if (result == nullptr) return E_POINTER;
   *result = FALSE;
+  if (!snapshot().has_value()) return UIA_E_ELEMENTNOTAVAILABLE;
   return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE Win32UiaProvider::Toggle() {
+  const auto state = snapshot();
+  if (!state.has_value()) return UIA_E_ELEMENTNOTAVAILABLE;
   return request_win32_uia_action(tree_, AccessibilityActionRequested{
       .kind = AccessibilityActionKind::toggle,
-      .element_id = node_.element_id,
+      .element_id = state->node.element_id,
   });
 }
 
 HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_ToggleState(
     ToggleState* result) {
   if (result == nullptr) return E_POINTER;
-  *result = node_.patterns.toggled.value_or(false) ? ToggleState_On
-                                                   : ToggleState_Off;
-  return S_OK;
-}
-
-HRESULT STDMETHODCALLTYPE Win32UiaProvider::SetValue(double value) {
-  if (!node_.patterns.range.has_value() ||
-      value < node_.patterns.range->minimum ||
-      value > node_.patterns.range->maximum) {
-    return E_INVALIDARG;
-  }
-  return request_win32_uia_action(tree_, AccessibilityActionRequested{
-      .kind = AccessibilityActionKind::set_range_value,
-      .element_id = node_.element_id,
-      .numeric_value = value,
-  });
-}
-
-HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_Value(double* result) {
-  if (result == nullptr) return E_POINTER;
-  *result = node_.patterns.range.has_value() ? node_.patterns.range->value : 0.0;
-  return S_OK;
-}
-
-HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_Maximum(double* result) {
-  if (result == nullptr) return E_POINTER;
-  *result = node_.patterns.range.has_value() ? node_.patterns.range->maximum
-                                             : 0.0;
-  return S_OK;
-}
-
-HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_Minimum(double* result) {
-  if (result == nullptr) return E_POINTER;
-  *result = node_.patterns.range.has_value() ? node_.patterns.range->minimum
-                                             : 0.0;
-  return S_OK;
-}
-
-HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_LargeChange(double* result) {
-  if (result == nullptr) return E_POINTER;
-  *result = node_.patterns.range.has_value()
-      ? node_.patterns.range->large_change
-      : 0.0;
-  return S_OK;
-}
-
-HRESULT STDMETHODCALLTYPE Win32UiaProvider::get_SmallChange(double* result) {
-  if (result == nullptr) return E_POINTER;
-  *result = node_.patterns.range.has_value()
-      ? node_.patterns.range->small_change
-      : 0.0;
+  *result = ToggleState_Off;
+  const auto state = snapshot();
+  if (!state.has_value()) return UIA_E_ELEMENTNOTAVAILABLE;
+  *result = state->node.patterns.toggled.value_or(false) ? ToggleState_On
+                                                         : ToggleState_Off;
   return S_OK;
 }
 

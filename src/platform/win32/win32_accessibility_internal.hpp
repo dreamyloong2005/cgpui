@@ -2,6 +2,7 @@
 
 #include "cgpui/platform/platform.hpp"
 #include "win32_uia_events_internal.hpp"
+#include "win32_uia_lifetime_internal.hpp"
 #include "win32_uia_navigation_internal.hpp"
 #include "win32_uia_provider_internal.hpp"
 

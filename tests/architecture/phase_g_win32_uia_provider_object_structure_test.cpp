@@ -31,6 +31,10 @@ int main() {
       "src/platform/win32/win32_uia_provider_object_internal.hpp");
   const std::string provider = read_source(
       "src/platform/win32/win32_uia_provider.cpp");
+  const std::string provider_state = read_source(
+      "src/platform/win32/win32_uia_provider_state.cpp");
+  const std::string lifetime = read_source(
+      "src/platform/win32/win32_uia_lifetime.cpp");
   const std::string adapter_header = read_source(
       "src/platform/win32/win32_accessibility_internal.hpp");
   const std::string adapter = read_source(
@@ -50,8 +54,8 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &provider_header, &provider_object_header, &provider, &adapter_header,
-      &adapter, &updates, &window,
+      &provider_header, &provider_object_header, &provider, &provider_state,
+      &lifetime, &adapter_header, &adapter, &updates, &window,
       &application, &behavior, &xmake, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
@@ -63,7 +67,7 @@ int main() {
       !contains(provider, "QueryInterface(") || !contains(provider, "AddRef()") ||
       !contains(provider, "Release()") ||
       !contains(provider, "ProviderOptions_ServerSideProvider") ||
-      !contains(provider, "UiaHostProviderFromHwnd(")) return 2;
+      !contains(provider_state, "UiaHostProviderFromHwnd(")) return 2;
   if (!contains(provider, "UIA_AutomationIdPropertyId") ||
       !contains(provider, "UIA_ControlTypePropertyId") ||
       !contains(provider, "UIA_NamePropertyId") ||
@@ -71,7 +75,7 @@ int main() {
       !contains(provider, "UIA_BoundingRectanglePropertyId")) return 3;
   if (!contains(adapter_header, "root_provider() const") ||
       !contains(adapter_header, "provider_for_element(") ||
-      !contains(updates, "create_win32_uia_provider(") ||
+      !contains(lifetime, "create_win32_uia_provider(") ||
       !contains(adapter, "release_providers()") ||
       !contains(window, "uia_accessibility_.attach(hwnd)") ||
       !contains(window, "uia_accessibility_.detach()") ||
@@ -104,7 +108,7 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 624 Win32 UIA provider lifetime "
+                "\"phase_f_current_handoff\": \"Step 625 Win32 UIA lifecycle stress "
                 "production behavior\"")) return 9;
   return 0;
 }

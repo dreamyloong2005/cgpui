@@ -13,6 +13,14 @@ Win32UiaProviderTreeHandle create_win32_uia_provider_tree(
     std::uint64_t root_element_id,
     std::vector<Win32UiaProviderNode> nodes,
     std::function<void(AccessibilityActionRequested)> action_callback);
+void replace_win32_uia_provider_tree_state(
+    const Win32UiaProviderTreeHandle& tree,
+    HWND hwnd,
+    std::uint64_t root_element_id,
+    std::vector<Win32UiaProviderNode> nodes,
+    std::function<void(AccessibilityActionRequested)> action_callback);
+void invalidate_win32_uia_provider_tree(
+    const Win32UiaProviderTreeHandle& tree);
 void set_win32_uia_provider_tree_hwnd(
     const Win32UiaProviderTreeHandle& tree,
     HWND hwnd);

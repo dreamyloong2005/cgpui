@@ -1,43 +1,12 @@
-#include "win32_uia_navigation_internal.hpp"
+#include "win32_uia_tree_state_internal.hpp"
 
 #include <UIAutomationCoreApi.h>
 
 #include <algorithm>
 #include <mutex>
-#include <unordered_map>
 #include <utility>
 
 namespace cgpui {
-
-class Win32UiaProviderTree {
- public:
-  Win32UiaProviderTree(
-      HWND hwnd,
-      std::uint64_t root_element_id,
-      std::vector<Win32UiaProviderNode> nodes,
-      std::function<void(AccessibilityActionRequested)> action_callback)
-      : hwnd(hwnd),
-        root_element_id(root_element_id),
-        nodes(std::move(nodes)),
-        action_callback(std::move(action_callback)) {
-    for (std::size_t index = 0; index < this->nodes.size(); ++index) {
-      const auto& node = this->nodes[index];
-      node_indices.emplace(node.element_id, index);
-      if (node.parent_element_id.has_value()) {
-        children[*node.parent_element_id].push_back(node.element_id);
-      }
-    }
-  }
-
-  std::mutex mutex;
-  HWND hwnd = nullptr;
-  std::uint64_t root_element_id = 0;
-  std::vector<Win32UiaProviderNode> nodes;
-  std::unordered_map<std::uint64_t, std::size_t> node_indices;
-  std::unordered_map<std::uint64_t, std::vector<std::uint64_t>> children;
-  std::unordered_map<std::uint64_t, IRawElementProviderFragment*> providers;
-  std::function<void(AccessibilityActionRequested)> action_callback;
-};
 
 namespace {
 
@@ -108,7 +77,7 @@ HRESULT navigate_win32_uia_fragment(
   if (!tree) return S_OK;
   const std::lock_guard lock(tree->mutex);
   const auto index = tree->node_indices.find(element_id);
-  if (index == tree->node_indices.end()) return S_OK;
+  if (index == tree->node_indices.end()) return UIA_E_ELEMENTNOTAVAILABLE;
   const auto& node = tree->nodes[index->second];
   std::optional<std::uint64_t> target;
   if (direction == NavigateDirection_Parent) {

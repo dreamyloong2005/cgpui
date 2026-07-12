@@ -18,10 +18,7 @@ void Win32UiaAccessibilityAdapter::detach() {
 }
 
 void Win32UiaAccessibilityAdapter::release_providers() {
-  for (IRawElementProviderSimple* provider : providers_) {
-    if (provider != nullptr) provider->Release();
-  }
-  providers_.clear();
+  retire_win32_uia_provider_lifetime(provider_tree_, providers_);
 }
 
 bool Win32UiaAccessibilityAdapter::handle_get_object(

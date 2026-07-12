@@ -3,8 +3,14 @@
 #include "win32_uia_navigation_internal.hpp"
 
 #include <atomic>
+#include <mutex>
 
 namespace cgpui {
+
+struct Win32UiaProviderSnapshot {
+  Win32UiaProviderNode node;
+  bool is_root = false;
+};
 
 class Win32UiaProvider final
     : public IRawElementProviderSimple,
@@ -67,11 +73,17 @@ class Win32UiaProvider final
   HRESULT STDMETHODCALLTYPE get_LargeChange(double* result) override;
   HRESULT STDMETHODCALLTYPE get_SmallChange(double* result) override;
 
+  [[nodiscard]] std::optional<Win32UiaProviderSnapshot> snapshot() const;
+  void replace_node(Win32UiaProviderNode node, bool is_root);
+  void retire();
+
  private:
   std::atomic<ULONG> reference_count_{1};
+  mutable std::mutex state_mutex_;
   Win32UiaProviderTreeHandle tree_;
   Win32UiaProviderNode node_;
   bool is_root_ = false;
+  bool available_ = true;
 };
 
 } // namespace cgpui

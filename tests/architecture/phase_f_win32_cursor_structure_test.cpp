@@ -121,7 +121,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 624 Win32 UIA provider lifetime production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 625 Win32 UIA lifecycle stress production behavior")) {
     return 8;
   }
   return 0;
