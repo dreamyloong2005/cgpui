@@ -27,8 +27,9 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
        ++child_index) {
     const auto& child = children_[child_index];
     child->inherit_text_style(inherited_text_style_);
-    const LayoutOutput child_output =
-        child->layout(LayoutInput{.scale = input.scale});
+    LayoutInput child_input = input;
+    child_input.constraints = {};
+    const LayoutOutput child_output = child->layout(child_input);
     child_sizes.push_back(child_output.size);
     if (is_positioned_out_of_flow(child->position())) {
       continue;

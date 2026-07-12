@@ -75,7 +75,7 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 40;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 644 element lifecycle animation production behavior\"") ||
+                "\"phase_f_current_handoff\": \"Step 645 animation repeat and chaining production behavior\"") ||
       !contains(task_plan,
                 "- Status: complete\n- Authoritative scope: Phase F")) return 50;
   return 0;

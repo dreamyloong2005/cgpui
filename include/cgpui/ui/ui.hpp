@@ -2,6 +2,7 @@
 
 #include "cgpui/ui/action.hpp"
 #include "cgpui/ui/animation_transition.hpp"
+#include "cgpui/ui/element_animation.hpp"
 #include "cgpui/ui/async_context.hpp"
 #include "cgpui/ui/cross_thread_entity.hpp"
 #include "cgpui/ui/key_binding.hpp"

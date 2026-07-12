@@ -31,6 +31,7 @@ void handle_wakeup(); void drain_cross_thread_entity_operations();
 void drain_deferred_callbacks();
 void fire_due_timers(); void sync_platform_time(); void schedule_next_timer_wakeup();
 void tick_animation(AnimationId id);
+void layout_element_tree_with_animations(FrameStatistics& frame_statistics);
 void update_platform_accessibility_tree();
 [[nodiscard]] PlatformAccessibilityTreeUpdate build_platform_accessibility_update()
     const;
@@ -127,15 +128,6 @@ struct RuntimeTimer {
   bool repeating = false;
   TimerCallback callback;
 };
-struct RuntimeAnimation {
-  AnimationId id;
-  AnimationOptions options;
-  AnimationCallback callback;
-  TimerId timer_id;
-  std::uint64_t started_ms = 0;
-  std::uint64_t last_tick_ms = 0;
-  bool complete = false;
-};
 struct RuntimeTask {
   TaskId id; TaskGroupId group_id{};
   TaskPriority priority = TaskPriority::normal;
@@ -186,6 +178,7 @@ std::optional<EventDispatchRecord> last_event_dispatch_;
 std::optional<ActionDispatchResult> last_action_dispatch_;
 std::optional<EventRoute> current_event_route_;
 std::unique_ptr<ElementTree> owned_element_tree_;
+bool view_rendered_element_tree_ = false;
 const Element* element_root_ = nullptr;
 StaticElementTreeView static_element_tree_;
 bool has_static_element_tree_ = false;
@@ -232,8 +225,7 @@ std::vector<RuntimeTimer> timers_;
 std::uint64_t next_timer_id_ = 1;
 std::uint64_t current_time_ms_ = 0, last_platform_time_ms_ = 0;
 bool firing_timers_ = false, platform_clock_initialized_ = false;
-std::vector<RuntimeAnimation> animations_;
-std::uint64_t next_animation_id_ = 1;
+#include "runtime_animation_state_internal.hpp"
 mutable std::mutex tasks_mutex_; std::shared_ptr<detail::CrossThreadEntityQueueState> cross_thread_entity_queue_; std::unique_ptr<RuntimeAsyncIoRegistry> async_io_registry_; std::unique_ptr<RuntimeTaskPool> task_pool_; std::unique_ptr<RuntimeTaskGroupStore> task_group_store_;
 std::vector<RuntimeTask> tasks_;
 std::vector<RuntimeTaskCompletion> task_completion_queue_;

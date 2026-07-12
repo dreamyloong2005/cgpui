@@ -40,8 +40,9 @@ LayoutOutput ScrollableListElement::layout(LayoutInput input) const {
         offset);
   }
 
-  const LayoutOutput content_output =
-      content_.layout(LayoutInput{.scale = input.scale});
+  LayoutInput content_input = input;
+  content_input.constraints = {};
+  const LayoutOutput content_output = content_.layout(content_input);
   Size preferred = style_.preferred_size;
   if (preferred.width == 0.0F) {
     preferred.width = content_output.size.width;

@@ -91,11 +91,18 @@ remain outside this freeze.
 - `AnimationTransitionSnapshot`
 - `AnimationTransitionHandle`
 - `start_animation_transition(...)`
+- `ElementAnimationSnapshot`
+- `ElementAnimationFrameResult`
+- `ElementAnimationStateStore`
+- `AnimationElement`
+- `with_animation(...)`
 
 Phase G Step 643 adds typed scalar from/to transitions over the existing
 deterministic animation scheduler. Direct runtime, runtime-context, and
-async-context starts share the same value snapshot and handle vocabulary;
-element lifecycle animation wrappers and repeat/chaining remain later work.
+async-context starts share the same value snapshot and handle vocabulary.
+Step 644 adds runtime-owned keyed lifecycle state and a transparent element
+wrapper with mount/update/unmount tracking across reconstructed render trees;
+repeat/chaining remains later work.
 
 ## Platform service vocabulary
 

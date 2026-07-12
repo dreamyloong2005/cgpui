@@ -1324,6 +1324,19 @@ Windows/Linux core API is stable enough for parity work.
   runtime-thread delivery, zero-duration synchronous final values, invalid
   callbacks, and handle observability; dedicated structure coverage freezes
   the public/source leaf boundary, inventories, registrations, and line caps.
+- Completed: Phase G Step 644 adds runtime-owned keyed element lifecycle animations with mount/update/unmount tracking, cross-window scope isolation, per-frame eased snapshots across reconstructed wrappers, transparent element forwarding, and one shared delayed frame wakeup. Step 645 animation repeat and chaining production behavior is next.
+- Step 644 boundary: add a focused `AnimationElement` wrapper and a scoped
+  `ElementAnimationStateStore` keyed by stable public `ElementKey`. Pass the
+  store explicitly through `LayoutInput`, preserve mount time across per-frame
+  wrapper reconstruction, prune unseen keys as unmounted at frame completion,
+  isolate equal keys by window-runtime scope, and drive active root-window
+  animations through one runtime timer. Repetition/chaining, springs,
+  cancellation diagnostics, and display-aligned pacing remain Steps 645-647.
+- Step 644 evidence: focused behavior covers scoped store lifecycle and window
+  isolation plus four runtime-rendered frames with reconstructed wrappers,
+  exact 0/0.5/1 progress, unmount pruning, and two shared delayed wakeups;
+  dedicated structure coverage freezes public/private leaves, layout-context
+  propagation, inventories, registrations, and broad runtime line caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1339,6 +1352,11 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 644 WSL build failed because `layout.hpp` used `std::uint64_t` through an MSVC-tolerated indirect include | Step 644 Arch Linux focused verification | Add the required direct `<cstdint>` include to the public layout leaf, then rerun the identical WSL target set |
+| The first eight-target Step 644 regression exposed `window_runtime_scheduling_test` return 521 because clearing every prior tree on an empty `View::render()` also removed caller-installed persistent trees | Step 644 runtime lifecycle compatibility | Track whether the tree came from the prior dynamic View render; clear only that tree on a later empty render and preserve explicit `set_element_tree()` installations |
+| `xmake test` was first invoked with target names rather than `target/default` test names and reported `nothing to test` | Step 644 focused verification | Use each registered `target/default` name in the multi-test invocation |
+| The first combined Step 644 runtime/layout patch used a context line from the wrong region of `window_runtime_internal.hpp` and was atomically rejected | Step 644 implementation | Re-read exact declaration locations, split the public/private-state patch from layout/runtime integration, and apply both with local context |
+| Step 644 paint-path reconnaissance guessed nonexistent `src/ui/runtime_renderer_frame.cpp` | Step 644 dynamic render audit | Follow the `try_draw_frame` symbol to the focused existing `runtime_renderer_frame_results.cpp` leaf before selecting the runtime integration boundary |
 | The first three-file Step 643 prelude-evidence patch had an empty hunk separator and was atomically rejected | Step 643 public authoring boundary review | Reissue the exact include, structure assertion, progress, and error-row edits as valid contiguous hunks |
 | Sandboxed `Invoke-WebRequest` calls for the pinned upstream animation sources failed with an authentication exception | Step 643 upstream semantic audit | Re-run the same read-only pinned raw URLs with approved network access; inspect `examples/animation.rs`, `src/elements/animation.rs`, and `examples/opacity.rs` without moving the revision pin |
 | A final Step 642 JSON audit queried the nonexistent top-level `summary` object and raised a Node `TypeError` | Step 642 final evidence query | Inspect the JSON top-level keys and query the established `phase_d_text_evidence` evidence container; handoff, 16 sources, and remaining gap then validated |

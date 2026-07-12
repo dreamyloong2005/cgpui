@@ -14,6 +14,7 @@
 #include "cgpui/ui/label_builder.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/animation_transition.hpp"
+#include "cgpui/ui/element_animation.hpp"
 #include "cgpui/ui/async_context.hpp"
 #include "cgpui/ui/async_io_hook.hpp"
 #include "cgpui/ui/cross_thread_entity.hpp"
@@ -507,6 +508,22 @@ int main() {
   };
   cgpui::StyleState style_state;
   cgpui::ElementKey element_key{.value = "header-key"};
+  cgpui::ElementAnimationStateStore animation_store;
+  animation_store.begin_frame(1, 0);
+  const cgpui::ElementAnimationSnapshot animation_snapshot =
+      animation_store.resolve(
+          element_key,
+          cgpui::AnimationOptions{.duration_ms = 100});
+  const cgpui::ElementAnimationFrameResult animation_frame =
+      animation_store.finish_frame(1);
+  cgpui::AnyElement animated_element = cgpui::with_animation(
+      cgpui::ElementKey{.value = "header-animation"},
+      cgpui::AnimationOptions{.duration_ms = 100},
+      cgpui::into_element(cgpui::div().size(1.0F, 1.0F)),
+      [](cgpui::Element&, const cgpui::ElementAnimationSnapshot&) {});
+  (void)animation_snapshot;
+  (void)animation_frame;
+  (void)animated_element;
   style_state.base = cgpui::Style{}
                          .with_background_color(cgpui::rgb(0, 0, 0))
                          .with_align_items(cgpui::AlignItems::center)

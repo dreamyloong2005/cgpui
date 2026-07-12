@@ -23518,3 +23518,52 @@
   start leaf, behavior, and structure guard are 83/97/56/169/131 lines;
   public/private broad runtime headers remain 259/260 lines; and
   `git diff --check` succeeds.
+
+## 2026-07-13 Phase G Step 644 Element Lifecycle Animation
+
+- Started from committed Step 643 at `a1880c3b` with only unrelated untracked
+  `.vscode/` present.
+- Audited dynamic render tree replacement, explicit tree lifecycle callbacks,
+  nested builder child ownership, node state persistence, layout-input
+  propagation, and frame scheduling. Chosen ownership is a focused animation
+  element/store boundary plus a focused runtime layout/timer integration leaf.
+- Added the focused Step 644 behavior target first. It requires scoped store
+  mount/update/unmount semantics, cross-window key isolation, exact completion
+  diagnostics, public prelude authoring, wrapper reconstruction across four
+  rendered frames, 0/0.5/1 progress, and exactly two shared 16ms wakeups.
+- Implemented the public animation element/store leaf, focused state-store,
+  forwarding, and runtime integration sources, explicit layout-input
+  propagation through flex/vertical-stack/scroll containers, and a focused
+  private runtime animation-state include that keeps the broad runtime header
+  below its cap.
+- The first Windows behavior build and run pass. The runtime preserves start
+  time across fresh wrappers, emits 0/0.5/1 snapshots, uses exactly two shared
+  delayed wakeups, removes the animation on the fourth frame, and leaves no
+  pending wakeup.
+- Added the dedicated structure guard, public aggregate export, header
+  cleanliness authoring, global UI inventories, Xmake registration, and
+  synchronized vocabulary, core parity, roadmap, Markdown/JSON ledgers, task
+  plan, and findings for the Step 645 handoff.
+- The first eight-target regression caught a persistent-tree compatibility
+  issue: an empty dynamic render cleared trees installed explicitly through
+  `set_element_tree()`. Added a source marker so only a tree produced by the
+  prior `View::render()` is cleared for animation unmount; caller-installed
+  trees remain intact.
+- The first Arch Linux WSL build caught a public-header self-containment gap:
+  GCC correctly rejected `std::uint64_t` in `layout.hpp` without `<cstdint>`.
+  Added the direct standard include before rerunning the same focused suite.
+- Final Step 644 focused verification passes Windows 8/8 and Arch Linux WSL
+  8/8 across lifecycle behavior/structure, Step 643 transition regressions,
+  runtime scheduling/frame scheduling, global UI structure, and public header
+  cleanliness. The persistent caller-installed element-tree regression remains
+  green in `window_runtime_scheduling_test`.
+- Advanced all 91 current-handoff consumers to Step 645 with zero stale Step
+  644 dynamic handoffs. Ninety basename-matched targets pass together and the
+  historical native-menu replacement target, whose target name differs from
+  its source basename, passes separately, completing the 91/91 chain.
+- Final audits pass: the exact Step 644 completion sentence appears once in
+  each of the five authority documents; JSON parses with 16 Step 644 sources;
+  the public header, store, element, forwarding, runtime integration, private
+  state, behavior, and structure files are 112/179/64/85/39/13/163/144 lines;
+  public/private broad runtime headers remain 260/252 lines; and
+  `git diff --check` succeeds.

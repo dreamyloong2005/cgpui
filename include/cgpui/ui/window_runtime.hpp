@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/action.hpp"
+#include "cgpui/ui/element_animation.hpp"
 #include "cgpui/ui/async_io_hook.hpp"
 #include "cgpui/ui/runtime_types.hpp"
 #include "cgpui/ui/task_priority.hpp"

@@ -4,6 +4,7 @@ namespace cgpui {
 
 void WindowRuntime::set_static_element_tree(StaticElementTreeView tree) {
   owned_element_tree_.reset();
+  view_rendered_element_tree_ = false;
   element_root_ = nullptr;
   static_element_tree_ = tree;
   has_static_element_tree_ = !tree.empty() && tree.valid();

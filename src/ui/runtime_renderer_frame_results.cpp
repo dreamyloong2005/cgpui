@@ -24,12 +24,16 @@ Result<void> WindowRuntime::try_draw_frame() {
     tree_kind = RenderTreeKind::static_element_tree;
   } else {
     clear_static_element_tree();
+    const bool had_view_rendered_element_tree = view_rendered_element_tree_;
     AnyElement rendered = view_.render(render_context);
     if (rendered != nullptr) {
       auto tree = std::make_unique<ElementTree>();
       rendered_root_id = tree->set_root(std::move(rendered));
       set_element_tree(std::move(tree));
+      view_rendered_element_tree_ = true;
       tree_kind = RenderTreeKind::dynamic_element_tree;
+    } else if (had_view_rendered_element_tree) {
+      set_element_tree(nullptr);
     }
   }
 
@@ -45,13 +49,7 @@ Result<void> WindowRuntime::try_draw_frame() {
     after_render_callback_(context(), *last_render_record_);
   }
 
-  if (owned_element_tree_ != nullptr) {
-    (void)owned_element_tree_->layout_root(LayoutInput{
-        .constraints = {.max_size = viewport_size_},
-        .scale = scale_,
-    });
-    frame_statistics.layout_pass_count += 1;
-  }
+  layout_element_tree_with_animations(frame_statistics);
   update_platform_accessibility_tree();
   apply_focused_text_ime_placement();
 

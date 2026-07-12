@@ -44,8 +44,9 @@ class ScrollElement : public Element {
       return output;
     }
 
-    const LayoutOutput child_output =
-        child_->layout(LayoutInput{.scale = input.scale});
+    LayoutInput child_input = input;
+    child_input.constraints = {};
+    const LayoutOutput child_output = child_->layout(child_input);
     child_->set_layout_bounds(Rect{
         .origin = child_output.origin,
         .size = child_output.size,

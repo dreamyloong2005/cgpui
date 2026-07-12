@@ -11299,3 +11299,39 @@
   pacing, broad style interpolation, and official examples remain their later
   Steps 644-650.
 - Phase G Step 643 adds typed scalar animation transitions over existing runtime, runtime-context, and async-context scheduling, with eased from/to value snapshots, runtime-thread callbacks, zero-duration final delivery, invalid-callback rejection, and handle observability. Step 644 element lifecycle animation production behavior is next.
+
+## 2026-07-13 Phase G Step 644 Element Lifecycle Animation Design
+
+- Root dynamic rendering creates a new `ElementTree` on every frame. Nested
+  builder children are owned inside their parent element rather than recorded
+  as separate `ElementTree::Node` entries, so neither wrapper-object fields nor
+  node `std::any` state can preserve nested animation start time across frames.
+- A production lifecycle boundary therefore needs runtime-owned state keyed by
+  stable animation identity, not object address. The selected key is
+  `(WindowRuntimeId scope, ElementKey value)` so equal authoring keys remain
+  isolated across windows and newly constructed wrappers in one window update
+  the same record.
+- `LayoutInput` is the explicit hot-path transport for the focused state store,
+  scope id, and current runtime time. Flex, vertical-stack, and scroll layout
+  leaves that currently reconstruct `LayoutInput` must preserve those fields
+  instead of silently dropping animation context.
+- `ElementAnimationStateStore::begin_frame/resolve/finish_frame` models mount,
+  update, completion, and unmount: first resolve inserts start state, later
+  resolves preserve it, and finish removes records not seen in that scope's
+  current generation. A public snapshot exposes elapsed, linear/eased progress,
+  mounted state, and completion without exposing runtime internals.
+- One root-runtime one-shot timer should wake the next active animation frame;
+  all active elements share it. This avoids a zero-time redraw loop in the
+  deterministic host while leaving display-aligned pacing and richer cadence
+  diagnostics for Step 647.
+- Repetition/chaining, spring/tween variants, cancellation diagnostics, broad
+  style interpolation, and official examples remain Steps 645-650.
+- The implemented wrapper copies non-virtual parent-layout metadata from its
+  child at construction and forwards dynamic z/layer, layout, paint, hit-test,
+  event, focus, accessibility, and lifecycle behavior. This keeps the wrapper
+  transparent while reserving broad per-frame style interpolation for Step
+  649.
+- Clearing the prior dynamic `ElementTree` when a later `View::render` returns
+  null is required for animation unmount semantics; otherwise the old wrapper
+  would be laid out again and falsely remain seen in the scoped state store.
+- Phase G Step 644 adds runtime-owned keyed element lifecycle animations with mount/update/unmount tracking, cross-window scope isolation, per-frame eased snapshots across reconstructed wrappers, transparent element forwarding, and one shared delayed frame wakeup. Step 645 animation repeat and chaining production behavior is next.

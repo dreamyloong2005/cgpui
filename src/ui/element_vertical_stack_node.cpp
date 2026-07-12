@@ -37,8 +37,9 @@ LayoutOutput VerticalStackElement::layout(LayoutInput input) const {
   std::size_t relative_child_index = 0;
   for (const auto& child : children_) {
     child->inherit_text_style(inherited_text_style_);
-    const LayoutOutput child_output =
-        child->layout(LayoutInput{.scale = input.scale});
+    LayoutInput child_input = input;
+    child_input.constraints = {};
+    const LayoutOutput child_output = child->layout(child_input);
     if (child->position() == Position::absolute) {
       continue;
     }
@@ -66,8 +67,9 @@ LayoutOutput VerticalStackElement::layout(LayoutInput input) const {
       continue;
     }
     child->inherit_text_style(inherited_text_style_);
-    const LayoutOutput child_output =
-        child->layout(LayoutInput{.scale = input.scale});
+    LayoutInput child_input = input;
+    child_input.constraints = {};
+    const LayoutOutput child_output = child->layout(child_input);
     child->set_layout_bounds(Rect{
         .origin = absolute_origin(output.size, child->inset()),
         .size = child_output.size,

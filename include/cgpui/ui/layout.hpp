@@ -3,9 +3,12 @@
 #include "cgpui/core/geometry.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <limits>
 
 namespace cgpui {
+
+class ElementAnimationStateStore;
 
 struct LayoutConstraints {
   Size min_size;
@@ -18,6 +21,9 @@ struct LayoutConstraints {
 struct LayoutInput {
   LayoutConstraints constraints;
   DpiScale scale;
+  ElementAnimationStateStore* animation_state_store = nullptr;
+  std::uint64_t animation_scope_id = 0;
+  std::uint64_t animation_time_ms = 0;
 };
 
 struct LayoutOutput {
