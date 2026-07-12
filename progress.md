@@ -23392,3 +23392,45 @@
   core, and private runtime header are 33/35/67/24/42/104/35/24/93/170/80/260
   lines; and `git diff --check` succeeds.
 - Phase G Step 640 integrates runtime timers with platform monotonic clocks and nearest-deadline delayed wakeups on Win32 and Wayland, preserving deterministic time advancement, cancellation, repeating cadence, and zero-delay compatibility. Step 641 cross-thread entity access production behavior is next.
+
+## 2026-07-12 Phase G Step 641 Cross-Thread Entity Access
+
+- Started from clean committed Step 640 at `cf655dc0` with only unrelated
+  untracked `.vscode/` present.
+- Initial audit finds direct entity pointer access over unsynchronized runtime
+  stores and confirms background completions already return to the runtime
+  thread. The Step 641 boundary will add explicit cross-thread queueing rather
+  than weakening the runtime-thread ownership rule for existing APIs.
+- Added the focused Step 641 behavior target. Its first build reaches the
+  expected RED because the planned public `cross_thread_entity.hpp` leaf does
+  not yet exist.
+- Added the focused public handle, opaque shared queue state, queue and drain
+  implementation leaves, AsyncContext creation API, wakeup drain integration,
+  and shutdown detachment. The focused Windows behavior target passes 1/1.
+- Expanded behavior to 16 concurrent worker update submissions; all are
+  accepted and execute serially on the runtime thread with exact final value
+  25. The focused behavior target remains green.
+- The initial seven-target entity/header/scheduling regression passed 6/7;
+  restoring the private runtime header from 261 to its frozen 260-line cap
+  makes the corrected regression pass 7/7.
+- Added the dedicated Step 641 structure guard. Its first run returned 8 only
+  because the prior Step 640 guard splits the historical handoff across C++
+  literals; matching the stable source fragment advances it to the expected
+  authority-document RED at exit 10.
+- Synchronized public vocabulary, core parity, the roadmap, both ledgers,
+  task plan, and findings, then advanced current handoffs to the Step 642 async
+  runtime closeout. Step 641 behavior and structure now pass 2/2, JSON parses,
+  and `git diff --check` succeeds.
+- Final Step 641 focused verification passes Windows 14/14 and Arch Linux WSL
+  14/14 across cross-thread entity access, prior async timer/I/O/cancellation,
+  entity transactions and weak semantics, async context, scheduling, header
+  cleanliness, and global UI structure. The complete Windows dynamic-handoff
+  chain passes 88/88.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 88 handoff consumers plus the JSON ledger point
+  to Step 642 with zero stale Step 641 current handoffs; JSON parses with 16
+  Step 641 sources; public handle, async context, public runtime, runtime
+  templates, private queue header/source, drain source, private runtime header,
+  behavior, and structure guard are 75/76/259/1005/25/37/17/260/184/153 lines;
+  and `git diff --check` succeeds.
+- Phase G Step 641 adds explicit CrossThreadEntity<T> read and update queueing through AsyncContextCapability, executing FIFO worker-thread submissions on the owning runtime thread with context isolation, missing-entity status, concurrent safety, and shutdown detachment. Step 642 async runtime production closeout audit is next.

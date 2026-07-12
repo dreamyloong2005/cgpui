@@ -126,7 +126,9 @@ desktop integration surfaces remain separate future work.
   cancellation. One-shot async I/O hooks now deliver payloads or failures back
   to the runtime thread with priority, cancellation, and teardown safety.
   Runtime timers use platform monotonic clocks and nearest-deadline delayed
-  wakeups on Win32 and Wayland; cross-thread entity access remains incomplete.
+  wakeups on Win32 and Wayland. Explicit `CrossThreadEntity<T>` handles queue
+  callback-scoped reads and updates back to the owning runtime thread with
+  context isolation, missing-entity results, and shutdown detachment.
 
 ## Missing
 
@@ -145,7 +147,6 @@ desktop integration surfaces remain separate future work.
   batching.
 - Full layout virtualization and large-list recycling beyond the current
   `scrollable_list` container.
-- Cross-thread entity access guarantees.
 
 ## Mac/Metal Deferred
 

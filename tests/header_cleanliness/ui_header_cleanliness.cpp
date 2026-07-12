@@ -15,6 +15,7 @@
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/async_context.hpp"
 #include "cgpui/ui/async_io_hook.hpp"
+#include "cgpui/ui/cross_thread_entity.hpp"
 #include "cgpui/ui/test_context.hpp"
 #include "cgpui/ui/render.hpp"
 #include "cgpui/ui/element_context.hpp"
@@ -118,7 +119,9 @@ class TestView final : public cgpui::View {
     (void)element_context.state<TestModel>();
     const cgpui::AsyncContextCapability async_context =
         context.async_context();
-    (void)async_context;
+    const cgpui::CrossThreadEntity<TestModel> cross_thread_entity =
+        async_context.entity(entity);
+    (void)cross_thread_entity;
     const cgpui::TestContextCapability test_context =
         context.test_context();
     (void)test_context.runtime_id();

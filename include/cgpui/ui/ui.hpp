@@ -2,6 +2,7 @@
 
 #include "cgpui/ui/action.hpp"
 #include "cgpui/ui/async_context.hpp"
+#include "cgpui/ui/cross_thread_entity.hpp"
 #include "cgpui/ui/key_binding.hpp"
 #include "cgpui/ui/paint.hpp"
 #include "cgpui/ui/render.hpp"

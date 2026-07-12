@@ -95,6 +95,6 @@ int main() {
     if (!contains(*document, completion)) return 6;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 641 cross-thread entity access production behavior\"")) return 7;
+                "\"phase_f_current_handoff\": \"Step 642 async runtime production closeout audit\"")) return 7;
   return 0;
 }

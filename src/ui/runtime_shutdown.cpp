@@ -1,11 +1,13 @@
 #include "ui_internal.hpp"
 #include "runtime_async_io_internal.hpp"
+#include "runtime_cross_thread_entity_internal.hpp"
 #include "runtime_task_group_internal.hpp"
 #include "runtime_task_pool_internal.hpp"
 
 namespace cgpui {
 
 WindowRuntime::~WindowRuntime() {
+  cross_thread_entity_queue_->shutdown();
   async_io_registry_->shutdown();
   {
     std::lock_guard lock(tasks_mutex_);

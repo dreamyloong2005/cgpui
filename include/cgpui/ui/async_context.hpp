@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/async_io_hook.hpp"
+#include "cgpui/ui/cross_thread_entity.hpp"
 #include "cgpui/ui/runtime_callbacks.hpp"
 #include "cgpui/ui/runtime_handles.hpp"
 #include "cgpui/ui/task_priority.hpp"
@@ -40,6 +41,8 @@ class AsyncContextCapability {
   [[nodiscard]] AsyncIoHook create_async_io_hook(
       TaskPriority priority,
       AsyncIoCompletionCallback callback) const;
+  template <typename T>
+  [[nodiscard]] CrossThreadEntity<T> entity(EntityHandle<T> entity) const;
 
   [[nodiscard]] TaskHandle spawn_task(TaskCompletionCallback callback) const;
   [[nodiscard]] TaskHandle spawn_task(

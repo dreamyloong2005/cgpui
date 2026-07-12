@@ -85,6 +85,65 @@ void invoke_entity_to_entity_observer(
 } // namespace detail
 
 template <typename T>
+CrossThreadEntity<T> AsyncContextCapability::entity(
+    EntityHandle<T> entity) const {
+  if (context_ == nullptr || entity.empty() ||
+      !entity.matches_context(detail::entity_context_token(*context_)) ||
+      context_->read_entity(entity) == nullptr) {
+    return {};
+  }
+  return CrossThreadEntity<T>(
+      entity, context_->runtime.cross_thread_entity_queue_);
+}
+
+template <typename T>
+bool CrossThreadEntity<T>::read(
+    ReadCallback callback,
+    CrossThreadEntityAccessCompletion completion) const {
+  if (empty() || !callback) return false;
+  return detail::enqueue_cross_thread_entity_operation(
+      queue_,
+      [entity = entity_, callback = std::move(callback),
+       completion = std::move(completion)](
+          const WindowRuntimeContext& context) mutable {
+        CrossThreadEntityAccessStatus status =
+            CrossThreadEntityAccessStatus::context_mismatch;
+        if (entity.matches_context(detail::entity_context_token(context))) {
+          const T* value = context.read_entity(entity);
+          status = value == nullptr ? CrossThreadEntityAccessStatus::missing
+                                    : CrossThreadEntityAccessStatus::read;
+          if (value != nullptr) callback(*value, context);
+        }
+        if (completion) completion(status, context);
+      });
+}
+
+template <typename T>
+bool CrossThreadEntity<T>::update(
+    UpdateCallback callback,
+    CrossThreadEntityAccessCompletion completion) const {
+  if (empty() || !callback) return false;
+  return detail::enqueue_cross_thread_entity_operation(
+      queue_,
+      [entity = entity_, callback = std::move(callback),
+       completion = std::move(completion)](
+          const WindowRuntimeContext& context) mutable {
+        CrossThreadEntityAccessStatus status =
+            CrossThreadEntityAccessStatus::context_mismatch;
+        if (entity.matches_context(detail::entity_context_token(context))) {
+          const bool updated = context.update_entity(
+              entity,
+              [&](T& value, const WindowRuntimeContext&) {
+                callback(value, context);
+              });
+          status = updated ? CrossThreadEntityAccessStatus::updated
+                           : CrossThreadEntityAccessStatus::missing;
+        }
+        if (completion) completion(status, context);
+      });
+}
+
+template <typename T>
 void AppContext::set_global(T global_value) const {
   runtime.set_global<T>(std::move(global_value));
 }

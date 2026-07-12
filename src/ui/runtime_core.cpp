@@ -1,5 +1,6 @@
 #include "ui_internal.hpp"
 #include "runtime_async_io_internal.hpp"
+#include "runtime_cross_thread_entity_internal.hpp"
 #include "runtime_task_pool_internal.hpp"
 #include "runtime_task_group_internal.hpp"
 
@@ -12,6 +13,8 @@ WindowRuntime::WindowRuntime(
     : application_(application),
       view_(view),
       renderer_factory_(std::move(renderer_factory)),
+      cross_thread_entity_queue_(
+          std::make_shared<detail::CrossThreadEntityQueueState>(*this)),
       async_io_registry_(std::make_unique<RuntimeAsyncIoRegistry>()),
       task_pool_(std::make_unique<RuntimeTaskPool>()),
       task_group_store_(std::make_unique<RuntimeTaskGroupStore>()) {

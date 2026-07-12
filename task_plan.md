@@ -1300,6 +1300,12 @@ Windows/Linux core API is stable enough for parity work.
   threadpool-timer and Wayland timerfd tests freeze platform wake/cancel paths;
   dedicated structure coverage freezes all production leaves, inventories,
   registrations, and existing broad-file caps.
+- Completed: Phase G Step 641 adds explicit CrossThreadEntity<T> read and update queueing through AsyncContextCapability, executing FIFO worker-thread submissions on the owning runtime thread with context isolation, missing-entity status, concurrent safety, and shutdown detachment. Step 642 async runtime production closeout audit is next.
+- Step 641 evidence: focused behavior proves worker-thread FIFO read/update
+  dispatch, 16 concurrent submissions serialized on the runtime thread,
+  callback-scoped reads, foreign-context rejection, missing status after entity
+  deletion, and post-shutdown enqueue rejection; dedicated structure coverage
+  freezes public/template/private ownership and broad-file caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1315,6 +1321,11 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 641 structure guard returned 8 because the prior guard splits the Step 641 handoff across adjacent C++ literals | Step 641 historical handoff assertion | Match the stable first source literal while retaining the exact full completion sentence across the five authority documents |
+| The first Step 641 seven-target regression passed 6/7; `ui_source_structure_test` returned 100 because the private runtime header reached 261 lines | Step 641 global structure regression | Keep wakeup and cross-thread drain declarations on the existing orchestration line, restoring the frozen 260-line cap without moving implementation into the header |
+| The first Step 641 queue forward-declaration patch had an empty hunk before a second file marker and was rejected | Step 641 private queue declaration | Reissue the two exact line replacements as a valid multi-file patch |
+| Step 641 lifecycle reconnaissance guessed nonexistent `src/ui/runtime_lifecycle.cpp` | Step 641 queue lifetime audit | Locate the constructor and destructor definitions by symbol search before selecting focused initialization/shutdown leaves |
+| Step 641 reconnaissance guessed nonexistent `tests/ui/window_runtime_entity_handle_token_test.cpp` | Step 641 entity boundary audit | Enumerate the actual token/entity tests with `rg --files` and read the focused runtime/entity sources rather than deriving filenames |
 | The first Step 640 structure/inventory patch expected the longer set-rundir Xmake target template and was atomically rejected | Step 640 structure guard registration | Re-read the exact compact Step 639 target block and apply the inventory, target, guard, and planning changes as focused patches |
 | The Step 638 dedicated structure guard exited 10 after all API, parent/child ownership, recursive state/cancellation, behavior, inventory, Xmake, and line-cap assertions passed | Step 638 authority-document RED | Synchronize the five authority documents, public vocabulary/core parity, and Step 639 handoff |
 | Step 638 focused regression passed 6/7 because the historical Step 637 guard still required completion aggregation in the membership source after the propagation split | Step 638 structure regression | Require `std::ranges::all_of` in the focused propagation leaf while preserving Step 637 membership and cancellation evidence |

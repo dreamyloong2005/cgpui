@@ -11234,3 +11234,33 @@
   behavior tests, global UI/platform source inventories, Xmake registrations,
   frozen line budgets, five authority documents, and the Step 641 handoff.
 - Phase G Step 640 integrates runtime timers with platform monotonic clocks and nearest-deadline delayed wakeups on Win32 and Wayland, preserving deterministic time advancement, cancellation, repeating cadence, and zero-delay compatibility. Step 641 cross-thread entity access production behavior is next.
+
+## 2026-07-12 Phase G Step 641 Cross-Thread Entity Access Design
+
+- Existing entity reads and updates return or mutate direct pointers in typed
+  runtime stores. Those stores are runtime-owned and unsynchronized, so making
+  existing `EntityHandle::read/update` callable from worker threads would expose
+  pointer lifetime and data-race hazards.
+- Existing background work already has the correct delivery primitive: worker
+  code runs in the bounded pool while completion callbacks are drained on the
+  runtime thread. Step 641 should expose an explicit copyable cross-thread
+  entity reference that queues typed read/update closures and resolves them on
+  the runtime thread instead of sharing entity pointers across threads.
+- `window_runtime.hpp` is already 259/260 lines, so Step 641 should not add a
+  broad public runtime method. A focused `CrossThreadEntity<T>` leaf created by
+  `AsyncContextCapability::entity(...)` keeps authoring in the intended async
+  boundary while an opaque shared queue state handles lifetime detachment.
+- Cross-thread read callbacks must receive a callback-scoped `const T&` only on
+  the runtime thread; update callbacks receive `T&` only on that thread. The
+  queued result must distinguish read, updated, missing, and context mismatch,
+  while enqueue itself returns false after runtime detachment.
+- The focused behavior test proves a worker-submitted FIFO read/update/read
+  sequence observes 5 then 9, every operation and status callback runs on the
+  runtime thread, a follow-on read after deletion reports `missing`, a foreign
+  context token cannot create an access handle, and shutdown rejects enqueue.
+- A 16-worker concurrent update burst is accepted through the same handle and
+  produces the exact serialized value 25 on the runtime thread. The dedicated
+  structure guard freezes the public/template/private ownership boundary,
+  queue synchronization, wakeup and shutdown integration, behavior evidence,
+  global inventory, and broad-file budgets before the Step 642 closeout.
+- Phase G Step 641 adds explicit CrossThreadEntity<T> read and update queueing through AsyncContextCapability, executing FIFO worker-thread submissions on the owning runtime thread with context isolation, missing-entity status, concurrent safety, and shutdown detachment. Step 642 async runtime production closeout audit is next.

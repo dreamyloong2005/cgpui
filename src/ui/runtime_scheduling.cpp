@@ -106,6 +106,7 @@ void WindowRuntime::handle_wakeup() {
   sync_platform_time();
   drain_async_io_completions();
   drain_task_completions();
+  drain_cross_thread_entity_operations();
   fire_due_timers();
   drain_deferred_callbacks();
   handling_wakeup_ = false;

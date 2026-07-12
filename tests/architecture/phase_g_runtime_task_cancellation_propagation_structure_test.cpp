@@ -123,8 +123,8 @@ int main() {
       contains(core_parity, "Cancellation propagation depth") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 641 cross-thread entity access "
-          "production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 642 async runtime production "
+          "closeout audit\"")) {
     return 11;
   }
   return 0;

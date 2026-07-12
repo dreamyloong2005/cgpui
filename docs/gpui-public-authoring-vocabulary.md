@@ -41,6 +41,7 @@ directly just to access these names.
 
 - `EntityHandle<T>`
 - `WeakEntity<T>`
+- `CrossThreadEntity<T>`
 - `ViewHandle<T>`
 - `WeakViewHandle<T>`
 

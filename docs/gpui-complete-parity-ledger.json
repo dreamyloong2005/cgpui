@@ -3154,7 +3154,27 @@
       "xmake.lua"
     ],
     "phase_g_step_640_remaining_gap": "Step 641 cross-thread entity access production behavior",
-    "phase_f_current_handoff": "Step 641 cross-thread entity access production behavior"
+    "phase_g_step_641_surface": "Phase G Step 641 adds explicit CrossThreadEntity<T> read and update queueing through AsyncContextCapability, executing FIFO worker-thread submissions on the owning runtime thread with context isolation, missing-entity status, concurrent safety, and shutdown detachment. Step 642 async runtime production closeout audit is next.",
+    "phase_g_step_641_sources": [
+      "include/cgpui/ui/cross_thread_entity.hpp",
+      "include/cgpui/ui/async_context.hpp",
+      "include/cgpui/ui/runtime_templates.hpp",
+      "include/cgpui/ui/window_runtime.hpp",
+      "src/ui/window_runtime_internal.hpp",
+      "src/ui/runtime_cross_thread_entity_internal.hpp",
+      "src/ui/runtime_cross_thread_entity_queue.cpp",
+      "src/ui/runtime_cross_thread_entity.cpp",
+      "src/ui/runtime_core.cpp",
+      "src/ui/runtime_scheduling.cpp",
+      "src/ui/runtime_shutdown.cpp",
+      "tests/async/runtime_cross_thread_entity_access_test.cpp",
+      "tests/architecture/phase_g_runtime_cross_thread_entity_access_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_641_remaining_gap": "Step 642 async runtime production closeout audit",
+    "phase_f_current_handoff": "Step 642 async runtime production closeout audit"
   },
   "categories": [
     "application_and_app_context",

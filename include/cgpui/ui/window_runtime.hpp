@@ -23,7 +23,7 @@
 #include <utility>
 #include <vector>
 
-namespace cgpui {
+namespace cgpui { namespace detail { class CrossThreadEntityQueueState; }
 
 struct AppRunnerOptions {
   WindowDescriptor window;

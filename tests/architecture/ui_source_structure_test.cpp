@@ -62,6 +62,7 @@ int main() {
       "include/cgpui/ui/accessibility.hpp",
       "include/cgpui/ui/paint.hpp",
       "include/cgpui/ui/async_context.hpp",
+      "include/cgpui/ui/cross_thread_entity.hpp",
       "include/cgpui/ui/test_context.hpp",
       "include/cgpui/ui/render.hpp",
       "include/cgpui/ui/element_context.hpp",
@@ -408,6 +409,7 @@ int main() {
   if (!contains(ui_header, "#include \"cgpui/ui/paint.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/action.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/async_context.hpp\"") ||
+      !contains(ui_header, "#include \"cgpui/ui/cross_thread_entity.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/test_context.hpp\"") ||
       !contains(ui_header, "#include \"cgpui/ui/uniform_list.hpp\"") ||
       !contains(ui_header,
@@ -921,6 +923,8 @@ int main() {
       read_source("include/cgpui/ui/runtime_input_state.hpp");
   const std::string async_context_header =
       read_source("include/cgpui/ui/async_context.hpp");
+  const std::string cross_thread_entity_header =
+      read_source("include/cgpui/ui/cross_thread_entity.hpp");
   const std::string test_context_header =
       read_source("include/cgpui/ui/test_context.hpp");
   const std::string element_context_header =
@@ -974,6 +978,12 @@ int main() {
       !contains(async_context_header,
                 "Result<TaskHandle> try_spawn_background_task(") ||
       !contains(async_context_header, "void batch_updates(") ||
+      !contains(async_context_header, "CrossThreadEntity<T> entity(") ||
+      !contains(cross_thread_entity_header, "class CrossThreadEntity") ||
+      !contains(cross_thread_entity_header,
+                "enum class CrossThreadEntityAccessStatus") ||
+      !contains(cross_thread_entity_header,
+                "CrossThreadEntityAccessCompletion") ||
       !contains(test_context_header, "class TestContextCapability") ||
       !contains(test_context_header, "WindowRuntimeId runtime_id() const") ||
       !contains(test_context_header, "ViewInputState input_state() const") ||
@@ -1156,7 +1166,8 @@ int main() {
                 "EntityStore<T>& WindowRuntime::entity_store")) {
     return 20;
   }
-  if (line_count(runtime_types_header) > 220 ||
+  if (line_count(cross_thread_entity_header) > 90 ||
+      line_count(runtime_types_header) > 220 ||
       line_count(async_context_header) > 120 ||
       line_count(test_context_header) > 120 ||
       line_count(element_context_header) > 120 ||
@@ -1968,6 +1979,9 @@ int main() {
       "src/ui/runtime_scheduling.cpp",
       "src/ui/runtime_timers.cpp",
       "src/ui/runtime_timer_integration.cpp",
+      "src/ui/runtime_cross_thread_entity_internal.hpp",
+      "src/ui/runtime_cross_thread_entity_queue.cpp",
+      "src/ui/runtime_cross_thread_entity.cpp",
       "src/ui/runtime_animation_start.cpp",
       "src/ui/runtime_animation_state.cpp",
       "src/ui/runtime_animation_tick.cpp",
