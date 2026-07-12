@@ -89,6 +89,11 @@ struct RuntimeDiagnosticsSnapshot {
   std::size_t completed_task_count = 0;
   std::size_t cancelled_task_count = 0;
   std::size_t background_task_count = 0;
+  std::size_t task_pool_worker_count = 0;
+  std::size_t task_pool_queued_work_count = 0;
+  std::size_t task_pool_active_work_count = 0;
+  std::size_t task_pool_peak_active_work_count = 0;
+  std::size_t task_pool_completed_work_count = 0;
 };
 
 struct EntitySubscription {

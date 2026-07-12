@@ -1268,7 +1268,12 @@ Windows/Linux core API is stable enough for parity work.
 - Step 634 evidence: the audit-only closeout guard aggregates seven Linux
   AT-SPI behavior targets, seven modular structure guards, the Wayland source
   inventory, Xmake registrations, and the closed Steps 627-634 roadmap band.
-- In progress: Step 635 async task pool production depth.
+- Completed: Phase G Step 635 replaces per-task background threads with a bounded reusable runtime task pool, preserves runtime-thread completion dispatch and cancellation tokens, and reports worker, queue, activity, peak, and completion diagnostics. Step 636 async task priority production behavior is next.
+- Step 635 evidence: focused behavior proves bounded reusable workers, queue and
+  activity diagnostics, runtime-thread completion dispatch, and full drain;
+  dedicated structure coverage freezes ownership, shutdown ordering, source
+  inventory, Xmake registration, and removal of per-task worker threads.
+- In progress: Step 636 async task priority production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1284,6 +1289,14 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first 82-target dynamic handoff run passed 81/82; the Windows full-debug guard returned 4 because the three nested Windows/WSL/cross-platform aggregate assertions still inspected old Step 635 text in their downstream guards | Step 635 dynamic handoff chain | Advance the three nested aggregate assertions to Step 636 while preserving historical completion sentences |
+| The first Step 635 dedicated structure run exited 10 after all implementation, behavior, ownership, shutdown-order, diagnostics, inventory, Xmake, and line-cap assertions passed | Step 635 structure RED | Synchronize the exact Step 635 completion sentence across the five authority documents and advance the current handoff to Step 636 |
+| A Step 635 structure-template read guessed `phase_g_wayland_atspi_bus_discovery_structure_test.cpp`, but Step 632 uses `phase_g_wayland_atspi_bus_connection_structure_test.cpp` | Step 635 structure guard reconnaissance | Reuse the exact historical filename already referenced by the Step 633 guard instead of deriving a new name from the feature wording |
+| After restoring the internal-header cap, `ui_source_structure_test` returned 85 because its historical shutdown assertion still required per-task `task.worker.request_stop()` | Step 635 existing structure regression | Advance the structure invariant to require `task_pool_->shutdown()` and reject the removed per-task worker shutdown path |
+| The first Step 635 six-target regression passed all behavior tests but `ui_source_structure_test` returned 100 because the new pool forward declaration raised `window_runtime_internal.hpp` from 260 to 261 lines | Step 635 existing structure regression | Keep the adjacent private pool/task-diagnostics forward declarations on one line so the established 260-line internal-header cap remains green |
+| A Step 635 diagnostics-target `rg` expression used PowerShell double quotes around escaped parentheses and failed with a parser error | Step 635 regression target discovery | Use single-quoted or fixed-string searches for Xmake target declarations before running the regression group |
+| The first Step 635 task-pool behavior build failed because `RuntimeDiagnosticsSnapshot` had no pool worker/queue/activity/completion fields | Step 635 behavior RED | Add the focused bounded pool module, route background work through it, and expose its snapshot through the existing runtime diagnostics boundary |
+| A Step 635 aggregate-header search included nonexistent `include/cgpui/ui/prelude.hpp` and `include/cgpui/ui/ui.hpp` paths, so `rg` reported OS error 2 after the valid `runtime.hpp` match | Step 635 public boundary reconnaissance | Read the actual `include/cgpui/ui/runtime.hpp` aggregate and use `rg --files` before naming optional aggregate paths |
 | The first Step 634 closeout run exited 5 after all 14 behavior/structure target registrations and source-inventory assertions passed | Step 634 audit RED | Mark the Steps 627-634 roadmap band closed, synchronize the five authority documents, and advance the current handoff to Step 635 |
 | A Step 634 async-boundary search included the nonexistent `tests/async` directory and `rg` returned OS error 2 after reporting other matches | Step 634 handoff reconnaissance | Search existing UI/API test roots now; create the focused async test directory from Step 635 when its ownership boundary is defined |
 | The first Step 633 structure run exited 9 after behavior, ownership, ordering, inventory, Xmake, and line-cap assertions passed | Step 633 structure RED | Synchronize the five authority documents and advance the current handoff to Step 634 before rerunning GREEN |

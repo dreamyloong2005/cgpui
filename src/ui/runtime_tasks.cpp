@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include "runtime_task_pool_internal.hpp"
 
 namespace cgpui {
 
@@ -44,29 +45,19 @@ TaskHandle WindowRuntime::spawn_background_task(
     });
   }
 
-  std::jthread worker(
-      [this,
-       id,
-       cancellation_requested,
-       work = std::move(work)]() mutable {
+  const bool submitted = task_pool_->submit(
+      [this, id, cancellation_requested, work = std::move(work)]() mutable {
         try {
-          work(TaskCancellationToken(cancellation_requested));
+          if (!cancellation_requested->load()) {
+            work(TaskCancellationToken(cancellation_requested));
+          }
         } catch (...) {
         }
         (void)complete_task(id);
       });
-
-  {
-    std::lock_guard lock(tasks_mutex_);
-    const auto task = std::find_if(
-        tasks_.begin(),
-        tasks_.end(),
-        [id](const RuntimeTask& task) {
-          return task.id == id;
-        });
-    if (task != tasks_.end()) {
-      task->worker = std::move(worker);
-    }
+  if (!submitted) {
+    (void)cancel_task(id);
+    return {};
   }
 
   return TaskHandle(*this, id);

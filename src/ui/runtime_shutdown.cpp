@@ -1,9 +1,9 @@
 #include "ui_internal.hpp"
+#include "runtime_task_pool_internal.hpp"
 
 namespace cgpui {
 
 WindowRuntime::~WindowRuntime() {
-  std::vector<std::jthread> workers;
   {
     std::lock_guard lock(tasks_mutex_);
     for (RuntimeTask& task : tasks_) {
@@ -13,13 +13,10 @@ WindowRuntime::~WindowRuntime() {
       if (!task.completed) {
         task.cancelled = true;
       }
-      if (task.worker.joinable()) {
-        task.worker.request_stop();
-        workers.push_back(std::move(task.worker));
-      }
     }
     task_completion_queue_.clear();
   }
+  task_pool_->shutdown();
 }
 
 } // namespace cgpui

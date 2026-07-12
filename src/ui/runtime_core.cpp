@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include "runtime_task_pool_internal.hpp"
 
 namespace cgpui {
 
@@ -8,7 +9,8 @@ WindowRuntime::WindowRuntime(
     RendererFactory renderer_factory)
     : application_(application),
       view_(view),
-      renderer_factory_(std::move(renderer_factory)) {
+      renderer_factory_(std::move(renderer_factory)),
+      task_pool_(std::make_unique<RuntimeTaskPool>()) {
   view_registry_.insert_or_assign(
       root_view_id_.value,
       RegisteredView{.view = &view_});

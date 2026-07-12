@@ -1969,6 +1969,8 @@ int main() {
       "src/ui/runtime_animation_tick.cpp",
       "src/ui/runtime_animations.cpp",
       "src/ui/runtime_tasks.cpp",
+      "src/ui/runtime_task_pool_internal.hpp",
+      "src/ui/runtime_task_pool.cpp",
       "src/ui/runtime_task_results.cpp",
       "src/ui/runtime_task_state.cpp",
       "src/ui/runtime_diagnostic_snapshot.cpp",
@@ -2149,7 +2151,8 @@ int main() {
   }
   if (line_count(runtime_shutdown_source) > 70 ||
       !contains(runtime_shutdown_source, "WindowRuntime::~WindowRuntime(") ||
-      !contains(runtime_shutdown_source, "task.worker.request_stop(") ||
+      !contains(runtime_shutdown_source, "task_pool_->shutdown();") ||
+      contains(runtime_shutdown_source, "task.worker") ||
       contains(runtime_shutdown_source, "WindowRuntime::run(")) {
     return 85;
   }

@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include "runtime_task_pool_internal.hpp"
 
 namespace cgpui {
 
@@ -28,6 +29,7 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
     active_runtime_window_count += record.active ? 1U : 0U;
   }
   const RuntimeTaskDiagnostics task_counts = task_diagnostics();
+  const RuntimeTaskPool::Snapshot task_pool = task_pool_->snapshot();
 
   return RuntimeDiagnosticsSnapshot{
       .entity_store_count = entity_stores_.size(),
@@ -54,6 +56,11 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       .completed_task_count = task_counts.completed_task_count,
       .cancelled_task_count = task_counts.cancelled_task_count,
       .background_task_count = task_counts.background_task_count,
+      .task_pool_worker_count = task_pool.worker_count,
+      .task_pool_queued_work_count = task_pool.queued_work_count,
+      .task_pool_active_work_count = task_pool.active_work_count,
+      .task_pool_peak_active_work_count = task_pool.peak_active_work_count,
+      .task_pool_completed_work_count = task_pool.completed_work_count,
   };
 }
 

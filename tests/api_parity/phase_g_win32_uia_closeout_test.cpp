@@ -95,6 +95,6 @@ int main() {
     if (!contains(*document, completion)) return 6;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 635 async task pool production depth\"")) return 7;
+                "\"phase_f_current_handoff\": \"Step 636 async task priority production behavior\"")) return 7;
   return 0;
 }

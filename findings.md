@@ -11086,3 +11086,30 @@
   seven behavior targets, seven structure guards, source inventories, Xmake
   registrations, and the closed roadmap band without modifying production.
 - Phase G Step 634 audits and closes the Linux AT-SPI production band, freezing D-Bus object exposure, navigation, roles/states, text/value/focus events, accessibility-bus discovery, reconnect behavior, diagnostics, and modular source evidence. Step 635 async task pool production depth is next.
+
+## 2026-07-12 Phase G Step 635 Async Task Pool Design
+
+- Current background spawning creates one `std::jthread` per task and stores it
+  directly in `RuntimeTask`; there is no bounded queue or worker reuse.
+- Task-pool ownership should be a focused private UI runtime module. Existing
+  `WindowRuntime` task handles, cancellation tokens, runtime-thread completion
+  queue, and public spawn signatures remain the coordination surface.
+- Existing `RuntimeDiagnosticsSnapshot` is the appropriate public observation
+  boundary for worker, queued, active, peak-active, and completed pool work.
+- Priorities, structured task groups, cancellation propagation depth, async I/O
+  hooks, timer integration, and cross-thread entity access remain their named
+  Steps 636-642 rather than being folded into the pool primitive.
+- Resume review confirms the patch preserves the intended ownership boundary:
+  `RuntimeTaskPool` is a focused private module, `RuntimeTask` no longer owns a
+  thread, and public scheduling signatures remain unchanged. Shutdown first
+  marks task cancellation, then joins reusable pool workers while queued work
+  skips cancelled user callbacks but still routes runtime completion safely.
+- The Step 635 structure guard should follow the established Phase G pattern:
+  verify implementation and test evidence first, freeze focused line caps and
+  Xmake/source inventory, then require one exact completion sentence in the
+  roadmap, Markdown/JSON ledgers, task plan, and findings before allowing the
+  global handoff to advance to Step 636.
+- Phase G Step 635 replaces per-task background threads with a bounded reusable runtime task pool, preserves runtime-thread completion dispatch and cancellation tokens, and reports worker, queue, activity, peak, and completion diagnostics. Step 636 async task priority production behavior is next.
+- Final review tightened the behavior oracle from “at least one completion
+  callback” to “exactly one completion callback per submitted task,” so full
+  runtime completion-queue drain is directly proven rather than inferred.

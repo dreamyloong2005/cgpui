@@ -23126,3 +23126,36 @@
   guard is 121 lines; `git diff --check` succeeds; and no production source
   file changed in this closeout slice.
 - Phase G Step 634 audits and closes the Linux AT-SPI production band, freezing D-Bus object exposure, navigation, roles/states, text/value/focus events, accessibility-bus discovery, reconnect behavior, diagnostics, and modular source evidence. Step 635 async task pool production depth is next.
+
+## 2026-07-12 Phase G Step 635 Async Task Pool
+
+- Started from committed Step 634 at `5acc6709` with only unrelated untracked
+  `.vscode/` present.
+- Added a focused async behavior target that submits more work than the worker
+  count and requires bounded concurrency, queued/active/peak diagnostics,
+  worker reuse, runtime-thread completion dispatch, and full drain.
+- Resumed after context handoff and confirmed the focused task-pool patch is
+  present in the worktree. Implementation review and first focused compile/run
+  remain the immediate Step 635 verification work.
+- The first GREEN candidate passes `phase_g_runtime_task_pool_test/default`
+  1/1 on Windows, proving bounded reusable workers, queue/active/peak/completed
+  diagnostics, runtime-thread completion dispatch, and full task drain.
+- Existing async scheduling, Result conventions, runtime diagnostics, wakeup,
+  and UI structure regressions pass 6/6 after advancing the historical
+  shutdown invariant from per-task workers to pool shutdown.
+- Added the dedicated Step 635 structure guard and UI source inventory entries.
+  Its first run exits 10 at the expected authority-document RED after all code,
+  behavior, shutdown-order, diagnostics, Xmake, inventory, and line-cap checks.
+- Synchronized the five authority documents, advanced all 82 dynamic handoff
+  guards plus the three nested Windows/WSL/cross-platform aggregate assertions
+  to Step 636, and verified the complete Windows handoff chain at 82/82.
+- Final focused verification passes Windows 7/7 and Arch Linux WSL 7/7 after
+  tightening completion callback coverage to require one callback per task.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 82 handoff guards plus the JSON ledger point
+  to Step 636 with zero stale Step 635 dynamic handoffs; JSON parses with 11
+  Step 635 source entries; pool header/source, task source, shutdown source,
+  runtime internal header, diagnostics header/source, behavior test, and
+  structure guard are 49/100/141/22/260/124/94/122/135 lines; and
+  `git diff --check` succeeds.
+- Phase G Step 635 replaces per-task background threads with a bounded reusable runtime task pool, preserves runtime-thread completion dispatch and cancellation tokens, and reports worker, queue, activity, peak, and completion diagnostics. Step 636 async task priority production behavior is next.
