@@ -2751,7 +2751,20 @@
       "xmake.lua"
     ],
     "phase_f_step_610_remaining_gap": "Step 611 Windows full-debug verification",
-    "phase_f_current_handoff": "Step 611 Windows full-debug verification"
+    "phase_f_step_611_surface": "Phase F Step 611 completes Windows full-debug verification at 338/338 after restoring deferred child-window fixtures, child renderer result coverage, extracted pointer-input ownership, and existing source caps. Step 612 WSL full-debug verification is next.",
+    "phase_f_step_611_sources": [
+      "tests/api_parity/app_window_context_test.cpp",
+      "tests/api_parity/renderer_result_conventions_test.cpp",
+      "src/platform/win32/win32_window_internal.hpp",
+      "src/platform/win32/win32_application.cpp",
+      "src/platform/linux/wayland_application_lifecycle.cpp",
+      "tests/architecture/phase_f_wayland_pointer_motion_structure_test.cpp",
+      "tests/architecture/phase_f_child_window_ownership_structure_test.cpp",
+      "tests/architecture/phase_f_windows_full_debug_verification_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_611_remaining_gap": "Step 612 WSL full-debug verification",
+    "phase_f_current_handoff": "Step 612 WSL full-debug verification"
   },
   "categories": [
     "application_and_app_context",

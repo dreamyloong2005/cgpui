@@ -120,6 +120,16 @@ class FakeApplication final : public cgpui::PlatformApplication {
     return std::unique_ptr<cgpui::PlatformWindow>(new BorrowedWindow(window_));
   }
 
+  cgpui::Result<std::unique_ptr<cgpui::PlatformWindow>> create_child_window(
+      const cgpui::WindowDescriptor& descriptor,
+      cgpui::PlatformWindow&,
+      cgpui::PlatformEventCallback callback) override {
+    create_window_count += 1;
+    last_descriptor = descriptor;
+    child_window_callback = std::move(callback);
+    return std::unique_ptr<cgpui::PlatformWindow>(new BorrowedWindow(window_));
+  }
+
   int run() override {
     run_count += 1;
     if (window_.callback) {
@@ -135,6 +145,7 @@ class FakeApplication final : public cgpui::PlatformApplication {
   int quit_count = 0;
   int run_result = 0;
   cgpui::WindowDescriptor last_descriptor;
+  cgpui::PlatformEventCallback child_window_callback;
 
  private:
   class BorrowedWindow final : public cgpui::PlatformWindow {

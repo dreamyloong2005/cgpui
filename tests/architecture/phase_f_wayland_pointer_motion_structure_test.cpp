@@ -50,6 +50,8 @@ int main() {
       read_source("src/ui/runtime_event_input.cpp");
   const std::string runtime_windows =
       read_source("src/ui/runtime_event_windows.cpp");
+  const std::string runtime_record_input =
+      read_source("src/ui/runtime_window_input_state.cpp");
   const std::string wayland_behavior =
       read_source("tests/platform/wayland_pointer_motion_test.cpp");
   const std::string runtime_behavior =
@@ -66,7 +68,8 @@ int main() {
   const std::string* required[]{
       &event_pointer, &event_platform, &application_pointer, &window_api,
       &window_bridge, &window_events, &event_kind, &event_pointer_internal,
-      &runtime_input, &runtime_windows, &wayland_behavior, &runtime_behavior,
+      &runtime_input, &runtime_windows, &runtime_record_input, &wayland_behavior,
+      &runtime_behavior,
       &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -95,7 +98,8 @@ int main() {
       !contains(runtime_input, "std::get_if<PointerExited>") ||
       !contains(runtime_input, "hovered_element_id_.reset()") ||
       !contains(runtime_input, "CursorShape::default_arrow") ||
-      !contains(runtime_windows, "std::get_if<PointerExited>")) {
+      !contains(runtime_windows, "update_input_state_for_record(record, event)") ||
+      !contains(runtime_record_input, "pointer_position_for(event)")) {
     return 5;
   }
   if (!contains(wayland_behavior, "request_pointer_enter(10, 20)") ||
@@ -131,7 +135,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 611 Windows full-debug verification")) {
+                "\"phase_f_current_handoff\": \"Step 612 WSL full-debug verification")) {
     return 10;
   }
   return 0;

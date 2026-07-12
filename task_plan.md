@@ -1157,7 +1157,11 @@ Windows/Linux core API is stable enough for parity work.
 - Completed: Phase F Step 610 audits and closes the Steps 603-609 platform diagnostics and stress band, freezing window churn, clipboard ownership, drag cancellation, IME, scale, timer, and task evidence. Step 611 Windows full-debug verification is next.
 - Step 610 evidence: the audit-only guard aggregates all seven behavior slices,
   their dedicated structure guards, and the complete Xmake target inventory.
-- In progress: Step 611 Windows full-debug verification.
+- Completed: Phase F Step 611 completes Windows full-debug verification at 338/338 after restoring deferred child-window fixtures, child renderer result coverage, extracted pointer-input ownership, and existing source caps. Step 612 WSL full-debug verification is next.
+- Step 611 evidence: the exact ten-failure regression group passes 10/10,
+  the real Unicode clipboard retry passes 1/1, and the final complete Windows
+  debug suite passes 338/338.
+- In progress: Step 612 WSL full-debug verification.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1187,6 +1191,11 @@ Windows/Linux core API is stable enough for parity work.
 | First Step 593 structure RED configure stopped on transient Ninja package filelock | Step 593 structure RED | Rerun the newly registered `/default` target after the configure process exits |
 | First Step 593 implementation patch was atomically rejected on the UI structure-cap hunk | Step 593 GREEN implementation | Split production/state edits from exact structure-inventory and line-cap edits |
 | First Step 593 RED launch stopped before compilation with transient `cannot create filelock for package(ninja)` | Step 593 focused RED | Let the configure process exit, then rerun the registered `/default` target separately |
+| First Step 611 full-debug launch used a nested PowerShell command, expanded `$LASTEXITCODE` in the outer shell, and also hit the user-level Ninja package lock | Step 611 Windows full-debug verification | Record the failure, avoid nested shell quoting, and run the already-approved direct `xmake f` then `xmake test` commands separately |
+| First completed Step 611 Windows full suite passed 328/338 with two behavior and eight structure failures | Step 611 Windows full-debug verification | Re-run the exact ten failures serially to separate deterministic regressions from full-suite parallel interference before changing production or guards |
+| Serial Step 611 rerun reproduced all ten failures; eight structure targets fail their existing line caps, `app_window_context_test` exits 2, and `renderer_result_conventions_test` exits 9 | Step 611 Windows full-debug verification | Measure each cap overage and trace the two behavior paths; restore modular ownership and result semantics without relaxing structure limits |
+| Post-repair Step 611 full suite passed 337/338 with only `win32_clipboard_unicode_test/default` failing | Step 611 Windows full-debug verification | Re-run the real system clipboard target alone, then require another complete 338/338 pass before closing the step |
+| First Step 611 bulk handoff rewrite used an over-escaped Node one-liner and failed before editing | Step 611 documentation closeout | Use PowerShell/.NET exact literal replacement over only files returned by `rg -l` for the `phase_f_current_handoff` key |
 | Step 593 looked for a nonexistent `include/cgpui/core/result.hpp` | Step 593 error-policy audit | Use the actual owner `include/cgpui/core/error.hpp`, where `Result<T>` and `ErrorCode` are defined |
 | A Step 593 `rg` target lookup used an over-escaped regex and failed with an unclosed group | Step 593 registered-test lookup | Use fixed-string lookup or search the target name without regex punctuation |
 | Step 593 guessed `tests/ui/platform_service_result_conventions_test.cpp`, which does not exist | Step 593 reference test read | Resolve the registered target source through `rg`/`xmake.lua` before reading it |

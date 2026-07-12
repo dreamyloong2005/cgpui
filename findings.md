@@ -10738,3 +10738,14 @@
 - The closeout remains audit-only: aggregate the seven guards and all behavior
   targets without introducing another diagnostic state or runtime pathway.
 - Phase F Step 610 audits and closes the Steps 603-609 platform diagnostics and stress band, freezing window churn, clipboard ownership, drag cancellation, IME, scale, timer, and task evidence. Step 611 Windows full-debug verification is next.
+
+## 2026-07-12 Phase F Step 611 Windows Full-Debug Verification
+
+- The full Windows gate exposed stale test fixtures after deferred child-window
+  activation, seven existing source-cap regressions, one missed dynamic handoff,
+  and one structure assertion that still named the pre-extraction input owner.
+- The repairs preserve current production semantics: child creation remains
+  deferred until the root is active, renderer failure is exercised while the
+  parent is active, and pointer-exit position dispatch remains owned by the
+  shared pointer helper plus the record-input leaf.
+- Phase F Step 611 completes Windows full-debug verification at 338/338 after restoring deferred child-window fixtures, child renderer result coverage, extracted pointer-input ownership, and existing source caps. Step 612 WSL full-debug verification is next.

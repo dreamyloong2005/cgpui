@@ -10,9 +10,7 @@ int WaylandApplication::run() {
       windows_);
 }
 
-void WaylandApplication::request_wakeup() {
-  wayland_request_wakeup(wakeup_pipe_[1]);
-}
+void WaylandApplication::request_wakeup() { wayland_request_wakeup(wakeup_pipe_[1]); }
 
 void WaylandApplication::quit() {
   running_.store(false);

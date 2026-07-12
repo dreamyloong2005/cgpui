@@ -22583,3 +22583,34 @@
 - JSON parsing, five-document completion phrase, 59 Step 611 handoffs, zero
   stale Step 610 handoffs, 76-line closeout guard, and `git diff --check` pass.
   WSL full debug remains scheduled for the final verification band.
+
+## 2026-07-12 Phase F Step 611 Windows Full-Debug Verification
+
+- Committed Step 610 as `c868393f test: close platform diagnostics stress band`.
+- The first Windows full-debug launch did not reach tests: nested PowerShell
+  expanded `$LASTEXITCODE` in the outer shell and Xmake also reported the
+  known transient user-level Ninja package lock. The retry uses direct,
+  separately approved `xmake f` and `xmake test` commands.
+- Direct debug configuration and the complete build succeeded. The first full
+  run passed 328/338; the ten failures are being rerun serially before any
+  production or structure change is made.
+- Serial rerun reproduced all ten failures. Eight are existing line-count
+  structure caps; the behavior exits are `app_window_context_test=2` and
+  `renderer_result_conventions_test=9`. Step 611 therefore requires a focused
+  modular/behavior repair before it can record a green Windows gate.
+- Repaired the two stale behavior fixtures, restored all existing source caps,
+  corrected the extracted pointer-input ownership assertion, and advanced the
+  missed child-window dynamic handoff. The exact ten-target group passes 10/10.
+- The next complete run passed 337/338; only the real system
+  `win32_clipboard_unicode_test/default` failed, so the clipboard target and
+  then the full suite must be rerun before Step 611 can close.
+- The isolated Unicode clipboard retry passes 1/1 and the final complete
+  Windows debug suite passes 338/338.
+- Added the Step 611 audit guard for the repaired fixture semantics, source
+  caps, pointer-input ownership, and WSL handoff.
+- Phase F Step 611 completes Windows full-debug verification at 338/338 after restoring deferred child-window fixtures, child renderer result coverage, extracted pointer-input ownership, and existing source caps. Step 612 WSL full-debug verification is next.
+- Final post-audit verification passes 14/14 focused and 339/339 complete
+  Windows tests, including all 61 Step 612 dynamic handoff guards.
+- JSON parsing, six-document completion phrase, 61 Step 612 handoffs, zero
+  stale Step 611 handoffs, 69-line audit guard, source caps, and
+  `git diff --check` pass.

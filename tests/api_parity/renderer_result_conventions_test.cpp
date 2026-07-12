@@ -1,6 +1,7 @@
 #include "cgpui/cgpui.hpp"
 
 #include <expected>
+#include <functional>
 #include <memory>
 #include <string_view>
 #include <type_traits>
@@ -75,12 +76,16 @@ class RendererResultApplication final : public cgpui::PlatformApplication {
         new BorrowedWindow(window_));
   }
 
-  int run() override { return 0; }
+  int run() override {
+    if (run_callback) run_callback();
+    return 0;
+  }
   void quit() override {}
 
   int create_window_count = 0;
   cgpui::WindowDescriptor last_descriptor{};
   cgpui::PlatformEventCallback window_callback;
+  std::function<void()> run_callback;
 
  private:
   class BorrowedWindow final : public cgpui::PlatformWindow {
@@ -234,13 +239,21 @@ int test_try_open_window_reuses_renderer_result_conventions() {
       [&](const cgpui::RenderSurfaceDescriptor&)
           -> cgpui::Result<cgpui::Renderer*> {
         factory_count += 1;
-        return nullptr;
+        return factory_count == 1
+            ? cgpui::Result<cgpui::Renderer*>{&fixture.renderer}
+            : cgpui::Result<cgpui::Renderer*>{nullptr};
       });
   const std::size_t record_count_before =
       runtime.window_runtime_records().size();
-
-  cgpui::Result<cgpui::AppOpenedWindow> opened =
-      runtime.try_open_window(cgpui::WindowOptions{}.title("No Renderer"));
+  cgpui::Result<cgpui::AppOpenedWindow> opened = std::unexpected(cgpui::Error{});
+  fixture.app.run_callback = [&] {
+    opened = runtime.try_open_window(
+        cgpui::WindowOptions{}.title("No Renderer"));
+  };
+  if (runtime.run(cgpui::WindowDescriptor{},
+                  {.request_initial_redraw = false}) != 0) {
+    return 12;
+  }
 
   if (opened.has_value()) {
     return 9;
@@ -251,7 +264,7 @@ int test_try_open_window_reuses_renderer_result_conventions() {
           "Renderer factory returned an empty child renderer") {
     return 10;
   }
-  if (fixture.app.create_window_count != 1 || factory_count != 1 ||
+  if (fixture.app.create_window_count != 2 || factory_count != 2 ||
       !runtime.app_opened_windows().empty() ||
       runtime.window_runtime_records().size() != record_count_before) {
     return 11;

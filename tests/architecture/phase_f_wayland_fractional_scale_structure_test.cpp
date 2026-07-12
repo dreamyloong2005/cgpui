@@ -102,7 +102,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 611 Windows full-debug verification")) {
+                "\"phase_f_current_handoff\": \"Step 612 WSL full-debug verification")) {
     return 9;
   }
   return 0;

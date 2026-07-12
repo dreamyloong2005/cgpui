@@ -32,8 +32,7 @@ class Win32Window final
   void request_close() override;
   void set_title(std::string_view title) override;
   void set_cursor(CursorShape cursor_shape) override;
-  [[nodiscard]] PlatformPointerCaptureState
-  pointer_capture_state() const override;
+  [[nodiscard]] PlatformPointerCaptureState pointer_capture_state() const override;
   void set_pointer_capture(bool captured) override;
   void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) override;
