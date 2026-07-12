@@ -22430,3 +22430,26 @@
 - JSON parsing, five-document unique completion phrase, 53 Step 605 handoffs,
   zero stale Step 604 handoffs, 95/36/59/89/93/47/72 line budgets, and
   `git diff --check` pass. WSL full debug remains batched.
+
+## 2026-07-12 Phase F Step 605 Drag-And-Drop Cancellation Diagnostics And Stress
+
+- Started from committed Step 604 at `0f281ea6`; only unrelated untracked
+  `.vscode/` remains outside the Step 605 work.
+- Added a compatible `PlatformDiagnosticEvent::cancelled` field and mapped
+  runtime `DragExited` diagnostics to cancelled/unsuccessful while preserving
+  successful entered, updated, and dropped reporting.
+- Added a focused 64-cycle enter/exit stress target. Its bounded 32-event tail
+  verifies sequences 97-128, sixteen cancellations, matching success flags,
+  and one payload value per event.
+- Added the dedicated Step 605 structure guard. It reached the intended
+  five-document RED at exit 7 after production mapping, behavior evidence,
+  prior-step linkage, Xmake registration, and line budgets passed.
+- Phase F Step 605 marks drag exits as cancelled runtime diagnostics, preserves successful enter/drop reporting, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 606 IME diagnostics and stress production behavior is next.
+- Final Windows focused runtime/drag/structure/header/ledger verification
+  passes 10/10.
+- Final WSL shared runtime, real Wayland cancellation, structure, header, and
+  ledger verification reuses `.build-wsl/master` plus `/dev/shm/cgpui` and
+  passes 12/12. WSL full debug remains batched.
+- JSON parsing, five-document completion phrase, 54 Step 606 handoffs, zero
+  stale Step 605 handoffs, 37/155/60/69/260 line budgets, and
+  `git diff --check` pass.

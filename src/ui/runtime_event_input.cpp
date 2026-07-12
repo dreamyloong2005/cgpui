@@ -35,13 +35,15 @@ void WindowRuntime::update_input_state_for_event(const PlatformEvent& event) {
       std::holds_alternative<DragUpdated>(event) ||
       std::holds_alternative<DragDropped>(event) ||
       std::holds_alternative<DragExited>(event)) {
+    const bool cancelled = std::holds_alternative<DragExited>(event);
     record_platform_diagnostic(PlatformDiagnosticEvent{
         .kind = PlatformDiagnosticKind::drag_drop,
         .event_kind = event_kind_for(event),
         .backend = "runtime",
         .operation = drag_drop_operation_for(event),
         .supported = true,
-        .succeeded = true,
+        .succeeded = !cancelled,
+        .cancelled = cancelled,
         .value_count = drag_drop_payload_value_count(event),
     });
   }

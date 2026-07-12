@@ -2687,7 +2687,16 @@
       "xmake.lua"
     ],
     "phase_f_step_604_remaining_gap": "Step 605 drag-and-drop cancellation diagnostics and stress production behavior",
-    "phase_f_current_handoff": "Step 605 drag-and-drop cancellation diagnostics and stress production behavior"
+    "phase_f_step_605_surface": "Phase F Step 605 marks drag exits as cancelled runtime diagnostics, preserves successful enter/drop reporting, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 606 IME diagnostics and stress production behavior is next.",
+    "phase_f_step_605_sources": [
+      "include/cgpui/platform/platform_diagnostics.hpp",
+      "src/ui/runtime_event_input.cpp",
+      "tests/ui/window_runtime_drag_drop_cancellation_diagnostics_test.cpp",
+      "tests/architecture/phase_f_drag_drop_cancellation_diagnostics_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_605_remaining_gap": "Step 606 IME diagnostics and stress production behavior",
+    "phase_f_current_handoff": "Step 606 IME diagnostics and stress production behavior"
   },
   "categories": [
     "application_and_app_context",

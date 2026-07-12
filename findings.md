@@ -10667,3 +10667,15 @@
 - The real compositor now verifies 64 continuous replacements, matching owned
   byte counts and ownership revisions, and final delivery of payload 63.
 - Phase F Step 604 reports current Wayland selection ownership, owned payload bytes, and ownership revisions through writer-serialized diagnostics, and verifies 64 continuous replacements serve the newest payload. Step 605 drag-and-drop cancellation diagnostics and stress production behavior is next.
+
+## 2026-07-12 Phase F Step 605 Drag-And-Drop Cancellation Diagnostics And Stress
+
+- Runtime drag diagnostics previously reported `DragExited` as successful and
+  had no compatible field distinguishing cancellation from ordinary failure.
+- The existing bounded platform diagnostic history is the correct ownership
+  boundary: add one defaulted public flag and derive both success and
+  cancellation from the focused runtime event variant without platform state.
+- Sixty-four enter/exit pairs produce 128 diagnostic events; the retained
+  32-event tail is sequences 97-128 with sixteen successful entered events and
+  sixteen unsuccessful cancelled exited events, each preserving one payload.
+- Phase F Step 605 marks drag exits as cancelled runtime diagnostics, preserves successful enter/drop reporting, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 606 IME diagnostics and stress production behavior is next.

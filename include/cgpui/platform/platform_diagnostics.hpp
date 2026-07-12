@@ -29,6 +29,7 @@ struct PlatformDiagnosticEvent {
   std::string operation;
   bool supported = true;
   bool succeeded = true;
+  bool cancelled = false;
   std::size_t value_count = 0;
   int sequence = 0;
 };

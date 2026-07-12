@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 605 drag-and-drop cancellation diagnostics and stress production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 606 IME diagnostics and stress production behavior")) {
     return 11;
   }
   return 0;
