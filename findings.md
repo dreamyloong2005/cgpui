@@ -11540,3 +11540,18 @@
   adding GIF recognition would otherwise have exceeded the established Step
   652 backend line cap. The old cap remains unchanged and green.
 - Phase G Step 653 adds bounded animated GIF decoding with complete composited RGBA8 frames, per-frame delays, finite and infinite loop metadata, structured pre-decode block scanning, and frame plus total-byte limits. Step 654 SVG asset decode boundary production behavior is next.
+
+## 2026-07-13 Phase G Step 654 SVG Asset Decode Boundary
+
+- Step 653 was committed as `ed09c7e0 feat: add animated gif decoding`;
+  unrelated `.vscode/` remains untracked.
+- Phase E already owns production LunaSVG rasterization, viewport limits,
+  recoloring, caching, and upload. Step 654 should add an encoded-asset parse
+  boundary and bridge into that implementation, not create another SVG engine.
+- Returning a raw `SvgRasterizationRequest` from a decoded asset would expose a
+  `string_view` lifetime hazard. A direct `rasterize_svg_asset(asset, options)`
+  bridge keeps the decoded source alive for the entire existing raster call.
+- Encoded-byte limits are checked before allocating the retained source string;
+  LunaSVG intrinsic width/height must be finite, positive, and within explicit
+  dimension/pixel limits before the asset becomes ready.
+- Phase G Step 654 adds bounded SVG asset decoding from AssetBytes with LunaSVG intrinsic-size validation and a lifetime-safe bridge into the existing viewport-aware, recolorable RGBA8 rasterization path. Step 655 asset cache key production behavior is next.

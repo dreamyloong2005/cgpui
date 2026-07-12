@@ -131,7 +131,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 654 SVG asset decode boundary production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 655 asset cache key production behavior\"")) {
     return 11;
   }
   return 0;

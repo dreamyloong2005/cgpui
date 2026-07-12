@@ -66,6 +66,8 @@ desktop integration surfaces remain separate future work.
   through a fixed, private stb_image backend with explicit status reporting.
   Animated GIF decoding preserves bounded composited RGBA8 frames, delays, and
   finite/infinite loop metadata after structured pre-decode block scanning.
+  Bounded SVG asset decoding validates intrinsic dimensions through LunaSVG
+  and bridges safely into the existing viewport-aware recolorable raster path.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -154,7 +156,7 @@ desktop integration surfaces remain separate future work.
 
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.
-- SVG asset decode integration, asset cache/reload invalidation, async loading,
+- Asset cache keys, reload invalidation, async loading,
   and final image/GIF public examples.
 - Rich text editing, selection handles, undo/redo stacks, complex shaping,
   bidi text, emoji/color glyphs, and platform input-method depth beyond the

@@ -134,6 +134,13 @@ remain outside this freeze.
 - `GifDecodeLimits`
 - `GifDecodeResult`
 - `decode_gif(...)`
+- `SvgAssetDecodeStatus`
+- `SvgAssetDecodeLimits`
+- `DecodedSvgAsset`
+- `SvgAssetDecodeResult`
+- `SvgAssetRasterizationOptions`
+- `decode_svg_asset(...)`
+- `rasterize_svg_asset(...)`
 
 Phase G Step 643 adds typed scalar from/to transitions over the existing
 deterministic animation scheduler. Direct runtime, runtime-context, and

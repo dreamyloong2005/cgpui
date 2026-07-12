@@ -1420,6 +1420,13 @@ Windows/Linux core API is stable enough for parity work.
   RGBA8 frame output, 50/100ms delays, finite/infinite Netscape loop metadata,
   generic GIF format routing, invalid input, screen, frame, and total-byte
   limits before backend allocation; structure coverage freezes source order.
+- Completed: Phase G Step 654 adds bounded SVG asset decoding from AssetBytes with LunaSVG intrinsic-size validation and a lifetime-safe bridge into the existing viewport-aware, recolorable RGBA8 rasterization path. Step 655 asset cache key production behavior is next.
+- Step 654 boundary: public asset decode/result/raster options live in a focused
+  renderer leaf; LunaSVG parse and the bridge to existing rasterization are
+  separate implementation leaves with no parser type in public headers.
+- Step 654 evidence: AssetBytes behavior proves intrinsic 2x1 parsing and exact
+  4x2 red RGBA8 output at 2x scale; empty, malformed, encoded-byte, intrinsic-
+  dimension, and absent-asset cases freeze bounded failure behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1435,6 +1442,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The synchronized Step 654 structure guard exited 9 because the core-parity sentence starts with uppercase `Bounded` | Step 654 authority verification | Match the exact core sentence casing; both vocabulary entries and JSON evidence were already present |
 | The synchronized Step 653 structure guard exited 10 because its compressed core-document phrase did not match the natural `Animated GIF decoding preserves bounded` wording | Step 653 authority verification | Match the exact core-parity wording; vocabulary and JSON sources/handoff were already present |
 | The synchronized Step 652 structure guard exited 9 because it searched for lowercase `signature-detected` while the core-parity sentence correctly begins with uppercase `Signature-detected` | Step 652 authority verification | Match the exact sentence casing; vocabulary and JSON evidence were already present |
 | Non-interactive Step 652 Xmake configuration prompted for stb installation with closed stdin; the `-y` retry then spawned many Git mirror processes without producing an installed package | Step 652 decoder dependency setup | Stop only the two Xmake processes started by the configuration, vendor `stb_image.h` from fixed upstream commit `28d546d5` with SHA-256 verification, and expose it only to `cgpui_renderer` |

@@ -3389,7 +3389,23 @@
       "xmake.lua"
     ],
     "phase_g_step_653_remaining_gap": "Step 654 SVG asset decode boundary production behavior",
-    "phase_f_current_handoff": "Step 654 SVG asset decode boundary production behavior"
+    "phase_g_step_654_surface": "Phase G Step 654 adds bounded SVG asset decoding from AssetBytes with LunaSVG intrinsic-size validation and a lifetime-safe bridge into the existing viewport-aware, recolorable RGBA8 rasterization path. Step 655 asset cache key production behavior is next.",
+    "phase_g_step_654_sources": [
+      "include/cgpui/renderer/svg_asset_decode.hpp",
+      "include/cgpui/renderer/svg_rasterization.hpp",
+      "include/cgpui/prelude.hpp",
+      "src/renderer/svg_asset_decode_lunasvg.cpp",
+      "src/renderer/svg_asset_rasterization.cpp",
+      "src/renderer/svg_rasterization.cpp",
+      "src/renderer/svg_rasterization_lunasvg.cpp",
+      "tests/assets/svg_asset_decode_test.cpp",
+      "tests/architecture/phase_g_svg_asset_decode_structure_test.cpp",
+      "tests/architecture/renderer_source_structure_test.cpp",
+      "tests/header_cleanliness/prelude_header_cleanliness.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_654_remaining_gap": "Step 655 asset cache key production behavior",
+    "phase_f_current_handoff": "Step 655 asset cache key production behavior"
   },
   "categories": [
     "application_and_app_context",

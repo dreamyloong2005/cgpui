@@ -14,6 +14,7 @@
 #include "cgpui/renderer/gif_decode.hpp"
 #include "cgpui/renderer/image_decode.hpp"
 #include "cgpui/renderer/renderer.hpp"
+#include "cgpui/renderer/svg_asset_decode.hpp"
 #include "cgpui/ui/element.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/scroll.hpp"

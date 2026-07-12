@@ -23857,3 +23857,24 @@
   matches, no public stb reference or `[DEBUG-*]` marker remains, all new C++
   lines are at most 100 columns, and `git diff --check` is clean. WSL remains
   unavailable, so no Linux result is claimed for this slice.
+
+## 2026-07-13 Phase G Step 654 SVG Asset Decode Boundary
+
+- Committed Step 653 as `ed09c7e0 feat: add animated gif decoding`; only
+  unrelated `.vscode/` remained untracked.
+- Added an `AssetBytes`-driven SVG decode/raster behavior test first. Its build
+  reached the intended RED because `cgpui/renderer/svg_asset_decode.hpp` did
+  not exist.
+- Implemented bounded LunaSVG asset parsing with retained source and intrinsic
+  size, plus a separate lifetime-safe bridge into the existing viewport,
+  recolor, RGBA8 rasterization path. Empty, malformed, encoded-byte, intrinsic-
+  dimension, and absent-asset cases have explicit outcomes.
+- Final Windows focused SVG asset/existing SVG/GIF/prelude/renderer verification
+  passes 7/7. The complete dynamic current-handoff chain builds and runs
+  101/101, and independent ledger, vocabulary, prelude, and renderer
+  regressions pass 4/4.
+- Final audits pass: the exact Step 654 completion sentence appears once in
+  each authority file, JSON parses with 12 present evidence sources, key files
+  are 53/55/18/78/128 lines, no public LunaSVG reference or `[DEBUG-*]` marker
+  remains, and `git diff --check` is clean. WSL remains unavailable, so no
+  Linux result is claimed for this slice.

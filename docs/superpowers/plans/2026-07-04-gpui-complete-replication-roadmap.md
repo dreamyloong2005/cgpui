@@ -1903,6 +1903,7 @@ apps rather than only demo windows.
 - [x] Phase G Step 651 adds root-confined file-backed AssetSource loading with binary and empty-file support, optional missing-file results, stable directory listing, canonical symlink escape protection, byte limits before allocation, and explicit invalid-path and I/O diagnostics. Step 652 PNG and JPEG decode boundary production behavior is next.
 - [x] Phase G Step 652 adds signature-detected PNG and JPEG decoding to RGBA8 bitmaps through a fixed stb_image backend, with explicit empty, unsupported, corrupt, decode-failure, dimension, pixel, stride, and decoded-byte statuses enforced before output allocation. Step 653 GIF decode boundary production behavior is next.
 - [x] Phase G Step 653 adds bounded animated GIF decoding with complete composited RGBA8 frames, per-frame delays, finite and infinite loop metadata, structured pre-decode block scanning, and frame plus total-byte limits. Step 654 SVG asset decode boundary production behavior is next.
+- [x] Phase G Step 654 adds bounded SVG asset decoding from AssetBytes with LunaSVG intrinsic-size validation and a lifetime-safe bridge into the existing viewport-aware, recolorable RGBA8 rasterization path. Step 655 asset cache key production behavior is next.
 - [x] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
 - [x] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree
