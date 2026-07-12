@@ -1130,7 +1130,11 @@ Windows/Linux core API is stable enough for parity work.
 - Step 603 evidence: the public snapshot reports all five lifecycle counts at
   root-only, active-child, deferred-retirement, and reclaimed baselines while
   the existing focused churn target remains within its 210-line budget.
-- In progress: Step 604 clipboard ownership diagnostics and stress production behavior.
+- Completed: Phase F Step 604 reports current Wayland selection ownership, owned payload bytes, and ownership revisions through writer-serialized diagnostics, and verifies 64 continuous replacements serve the newest payload. Step 605 drag-and-drop cancellation diagnostics and stress production behavior is next.
+- Step 604 evidence: the real compositor observes sixty-four continuous
+  selection replacements, monotonic ownership revisions, matching payload
+  byte counts, and final delivery of the newest payload.
+- In progress: Step 605 drag-and-drop cancellation diagnostics and stress production behavior.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform
@@ -1150,6 +1154,7 @@ Windows/Linux core API is stable enough for parity work.
 |-------|---------|------------|
 | The first Step 603 structure build hit a transient Ninja package file lock | Step 603 structure RED | Confirm no xmake/ninja process remained, then rebuild through the existing generated configuration |
 | The first Step 603 WSL unified session exited at 65% without a compiler diagnostic | Step 603 WSL focused gate | Confirm no process remained and resume the same cached target set with `-j 2`; the gate passed 10/10 |
+| The new Step 604 structure target hit the Ninja package lock twice inside the read-only user-cache sandbox | Step 604 structure RED | Run the approved `xmake build` outside the sandbox; the guard built and reached intended document RED exit 8 |
 | Step 596 root-redraw synchronization patch assumed one declaration per line in the compact frame-scheduling include | Step 596 root record consistency | Patch the existing comma-combined declaration format exactly and keep the helper in the focused scheduling leaf |
 | Step 596 structure-cap search again passed a wildcard path directly to `rg` on Windows | Step 596 public-record audit | Search the concrete architecture directory or exact structure file without shell wildcard arguments |
 | A Step 595 `rg` command passed a PowerShell wildcard path directly and Windows rejected it | Step 595 multi-window test inventory | Search the concrete `tests/ui` directory and filter filenames/results with `rg` instead of shell glob syntax |

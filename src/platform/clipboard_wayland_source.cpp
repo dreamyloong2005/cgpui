@@ -62,6 +62,7 @@ bool WaylandClipboard::Connection::write_text(std::string_view text) {
         wl_data_source_destroy(previous_source);
       }
       installed = true;
+      diagnostics_.record_ownership(true, text.size());
       record_diagnostics(
           WaylandClipboardOperation::write,
           WaylandClipboardFailure::none,

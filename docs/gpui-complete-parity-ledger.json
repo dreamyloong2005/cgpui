@@ -2675,7 +2675,19 @@
       "xmake.lua"
     ],
     "phase_f_step_603_remaining_gap": "Step 604 clipboard ownership diagnostics and stress production behavior",
-    "phase_f_current_handoff": "Step 604 clipboard ownership diagnostics and stress production behavior"
+    "phase_f_step_604_surface": "Phase F Step 604 reports current Wayland selection ownership, owned payload bytes, and ownership revisions through writer-serialized diagnostics, and verifies 64 continuous replacements serve the newest payload. Step 605 drag-and-drop cancellation diagnostics and stress production behavior is next.",
+    "phase_f_step_604_sources": [
+      "include/cgpui/platform/clipboard.hpp",
+      "src/platform/clipboard_wayland_diagnostics_internal.hpp",
+      "src/platform/clipboard_wayland_diagnostics.cpp",
+      "src/platform/clipboard_wayland_source.cpp",
+      "src/platform/clipboard_wayland_source_events.cpp",
+      "tests/platform/wayland_clipboard_ownership_test.cpp",
+      "tests/architecture/phase_f_clipboard_ownership_diagnostics_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_604_remaining_gap": "Step 605 drag-and-drop cancellation diagnostics and stress production behavior",
+    "phase_f_current_handoff": "Step 605 drag-and-drop cancellation diagnostics and stress production behavior"
   },
   "categories": [
     "application_and_app_context",

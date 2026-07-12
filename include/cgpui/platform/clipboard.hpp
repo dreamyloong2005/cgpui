@@ -58,6 +58,9 @@ struct WaylandClipboardDiagnostics {
   WaylandClipboardFailure failure = WaylandClipboardFailure::none;
   std::size_t bytes_transferred = 0;
   std::uint64_t revision = 0;
+  bool owns_selection = false;
+  std::size_t owned_payload_bytes = 0;
+  std::uint64_t ownership_revision = 0;
 };
 
 struct WaylandClipboardOptions {

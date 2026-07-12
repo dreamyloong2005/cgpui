@@ -69,8 +69,9 @@ int main() {
                 "#include \"wayland_test_clipboard_source_state.hpp\"") ||
       !contains(compositor, "clipboard_source.set_selection(") ||
       !contains(compositor, "clipboard_source.record_payload(")) return 5;
-  if (!contains(behavior, "first payload") ||
-      !contains(behavior, "second payload") ||
+  if (!contains(behavior, "index < 64") ||
+      !contains(behavior, "ownership_revision != index + 1") ||
+      !contains(behavior, "last_payload") ||
       !contains(behavior,
                 "clipboard_client_selection_replacement_was_continuous")) {
     return 6;
@@ -99,7 +100,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 604 clipboard ownership diagnostics and stress production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 605 drag-and-drop cancellation diagnostics and stress production behavior")) {
     return 11;
   }
   return 0;

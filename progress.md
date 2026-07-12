@@ -22404,3 +22404,29 @@
 - JSON parsing, five-document unique completion phrase, 52 Step 604 dynamic
   handoffs, zero stale Step 603 handoffs, 87/210/64/260 line budgets, and
   `git diff --check` pass. WSL full debug remains batched.
+
+## 2026-07-12 Phase F Step 604 Clipboard Ownership Diagnostics And Stress
+
+- Started from committed Step 603 at `5a87c44a`; only unrelated untracked
+  `.vscode/` remains.
+- Added real-Wayland behavior RED for missing ownership state, owned payload
+  bytes, and ownership revision across sixty-four continuous replacements.
+- Extended the existing allocation-free Wayland diagnostics leaf and added an
+  `atomic_flag` writer lock so caller-thread writes and dispatch-thread send
+  records cannot publish an even sequence while another writer is active.
+- Successful source installation records owned state and cancellation clears
+  it; the 64-cycle ownership test and Step 570 failure/recovery diagnostics pass
+  2/2 on WSL.
+- Added the Step 604 structure guard; it reached the intended five-document RED
+  at exit 8 after production, behavior, writer-serialization, and line-budget
+  assertions passed.
+- Phase F Step 604 reports current Wayland selection ownership, owned payload bytes, and ownership revisions through writer-serialized diagnostics, and verifies 64 continuous replacements serve the newest payload. Step 605 drag-and-drop cancellation diagnostics and stress production behavior is next.
+- Updated the Step 565 historical ownership guard from two literal payloads to
+  the 64-cycle revision/latest-payload evidence while preserving transactional
+  installation and continuous-replacement assertions.
+- Final Windows shared clipboard/header/structure/ledger verification passes
+  8/8. Final WSL ownership/failure/incremental/structure verification passes
+  11/11.
+- JSON parsing, five-document unique completion phrase, 53 Step 605 handoffs,
+  zero stale Step 604 handoffs, 95/36/59/89/93/47/72 line budgets, and
+  `git diff --check` pass. WSL full debug remains batched.

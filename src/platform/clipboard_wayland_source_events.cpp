@@ -71,6 +71,7 @@ void WaylandClipboard::Connection::handle_source_cancelled(
     }
   }
   if (should_destroy) {
+    connection->diagnostics_.record_ownership(false, 0);
     wl_data_source_destroy(source);
   }
 }

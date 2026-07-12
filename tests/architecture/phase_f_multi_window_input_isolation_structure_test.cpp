@@ -77,6 +77,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 9;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 604 clipboard ownership diagnostics and stress production behavior")) return 10;
+                "\"phase_f_current_handoff\": \"Step 605 drag-and-drop cancellation diagnostics and stress production behavior")) return 10;
   return 0;
 }

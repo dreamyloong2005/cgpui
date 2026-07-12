@@ -10651,3 +10651,19 @@
   `{2,2,1,1,0}` while a child is active, `{2,1,1,0,1}` after close, and the
   root-only baseline again after the root wakeup performs deferred collection.
 - Phase F Step 603 exposes bounded window lifecycle diagnostics for runtime records, active windows, opened windows, active native children, and retired native children, and verifies 64 churn cycles return to the root-only baseline. Step 604 clipboard ownership diagnostics and stress production behavior is next.
+
+## 2026-07-12 Phase F Step 604 Clipboard Ownership Diagnostics And Stress
+
+- Step 570 diagnostics report the latest operation/failure/byte count but do
+  not expose whether the client still owns the Wayland selection, the current
+  payload size, or how many ownership generations have been installed.
+- The diagnostic seqlock also had two possible writers, the caller write path
+  and async send dispatch, without writer serialization. An allocation-free
+  `atomic_flag` writer lock keeps snapshots coherent while retaining lock-free
+  readers.
+- Successful selection installation records ownership only after the new
+  source is flushed and committed; source cancellation clears ownership. A
+  failed replacement therefore preserves the previous ownership snapshot.
+- The real compositor now verifies 64 continuous replacements, matching owned
+  byte counts and ownership revisions, and final delivery of payload 63.
+- Phase F Step 604 reports current Wayland selection ownership, owned payload bytes, and ownership revisions through writer-serialized diagnostics, and verifies 64 continuous replacements serve the newest payload. Step 605 drag-and-drop cancellation diagnostics and stress production behavior is next.

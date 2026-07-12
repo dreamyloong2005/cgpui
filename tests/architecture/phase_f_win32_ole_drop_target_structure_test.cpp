@@ -75,6 +75,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_571_remaining_gap\": \"Step 572 Win32")) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 604 clipboard ownership diagnostics and stress production behavior")) return 9;
+                "\"phase_f_current_handoff\": \"Step 605 drag-and-drop cancellation diagnostics and stress production behavior")) return 9;
   return 0;
 }
