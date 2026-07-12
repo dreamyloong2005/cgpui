@@ -10,6 +10,7 @@ void WindowRuntime::tick_animation(AnimationId id) {
         return animation.id == id;
       });
   if (animation == animations_.end() || animation->complete ||
+      animation->cancelled ||
       animation->last_tick_ms == current_time_ms_) {
     return;
   }

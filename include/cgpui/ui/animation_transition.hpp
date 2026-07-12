@@ -36,6 +36,7 @@ class AnimationTransitionHandle {
   [[nodiscard]] AnimationId id() const;
   [[nodiscard]] bool active() const;
   [[nodiscard]] bool complete() const;
+  [[nodiscard]] bool cancelled() const;
   [[nodiscard]] std::optional<AnimationTransitionSnapshot> progress() const;
   [[nodiscard]] bool cancel();
 

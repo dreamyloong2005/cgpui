@@ -3272,7 +3272,30 @@
       "xmake.lua"
     ],
     "phase_g_step_646_remaining_gap": "Step 647 animation cancellation production behavior",
-    "phase_f_current_handoff": "Step 647 animation cancellation production behavior"
+    "phase_g_step_647_surface": "Phase G Step 647 makes runtime animation cancellation a distinct terminal state with frozen progress, immediate callback release, idempotent timer teardown, ordinary and transition handle observability, runtime/context/async forwarding, and aggregate plus last-cancellation diagnostics. Step 648 animation frame pacing production behavior is next.",
+    "phase_g_step_647_sources": [
+      "include/cgpui/ui/animation_cancellation.hpp",
+      "include/cgpui/ui/runtime_handles.hpp",
+      "include/cgpui/ui/animation_transition.hpp",
+      "include/cgpui/ui/runtime_diagnostics.hpp",
+      "include/cgpui/ui/ui.hpp",
+      "src/ui/runtime_animation_state_internal.hpp",
+      "src/ui/window_runtime_internal.hpp",
+      "src/ui/runtime_animation_start.cpp",
+      "src/ui/runtime_animation_cancellation.cpp",
+      "src/ui/runtime_animation_state.cpp",
+      "src/ui/runtime_animation_tick.cpp",
+      "src/ui/ui.cpp",
+      "src/ui/animation_transition.cpp",
+      "src/ui/runtime_diagnostic_snapshot.cpp",
+      "tests/animation/animation_cancellation_test.cpp",
+      "tests/architecture/phase_g_animation_cancellation_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_647_remaining_gap": "Step 648 animation frame pacing production behavior",
+    "phase_f_current_handoff": "Step 648 animation frame pacing production behavior"
   },
   "categories": [
     "application_and_app_context",

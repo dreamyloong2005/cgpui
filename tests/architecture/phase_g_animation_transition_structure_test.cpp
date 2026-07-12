@@ -125,7 +125,7 @@ int main() {
   if (!contains(vocabulary, "`AnimationTransition`") ||
       !contains(core_parity, "typed scalar animation transitions") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 647 animation cancellation "
+                "\"phase_f_current_handoff\": \"Step 648 animation frame pacing "
                 "production behavior\"")) return 9;
   return 0;
 }

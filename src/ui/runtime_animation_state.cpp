@@ -19,8 +19,9 @@ std::optional<AnimationSnapshot> WindowRuntime::animation_snapshot(
   }
 
   const std::uint64_t duration_ms = animation->options.duration_ms;
-  const std::uint64_t raw_elapsed_ms =
-      current_time_ms_ >= animation->started_ms
+  const std::uint64_t raw_elapsed_ms = animation->cancelled
+      ? animation->cancelled_elapsed_ms
+      : current_time_ms_ >= animation->started_ms
           ? current_time_ms_ - animation->started_ms
           : 0;
   const std::uint64_t elapsed_ms =
@@ -43,40 +44,15 @@ std::optional<AnimationSnapshot> WindowRuntime::animation_snapshot(
       .eased_progress = eased_progress,
       .easing = animation->options.easing,
       .curve = animation->options.curve,
-      .complete = animation->complete || linear_progress >= 1.0F,
+      .complete = !animation->cancelled &&
+          (animation->complete || linear_progress >= 1.0F),
+      .cancelled = animation->cancelled,
   };
-}
-
-bool WindowRuntime::cancel_animation(AnimationId id) {
-  if (id.value == 0) {
-    return false;
-  }
-
-  const auto animation = std::find_if(
-      animations_.begin(),
-      animations_.end(),
-      [id](const RuntimeAnimation& animation) {
-        return animation.id == id;
-      });
-  if (animation == animations_.end()) {
-    return false;
-  }
-  const std::optional<AnimationSnapshot> snapshot = animation_snapshot(id);
-  if (animation->complete || !snapshot.has_value() || snapshot->complete) {
-    return false;
-  }
-
-  animation->complete = true;
-  if (animation->timer_id.value != 0) {
-    (void)cancel_timer(animation->timer_id);
-    animation->timer_id = {};
-  }
-  return true;
 }
 
 bool WindowRuntime::animation_active(AnimationId id) const {
   const std::optional<AnimationSnapshot> snapshot = animation_snapshot(id);
-  return snapshot.has_value() && !snapshot->complete;
+  return snapshot.has_value() && !snapshot->complete && !snapshot->cancelled;
 }
 
 bool WindowRuntime::animation_complete(AnimationId id) const {

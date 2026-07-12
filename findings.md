@@ -11385,3 +11385,33 @@
   non-finite parameter sets fall back to linear progress, and near-critical
   damping uses a tolerance branch to avoid an unstable small denominator.
 - Phase G Step 646 adds zero-allocation animation curve variants with pinned-upstream quadratic, ease-out-quint, bounce, and pulsating tween behavior plus parameterized under-, critical-, and over-damped springs shared by runtime, element, sequence, and style animation paths. Step 647 animation cancellation production behavior is next.
+
+## 2026-07-13 Phase G Step 647 Animation Cancellation Baseline
+
+- Runtime, runtime-context, async-context, `AnimationHandle`, and
+  `AnimationTransitionHandle` already route to `cancel_animation`, but the
+  stored runtime record has only `complete`. Cancellation is therefore
+  indistinguishable from natural completion in snapshots and handles.
+- The current cancel path stops the timer but retains the callback until the
+  runtime record is destroyed. Production cancellation should release captured
+  resources immediately, remain idempotent, and suppress every later tick.
+- Runtime diagnostics currently report task counts but no animation lifecycle
+  counts or last-cancellation evidence. Step 647 should add compact aggregate
+  animation counts plus one last-cancellation record rather than a growing
+  event log.
+- Element animation unmount already removes keyed lifecycle records. Explicit
+  runtime animation cancellation is the active Step 647 gap; display-aligned
+  pacing remains Step 648.
+- The interrupted Xmake `ninja` filelock did not reproduce with the exact five-
+  target focused command. All behavior and shared structure targets passed;
+  the Step 647 guard reached its intentional authority-document `return 8`.
+- Keeping cancellation in `runtime_animation_cancellation.cpp` leaves the
+  established runtime state-query source below its 100-line cap while giving
+  callback release, frozen elapsed time, timer teardown, and diagnostics one
+  focused owner.
+- Windows verification is complete for Step 647: the focused animation and
+  authority group passes 11/11 and the complete dynamic-handoff chain passes
+  94/94 including the native-menu target-name exception. The attempted Arch
+  Linux run did not produce a valid test report before the existing distro
+  became unavailable, so WSL verification remains explicitly pending.
+- Phase G Step 647 makes runtime animation cancellation a distinct terminal state with frozen progress, immediate callback release, idempotent timer teardown, ordinary and transition handle observability, runtime/context/async forwarding, and aggregate plus last-cancellation diagnostics. Step 648 animation frame pacing production behavior is next.

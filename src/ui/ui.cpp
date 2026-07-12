@@ -32,6 +32,10 @@ bool AnimationHandle::complete() const {
   return runtime_ != nullptr && runtime_->animation_complete(id_);
 }
 
+bool AnimationHandle::cancelled() const {
+  return runtime_ != nullptr && runtime_->animation_cancelled(id_);
+}
+
 std::optional<AnimationSnapshot> AnimationHandle::progress() const {
   if (runtime_ == nullptr) {
     return std::nullopt;

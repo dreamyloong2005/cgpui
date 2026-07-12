@@ -21,6 +21,7 @@ AnimationHandle WindowRuntime::start_animation(
       .started_ms = current_time_ms_,
       .last_tick_ms = current_time_ms_,
       .complete = options.duration_ms == 0,
+      .cancelled = false,
   });
 
   if (options.duration_ms == 0) {

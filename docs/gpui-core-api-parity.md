@@ -51,7 +51,9 @@ desktop integration surfaces remain separate future work.
   mount/update/unmount tracking and shared delayed frame wakeups, including
   infinite repeated stages, indexed one-shot animation chains, pinned tween
   curve variants, and parameterized spring curves shared across runtime,
-  element, sequence, and style animation paths.
+  element, sequence, and style animation paths, plus distinct cancellation
+  state with frozen progress, immediate callback release, idempotent timer
+  teardown, handle observability, and aggregate plus last-cancellation diagnostics.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -139,9 +141,9 @@ desktop integration surfaces remain separate future work.
 ## Missing
 
 - Full upstream GPUI animation and easing system beyond typed scalar
-  transitions, runtime-owned keyed element lifecycle animations, repeat, and
-  chaining, including cancellation diagnostics, frame pacing, broad style
-  interpolation, and official examples.
+  transitions, runtime-owned keyed element lifecycle animations, repeat,
+  chaining, curve variants, and cancellation, including frame pacing, broad
+  style interpolation, and official examples.
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.
 - Asset, image, SVG, and texture upload pipelines.

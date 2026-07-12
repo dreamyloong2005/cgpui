@@ -100,6 +100,7 @@ remain outside this freeze.
 - `AnimationTransitionSnapshot`
 - `AnimationTransitionHandle`
 - `start_animation_transition(...)`
+- `AnimationCancellationDiagnostic`
 - `ElementAnimationSnapshot`
 - `ElementAnimationFrameResult`
 - `ElementAnimationStateStore`
@@ -121,6 +122,11 @@ runtime, element, sequence, and style animations. Quadratic, ease-out-quint,
 bounce, and pulsating curves match the pinned upstream formulas; parameterized
 under-, critical-, and over-damped springs are the explicit CGPUI roadmap
 extension.
+Step 647 makes cancellation a distinct terminal state across ordinary and
+transition handles. Cancelled animations freeze elapsed progress, release
+their callback capture immediately, tear down timers idempotently, suppress
+later ticks, and expose aggregate plus last-cancellation diagnostics through
+the runtime snapshot.
 
 ## Platform service vocabulary
 

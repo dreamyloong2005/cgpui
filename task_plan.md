@@ -1360,6 +1360,15 @@ Windows/Linux core API is stable enough for parity work.
   40-byte maximum value storage, shared element/style results, and real runtime
   snapshot retention and completion; dedicated structure coverage freezes the
   leaf ownership, integration points, inventories, registration, and line caps.
+- Completed: Phase G Step 647 makes runtime animation cancellation a distinct terminal state with frozen progress, immediate callback release, idempotent timer teardown, ordinary and transition handle observability, runtime/context/async forwarding, and aggregate plus last-cancellation diagnostics. Step 648 animation frame pacing production behavior is next.
+- Step 647 boundary: cancellation stays in the focused public diagnostic leaf
+  and `runtime_animation_cancellation.cpp`; ordinary runtime state queries,
+  tick dispatch, transition forwarding, and diagnostics consume that state
+  without moving cancellation bodies back into the broad runtime leaves.
+- Step 647 evidence: focused behavior covers frozen progress, immediate capture
+  release, idempotent timer teardown, later-tick suppression, ordinary and
+  transition handles, runtime/context/async forwarding, and exact aggregate
+  diagnostics; dedicated structure coverage freezes ownership and line caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1375,6 +1384,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The Step 647 Arch Linux focused run started successfully, but two detached WSL Xmake processes outlived their Windows callers and subsequent probes returned `WSL_E_DISTRO_NOT_FOUND` | Step 647 WSL verification | Do not restore or install a distribution; retain Windows evidence, record WSL verification as pending, and retry the existing `archlinux` environment before the Phase G full cross-platform gate |
+| `Get-CimInstance Win32_Process` returned access denied while checking the interrupted Xmake filelock | Step 647 filelock diagnosis | Use the lower-privilege `Get-Process -Name xmake,ninja` query and the exact focused Xmake test as the red-capable feedback loop; the lock did not reproduce and no processes remained afterward |
 | Sandboxed pinned-upstream `animation.rs` reads failed with an authentication exception | Step 645 upstream semantic audit | Re-run the same read-only raw GitHub URLs with approved network access and keep the revision fixed at `5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0` |
 | The first Step 644 WSL build failed because `layout.hpp` used `std::uint64_t` through an MSVC-tolerated indirect include | Step 644 Arch Linux focused verification | Add the required direct `<cstdint>` include to the public layout leaf, then rerun the identical WSL target set |
 | The first eight-target Step 644 regression exposed `window_runtime_scheduling_test` return 521 because clearing every prior tree on an empty `View::render()` also removed caller-installed persistent trees | Step 644 runtime lifecycle compatibility | Track whether the tree came from the prior dynamic View render; clear only that tree on a later empty render and preserve explicit `set_element_tree()` installations |

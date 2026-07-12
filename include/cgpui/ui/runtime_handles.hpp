@@ -45,6 +45,7 @@ struct AnimationSnapshot {
   AnimationEasing easing = AnimationEasing::linear;
   AnimationCurve curve;
   bool complete = false;
+  bool cancelled = false;
 };
 
 using AnimationCallback = std::function<void(
@@ -58,6 +59,7 @@ class AnimationHandle {
   [[nodiscard]] AnimationId id() const { return id_; }
   [[nodiscard]] bool active() const;
   [[nodiscard]] bool complete() const;
+  [[nodiscard]] bool cancelled() const;
   [[nodiscard]] std::optional<AnimationSnapshot> progress() const;
   [[nodiscard]] bool cancel();
 

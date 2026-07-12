@@ -42,6 +42,7 @@ void update_platform_accessibility_tree();
 [[nodiscard]] bool cancel_task(TaskId id);
 [[nodiscard]] bool animation_active(AnimationId id) const;
 [[nodiscard]] bool animation_complete(AnimationId id) const;
+[[nodiscard]] bool animation_cancelled(AnimationId id) const;
 void apply_cursor_shape(CursorShape cursor_shape);
 void apply_focused_text_ime_placement();
 void record_platform_diagnostic(PlatformDiagnosticEvent event);

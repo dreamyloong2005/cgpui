@@ -53,6 +53,10 @@ bool AnimationTransitionHandle::complete() const {
   return animation_.complete();
 }
 
+bool AnimationTransitionHandle::cancelled() const {
+  return animation_.cancelled();
+}
+
 std::optional<AnimationTransitionSnapshot>
 AnimationTransitionHandle::progress() const {
   const std::optional<AnimationSnapshot> animation = animation_.progress();

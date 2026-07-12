@@ -13,6 +13,7 @@
 #include "cgpui/ui/button_builder.hpp"
 #include "cgpui/ui/label_builder.hpp"
 #include "cgpui/ui/layout.hpp"
+#include "cgpui/ui/animation_cancellation.hpp"
 #include "cgpui/ui/animation_curve.hpp"
 #include "cgpui/ui/animation_transition.hpp"
 #include "cgpui/ui/element_animation.hpp"
@@ -318,6 +319,9 @@ class TestView final : public cgpui::View {
     (void)runtime_diagnostics.active_task_count;
     (void)runtime_diagnostics.completed_task_count;
     (void)runtime_diagnostics.queued_task_count;
+    (void)runtime_diagnostics.active_animation_count;
+    (void)runtime_diagnostics.cancelled_animation_count;
+    (void)runtime_diagnostics.last_animation_cancellation;
     const cgpui::PlatformDiagnosticEvent platform_diagnostic{
         .kind = cgpui::PlatformDiagnosticKind::clipboard,
         .event_kind = cgpui::EventKind::unknown,
@@ -511,6 +515,12 @@ int main() {
   cgpui::StyleState style_state;
   const cgpui::AnimationCurve animation_curve =
       cgpui::AnimationCurve::spring(cgpui::AnimationSpring{});
+  const cgpui::AnimationCancellationDiagnostic animation_cancellation{
+      .id = cgpui::AnimationId{1},
+      .elapsed_ms = 25,
+      .duration_ms = 100,
+      .timer_was_active = true,
+  };
   cgpui::ElementKey element_key{.value = "header-key"};
   cgpui::ElementAnimationStateStore animation_store;
   animation_store.begin_frame(1, 0);
@@ -537,6 +547,7 @@ int main() {
   (void)animated_element;
   (void)animated_sequence;
   (void)animation_curve;
+  (void)animation_cancellation;
   style_state.base = cgpui::Style{}
                          .with_background_color(cgpui::rgb(0, 0, 0))
                          .with_align_items(cgpui::AlignItems::center)

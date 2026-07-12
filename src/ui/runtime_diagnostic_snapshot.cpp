@@ -30,6 +30,15 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
   }
   const RuntimeTaskDiagnostics task_counts = task_diagnostics();
   const RuntimeTaskPool::Snapshot task_pool = task_pool_->snapshot();
+  std::size_t active_animation_count = 0;
+  std::size_t completed_animation_count = 0;
+  std::size_t cancelled_animation_count = 0;
+  for (const RuntimeAnimation& animation : animations_) {
+    active_animation_count +=
+        !animation.complete && !animation.cancelled ? 1U : 0U;
+    completed_animation_count += animation.complete ? 1U : 0U;
+    cancelled_animation_count += animation.cancelled ? 1U : 0U;
+  }
 
   return RuntimeDiagnosticsSnapshot{
       .entity_store_count = entity_stores_.size(),
@@ -50,6 +59,11 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       .last_frame_statistics = last_frame_statistics_,
       .last_renderer_frame_diagnostics = last_renderer_frame_diagnostics_,
       .platform_diagnostics = platform_diagnostics_,
+      .animation_count = animations_.size(),
+      .active_animation_count = active_animation_count,
+      .completed_animation_count = completed_animation_count,
+      .cancelled_animation_count = cancelled_animation_count,
+      .last_animation_cancellation = last_animation_cancellation_,
       .task_count = task_counts.task_count,
       .active_task_count = task_counts.active_task_count,
       .queued_task_count = task_counts.queued_task_count,

@@ -23649,3 +23649,48 @@
   105/92/118/87/131/149/126/19/28/157/137 lines; and `git diff --check`
   succeeds.
 - Phase G Step 646 adds zero-allocation animation curve variants with pinned-upstream quadratic, ease-out-quint, bounce, and pulsating tween behavior plus parameterized under-, critical-, and over-damped springs shared by runtime, element, sequence, and style animation paths. Step 647 animation cancellation production behavior is next.
+
+## 2026-07-13 Phase G Step 647 Animation Cancellation
+
+- Added the focused cancellation behavior target first. Its initial compile
+  fails at the expected RED on missing snapshot/handle cancelled state and
+  missing runtime cancellation diagnostics fields.
+- The first implementation build succeeds, but the combined behavior assertion
+  exits 1. Split the test into stable failure groups before changing production
+  code so frozen progress, state, resource release, counts, and last-diagnostic
+  failures can be distinguished.
+- Granular reruns isolate the failure to handle state: `animation_active()`
+  treated every non-complete snapshot as active, including cancelled snapshots.
+  Update the predicate to require both non-complete and non-cancelled state.
+- The corrected focused test passes. Cancellation freezes elapsed progress,
+  distinguishes cancelled from complete, stops future callbacks, releases the
+  callback capture immediately, exposes ordinary/transition handle state, and
+  reports aggregate plus last-cancellation diagnostics.
+- A combined test/progress patch was atomically rejected because the progress
+  context appeared in the test-file block. No partial edit occurred; split the
+  retry into explicit file blocks.
+- Extended the GREEN behavior through runtime-context and async-context start
+  and cancel forwarding. Six runtime records end as two natural completions
+  and four cancellations with no active animation left.
+- Moved cancellation bodies out of the frozen runtime-state query leaf into
+  `runtime_animation_cancellation.cpp`. A large structure patch reported a
+  late context mismatch after applying its earlier file blocks; inspection
+  confirmed inventories, header cleanliness, and the new guard were present,
+  so only the missing Xmake registration was applied on retry.
+- Restored the interrupted session and used the exact five-target Xmake command
+  as the filelock feedback loop. The filelock did not reproduce: cancellation
+  behavior, curve structure, global UI structure, and header cleanliness pass;
+  the new Step 647 guard alone reaches its expected authority-document RED.
+- Synchronized the public vocabulary, core API parity boundary, roadmap,
+  Markdown/JSON ledgers, task plan, and findings with the exact Step 647
+  completion sentence, 19 JSON evidence sources, and the Step 648 handoff.
+- Corrected the Step 647 structure guard's frozen-progress evidence to match
+  the test's failure predicate (`after != before`). The final Windows focused
+  animation/source/header/ledger group passes 11/11.
+- Advanced all 94 current-handoff consumers to Step 648, preserving the Step
+  646 and Step 647 historical completion sentences. All 93 basename-derived
+  targets plus the native-menu replacement naming exception pass 94/94.
+- Direct `archlinux` startup initially succeeded, but both WSL Xmake commands
+  continued compiling after their Windows callers returned and later WSL
+  probes consistently returned `WSL_E_DISTRO_NOT_FOUND`. No distribution was
+  restored or installed; Step 647 WSL focused verification remains pending.

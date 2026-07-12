@@ -61,6 +61,7 @@ int main() {
       "include/cgpui/ui/action.hpp",
       "include/cgpui/ui/accessibility.hpp",
       "include/cgpui/ui/paint.hpp",
+      "include/cgpui/ui/animation_cancellation.hpp",
       "include/cgpui/ui/animation_curve.hpp",
       "include/cgpui/ui/animation_transition.hpp",
       "include/cgpui/ui/element_animation.hpp",
@@ -1997,6 +1998,7 @@ int main() {
       "src/ui/runtime_element_animation.cpp",
       "src/ui/runtime_animation_state_internal.hpp",
       "src/ui/runtime_animation_start.cpp",
+      "src/ui/runtime_animation_cancellation.cpp",
       "src/ui/runtime_animation_state.cpp",
       "src/ui/runtime_animation_tick.cpp",
       "src/ui/runtime_animations.cpp",
@@ -3469,6 +3471,8 @@ int main() {
 
   const std::string runtime_animation_start_source =
       read_source("src/ui/runtime_animation_start.cpp");
+  const std::string runtime_animation_cancellation_source =
+      read_source("src/ui/runtime_animation_cancellation.cpp");
   const std::string runtime_animation_state_source =
       read_source("src/ui/runtime_animation_state.cpp");
   const std::string runtime_animation_tick_source =
@@ -3476,6 +3480,7 @@ int main() {
   const std::string runtime_animations_source =
       read_source("src/ui/runtime_animations.cpp");
   if (runtime_animation_start_source.empty() ||
+      runtime_animation_cancellation_source.empty() ||
       runtime_animation_state_source.empty() ||
       runtime_animation_tick_source.empty() ||
       runtime_animations_source.empty()) {
@@ -3495,16 +3500,29 @@ int main() {
                 "std::optional<AnimationSnapshot> "
                 "WindowRuntime::animation_snapshot(") ||
       !contains(runtime_animation_state_source,
-                "bool WindowRuntime::cancel_animation(") ||
-      !contains(runtime_animation_state_source,
                 "bool WindowRuntime::animation_active(") ||
       !contains(runtime_animation_state_source,
                 "bool WindowRuntime::animation_complete(") ||
+      contains(runtime_animation_state_source,
+               "bool WindowRuntime::cancel_animation(") ||
       contains(runtime_animation_state_source,
                "AnimationHandle WindowRuntime::start_animation(") ||
       contains(runtime_animation_state_source,
                "void WindowRuntime::tick_animation(")) {
     return 89;
+  }
+  if (line_count(runtime_animation_cancellation_source) > 70 ||
+      !contains(runtime_animation_cancellation_source,
+                "bool WindowRuntime::cancel_animation(") ||
+      !contains(runtime_animation_cancellation_source,
+                "bool WindowRuntime::animation_cancelled(") ||
+      !contains(runtime_animation_cancellation_source,
+                "animation->callback = {}") ||
+      contains(runtime_animation_cancellation_source,
+               "AnimationHandle WindowRuntime::start_animation(") ||
+      contains(runtime_animation_cancellation_source,
+               "void WindowRuntime::tick_animation(")) {
+    return 166;
   }
   if (line_count(runtime_animation_tick_source) > 70 ||
       !contains(runtime_animation_tick_source,
