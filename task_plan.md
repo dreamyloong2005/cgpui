@@ -1235,7 +1235,11 @@ Windows/Linux core API is stable enough for parity work.
   and adapter leaves register and unregister deterministic element paths,
   dispatch real libdbus Introspect/GetInterfaces calls, and expose exact
   registration, removal, method, failure, and active-object diagnostics.
-- In progress: Step 628 Linux AT-SPI tree navigation production behavior.
+- Completed: Phase G Step 628 adds Linux AT-SPI Accessible tree navigation with Parent and ChildCount properties, ordered child lookup and enumeration, parent indexes, application roots, and standard D-Bus object references. Step 629 Linux AT-SPI roles and states production behavior is next.
+- Step 628 evidence: object snapshots precompute ordered child paths and parent
+  indexes; the focused navigation serializer returns standard variant, `(so)`,
+  and `a(so)` replies using the connection unique name and adapter root path.
+- In progress: Step 629 Linux AT-SPI roles and states production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1251,6 +1255,12 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 628 75-guard handoff run passed 74/75 because the Windows/WSL/cross-platform nested aggregate chain still required Step 628 | Step 628 dynamic handoff gate | Advance all three nested assertions together to Step 629 while preserving their frozen Phase F completion sentences |
+| The first Step 628 structure RED stopped at exit 4 because the guard expected the full `a(so)` signature in the libdbus serializer | Step 628 structure RED | Require `DBUS_TYPE_ARRAY` plus element signature `(so)` in serialization and reserve full `a(so)` for the introspection XML assertion |
+| A combined Step 628 path-lifetime fix omitted the `task_plan.md` patch header and was rejected atomically | Step 628 behavior fix | Split the production and error-record contexts under explicit file headers before retrying |
+| The first Step 628 behavior run aborted because a conditional expression materialized a temporary path string and left the libdbus serializer with a dangling `string_view` | Step 628 first GREEN run | Bind `string_view` to the stable null path first, then assign references to persistent object-record strings only inside explicit branches |
+| The first Step 628 object-metadata patch named bounds as `optional<string>` instead of the actual `optional<Rect>` and was rejected atomically | Step 628 GREEN implementation | Re-read the current object record and apply the child-path/index additions against the exact `optional<Rect>` declaration |
+| Arch WSL does not contain the optional `at-spi2-core` package for local introspection XML lookup | Step 628 protocol discovery | Do not install anything; implement the stable AT-SPI2 Accessible navigation signatures over the existing verified libdbus dependency and prove them with real messages |
 | The third Step 627 74-guard run moved the only failure to the cross-platform aggregate because it still required the WSL guard's Step 627 nested handoff | Step 627 dynamic handoff gate second retry | Advance the final WSL-to-cross-platform nested assertion to Step 628 while retaining the Step 613 completion sentence |
 | The second Step 627 74-guard run moved the only failure from the Windows aggregate to the WSL aggregate because it still required the Windows guard's Step 627 nested handoff | Step 627 dynamic handoff gate retry | Advance the WSL-to-Windows nested assertion to Step 628 without changing the frozen Step 612 completion evidence |
 | The first Step 627 74-guard handoff run passed 73/74 because the Windows full-debug aggregate still required its child guard to contain the Step 627 handoff | Step 627 dynamic handoff gate | Advance the nested child-guard assertion to Step 628 while preserving the historical Step 611 completion sentence |

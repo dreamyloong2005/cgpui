@@ -64,6 +64,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 31;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 628 Linux AT-SPI tree navigation production behavior\"")) return 32;
+                "\"phase_f_current_handoff\": \"Step 629 Linux AT-SPI roles and states production behavior\"")) return 32;
   return 0;
 }

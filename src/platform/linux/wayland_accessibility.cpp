@@ -19,6 +19,8 @@ void WaylandAtspiAccessibilityAdapter::update(
     }
   }
   atspi_object_nodes_ = build_wayland_atspi_object_nodes(last_update_);
+  dbus_registry_.set_root_object_path(
+      wayland_atspi_object_path_for(root_element_id_));
   dbus_registry_.synchronize(atspi_object_nodes_);
 }
 

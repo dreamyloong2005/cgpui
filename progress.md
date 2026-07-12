@@ -22969,3 +22969,21 @@
   dynamic handoff guards pass together after advancing the three nested
   Windows/WSL/cross-platform aggregate assertions.
 - Phase G Step 627 exposes Linux AT-SPI accessibility objects on an attached D-Bus connection with deterministic object-path registration, introspection, interface discovery, removal, teardown, and diagnostics. Step 628 Linux AT-SPI tree navigation production behavior is next.
+
+## 2026-07-12 Phase G Step 628 AT-SPI Tree Navigation
+
+- Started from committed Step 627 at `948fc62f` with only unrelated untracked
+  `.vscode/` present.
+- The optional at-spi2-core package is absent in WSL; no installation or
+  recovery was attempted. The implementation will use the stable AT-SPI2
+  signatures directly over the already verified system libdbus boundary.
+- Added precomputed ordered child paths and parent indexes plus a focused
+  navigation serializer for Parent/ChildCount, GetChildAtIndex, GetChildren,
+  GetIndexInParent, and GetApplication replies using the connection unique
+  name and adapter root path.
+- Refactored both AT-SPI behavior tests onto a shared real-libdbus recorder;
+  the object exposure and navigation tests pass 2/2 in WSL.
+- Windows source/structure/ledger regression passes 5/5, WSL behavior and
+  source/structure/ledger regression passes 7/7, and all 75 dynamic handoff
+  guards pass after advancing the nested aggregate chain.
+- Phase G Step 628 adds Linux AT-SPI Accessible tree navigation with Parent and ChildCount properties, ordered child lookup and enumeration, parent indexes, application roots, and standard D-Bus object references. Step 629 Linux AT-SPI roles and states production behavior is next.

@@ -47,6 +47,8 @@ int main() {
       "src/platform/linux/wayland_window.cpp");
   const std::string behavior = read_source(
       "tests/platform/wayland_atspi_dbus_object_test.cpp");
+  const std::string test_support = read_source(
+      "tests/platform/wayland_atspi_dbus_test_support.hpp");
   const std::string xmake = read_source("xmake.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
@@ -59,6 +61,7 @@ int main() {
   const std::string* required[]{
       &object_header, &object, &dbus_header, &dbus, &messages_header,
       &messages, &adapter_header, &adapter, &services, &window, &behavior,
+      &test_support,
       &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -87,9 +90,10 @@ int main() {
     return 4;
   }
   if (!contains(behavior, "DBusMessage*") ||
-      !contains(behavior, "message_function(") ||
+      !contains(test_support, "message_function(") ||
+      !contains(test_support, "WaylandAtspiDbusRecorder") ||
       !contains(behavior, "registration_attempt_count != 2") ||
-      !contains(behavior, "unregistered_paths") ||
+      !contains(test_support, "unregistered_paths") ||
       !contains(behavior, "org.freedesktop.DBus.Introspectable")) {
     return 5;
   }
@@ -123,8 +127,8 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 628 Linux AT-SPI tree "
-          "navigation production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 629 Linux AT-SPI roles and "
+          "states production behavior\"")) {
     return 9;
   }
   return 0;

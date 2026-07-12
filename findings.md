@@ -10987,3 +10987,17 @@
   long-lived bus teardown policy remain in the later bus-lifecycle slice;
   navigation, roles/states, and events remain their named following slices.
 - Phase G Step 627 exposes Linux AT-SPI accessibility objects on an attached D-Bus connection with deterministic object-path registration, introspection, interface discovery, removal, teardown, and diagnostics. Step 628 Linux AT-SPI tree navigation production behavior is next.
+
+## 2026-07-12 Phase G Step 628 AT-SPI Tree Navigation Design
+
+- The existing Arch WSL does not have the optional `at-spi2-core` package, so
+  no environment change will be made. System libdbus remains sufficient to
+  build and validate the stable AT-SPI2 D-Bus wire signatures.
+- Step 628 owns Accessible navigation over the Step 627 object records:
+  `Parent` and `ChildCount` properties plus `GetChildAtIndex`, `GetChildren`,
+  `GetIndexInParent`, and `GetApplication` methods, using `(so)` object refs
+  and `a(so)` child arrays.
+- Object records should derive ordered child paths and parent indexes once per
+  snapshot. Message serialization consumes that immutable metadata; the D-Bus
+  registry only supplies the connection unique name and root path.
+- Phase G Step 628 adds Linux AT-SPI Accessible tree navigation with Parent and ChildCount properties, ordered child lookup and enumeration, parent indexes, application roots, and standard D-Bus object references. Step 629 Linux AT-SPI roles and states production behavior is next.

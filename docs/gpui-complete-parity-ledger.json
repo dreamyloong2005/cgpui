@@ -2935,7 +2935,24 @@
       "xmake.lua"
     ],
     "phase_g_step_627_remaining_gap": "Step 628 Linux AT-SPI tree navigation production behavior",
-    "phase_f_current_handoff": "Step 628 Linux AT-SPI tree navigation production behavior"
+    "phase_g_step_628_surface": "Phase G Step 628 adds Linux AT-SPI Accessible tree navigation with Parent and ChildCount properties, ordered child lookup and enumeration, parent indexes, application roots, and standard D-Bus object references. Step 629 Linux AT-SPI roles and states production behavior is next.",
+    "phase_g_step_628_sources": [
+      "src/platform/linux/wayland_atspi_object_internal.hpp",
+      "src/platform/linux/wayland_atspi_object.cpp",
+      "src/platform/linux/wayland_atspi_dbus_internal.hpp",
+      "src/platform/linux/wayland_atspi_dbus.cpp",
+      "src/platform/linux/wayland_atspi_dbus_messages_internal.hpp",
+      "src/platform/linux/wayland_atspi_dbus_messages.cpp",
+      "src/platform/linux/wayland_atspi_dbus_navigation_internal.hpp",
+      "src/platform/linux/wayland_atspi_dbus_navigation.cpp",
+      "src/platform/linux/wayland_accessibility.cpp",
+      "tests/platform/wayland_atspi_dbus_test_support.hpp",
+      "tests/platform/wayland_atspi_tree_navigation_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_tree_navigation_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_628_remaining_gap": "Step 629 Linux AT-SPI roles and states production behavior",
+    "phase_f_current_handoff": "Step 629 Linux AT-SPI roles and states production behavior"
   },
   "categories": [
     "application_and_app_context",

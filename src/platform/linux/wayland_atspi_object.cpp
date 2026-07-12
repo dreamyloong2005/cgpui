@@ -1,5 +1,6 @@
 #include "wayland_atspi_object_internal.hpp"
 
+#include <unordered_map>
 #include <utility>
 
 namespace cgpui {
@@ -12,6 +13,8 @@ std::vector<WaylandAtspiObjectNode> build_wayland_atspi_object_nodes(
     const PlatformAccessibilityTreeUpdate& update) {
   std::vector<WaylandAtspiObjectNode> objects;
   objects.reserve(update.nodes.size());
+  std::unordered_map<std::uint64_t, std::size_t> object_indices;
+  object_indices.reserve(update.nodes.size());
   for (const PlatformAccessibilityNodeUpdate& node : update.nodes) {
     std::optional<std::string> parent_object_path;
     if (node.parent_element_id.has_value()) {
@@ -33,6 +36,16 @@ std::vector<WaylandAtspiObjectNode> build_wayland_atspi_object_nodes(
         .bounds = node.bounds,
         .child_count = node.child_count,
     });
+    object_indices.insert_or_assign(node.element_id, objects.size() - 1);
+  }
+  for (WaylandAtspiObjectNode& object : objects) {
+    if (!object.parent_element_id.has_value()) continue;
+    const auto parent = object_indices.find(*object.parent_element_id);
+    if (parent == object_indices.end()) continue;
+    WaylandAtspiObjectNode& parent_object = objects[parent->second];
+    object.index_in_parent =
+        static_cast<std::int32_t>(parent_object.child_object_paths.size());
+    parent_object.child_object_paths.push_back(object.object_path);
   }
   return objects;
 }

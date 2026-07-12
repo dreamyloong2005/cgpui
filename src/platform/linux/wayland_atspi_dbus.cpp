@@ -27,6 +27,10 @@ dbus_bool_t send_message(
   return dbus_connection_send(connection, message, serial);
 }
 
+const char* get_unique_name(DBusConnection* connection) {
+  return dbus_bus_get_unique_name(connection);
+}
+
 const DBusObjectPathVTable& object_vtable() {
   static const DBusObjectPathVTable value{
       .unregister_function = nullptr,
@@ -42,6 +46,7 @@ WaylandAtspiDbusOperations default_wayland_atspi_dbus_operations() {
       .register_object_path = &register_object_path,
       .unregister_object_path = &unregister_object_path,
       .send = &send_message,
+      .get_unique_name = &get_unique_name,
   };
 }
 
@@ -69,6 +74,11 @@ void WaylandAtspiDbusRegistry::detach() {
   objects_.clear();
   diagnostics_.registered_object_count = 0;
   connection_ = nullptr;
+}
+
+void WaylandAtspiDbusRegistry::set_root_object_path(
+    std::string root_object_path) {
+  root_object_path_ = std::move(root_object_path);
 }
 
 void WaylandAtspiDbusRegistry::synchronize(
@@ -131,7 +141,14 @@ DBusHandlerResult WaylandAtspiDbusRegistry::dispatch(
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
 
-  WaylandAtspiDbusReply reply = wayland_atspi_dbus_reply_for(message);
+  const char* unique_name = operations_.get_unique_name == nullptr
+      ? nullptr
+      : operations_.get_unique_name(connection);
+  WaylandAtspiDbusReply reply = wayland_atspi_dbus_reply_for(
+      message,
+      objects_.at(path),
+      unique_name == nullptr ? std::string_view{} : unique_name,
+      root_object_path_);
   if (!reply.handled) {
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }

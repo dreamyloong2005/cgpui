@@ -8,12 +8,9 @@
 
 namespace cgpui {
 
-struct WaylandAtspiDbusReply {
-  bool handled = false;
-  DBusMessage* message = nullptr;
-};
+struct WaylandAtspiDbusReply;
 
-[[nodiscard]] WaylandAtspiDbusReply wayland_atspi_dbus_reply_for(
+[[nodiscard]] WaylandAtspiDbusReply wayland_atspi_navigation_reply_for(
     DBusMessage* request,
     const WaylandAtspiObjectNode& object,
     std::string_view bus_name,

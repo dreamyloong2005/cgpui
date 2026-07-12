@@ -107,7 +107,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 628 Linux AT-SPI tree navigation production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 629 Linux AT-SPI roles and states production behavior")) {
     return 8;
   }
   return 0;

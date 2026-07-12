@@ -20,6 +20,7 @@ struct WaylandAtspiDbusOperations {
       void*) = nullptr;
   dbus_bool_t (*unregister_object_path)(DBusConnection*, const char*) = nullptr;
   dbus_bool_t (*send)(DBusConnection*, DBusMessage*, dbus_uint32_t*) = nullptr;
+  const char* (*get_unique_name)(DBusConnection*) = nullptr;
 };
 
 struct WaylandAtspiDbusDiagnostics {
@@ -43,6 +44,7 @@ class WaylandAtspiDbusRegistry {
       WaylandAtspiDbusOperations operations =
           default_wayland_atspi_dbus_operations());
   void detach();
+  void set_root_object_path(std::string root_object_path);
   void synchronize(std::span<const WaylandAtspiObjectNode> objects);
   [[nodiscard]] WaylandAtspiDbusDiagnostics diagnostics() const;
   static DBusHandlerResult handle_message(
@@ -60,6 +62,7 @@ class WaylandAtspiDbusRegistry {
   WaylandAtspiDbusOperations operations_;
   std::unordered_map<std::string, WaylandAtspiObjectNode> objects_;
   std::vector<std::string> registered_paths_;
+  std::string root_object_path_;
   WaylandAtspiDbusDiagnostics diagnostics_;
 };
 

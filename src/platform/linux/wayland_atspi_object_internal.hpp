@@ -23,6 +23,8 @@ struct WaylandAtspiObjectNode {
   bool focused = false;
   std::optional<Rect> bounds;
   std::size_t child_count = 0;
+  std::vector<std::string> child_object_paths;
+  std::int32_t index_in_parent = -1;
 };
 
 [[nodiscard]] std::string wayland_atspi_object_path_for(

@@ -189,6 +189,8 @@ int main(int argc, char** argv) {
       "src/platform/linux/wayland_atspi_dbus.cpp",
       "src/platform/linux/wayland_atspi_dbus_messages_internal.hpp",
       "src/platform/linux/wayland_atspi_dbus_messages.cpp",
+      "src/platform/linux/wayland_atspi_dbus_navigation_internal.hpp",
+      "src/platform/linux/wayland_atspi_dbus_navigation.cpp",
       "src/platform/linux/wayland_accessibility_internal.hpp",
       "src/platform/linux/wayland_accessibility.cpp",
       "src/platform/linux/wayland_native.cpp",
