@@ -23601,3 +23601,51 @@
   the base/sequence headers, store, private state, element, sequence,
   sequence-state, and behavior files are 130/22/148/55/88/33/124/198 lines;
   and `git diff --check` succeeds.
+
+## 2026-07-13 Phase G Step 646 Spring And Tween Variants
+
+- Added the focused curve behavior target first. Its initial compile fails at
+  the expected RED because `AnimationCurve`, `AnimationSpring`, the
+  `AnimationOptions::curve`, `ElementAnimationSnapshot::curve`, and
+  `StyleTween::curve` surfaces do not yet exist.
+- Added a focused trivially-copyable curve value and implementation leaf with
+  inherited legacy easing, the pinned quadratic/quint/bounce/pulse variants,
+  and parameterized under/critical/over-damped spring evaluation. The first
+  GREEN behavior run passes pinned values, invalid-spring fallback, element
+  lifecycle integration, and shared `StyleTween` evaluation.
+- Extended the focused behavior target through the real runtime animation
+  scheduler. A quint curve is retained in `AnimationSnapshot`, evaluates at
+  0/0.25/1 progress, and completes through the established timer path.
+- The first curve/runtime/transition/lifecycle/sequence/style/header/source
+  regression passes 8/8 on Windows. Existing enum-only easing behavior remains
+  green because an inherited default curve delegates to `AnimationEasing`.
+- Added the global public/source inventories, direct header-cleanliness
+  authoring, and the dedicated Step 646 structure guard. Its first execution
+  returns 6 because the Step 645 guard splits the historical handoff across
+  adjacent C++ literals; the assertion now matches the stable source fragment
+  while full authority documents remain exact-sentence checks.
+- Synchronized the public vocabulary, core parity boundary, roadmap,
+  Markdown/JSON ledgers, task plan, and findings, then advanced 92 current
+  handoff consumers to Step 647 while preserving the Step 645 historical
+  completion sentence.
+- The dedicated Step 646 behavior/structure, previous sequence structure,
+  global UI source/header inventories, and ledger regression pass 6/6 on
+  Windows after authority synchronization.
+- The initial sandboxed read of the pinned upstream raw files failed with a
+  network authentication error. The approved read-only retry succeeded and
+  confirmed that the fixed commit has the tween functions in
+  `elements/animation.rs` but no separate spring module.
+- Final Step 646 focused verification passes Windows 11/11 and Arch Linux WSL
+  11/11 across curve behavior/structure, runtime transitions, element
+  lifecycle and sequences, style, scheduling, header/source inventories, and
+  ledger authority.
+- The complete dynamic handoff chain passes 93/93 basename-derived targets;
+  the historical native-menu replacement target passes separately under its
+  non-basename target name, completing 94/94 with the JSON handoff at Step 647.
+- Final audits pass: the exact Step 646 completion sentence appears once in
+  each of the five authority documents; JSON parses with 18 Step 646 sources;
+  curve header/source, runtime handles/state, element header/store/sequence,
+  style header/source, behavior, and structure guard are
+  105/92/118/87/131/149/126/19/28/157/137 lines; and `git diff --check`
+  succeeds.
+- Phase G Step 646 adds zero-allocation animation curve variants with pinned-upstream quadratic, ease-out-quint, bounce, and pulsating tween behavior plus parameterized under-, critical-, and over-damped springs shared by runtime, element, sequence, and style animation paths. Step 647 animation cancellation production behavior is next.

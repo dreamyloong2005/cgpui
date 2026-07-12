@@ -22,7 +22,7 @@ Style tween(const Style& from, const Style& to, float progress) {
 }
 
 Style StyleTween::value_at(float progress) const {
-  return tween(from, to, ease(easing, progress));
+  return tween(from, to, curve.value_at(progress, easing));
 }
 
 } // namespace cgpui

@@ -19,8 +19,10 @@ ElementAnimationSnapshot sequence_snapshot(
       .elapsed_ms = elapsed_ms,
       .duration_ms = stage.animation.duration_ms,
       .linear_progress = linear_progress,
-      .eased_progress = ease(stage.animation.easing, linear_progress),
+      .eased_progress = stage.animation.curve.value_at(
+          linear_progress, stage.animation.easing),
       .easing = stage.animation.easing,
+      .curve = stage.animation.curve,
       .stage_index = stage_index,
       .iteration = iteration,
       .repeating = stage.repeating,

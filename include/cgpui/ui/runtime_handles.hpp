@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/ui/animation_curve.hpp"
 #include "cgpui/ui/runtime_callbacks.hpp"
 #include "cgpui/ui/runtime_ids.hpp"
 
@@ -31,6 +32,7 @@ using BackgroundTaskCallback = std::function<void(TaskCancellationToken)>;
 struct AnimationOptions {
   std::uint64_t duration_ms = 0;
   AnimationEasing easing = AnimationEasing::linear;
+  AnimationCurve curve;
   std::uint64_t tick_interval_ms = 16;
 };
 
@@ -41,6 +43,7 @@ struct AnimationSnapshot {
   float linear_progress = 0.0F;
   float eased_progress = 0.0F;
   AnimationEasing easing = AnimationEasing::linear;
+  AnimationCurve curve;
   bool complete = false;
 };
 

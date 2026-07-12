@@ -145,8 +145,8 @@ int main() {
       contains(core_parity, "cross-thread entity access remains incomplete") ||
       contains(core_parity, "Cross-thread entity access guarantees") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 646 spring and tween "
-                "variant production behavior\"")) {
+                "\"phase_f_current_handoff\": \"Step 647 animation cancellation "
+                "production behavior\"")) {
     return 11;
   }
   return 0;

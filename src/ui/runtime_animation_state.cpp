@@ -32,7 +32,8 @@ std::optional<AnimationSnapshot> WindowRuntime::animation_snapshot(
                 static_cast<float>(elapsed_ms) /
                 static_cast<float>(duration_ms));
   const float eased_progress =
-      ease(animation->options.easing, linear_progress);
+      animation->options.curve.value_at(
+          linear_progress, animation->options.easing);
 
   return AnimationSnapshot{
       .id = animation->id,
@@ -41,6 +42,7 @@ std::optional<AnimationSnapshot> WindowRuntime::animation_snapshot(
       .linear_progress = linear_progress,
       .eased_progress = eased_progress,
       .easing = animation->options.easing,
+      .curve = animation->options.curve,
       .complete = animation->complete || linear_progress >= 1.0F,
   };
 }

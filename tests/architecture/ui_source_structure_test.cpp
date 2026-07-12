@@ -61,6 +61,7 @@ int main() {
       "include/cgpui/ui/action.hpp",
       "include/cgpui/ui/accessibility.hpp",
       "include/cgpui/ui/paint.hpp",
+      "include/cgpui/ui/animation_curve.hpp",
       "include/cgpui/ui/animation_transition.hpp",
       "include/cgpui/ui/element_animation.hpp",
       "include/cgpui/ui/element_animation_sequence.hpp",
@@ -1413,7 +1414,8 @@ int main() {
       contains(widget_builders_header, "class ButtonBuilder {")) {
     return 103;
   }
-  if (read_source("src/ui/element_tree.cpp").empty() ||
+  if (read_source("src/ui/animation_curve.cpp").empty() ||
+      read_source("src/ui/element_tree.cpp").empty() ||
       read_source("src/ui/style_tween.cpp").empty()) {
     return 104;
   }

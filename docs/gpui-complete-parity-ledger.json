@@ -3250,7 +3250,29 @@
       "xmake.lua"
     ],
     "phase_g_step_645_remaining_gap": "Step 646 spring and tween variant production behavior",
-    "phase_f_current_handoff": "Step 646 spring and tween variant production behavior"
+    "phase_g_step_646_surface": "Phase G Step 646 adds zero-allocation animation curve variants with pinned-upstream quadratic, ease-out-quint, bounce, and pulsating tween behavior plus parameterized under-, critical-, and over-damped springs shared by runtime, element, sequence, and style animation paths. Step 647 animation cancellation production behavior is next.",
+    "phase_g_step_646_sources": [
+      "include/cgpui/ui/animation_curve.hpp",
+      "src/ui/animation_curve.cpp",
+      "include/cgpui/ui/runtime_handles.hpp",
+      "src/ui/runtime_animation_state.cpp",
+      "include/cgpui/ui/element_animation.hpp",
+      "src/ui/element_animation_state_store.cpp",
+      "src/ui/element_animation_sequence_state.cpp",
+      "include/cgpui/ui/style_animation.hpp",
+      "src/ui/style_tween.cpp",
+      "tests/animation/animation_curve_variant_test.cpp",
+      "tests/architecture/phase_g_animation_curve_variant_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "docs/gpui-upstream-pinned-revision.md",
+      "docs/gpui-public-authoring-vocabulary.md",
+      "docs/gpui-core-api-parity.md",
+      "include/cgpui/ui/ui.hpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_646_remaining_gap": "Step 647 animation cancellation production behavior",
+    "phase_f_current_handoff": "Step 647 animation cancellation production behavior"
   },
   "categories": [
     "application_and_app_context",

@@ -121,7 +121,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 646 spring and tween variant production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 647 animation cancellation production behavior")) {
     return 8;
   }
   return 0;

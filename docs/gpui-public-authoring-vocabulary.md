@@ -87,6 +87,15 @@ remain outside this freeze.
 
 ## Animation vocabulary
 
+- `AnimationSpring`
+- `AnimationCurveKind`
+- `AnimationCurve`
+- `AnimationCurve::from_easing(...)`
+- `AnimationCurve::quadratic()`
+- `AnimationCurve::ease_out_quint()`
+- `AnimationCurve::bounce(...)`
+- `AnimationCurve::pulsating_between(...)`
+- `AnimationCurve::spring(...)`
 - `AnimationTransition`
 - `AnimationTransitionSnapshot`
 - `AnimationTransitionHandle`
@@ -107,6 +116,11 @@ Step 644 adds runtime-owned keyed lifecycle state and a transparent element
 wrapper with mount/update/unmount tracking across reconstructed render trees.
 Step 645 adds pinned-upstream-compatible infinite repeated stages and indexed
 one-shot chains, with final stage values delivered before the next stage begins.
+Step 646 adds a trivially-copyable, zero-allocation curve value shared by
+runtime, element, sequence, and style animations. Quadratic, ease-out-quint,
+bounce, and pulsating curves match the pinned upstream formulas; parameterized
+under-, critical-, and over-damped springs are the explicit CGPUI roadmap
+extension.
 
 ## Platform service vocabulary
 

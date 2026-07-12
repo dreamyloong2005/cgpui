@@ -13,6 +13,7 @@
 #include "cgpui/ui/button_builder.hpp"
 #include "cgpui/ui/label_builder.hpp"
 #include "cgpui/ui/layout.hpp"
+#include "cgpui/ui/animation_curve.hpp"
 #include "cgpui/ui/animation_transition.hpp"
 #include "cgpui/ui/element_animation.hpp"
 #include "cgpui/ui/element_animation_sequence.hpp"
@@ -508,6 +509,8 @@ int main() {
       .scope = cgpui::ActionScope::app,
   };
   cgpui::StyleState style_state;
+  const cgpui::AnimationCurve animation_curve =
+      cgpui::AnimationCurve::spring(cgpui::AnimationSpring{});
   cgpui::ElementKey element_key{.value = "header-key"};
   cgpui::ElementAnimationStateStore animation_store;
   animation_store.begin_frame(1, 0);
@@ -533,6 +536,7 @@ int main() {
   (void)animation_frame;
   (void)animated_element;
   (void)animated_sequence;
+  (void)animation_curve;
   style_state.base = cgpui::Style{}
                          .with_background_color(cgpui::rgb(0, 0, 0))
                          .with_align_items(cgpui::AlignItems::center)

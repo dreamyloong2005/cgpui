@@ -11355,3 +11355,33 @@
   stage path. Sequence-only state resolution belongs in a separate source so
   the Step 644 store and wrapper leaves remain below their structure caps.
 - Phase G Step 645 adds pinned-upstream-compatible infinite element animation repetition and indexed one-shot chains, with iteration observability, final-stage value delivery before advancement, reconstructed-wrapper persistence, invalid-sequence rejection, and shared runtime frame wakeups. Step 646 spring and tween variant production behavior is next.
+
+## 2026-07-13 Phase G Step 646 Spring And Tween Variant Baseline
+
+- The roadmap assigns Step 646 only spring/tween variants. Cancellation,
+  frame-pacing diagnostics, broader style interpolation, and official examples
+  remain the explicit Steps 647-650 boundaries.
+- The current public easing surface contains only linear, ease-in, ease-out,
+  and ease-in-out curves. Existing scalar/color/transform/style tween helpers
+  are fixed linear interpolation plus an optional enum easing; there is no
+  parameterized spring curve or reusable tween-curve value object yet.
+- Step 646 should stay in focused animation/style leaves and preserve the
+  existing enum-based compatibility path. It must not grow broad runtime or
+  element entry files merely to add curve mathematics.
+- The pinned upstream commit has no separate spring or tween module. Its only
+  GPUI animation implementation is `src/elements/animation.rs`; spring support
+  is therefore a CGPUI roadmap extension, not pinned-upstream API parity.
+- The pinned tween/easing set is linear, quadratic, quadratic ease-in-out,
+  ease-out-quint, a composable forward/reverse `bounce`, and
+  `pulsating_between(min, max)`. The official pinned animation example uses a
+  repeated `bounce(ease_in_out)` curve for its rotation.
+- A compact public curve value should preserve enum-based construction while
+  carrying parameterized bounce, pulse, and spring configuration without
+  heap-backed callbacks. Runtime transitions, lifecycle animations, animation
+  sequences, and `StyleTween` should all evaluate that same value so variants
+  do not diverge across animation entry points.
+- The implemented spring evaluator uses closed-form under-, critical-, and
+  over-damped oscillator solutions. Progress endpoints are exact, invalid or
+  non-finite parameter sets fall back to linear progress, and near-critical
+  damping uses a tolerance branch to avoid an unstable small denominator.
+- Phase G Step 646 adds zero-allocation animation curve variants with pinned-upstream quadratic, ease-out-quint, bounce, and pulsating tween behavior plus parameterized under-, critical-, and over-damped springs shared by runtime, element, sequence, and style animation paths. Step 647 animation cancellation production behavior is next.

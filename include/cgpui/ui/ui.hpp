@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/action.hpp"
+#include "cgpui/ui/animation_curve.hpp"
 #include "cgpui/ui/animation_transition.hpp"
 #include "cgpui/ui/element_animation.hpp"
 #include "cgpui/ui/element_animation_sequence.hpp"

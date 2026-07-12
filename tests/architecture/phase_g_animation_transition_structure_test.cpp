@@ -125,7 +125,7 @@ int main() {
   if (!contains(vocabulary, "`AnimationTransition`") ||
       !contains(core_parity, "typed scalar animation transitions") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 646 spring and tween "
-                "variant production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 647 animation cancellation "
+                "production behavior\"")) return 9;
   return 0;
 }

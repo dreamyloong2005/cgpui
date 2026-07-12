@@ -1349,6 +1349,17 @@ Windows/Linux core API is stable enough for parity work.
   sequence preservation, and four reconstructed runtime wrappers using three
   shared delayed wakeups; dedicated structure coverage freezes the public,
   private, source, inventory, pinned-upstream, and line-cap boundaries.
+- Completed: Phase G Step 646 adds zero-allocation animation curve variants with pinned-upstream quadratic, ease-out-quint, bounce, and pulsating tween behavior plus parameterized under-, critical-, and over-damped springs shared by runtime, element, sequence, and style animation paths. Step 647 animation cancellation production behavior is next.
+- Step 646 boundary: `AnimationCurve` is a trivially-copyable public leaf with
+  no callback or container ownership. Its inherited default delegates to the
+  existing `AnimationEasing`, while explicit curves share one focused evaluator
+  across runtime snapshots, element lifecycle state, sequences, and style
+  tweening. Spring support is a roadmap extension, not a pinned-upstream claim.
+- Step 646 evidence: focused behavior freezes pinned formula values,
+  invalid-spring fallback, under/critical/over-damped finite evaluation,
+  40-byte maximum value storage, shared element/style results, and real runtime
+  snapshot retention and completion; dedicated structure coverage freezes the
+  leaf ownership, integration points, inventories, registration, and line caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.

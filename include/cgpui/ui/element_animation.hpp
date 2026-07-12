@@ -22,6 +22,7 @@ struct ElementAnimationSnapshot {
   float linear_progress = 0.0F;
   float eased_progress = 0.0F;
   AnimationEasing easing = AnimationEasing::linear;
+  AnimationCurve curve;
   std::size_t stage_index = 0;
   std::uint64_t iteration = 0;
   bool repeating = false;
