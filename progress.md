@@ -22939,3 +22939,15 @@
   dynamic handoff guards pass 72/72, and the existing Arch Linux WSL shared
   source/structure group passes 8/8.
 - Phase G Step 625 verifies Win32 UIA lifecycle diagnostics and stress behavior across 128 concurrent stable updates and 64 remove/recreate cycles. Step 626 Win32 UIA production closeout audit is next.
+
+## 2026-07-12 Phase G Step 626 Win32 UIA Closeout
+
+- Started from committed Step 625 at `71863dbd` with only unrelated untracked
+  `.vscode/` present.
+- Added an audit-only closeout target aggregating the seven Steps 619-625 UIA
+  structure guards, all core behavior targets, the source inventory, and the
+  closed roadmap band; no production source changed.
+- Final Step 626 verification passes the Windows UIA/accessibility closeout
+  regression 20/20, the complete dynamic-handoff group 73/73, and the existing
+  Arch Linux WSL shared/source/closeout group 9/9.
+- Phase G Step 626 audits and closes the Win32 UIA production band, freezing provider objects, navigation, patterns, live events, runtime change integration, provider lifetime, diagnostics, and stress evidence. Step 627 Linux AT-SPI D-Bus object exposure production behavior is next.

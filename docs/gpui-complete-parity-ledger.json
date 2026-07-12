@@ -2907,7 +2907,20 @@
       "xmake.lua"
     ],
     "phase_g_step_625_remaining_gap": "Step 626 Win32 UIA production closeout audit",
-    "phase_f_current_handoff": "Step 626 Win32 UIA production closeout audit"
+    "phase_g_step_626_surface": "Phase G Step 626 audits and closes the Win32 UIA production band, freezing provider objects, navigation, patterns, live events, runtime change integration, provider lifetime, diagnostics, and stress evidence. Step 627 Linux AT-SPI D-Bus object exposure production behavior is next.",
+    "phase_g_step_626_sources": [
+      "tests/architecture/phase_g_win32_uia_provider_object_structure_test.cpp",
+      "tests/architecture/phase_g_win32_uia_tree_navigation_structure_test.cpp",
+      "tests/architecture/phase_g_win32_uia_pattern_provider_structure_test.cpp",
+      "tests/architecture/phase_g_win32_uia_live_event_structure_test.cpp",
+      "tests/architecture/phase_g_win32_uia_change_integration_structure_test.cpp",
+      "tests/architecture/phase_g_win32_uia_provider_lifetime_structure_test.cpp",
+      "tests/architecture/phase_g_win32_uia_lifecycle_stress_structure_test.cpp",
+      "tests/api_parity/phase_g_win32_uia_closeout_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_626_remaining_gap": "Step 627 Linux AT-SPI D-Bus object exposure production behavior",
+    "phase_f_current_handoff": "Step 627 Linux AT-SPI D-Bus object exposure production behavior"
   },
   "categories": [
     "application_and_app_context",

@@ -1226,7 +1226,11 @@ Windows/Linux core API is stable enough for parity work.
   remain allocation-free counters over existing loops; a reader thread queries
   value, runtime id, and parent navigation during 128 stable updates, followed
   by 64 remove/recreate cycles with exact diagnostic and unavailable checks.
-- In progress: Step 626 Win32 UIA production closeout audit.
+- Completed: Phase G Step 626 audits and closes the Win32 UIA production band, freezing provider objects, navigation, patterns, live events, runtime change integration, provider lifetime, diagnostics, and stress evidence. Step 627 Linux AT-SPI D-Bus object exposure production behavior is next.
+- Step 626 evidence: an audit-only closeout target requires all seven focused
+  Win32 UIA structure guards, every core behavior target, the Win32 source
+  inventory, and the closed Steps 619-626 roadmap band without production edits.
+- In progress: Step 627 Linux AT-SPI D-Bus object exposure production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.

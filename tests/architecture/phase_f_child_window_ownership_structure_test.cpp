@@ -152,7 +152,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 626 Win32 UIA production closeout audit")) {
+                "\"phase_f_current_handoff\": \"Step 627 Linux AT-SPI D-Bus object exposure production behavior")) {
     return 9;
   }
   return 0;

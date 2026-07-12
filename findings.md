@@ -10958,3 +10958,12 @@
 - Sixty-four remove/recreate cycles verify each retired external reference is
   unavailable and each replacement receives a distinct COM identity.
 - Phase G Step 625 verifies Win32 UIA lifecycle diagnostics and stress behavior across 128 concurrent stable updates and 64 remove/recreate cycles. Step 626 Win32 UIA production closeout audit is next.
+
+## 2026-07-12 Phase G Step 626 Win32 UIA Closeout
+
+- The Win32 UIA band has focused behavior and structure evidence for provider
+  objects, fragment navigation, pattern actions, live events, runtime change
+  integration, stable lifetime, unavailable teardown, diagnostics, and stress.
+- Step 626 can remain audit-only by aggregating those guards and targets while
+  freezing the Win32 source inventory and the closed Steps 619-626 roadmap row.
+- Phase G Step 626 audits and closes the Win32 UIA production band, freezing provider objects, navigation, patterns, live events, runtime change integration, provider lifetime, diagnostics, and stress evidence. Step 627 Linux AT-SPI D-Bus object exposure production behavior is next.

@@ -752,6 +752,7 @@ consume C: drive space again.
 - Phase G Step 623 integrates runtime-generated Win32 UIA focus, value, and text changes end to end through the platform window and adapter event publisher. Step 624 Win32 UIA provider lifetime production behavior is next.
 - Phase G Step 624 preserves Win32 UIA provider COM identity across stable element updates, refreshes provider state in place, and retires removed or destroyed providers with element-unavailable semantics. Step 625 Win32 UIA lifecycle stress production behavior is next.
 - Phase G Step 625 verifies Win32 UIA lifecycle diagnostics and stress behavior across 128 concurrent stable updates and 64 remove/recreate cycles. Step 626 Win32 UIA production closeout audit is next.
+- Phase G Step 626 audits and closes the Win32 UIA production band, freezing provider objects, navigation, patterns, live events, runtime change integration, provider lifetime, diagnostics, and stress evidence. Step 627 Linux AT-SPI D-Bus object exposure production behavior is next.
 
 ## Categories
 
