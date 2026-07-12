@@ -10967,3 +10967,23 @@
 - Step 626 can remain audit-only by aggregating those guards and targets while
   freezing the Win32 source inventory and the closed Steps 619-626 roadmap row.
 - Phase G Step 626 audits and closes the Win32 UIA production band, freezing provider objects, navigation, patterns, live events, runtime change integration, provider lifetime, diagnostics, and stress evidence. Step 627 Linux AT-SPI D-Bus object exposure production behavior is next.
+
+## 2026-07-12 Phase G Step 627 AT-SPI D-Bus Object Exposure Design
+
+- The existing Wayland accessibility adapter is still an in-memory facade: it
+  derives deterministic AT-SPI-looking object paths from snapshots, but it has
+  no D-Bus connection, object-path registration, message dispatch, reply
+  generation, or unregister behavior.
+- The existing Arch Linux WSL environment provides system `dbus-1` 1.16.2,
+  including headers and `-ldbus-1`; Step 627 can use real libdbus types and
+  messages without installing or restoring anything.
+- Step 627 ownership is three focused private leaves: the AT-SPI object record,
+  a D-Bus object registry/dispatcher, and adapter coordination. The broad
+  Wayland services header remains declarations-only and the window entry stays
+  unchanged.
+- This step registers and unregisters per-element object paths on an explicitly
+  supplied D-Bus connection and handles baseline Introspectable plus AT-SPI
+  Accessible interface discovery. Accessibility-bus discovery, reconnect, and
+  long-lived bus teardown policy remain in the later bus-lifecycle slice;
+  navigation, roles/states, and events remain their named following slices.
+- Phase G Step 627 exposes Linux AT-SPI accessibility objects on an attached D-Bus connection with deterministic object-path registration, introspection, interface discovery, removal, teardown, and diagnostics. Step 628 Linux AT-SPI tree navigation production behavior is next.

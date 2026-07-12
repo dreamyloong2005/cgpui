@@ -2920,7 +2920,22 @@
       "xmake.lua"
     ],
     "phase_g_step_626_remaining_gap": "Step 627 Linux AT-SPI D-Bus object exposure production behavior",
-    "phase_f_current_handoff": "Step 627 Linux AT-SPI D-Bus object exposure production behavior"
+    "phase_g_step_627_surface": "Phase G Step 627 exposes Linux AT-SPI accessibility objects on an attached D-Bus connection with deterministic object-path registration, introspection, interface discovery, removal, teardown, and diagnostics. Step 628 Linux AT-SPI tree navigation production behavior is next.",
+    "phase_g_step_627_sources": [
+      "src/platform/linux/wayland_atspi_object_internal.hpp",
+      "src/platform/linux/wayland_atspi_object.cpp",
+      "src/platform/linux/wayland_atspi_dbus_internal.hpp",
+      "src/platform/linux/wayland_atspi_dbus.cpp",
+      "src/platform/linux/wayland_atspi_dbus_messages_internal.hpp",
+      "src/platform/linux/wayland_atspi_dbus_messages.cpp",
+      "src/platform/linux/wayland_accessibility_internal.hpp",
+      "src/platform/linux/wayland_accessibility.cpp",
+      "tests/platform/wayland_atspi_dbus_object_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_dbus_object_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_627_remaining_gap": "Step 628 Linux AT-SPI tree navigation production behavior",
+    "phase_f_current_handoff": "Step 628 Linux AT-SPI tree navigation production behavior"
   },
   "categories": [
     "application_and_app_context",

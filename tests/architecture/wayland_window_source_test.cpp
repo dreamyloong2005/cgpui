@@ -158,6 +158,13 @@ std::string read_wayland_source() {
       "src/platform/linux/wayland_data_device_drag_events.cpp",
       "src/platform/linux/wayland_data_device_drag.cpp",
       "src/platform/linux/wayland_data_device_payload.cpp",
+      "src/platform/linux/wayland_atspi_object_internal.hpp",
+      "src/platform/linux/wayland_atspi_object.cpp",
+      "src/platform/linux/wayland_atspi_dbus_internal.hpp",
+      "src/platform/linux/wayland_atspi_dbus.cpp",
+      "src/platform/linux/wayland_atspi_dbus_messages_internal.hpp",
+      "src/platform/linux/wayland_atspi_dbus_messages.cpp",
+      "src/platform/linux/wayland_accessibility_internal.hpp",
       "src/platform/linux/wayland_accessibility.cpp",
       "src/platform/linux/wayland_native.cpp",
       "src/platform/linux/wayland_event_loop.cpp",
@@ -359,7 +366,7 @@ int main(int argc, char** argv) {
       !contains(text, "atspi_object_nodes_") ||
       !contains(text, "atspi_object_nodes()") ||
       !contains(text, "std::string object_path") ||
-      !contains(text, "atspi_object_path_for(") ||
+      !contains(text, "wayland_atspi_object_path_for(") ||
       !contains(text, "\"/org/a11y/atspi/accessible/\"") ||
       !contains(text, "role = node.role") ||
       !contains(text, "name = node.name") ||

@@ -105,7 +105,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 627 Linux AT-SPI D-Bus object exposure production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 628 Linux AT-SPI tree navigation production behavior")) {
     return 11;
   }
   return 0;

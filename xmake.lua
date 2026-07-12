@@ -14,6 +14,7 @@ end
 
 if is_plat("linux") then
     add_requires("wayland")
+    add_requires("dbus", {system = true})
     add_requires("libxkbcommon", {configs = {x11 = false, wayland = false, tools = false}})
     add_requires("fontconfig", {system = true, optional = true})
 end
@@ -637,6 +638,13 @@ target("phase_g_win32_uia_closeout_test")
     add_files("tests/api_parity/phase_g_win32_uia_closeout_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_wayland_atspi_dbus_object_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_g_wayland_atspi_dbus_object_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -1011,13 +1019,21 @@ if is_plat("linux") then
         set_kind("static")
         add_files("src/platform/linux/*.cpp")
         add_deps("cgpui_core", "cgpui_platform")
-        add_packages("wayland", "libxkbcommon")
+        add_packages("wayland", "dbus", "libxkbcommon")
         add_syslinks("wayland-cursor", {public = true})
         if has_package("fontconfig") then
             add_packages("fontconfig")
             add_defines("CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND")
         end
         add_includedirs(public_includedirs, {public = true})
+
+    target("phase_g_wayland_atspi_dbus_object_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_atspi_dbus_object_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_packages("dbus")
+        add_includedirs(public_includedirs, "src/platform/linux")
+        add_tests("default")
 
     target("wayland_compositor_close_test")
         set_kind("binary")

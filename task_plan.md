@@ -1230,7 +1230,12 @@ Windows/Linux core API is stable enough for parity work.
 - Step 626 evidence: an audit-only closeout target requires all seven focused
   Win32 UIA structure guards, every core behavior target, the Win32 source
   inventory, and the closed Steps 619-626 roadmap band without production edits.
-- In progress: Step 627 Linux AT-SPI D-Bus object exposure production behavior.
+- Completed: Phase G Step 627 exposes Linux AT-SPI accessibility objects on an attached D-Bus connection with deterministic object-path registration, introspection, interface discovery, removal, teardown, and diagnostics. Step 628 Linux AT-SPI tree navigation production behavior is next.
+- Step 627 evidence: focused object-model, D-Bus registry, message serialization,
+  and adapter leaves register and unregister deterministic element paths,
+  dispatch real libdbus Introspect/GetInterfaces calls, and expose exact
+  registration, removal, method, failure, and active-object diagnostics.
+- In progress: Step 628 Linux AT-SPI tree navigation production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1246,6 +1251,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The third Step 627 74-guard run moved the only failure to the cross-platform aggregate because it still required the WSL guard's Step 627 nested handoff | Step 627 dynamic handoff gate second retry | Advance the final WSL-to-cross-platform nested assertion to Step 628 while retaining the Step 613 completion sentence |
+| The second Step 627 74-guard run moved the only failure from the Windows aggregate to the WSL aggregate because it still required the Windows guard's Step 627 nested handoff | Step 627 dynamic handoff gate retry | Advance the WSL-to-Windows nested assertion to Step 628 without changing the frozen Step 612 completion evidence |
+| The first Step 627 74-guard handoff run passed 73/74 because the Windows full-debug aggregate still required its child guard to contain the Step 627 handoff | Step 627 dynamic handoff gate | Advance the nested child-guard assertion to Step 628 while preserving the historical Step 611 completion sentence |
+| The first Step 627 behavior run aborted because the synthetic libdbus method calls had reply serial 0 | Step 627 first GREEN run | Assign a nonzero monotonically increasing serial in the test message factory; real bus-delivered calls already carry serials |
 | Step 624 initially pushed `win32_uia_provider.cpp`, `win32_uia_navigation.cpp`, and `win32_uia_patterns.cpp` past their frozen 190/230/130-line caps | Step 624 first GREEN structure audit | Extract host state, tree-state replacement, and RangeValue behavior into focused leaves; restored the files to 186/189/88 lines |
 | Step 622 live-event structure guard still required provider-tree creation in `win32_uia_updates.cpp` after Step 624 moved ownership | Step 624 historical regression group | Read the focused lifecycle leaf and require creation there while preserving the Step 622 completion sentence |
 | A combined historical-guard patch missed one exact context block | Step 624 modular structure repair | Split the patch by guard file and apply the ownership updates independently |

@@ -22951,3 +22951,21 @@
   regression 20/20, the complete dynamic-handoff group 73/73, and the existing
   Arch Linux WSL shared/source/closeout group 9/9.
 - Phase G Step 626 audits and closes the Win32 UIA production band, freezing provider objects, navigation, patterns, live events, runtime change integration, provider lifetime, diagnostics, and stress evidence. Step 627 Linux AT-SPI D-Bus object exposure production behavior is next.
+
+## 2026-07-12 Phase G Step 627 AT-SPI D-Bus Object Exposure
+
+- Started from committed Step 626 at `50c71163` with only unrelated untracked
+  `.vscode/` present.
+- Confirmed the current adapter exposes only in-memory object records and that
+  the existing Arch Linux WSL has system libdbus 1.16.2 available.
+- Chosen modular boundary: focused object-model, D-Bus registry/dispatch, and
+  adapter-coordination leaves, with a Linux behavior test using real
+  `DBusMessage` objects and injected registration/send operations.
+- The behavior target passes real libdbus Introspect/GetInterfaces replies,
+  deterministic two-object registration, removed-object unregistration,
+  detach cleanup, and exact lifecycle/method diagnostics.
+- Windows source/structure/ledger regression passes 5/5, the existing Arch
+  Linux WSL behavior/source/structure/ledger group passes 5/5, and all 74
+  dynamic handoff guards pass together after advancing the three nested
+  Windows/WSL/cross-platform aggregate assertions.
+- Phase G Step 627 exposes Linux AT-SPI accessibility objects on an attached D-Bus connection with deterministic object-path registration, introspection, interface discovery, removal, teardown, and diagnostics. Step 628 Linux AT-SPI tree navigation production behavior is next.

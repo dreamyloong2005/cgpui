@@ -183,6 +183,13 @@ int main(int argc, char** argv) {
       "src/platform/linux/wayland_data_device_drag_events.cpp",
       "src/platform/linux/wayland_data_device_drag.cpp",
       "src/platform/linux/wayland_data_device_payload.cpp",
+      "src/platform/linux/wayland_atspi_object_internal.hpp",
+      "src/platform/linux/wayland_atspi_object.cpp",
+      "src/platform/linux/wayland_atspi_dbus_internal.hpp",
+      "src/platform/linux/wayland_atspi_dbus.cpp",
+      "src/platform/linux/wayland_atspi_dbus_messages_internal.hpp",
+      "src/platform/linux/wayland_atspi_dbus_messages.cpp",
+      "src/platform/linux/wayland_accessibility_internal.hpp",
       "src/platform/linux/wayland_accessibility.cpp",
       "src/platform/linux/wayland_native.cpp",
       "src/platform/linux/wayland_event_loop.cpp",
@@ -932,11 +939,19 @@ int main(int argc, char** argv) {
     return 26;
   }
 
+  const std::string accessibility_header =
+      read_source("src/platform/linux/wayland_accessibility_internal.hpp");
+  const std::string atspi_object =
+      read_source("src/platform/linux/wayland_atspi_object_internal.hpp");
+  const std::string atspi_dbus =
+      read_source("src/platform/linux/wayland_atspi_dbus.cpp");
   const std::string accessibility =
       read_source("src/platform/linux/wayland_accessibility.cpp");
-  if (!contains(accessibility, "class WaylandAtspiAccessibilityAdapter") ||
-      !contains(accessibility, "WaylandAtspiObjectNode") ||
-      !contains(accessibility, "PlatformAccessibilityTreeUpdate")) {
+  if (!contains(accessibility_header,
+                "class WaylandAtspiAccessibilityAdapter") ||
+      !contains(atspi_object, "struct WaylandAtspiObjectNode") ||
+      !contains(accessibility, "PlatformAccessibilityTreeUpdate") ||
+      !contains(atspi_dbus, "dbus_connection_register_object_path")) {
     return 8;
   }
 

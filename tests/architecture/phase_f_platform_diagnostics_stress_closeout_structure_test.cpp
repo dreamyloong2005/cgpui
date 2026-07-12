@@ -71,6 +71,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 5;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 627 Linux AT-SPI D-Bus object exposure production behavior\"")) return 6;
+                "\"phase_f_current_handoff\": \"Step 628 Linux AT-SPI tree navigation production behavior\"")) return 6;
   return 0;
 }
