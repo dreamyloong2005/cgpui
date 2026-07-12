@@ -59,7 +59,7 @@ int main() {
       !contains(event_header, "class WaylandAtspiEventPublisher") ||
       !contains(event_header, "missing_object_count") ||
       !contains(event_header, "no_connection_count") ||
-      !contains(event_header, "deferred_focus_count") ||
+      !contains(event_header, "focus_event_count") ||
       !contains(event_header, "send_failure_count")) {
     return 2;
   }
@@ -75,7 +75,7 @@ int main() {
   }
   if (!contains(event_source, "diagnostics_.missing_object_count += 1") ||
       !contains(event_source, "diagnostics_.no_connection_count += 1") ||
-      !contains(event_source, "diagnostics_.deferred_focus_count += 1") ||
+      !contains(event_source, "diagnostics_.focus_event_count += 1") ||
       !contains(event_source, "diagnostics_.send_failure_count += 1")) {
     return 4;
   }
@@ -96,8 +96,7 @@ int main() {
   if (!contains(behavior, "siiv(so)") ||
       !contains(behavior, "text.detail2 != 2") ||
       !contains(behavior, "diagnostics.no_connection_count != 1") ||
-      !contains(behavior, "diagnostics.send_failure_count != 1") ||
-      !contains(behavior, "diagnostics.deferred_focus_count != 1")) {
+      !contains(behavior, "diagnostics.send_failure_count != 1")) {
     return 7;
   }
   if (!contains(xmake,
@@ -126,8 +125,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 631 Linux AT-SPI focus "
-          "event production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior\"")) {
     return 11;
   }
   return 0;

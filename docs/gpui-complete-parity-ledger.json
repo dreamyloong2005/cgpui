@@ -2976,7 +2976,18 @@
       "xmake.lua"
     ],
     "phase_g_step_630_remaining_gap": "Step 631 Linux AT-SPI focus event production behavior",
-    "phase_f_current_handoff": "Step 631 Linux AT-SPI focus event production behavior"
+    "phase_g_step_631_surface": "Phase G Step 631 publishes Linux AT-SPI focused state changes for focus gain and loss with standard Object StateChanged signals, source references, and publication diagnostics. Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior is next.",
+    "phase_g_step_631_sources": [
+      "src/platform/linux/wayland_atspi_events_internal.hpp",
+      "src/platform/linux/wayland_atspi_events.cpp",
+      "tests/platform/wayland_atspi_event_test_support.hpp",
+      "tests/platform/wayland_atspi_text_value_event_test.cpp",
+      "tests/platform/wayland_atspi_focus_event_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_focus_event_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_631_remaining_gap": "Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior",
+    "phase_f_current_handoff": "Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior"
   },
   "categories": [
     "application_and_app_context",

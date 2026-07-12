@@ -1,46 +1,11 @@
 #include "wayland_accessibility_internal.hpp"
-#include "wayland_atspi_dbus_test_support.hpp"
+#include "wayland_atspi_event_test_support.hpp"
 #include "wayland_atspi_events_internal.hpp"
 #include "wayland_services_internal.hpp"
 
 #include <dbus/dbus.h>
 
-#include <cstdint>
 #include <string>
-
-namespace {
-
-struct EventPayload {
-  std::string detail;
-  std::int32_t detail1 = 0;
-  std::int32_t detail2 = 0;
-  std::string value;
-  cgpui::test::AtspiObjectReference source;
-};
-
-EventPayload event_payload(DBusMessage* message) {
-  DBusMessageIter root;
-  dbus_message_iter_init(message, &root);
-  EventPayload payload;
-  const char* detail = nullptr;
-  dbus_message_iter_get_basic(&root, &detail);
-  payload.detail = detail == nullptr ? "" : detail;
-  dbus_message_iter_next(&root);
-  dbus_message_iter_get_basic(&root, &payload.detail1);
-  dbus_message_iter_next(&root);
-  dbus_message_iter_get_basic(&root, &payload.detail2);
-  dbus_message_iter_next(&root);
-  DBusMessageIter variant;
-  dbus_message_iter_recurse(&root, &variant);
-  const char* value = nullptr;
-  dbus_message_iter_get_basic(&variant, &value);
-  payload.value = value == nullptr ? "" : value;
-  dbus_message_iter_next(&root);
-  payload.source = cgpui::test::read_object_reference(&root);
-  return payload;
-}
-
-} // namespace
 
 int main() {
   using namespace cgpui;
@@ -88,11 +53,6 @@ int main() {
       .element_id = 99,
       .value = "missing",
   });
-  update.live_updates.push_back(PlatformAccessibilityLiveUpdate{
-      .kind = PlatformAccessibilityLiveUpdateKind::focus_changed,
-      .element_id = 10,
-      .focused = true,
-  });
   wayland_atspi_update_accessibility_tree(*adapter, std::move(update));
 
   if (recorder.sent_messages.size() != 2) return 1;
@@ -105,7 +65,7 @@ int main() {
       std::string(dbus_message_get_signature(value_event)) != "siiv(so)") {
     return 2;
   }
-  const EventPayload value = event_payload(value_event);
+  const auto value = test::read_atspi_event_payload(value_event);
   if (value.detail != "accessible-value" || value.value != "42" ||
       value.source != test::AtspiObjectReference{
           ":1.88", "/org/a11y/atspi/accessible/10"}) {
@@ -117,7 +77,7 @@ int main() {
       std::string(dbus_message_get_signature(text_event)) != "siiv(so)") {
     return 4;
   }
-  const EventPayload text = event_payload(text_event);
+  const auto text = test::read_atspi_event_payload(text_event);
   if (text.detail != "insert" || text.detail1 != 0 || text.detail2 != 2 ||
       text.value != "A\xC3\xA9") {
     return 5;
@@ -169,7 +129,6 @@ int main() {
       diagnostics.text_event_count != 1 ||
       diagnostics.missing_object_count != 1 ||
       diagnostics.no_connection_count != 1 ||
-      diagnostics.deferred_focus_count != 1 ||
       diagnostics.send_failure_count != 1) {
     return 8;
   }

@@ -127,7 +127,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 631 Linux AT-SPI focus event production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior\"")) {
     return 9;
   }
   return 0;

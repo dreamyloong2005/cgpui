@@ -12,7 +12,7 @@ struct WaylandAtspiEventDiagnostics {
   std::size_t text_event_count = 0;
   std::size_t missing_object_count = 0;
   std::size_t no_connection_count = 0;
-  std::size_t deferred_focus_count = 0;
+  std::size_t focus_event_count = 0;
   std::size_t send_failure_count = 0;
 };
 

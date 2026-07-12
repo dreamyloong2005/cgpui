@@ -11030,3 +11030,15 @@
   the connection unique name and object path, and UTF-8 text length counts code
   points rather than bytes.
 - Phase G Step 630 publishes Linux AT-SPI value property and text change events from runtime accessibility live updates with standard Object event signals, UTF-8 text lengths, source references, and publication diagnostics. Step 631 Linux AT-SPI focus event production behavior is next.
+
+## 2026-07-12 Phase G Step 631 AT-SPI Focus Events Design
+
+- Focus changes belong to the existing focused AT-SPI event publisher rather
+  than a second adapter or broad Wayland entry file.
+- A focus update will emit the standard Object `StateChanged` signal with
+  detail `focused`, detail1 set to 1/0, detail2 zero, an empty variant payload,
+  and the same `(so)` source reference used by the text/value events.
+- The temporary Step 630 deferred-focus diagnostic should be replaced by a
+  successful focus-event count. Text/value and focus tests will share a focused
+  event-payload reader outside the already capped D-Bus recorder.
+- Phase G Step 631 publishes Linux AT-SPI focused state changes for focus gain and loss with standard Object StateChanged signals, source references, and publication diagnostics. Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior is next.

@@ -85,10 +85,6 @@ void WaylandAtspiEventPublisher::publish(
       diagnostics_.missing_object_count += 1;
       continue;
     }
-    if (update.kind == PlatformAccessibilityLiveUpdateKind::focus_changed) {
-      diagnostics_.deferred_focus_count += 1;
-      continue;
-    }
     if (connection_ == nullptr || operations_.send == nullptr) {
       diagnostics_.no_connection_count += 1;
       continue;
@@ -107,6 +103,11 @@ void WaylandAtspiEventPublisher::publish(
           *object, "TextChanged", "insert", 0,
           static_cast<std::int32_t>(utf8_code_point_count(update.text)),
           update.text, unique_name == nullptr ? "" : unique_name);
+    } else if (update.kind ==
+               PlatformAccessibilityLiveUpdateKind::focus_changed) {
+      message = event_message(
+          *object, "StateChanged", "focused", update.focused ? 1 : 0, 0,
+          {}, unique_name == nullptr ? "" : unique_name);
     }
     if (message == nullptr ||
         !operations_.send(connection_, message, nullptr)) {
@@ -116,8 +117,11 @@ void WaylandAtspiEventPublisher::publish(
     }
     if (update.kind == PlatformAccessibilityLiveUpdateKind::value_changed) {
       diagnostics_.value_event_count += 1;
-    } else {
+    } else if (update.kind ==
+               PlatformAccessibilityLiveUpdateKind::text_changed) {
       diagnostics_.text_event_count += 1;
+    } else {
+      diagnostics_.focus_event_count += 1;
     }
     dbus_message_unref(message);
   }

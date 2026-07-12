@@ -1880,6 +1880,7 @@ apps rather than only demo windows.
 - [x] Phase G Step 628 adds Linux AT-SPI Accessible tree navigation with Parent and ChildCount properties, ordered child lookup and enumeration, parent indexes, application roots, and standard D-Bus object references. Step 629 Linux AT-SPI roles and states production behavior is next.
 - [x] Phase G Step 629 maps Linux accessibility nodes to standard AT-SPI roles, role names, and two-word state sets covering visibility, enablement, sensitivity, focus, checkability, checked state, and editability. Step 630 Linux AT-SPI text and value event production behavior is next.
 - [x] Phase G Step 630 publishes Linux AT-SPI value property and text change events from runtime accessibility live updates with standard Object event signals, UTF-8 text lengths, source references, and publication diagnostics. Step 631 Linux AT-SPI focus event production behavior is next.
+- [x] Phase G Step 631 publishes Linux AT-SPI focused state changes for focus gain and loss with standard Object StateChanged signals, source references, and publication diagnostics. Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior is next.
 - [x] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
 - [ ] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree

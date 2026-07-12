@@ -1249,7 +1249,13 @@ Windows/Linux core API is stable enough for parity work.
   reconciliation, counts UTF-8 code points, and diagnoses missing objects,
   absent connections, deferred focus, and failed sends under a dedicated
   behavior target and modular structure guard.
-- In progress: Step 631 Linux AT-SPI focus event production behavior.
+- Completed: Phase G Step 631 publishes Linux AT-SPI focused state changes for focus gain and loss with standard Object StateChanged signals, source references, and publication diagnostics. Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior is next.
+- Step 631 evidence: focus gain and loss updates emit standard `siiv(so)`
+  Object StateChanged signals with `focused` detail, 1/0 state values, empty
+  variant payloads, stable source references, and a dedicated publication count;
+  text/value and focus tests share a focused event-payload parser.
+- In progress: Step 632 Linux AT-SPI accessibility bus discovery and connection
+  production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1265,6 +1271,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 631 structure run exited 9 after implementation and layout assertions passed | Step 631 structure RED | Synchronize the five authority documents and advance the current handoff to Step 632 before rerunning GREEN |
+| The first Step 631 focus-event build failed because the planned shared event-payload test helper did not exist | Step 631 behavior RED | Add the focused helper, reuse it from Step 630, and implement standard focused StateChanged publication in the existing event publisher |
+| A Step 631 resume search again passed a Windows wildcard path directly to `rg` and failed with OS error 123 | Step 631 focus-event audit | Search the explicit `tests/platform` directory with `--glob 'wayland_atspi*'` instead of a wildcard path operand |
 | The first complete Step 630 handoff group passed 76/77 because the shared D-Bus recorder grew from its frozen 230-line cap to 231 | Step 630 dynamic handoff gate | Remove one non-semantic blank line while retaining failed-send coverage and rerun the historical navigation guard before the full group |
 | The first Step 630 bounded handoff script stopped after two files because one guard omits the escaped JSON closing quote | Step 630 dynamic handoff update | Match through the stable `production behavior` words, preserve each source suffix, and assert the 74 remaining direct plus three nested updates |
 | The first Step 630 structure run exited 10 after code and layout assertions passed | Step 630 structure RED | Synchronize the five authority documents and advance the current handoff to Step 631 before rerunning GREEN |

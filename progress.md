@@ -23026,3 +23026,27 @@
   event source, adapter header/source, shared recorder, behavior test, and
   structure guard are 36/130/50/98/230/177/134 lines; and
   `git diff --check` succeeds.
+
+## 2026-07-12 Phase G Step 631 AT-SPI Focus Events
+
+- Started from committed Step 630 at `a15a7315` with only unrelated untracked
+  `.vscode/` present.
+- Chosen ownership keeps focus publication in the focused AT-SPI event
+  publisher and introduces a shared event-payload test helper, leaving the
+  broad Wayland accessibility adapter as coordination only.
+- The focused behavior target reached the expected RED compile because the
+  planned shared event-payload test helper did not yet exist.
+- Added the shared event-payload test helper and standard focused StateChanged
+  publication. Focus plus text/value behavior passes 2/2 in WSL.
+- The Step 631 structure guard reached the expected authority-document RED at
+  exit 9 after all code, helper, behavior, Xmake, and line-cap checks passed.
+- Final Step 631 verification passes the Windows structure/ledger regression
+  6/6, the existing Arch Linux WSL behavior/structure/source/ledger group
+  13/13, and the complete dynamic-handoff chain 78/78.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 78 handoff guards and the ledger point to Step
+  632 with zero stale Step 631 current handoffs; JSON parses; event header,
+  event source, shared event helper, text/value test, focus test, and focus
+  structure guard are 36/134/40/136/83/112 lines; and `git diff --check`
+  succeeds.
+- Phase G Step 631 publishes Linux AT-SPI focused state changes for focus gain and loss with standard Object StateChanged signals, source references, and publication diagnostics. Step 632 Linux AT-SPI accessibility bus discovery and connection production behavior is next.
