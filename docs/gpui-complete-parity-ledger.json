@@ -2802,7 +2802,19 @@
       "xmake.lua"
     ],
     "phase_f_step_617_remaining_gap": "Step 618 Phase F final closeout",
-    "phase_f_current_handoff": "Step 618 Phase F final closeout"
+    "phase_f_step_618_surface": "Phase F final closeout: Steps 611-618 close with `tests/api_parity/phase_f_final_closeout_test.cpp`; Windows full debug suite passes 343/343 and WSL Arch Linux full debug suite passes 325/325, including active-display Wayland frame pixel capture on `WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The required Win32/Wayland platform production path is complete for Phase F, and Phase G Step 619 Win32 UIA provider object production depth is next.",
+    "phase_f_step_618_sources": [
+      "tests/api_parity/phase_f_final_closeout_test.cpp",
+      "tests/architecture/phase_f_platform_production_path_audit_test.cpp",
+      "docs/gpui-complete-parity-ledger.md",
+      "docs/gpui-complete-parity-ledger.json",
+      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md",
+      "task_plan.md",
+      "findings.md",
+      "xmake.lua"
+    ],
+    "phase_f_step_618_remaining_gap": "Phase G Step 619 Win32 UIA provider object production depth",
+    "phase_f_current_handoff": "Phase G Step 619 Win32 UIA provider object production depth"
   },
   "categories": [
     "application_and_app_context",

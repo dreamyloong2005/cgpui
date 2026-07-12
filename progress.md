@@ -22698,3 +22698,20 @@
 - Final Windows and WSL final-band plus ledger verification passes 6/6; JSON
   parsing, five-document phrase uniqueness, 65 Step 618 dynamic handoffs, zero
   stale Step 617 handoffs, 68/169/114 line caps, and `git diff --check` pass.
+
+## 2026-07-12 Phase F Step 618 Final Closeout
+
+- Started from committed Step 617 at `1dd7cb23`.
+- Marked the roadmap Steps 611-618 complete, changed the active Phase F status
+  to complete, strengthened `phase_f_final_closeout_test` around the final host
+  totals and Phase G handoff, and synchronized the Markdown/JSON ledgers plus
+  planning files.
+- Step 618 changes only documentation and audit expectations, with no
+  production source or Xmake registration change. Step 617 remains the final
+  full 343/343 Windows and 325/325 WSL gate; every changed final-band guard is
+  rerun on both hosts for Step 618.
+- Phase F final closeout: Steps 611-618 close with `tests/api_parity/phase_f_final_closeout_test.cpp`; Windows full debug suite passes 343/343 and WSL Arch Linux full debug suite passes 325/325, including active-display Wayland frame pixel capture on `WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The required Win32/Wayland platform production path is complete for Phase F, and Phase G Step 619 Win32 UIA provider object production depth is next.
+- Final Windows and WSL final-band plus ledger verification passes 6/6; JSON
+  parsing, five-document final phrase uniqueness, completed roadmap/status,
+  65 Phase G Step 619 dynamic handoffs, zero stale Step 618 handoffs,
+  83/169/114 line caps, and `git diff --check` pass.

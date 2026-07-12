@@ -59,7 +59,7 @@ int main() {
   }
   if (!contains(xmake,
                 "target(\"phase_f_wsl_full_debug_verification_structure_test\")") ||
-      !contains(windows_guard, "Step 618 Phase F final closeout")) {
+      !contains(windows_guard, "Phase G Step 619 Win32 UIA provider object production depth")) {
     return 20;
   }
 
@@ -69,6 +69,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 21;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 618 Phase F final closeout\"")) return 22;
+                "\"phase_f_current_handoff\": \"Phase G Step 619 Win32 UIA provider object production depth\"")) return 22;
   return 0;
 }

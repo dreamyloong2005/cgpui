@@ -83,7 +83,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 618 Phase F final closeout")) {
+                "\"phase_f_current_handoff\": \"Phase G Step 619 Win32 UIA provider object production depth")) {
     return 9;
   }
   return 0;

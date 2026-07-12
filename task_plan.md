@@ -848,7 +848,7 @@ Windows/Linux core API is stable enough for parity work.
 
 ## Active Phase F Execution Goal (2026-07-11)
 
-- Status: in_progress
+- Status: complete
 - Authoritative scope: Phase F Steps 539-618 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
 - Goal: make Win32 and Wayland real application backends across window
@@ -1172,7 +1172,7 @@ Windows/Linux core API is stable enough for parity work.
 - Step 617 evidence: the two system-clipboard targets pass 2/2 in isolation;
   after avoiding cross-host clipboard overlap, the final Windows serial suite
   passes 343/343 and the WSL Arch Linux suite passes 325/325.
-- In progress: Step 618 Phase F final closeout.
+- Completed: Phase F final closeout: Steps 611-618 close with `tests/api_parity/phase_f_final_closeout_test.cpp`; Windows full debug suite passes 343/343 and WSL Arch Linux full debug suite passes 325/325, including active-display Wayland frame pixel capture on `WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The required Win32/Wayland platform production path is complete for Phase F, and Phase G Step 619 Win32 UIA provider object production depth is next.
 - Planned bands: Steps 539-546 window lifecycle; 547-554 Win32 input; 555-562
   Wayland input; 563-570 clipboard; 571-578 drag/drop; 579-586 native menus;
   587-594 dialogs/services; 595-602 multi-window event loops; 603-610 platform

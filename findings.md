@@ -10787,3 +10787,11 @@
   alone, the final Windows serial suite passes 343/343, and the WSL Arch Linux
   suite passes 325/325.
 - Phase F Step 617 passes the final Windows and WSL gates: Windows full debug passes 343/343 and WSL Arch Linux passes 325/325, including active-display Wayland frame pixel capture, with JSON, structure, line-count, phrase, handoff, and diff hygiene audits green. Step 618 Phase F final closeout is next.
+
+## 2026-07-12 Phase F Final Closeout
+
+- Step 618 is documentation and audit-guard closeout only; it changes no
+  production source, build registration, or platform behavior. The Step 617
+  343/343 and 325/325 suites remain the final full host gates, while Step 618
+  requires focused execution of every changed final-band guard on both hosts.
+- Phase F final closeout: Steps 611-618 close with `tests/api_parity/phase_f_final_closeout_test.cpp`; Windows full debug suite passes 343/343 and WSL Arch Linux full debug suite passes 325/325, including active-display Wayland frame pixel capture on `WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The required Win32/Wayland platform production path is complete for Phase F, and Phase G Step 619 Win32 UIA provider object production depth is next.

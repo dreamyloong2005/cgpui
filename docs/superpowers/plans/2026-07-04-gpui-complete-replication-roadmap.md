@@ -1821,6 +1821,7 @@ not protocol/test skeletons.
 - [x] Phase F Step 615 adds `phase_f_final_closeout_test` as the audit-only guard for Steps 539-614, freezing all production bands, host verification, cross-platform test execution, platform entry caps, and the Phase G handoff boundary. Step 616 ledger closeout is next.
 - [x] Phase F Step 616 closes the active platform production ledger for Win32 and Wayland, records all Phase F closeout guards, and moves the handoff to the final dual-host gate without claiming deferred macOS/Cocoa/Metal work. Step 617 final Windows/WSL gate is next.
 - [x] Phase F Step 617 passes the final Windows and WSL gates: Windows full debug passes 343/343 and WSL Arch Linux passes 325/325, including active-display Wayland frame pixel capture, with JSON, structure, line-count, phrase, handoff, and diff hygiene audits green. Step 618 Phase F final closeout is next.
+- [x] Phase F final closeout: Steps 611-618 close with `tests/api_parity/phase_f_final_closeout_test.cpp`; Windows full debug suite passes 343/343 and WSL Arch Linux full debug suite passes 325/325, including active-display Wayland frame pixel capture on `WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus `/dev/shm/cgpui` transient temp. The required Win32/Wayland platform production path is complete for Phase F, and Phase G Step 619 Win32 UIA provider object production depth is next.
 - [x] Steps 539-546: Complete window lifecycle: creation, activation, focus,
   resize, scale changes, close policy, fullscreen, minimize/maximize, window
   positioning, transparent/decorated windows, and child-window ownership.
@@ -1848,7 +1849,7 @@ not protocol/test skeletons.
 - [x] Steps 603-610: Add production platform diagnostics and stress tests for
   window churn, clipboard ownership, DnD cancellation, IME, scale changes, and
   timer/task wakeups.
-- [ ] Steps 611-618: Run full Windows/WSL verification and mark active
+- [x] Steps 611-618: Run full Windows/WSL verification and mark active
   platform production behavior complete.
 
 ## Phase G: Steps 619-678 - Accessibility, Async Runtime, Assets, Animation, And Test Macro Parity

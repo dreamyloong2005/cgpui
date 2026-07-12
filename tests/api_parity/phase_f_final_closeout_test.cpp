@@ -57,12 +57,27 @@ int main() {
   }
   if (line_count(win32) > 170 || line_count(wayland) > 140) return 30;
 
+  if (!contains(roadmap,
+                "- [x] Steps 611-618: Run full Windows/WSL verification") ||
+      contains(roadmap,
+               "- [ ] Steps 611-618: Run full Windows/WSL verification")) return 31;
+
   constexpr const char* completion =
-      "Phase F Step 615 adds `phase_f_final_closeout_test` as the audit-only guard for Steps 539-614, freezing all production bands, host verification, cross-platform test execution, platform entry caps, and the Phase G handoff boundary. Step 616 ledger closeout is next.";
+      "Phase F final closeout: Steps 611-618 close with "
+      "`tests/api_parity/phase_f_final_closeout_test.cpp`; Windows full "
+      "debug suite passes 343/343 and WSL Arch Linux full debug suite passes "
+      "325/325, including active-display Wayland frame pixel capture on "
+      "`WAYLAND_DISPLAY=wayland-0`, using D-drive WSL build/cache output plus "
+      "`/dev/shm/cgpui` transient temp. The required Win32/Wayland platform "
+      "production path is complete for Phase F, and Phase G Step 619 Win32 "
+      "UIA provider object production depth is next.";
   const std::string* documents[]{
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 31;
+  for (const auto* document : documents) if (!contains(*document, completion)) return 40;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 618 Phase F final closeout\"")) return 32;
+                "\"phase_f_current_handoff\": \"Phase G Step 619 Win32 UIA "
+                "provider object production depth\"") ||
+      !contains(task_plan,
+                "- Status: complete\n- Authoritative scope: Phase F")) return 50;
   return 0;
 }
