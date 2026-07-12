@@ -2770,7 +2770,13 @@
       "tests/architecture/phase_f_wsl_full_debug_verification_structure_test.cpp"
     ],
     "phase_f_step_612_remaining_gap": "Step 613 cross-platform test execution audit",
-    "phase_f_current_handoff": "Step 613 cross-platform test execution audit"
+    "phase_f_step_613_surface": "Phase F Step 613 audits cross-platform test execution by requiring repository-inspection targets to run from the project root with CGPUI_SOURCE_ROOT, preserving identical Windows and Linux path semantics. Step 614 platform production-path audit is next.",
+    "phase_f_step_613_sources": [
+      "xmake.lua",
+      "tests/architecture/phase_f_cross_platform_test_execution_structure_test.cpp"
+    ],
+    "phase_f_step_613_remaining_gap": "Step 614 platform production-path audit",
+    "phase_f_current_handoff": "Step 614 platform production-path audit"
   },
   "categories": [
     "application_and_app_context",

@@ -101,7 +101,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 613 cross-platform test execution audit")) {
+                "\"phase_f_current_handoff\": \"Step 614 platform production-path audit")) {
     return 10;
   }
   return 0;

@@ -22638,3 +22638,15 @@
 - Final Windows and WSL structure verification passes 2/2. Ledger JSON parsing,
   five-document completion phrase, zero stale Step 612 handoffs, 62 Step 613
   handoffs, and `git diff --check` pass.
+
+## 2026-07-12 Phase F Step 613 Cross-Platform Test Execution Audit
+
+- Started from committed Step 612 at `7300854a`.
+- Added a focused structure audit covering all thirteen root-bound historical
+  and final-verification targets, including the audit itself.
+- Phase F Step 613 audits cross-platform test execution by requiring repository-inspection targets to run from the project root with CGPUI_SOURCE_ROOT, preserving identical Windows and Linux path semantics. Step 614 platform production-path audit is next.
+- The first three-guard run exposed one intentionally dynamic nested handoff in
+  the Step 612 guard; advanced it to Step 614 without changing Step 612's
+  historical completion phrase.
+- Final Windows and WSL verification passes all three final-band structure
+  guards 3/3; JSON parsing, Step 614 handoff propagation, and diff hygiene pass.

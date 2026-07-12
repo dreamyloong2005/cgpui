@@ -10763,3 +10763,7 @@
   use `os.projectdir()` plus `CGPUI_SOURCE_ROOT`, matching current structure
   targets.
 - Phase F Step 612 completes WSL full-debug verification at 321/321 after binding historical repository-inspection targets to the project root, including real WSLg Wayland frame capture. Step 613 cross-platform test execution audit is next.
+
+## 2026-07-12 Phase F Step 613 Cross-Platform Test Execution Audit
+
+- Phase F Step 613 audits cross-platform test execution by requiring repository-inspection targets to run from the project root with CGPUI_SOURCE_ROOT, preserving identical Windows and Linux path semantics. Step 614 platform production-path audit is next.

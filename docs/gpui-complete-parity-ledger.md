@@ -739,6 +739,7 @@ consume C: drive space again.
 - Phase F Step 610 audits and closes the Steps 603-609 platform diagnostics and stress band, freezing window churn, clipboard ownership, drag cancellation, IME, scale, timer, and task evidence. Step 611 Windows full-debug verification is next.
 - Phase F Step 611 completes Windows full-debug verification at 338/338 after restoring deferred child-window fixtures, child renderer result coverage, extracted pointer-input ownership, and existing source caps. Step 612 WSL full-debug verification is next.
 - Phase F Step 612 completes WSL full-debug verification at 321/321 after binding historical repository-inspection targets to the project root, including real WSLg Wayland frame capture. Step 613 cross-platform test execution audit is next.
+- Phase F Step 613 audits cross-platform test execution by requiring repository-inspection targets to run from the project root with CGPUI_SOURCE_ROOT, preserving identical Windows and Linux path semantics. Step 614 platform production-path audit is next.
 
 ## Categories
 
