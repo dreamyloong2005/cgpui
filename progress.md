@@ -22999,3 +22999,30 @@
   Windows structure/ledger regression passes 6/6, WSL behavior/structure group
   passes 9/9, and all 76 dynamic handoff guards pass.
 - Phase G Step 629 maps Linux accessibility nodes to standard AT-SPI roles, role names, and two-word state sets covering visibility, enablement, sensitivity, focus, checkability, checked state, and editability. Step 630 Linux AT-SPI text and value event production behavior is next.
+
+## 2026-07-12 Phase G Step 630 AT-SPI Text And Value Events
+
+- Started from committed Step 629 at `6c5de550` with only unrelated untracked
+  `.vscode/` present.
+- Resume audit recovered the uncommitted event publisher, shared D-Bus recorder,
+  adapter wiring, focused behavior test, and Xmake target. The slice remains
+  unverified until its first WSL compile/run and the Step 630 structure and
+  authority-document gates are complete.
+- The first WSL compile/run passes 1/1 for the focused text/value event target
+  using the established Arch Linux environment and real libdbus messages.
+- Extended the shared recorder and behavior test to prove failed-send and
+  disconnected publication diagnostics; the focused WSL target remains 1/1.
+- Added the dedicated Step 630 structure guard. Its first Windows run reached
+  the expected authority-document RED at exit 10 after all code, test, Xmake,
+  ownership, diagnostic, and line-cap assertions passed.
+- Phase G Step 630 publishes Linux AT-SPI value property and text change events from runtime accessibility live updates with standard Object event signals, UTF-8 text lengths, source references, and publication diagnostics. Step 631 Linux AT-SPI focus event production behavior is next.
+- Final Step 630 verification passes the Windows structure/ledger regression
+  6/6, the existing Arch Linux WSL behavior/structure/source/ledger group
+  11/11, and the complete dynamic-handoff chain 77/77 after restoring the
+  shared D-Bus recorder to its frozen 230-line cap.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 77 test guards plus the ledger point to Step
+  631 with zero stale Step 630 current handoffs; JSON parses; the event header,
+  event source, adapter header/source, shared recorder, behavior test, and
+  structure guard are 36/130/50/98/230/177/134 lines; and
+  `git diff --check` succeeds.

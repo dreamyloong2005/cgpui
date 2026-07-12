@@ -11014,3 +11014,19 @@
 - The focused test must assert protocol numeric ids and bit positions directly,
   not merely compare against implementation enums.
 - Phase G Step 629 maps Linux accessibility nodes to standard AT-SPI roles, role names, and two-word state sets covering visibility, enablement, sensitivity, focus, checkability, checked state, and editability. Step 630 Linux AT-SPI text and value event production behavior is next.
+
+## 2026-07-12 Phase G Step 630 AT-SPI Text And Value Events Design
+
+- Step 630 owns a focused event publisher attached alongside the object
+  registry. It consumes the existing runtime-generated live-update batch only
+  after the replacement object snapshot is installed.
+- Value updates emit `org.a11y.atspi.Event.Object.PropertyChange` for
+  `accessible-value`; text updates emit `TextChanged` with UTF-8 code-point
+  length. Both carry a variant payload and `(so)` source reference.
+- Focus updates are counted but deferred to Step 631. Missing objects, absent
+  connections, sent events, and send failures need explicit diagnostics.
+- The first WSL compile/run passes 1/1 against real libdbus messages. The test
+  proves `PropertyChange` and `TextChanged` use `siiv(so)`, the source carries
+  the connection unique name and object path, and UTF-8 text length counts code
+  points rather than bytes.
+- Phase G Step 630 publishes Linux AT-SPI value property and text change events from runtime accessibility live updates with standard Object event signals, UTF-8 text lengths, source references, and publication diagnostics. Step 631 Linux AT-SPI focus event production behavior is next.

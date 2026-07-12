@@ -22,21 +22,29 @@ void WaylandAtspiAccessibilityAdapter::update(
   dbus_registry_.set_root_object_path(
       wayland_atspi_object_path_for(root_element_id_));
   dbus_registry_.synchronize(atspi_object_nodes_);
+  event_publisher_.publish(atspi_object_nodes_, live_updates_);
 }
 
 void WaylandAtspiAccessibilityAdapter::attach_dbus(
     DBusConnection* connection, WaylandAtspiDbusOperations operations) {
   dbus_registry_.attach(connection, operations);
+  event_publisher_.attach(connection, operations);
   dbus_registry_.synchronize(atspi_object_nodes_);
 }
 
 void WaylandAtspiAccessibilityAdapter::detach_dbus() {
+  event_publisher_.detach();
   dbus_registry_.detach();
 }
 
 WaylandAtspiDbusDiagnostics
 WaylandAtspiAccessibilityAdapter::dbus_diagnostics() const {
   return dbus_registry_.diagnostics();
+}
+
+WaylandAtspiEventDiagnostics
+WaylandAtspiAccessibilityAdapter::event_diagnostics() const {
+  return event_publisher_.diagnostics();
 }
 
 const std::vector<WaylandAtspiObjectNode>&
@@ -80,6 +88,11 @@ void wayland_atspi_detach_dbus(WaylandAtspiAccessibilityAdapter& adapter) {
 WaylandAtspiDbusDiagnostics wayland_atspi_dbus_diagnostics(
     const WaylandAtspiAccessibilityAdapter& adapter) {
   return adapter.dbus_diagnostics();
+}
+
+WaylandAtspiEventDiagnostics wayland_atspi_event_diagnostics(
+    const WaylandAtspiAccessibilityAdapter& adapter) {
+  return adapter.event_diagnostics();
 }
 
 } // namespace cgpui

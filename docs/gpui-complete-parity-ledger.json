@@ -2964,7 +2964,19 @@
       "xmake.lua"
     ],
     "phase_g_step_629_remaining_gap": "Step 630 Linux AT-SPI text and value event production behavior",
-    "phase_f_current_handoff": "Step 630 Linux AT-SPI text and value event production behavior"
+    "phase_g_step_630_surface": "Phase G Step 630 publishes Linux AT-SPI value property and text change events from runtime accessibility live updates with standard Object event signals, UTF-8 text lengths, source references, and publication diagnostics. Step 631 Linux AT-SPI focus event production behavior is next.",
+    "phase_g_step_630_sources": [
+      "src/platform/linux/wayland_atspi_events_internal.hpp",
+      "src/platform/linux/wayland_atspi_events.cpp",
+      "src/platform/linux/wayland_accessibility_internal.hpp",
+      "src/platform/linux/wayland_accessibility.cpp",
+      "tests/platform/wayland_atspi_dbus_test_support.hpp",
+      "tests/platform/wayland_atspi_text_value_event_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_text_value_event_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_630_remaining_gap": "Step 631 Linux AT-SPI focus event production behavior",
+    "phase_f_current_handoff": "Step 631 Linux AT-SPI focus event production behavior"
   },
   "categories": [
     "application_and_app_context",

@@ -1243,7 +1243,13 @@ Windows/Linux core API is stable enough for parity work.
 - Step 629 evidence: a focused role/state leaf maps every current platform role
   to stable AT-SPI ids/names and returns the standard two-word `au` state set;
   tests assert protocol ids and state-bit positions directly.
-- In progress: Step 630 Linux AT-SPI text and value event production behavior.
+- Completed: Phase G Step 630 publishes Linux AT-SPI value property and text change events from runtime accessibility live updates with standard Object event signals, UTF-8 text lengths, source references, and publication diagnostics. Step 631 Linux AT-SPI focus event production behavior is next.
+- Step 630 evidence: a focused event publisher emits standard `siiv(so)`
+  PropertyChange/TextChanged signals over real libdbus messages after object
+  reconciliation, counts UTF-8 code points, and diagnoses missing objects,
+  absent connections, deferred focus, and failed sends under a dedicated
+  behavior target and modular structure guard.
+- In progress: Step 631 Linux AT-SPI focus event production behavior.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1259,6 +1265,11 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first complete Step 630 handoff group passed 76/77 because the shared D-Bus recorder grew from its frozen 230-line cap to 231 | Step 630 dynamic handoff gate | Remove one non-semantic blank line while retaining failed-send coverage and rerun the historical navigation guard before the full group |
+| The first Step 630 bounded handoff script stopped after two files because one guard omits the escaped JSON closing quote | Step 630 dynamic handoff update | Match through the stable `production behavior` words, preserve each source suffix, and assert the 74 remaining direct plus three nested updates |
+| The first Step 630 structure run exited 10 after code and layout assertions passed | Step 630 structure RED | Synchronize the five authority documents and advance the current handoff to Step 631 before rerunning GREEN |
+| A Step 630 source-inventory query passed a Windows wildcard path directly to `rg` and failed with OS error 123 | Step 630 authority inventory audit | Search the directory root with a filename glob or enumerate resolved paths before invoking `rg` |
+| Step 629 structure guard was first read from `tests/api_parity` but the registered source lives under `tests/architecture` | Step 630 structure-pattern audit | Resolve the source from the Xmake target or `rg --files` before reading the guard |
 | A Step 629 structure assertion placed the closing quote before `.id != 79` during initial authoring | Step 629 structure guard review | Correct the assertion before compiling so it matches the complete behavior-test expression |
 | The first Step 628 75-guard handoff run passed 74/75 because the Windows/WSL/cross-platform nested aggregate chain still required Step 628 | Step 628 dynamic handoff gate | Advance all three nested assertions together to Step 629 while preserving their frozen Phase F completion sentences |
 | The first Step 628 structure RED stopped at exit 4 because the guard expected the full `a(so)` signature in the libdbus serializer | Step 628 structure RED | Require `DBUS_TYPE_ARRAY` plus element signature `(so)` in serialization and reserve full `a(so)` for the introspection XML assertion |

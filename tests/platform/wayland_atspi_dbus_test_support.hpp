@@ -26,7 +26,10 @@ class WaylandAtspiDbusRecorder {
     void* user_data = nullptr;
   };
 
-  ~WaylandAtspiDbusRecorder() { clear_reply(); }
+  ~WaylandAtspiDbusRecorder() {
+    clear_reply();
+    clear_messages();
+  }
 
   WaylandAtspiDbusOperations operations() {
     active_ = this;
@@ -58,11 +61,17 @@ class WaylandAtspiDbusRecorder {
     }
   }
 
+  void clear_messages() {
+    for (DBusMessage* message : sent_messages) dbus_message_unref(message);
+    sent_messages.clear();
+  }
+
   std::string unique_name = ":1.88";
+  bool send_result = true;
   std::vector<RegisteredPath> registered_paths;
   std::vector<std::string> unregistered_paths;
+  std::vector<DBusMessage*> sent_messages;
   DBusMessage* sent_reply = nullptr;
-
  private:
   static dbus_bool_t register_object_path(
       DBusConnection*,
@@ -80,8 +89,12 @@ class WaylandAtspiDbusRecorder {
 
   static dbus_bool_t send_message(
       DBusConnection*, DBusMessage* message, dbus_uint32_t*) {
+    if (active_->sent_reply != nullptr) {
+      dbus_message_unref(active_->sent_reply);
+    }
     active_->sent_reply = dbus_message_ref(message);
-    return true;
+    active_->sent_messages.push_back(dbus_message_ref(message));
+    return active_->send_result;
   }
 
   static const char* get_unique_name(DBusConnection*) {
