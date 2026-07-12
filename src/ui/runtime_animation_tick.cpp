@@ -35,10 +35,7 @@ void WindowRuntime::tick_animation(AnimationId id) {
         });
     if (completed != animations_.end()) {
       completed->complete = true;
-      if (completed->timer_id.value != 0) {
-        (void)cancel_timer(completed->timer_id);
-        completed->timer_id = {};
-      }
+      completed->frame_pending = false;
     }
   }
 }

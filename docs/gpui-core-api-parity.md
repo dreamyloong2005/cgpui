@@ -53,7 +53,9 @@ desktop integration surfaces remain separate future work.
   curve variants, and parameterized spring curves shared across runtime,
   element, sequence, and style animation paths, plus distinct cancellation
   state with frozen progress, immediate callback release, idempotent timer
-  teardown, handle observability, and aggregate plus last-cancellation diagnostics.
+  teardown, handle observability, and aggregate plus last-cancellation diagnostics,
+  plus one deadline-driven frame timer shared by ordinary and
+  element animations with cadence-preserving late-frame delivery.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -142,8 +144,8 @@ desktop integration surfaces remain separate future work.
 
 - Full upstream GPUI animation and easing system beyond typed scalar
   transitions, runtime-owned keyed element lifecycle animations, repeat,
-  chaining, curve variants, and cancellation, including frame pacing, broad
-  style interpolation, and official examples.
+  chaining, curve variants, cancellation, and deadline-driven frame pacing,
+  including broad style interpolation and official examples.
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.
 - Asset, image, SVG, and texture upload pipelines.

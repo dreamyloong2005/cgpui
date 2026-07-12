@@ -14,6 +14,7 @@
 #include "cgpui/ui/label_builder.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/animation_cancellation.hpp"
+#include "cgpui/ui/animation_frame_pacing.hpp"
 #include "cgpui/ui/animation_curve.hpp"
 #include "cgpui/ui/animation_transition.hpp"
 #include "cgpui/ui/element_animation.hpp"
@@ -322,6 +323,7 @@ class TestView final : public cgpui::View {
     (void)runtime_diagnostics.active_animation_count;
     (void)runtime_diagnostics.cancelled_animation_count;
     (void)runtime_diagnostics.last_animation_cancellation;
+    (void)runtime_diagnostics.animation_frame_pacing;
     const cgpui::PlatformDiagnosticEvent platform_diagnostic{
         .kind = cgpui::PlatformDiagnosticKind::clipboard,
         .event_kind = cgpui::EventKind::unknown,
@@ -521,6 +523,13 @@ int main() {
       .duration_ms = 100,
       .timer_was_active = true,
   };
+  const cgpui::AnimationFramePacingSnapshot animation_frame_pacing{
+      .pending_animation_count = 2,
+      .wakeup_scheduled = true,
+      .next_frame_deadline_ms = 16,
+      .scheduled_wakeup_count = 1,
+      .coalesced_request_count = 1,
+  };
   cgpui::ElementKey element_key{.value = "header-key"};
   cgpui::ElementAnimationStateStore animation_store;
   animation_store.begin_frame(1, 0);
@@ -548,6 +557,7 @@ int main() {
   (void)animated_sequence;
   (void)animation_curve;
   (void)animation_cancellation;
+  (void)animation_frame_pacing;
   style_state.base = cgpui::Style{}
                          .with_background_color(cgpui::rgb(0, 0, 0))
                          .with_align_items(cgpui::AlignItems::center)

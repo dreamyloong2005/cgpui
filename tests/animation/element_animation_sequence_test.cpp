@@ -180,7 +180,7 @@ int test_runtime_chain_survives_wrapper_reconstruction() {
       !near(view.snapshots[2].linear_progress, 0.5F) ||
       !view.snapshots[3].complete ||
       fixture.app.delayed_wakeup_delays !=
-          std::vector<std::uint64_t>({16, 16, 16}) ||
+          std::vector<std::uint64_t>({16, 13, 4}) ||
       fixture.app.delayed_wakeup_pending) return 4;
   return 0;
 }

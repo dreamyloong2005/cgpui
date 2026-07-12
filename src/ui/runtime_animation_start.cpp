@@ -20,8 +20,10 @@ AnimationHandle WindowRuntime::start_animation(
       .callback = std::move(callback),
       .started_ms = current_time_ms_,
       .last_tick_ms = current_time_ms_,
+      .next_tick_ms = next_animation_frame_deadline(0, options.tick_interval_ms),
       .complete = options.duration_ms == 0,
       .cancelled = false,
+      .frame_pending = options.duration_ms != 0,
   });
 
   if (options.duration_ms == 0) {
@@ -35,20 +37,7 @@ AnimationHandle WindowRuntime::start_animation(
         [id](const RuntimeAnimation& animation) { return animation.id == id; });
     if (completed != animations_.end()) completed->callback = {};
   } else {
-    const TimerId timer_id = schedule_repeating_timer(
-        options.tick_interval_ms,
-        [this, id](const WindowRuntimeContext&) {
-          tick_animation(id);
-        });
-    auto stored = std::find_if(
-        animations_.begin(),
-        animations_.end(),
-        [id](const RuntimeAnimation& animation) {
-          return animation.id == id;
-        });
-    if (stored != animations_.end()) {
-      stored->timer_id = timer_id;
-    }
+    schedule_animation_frame_wakeup(true);
   }
 
   return AnimationHandle(*this, id);

@@ -93,8 +93,8 @@ int main() {
   }
   if (!contains(runtime, "element_animation_state_store_.begin_frame") ||
       !contains(runtime, "element_animation_state_store_.finish_frame") ||
-      !contains(runtime, "schedule_timer(") ||
-      !contains(runtime, "element_animation_timer_id_ = {}") ||
+      !contains(runtime, "request_element_animation_frame(") ||
+      !contains(runtime, "clear_element_animation_frame()") ||
       !contains(runtime_state, "ElementAnimationStateStore") ||
       !contains(runtime_internal, "runtime_animation_state_internal.hpp")) {
     return 5;
@@ -108,7 +108,7 @@ int main() {
   if (!contains(behavior, "cgpui/prelude.hpp") ||
       !contains(behavior, "test_scoped_store_mount_update_unmount_and_isolation") ||
       !contains(behavior, "test_runtime_preserves_animation_across_rendered_wrapper_instances") ||
-      !contains(behavior, "std::vector<std::uint64_t>({16, 16})") ||
+      !contains(behavior, "std::vector<std::uint64_t>({16, 14})") ||
       !contains(behavior, "view.render_count != 4")) return 7;
   if (!contains(aggregate, "cgpui/ui/element_animation.hpp") ||
       !contains(ui_structure, "include/cgpui/ui/element_animation.hpp") ||
@@ -138,7 +138,7 @@ int main() {
   if (!contains(vocabulary, "`ElementAnimationStateStore`") ||
       !contains(core_parity, "runtime-owned keyed element lifecycle") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 648 animation frame pacing "
+                "\"phase_f_current_handoff\": \"Step 649 style interpolation "
                 "production behavior\"")) return 11;
   return 0;
 }

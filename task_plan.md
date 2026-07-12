@@ -1369,6 +1369,15 @@ Windows/Linux core API is stable enough for parity work.
   release, idempotent timer teardown, later-tick suppression, ordinary and
   transition handles, runtime/context/async forwarding, and exact aggregate
   diagnostics; dedicated structure coverage freezes ownership and line caps.
+- Completed: Phase G Step 648 coalesces ordinary and element animations onto one deadline-driven frame timer, preserves cadence across late frames, delivers mutation-safe due callbacks without a per-frame allocation, tears down cancelled participation, and reports pending, scheduled, delivered, coalesced, and late-frame diagnostics. Step 649 style interpolation production behavior is next.
+- Step 648 boundary: the public pacing snapshot is a compact value leaf; the
+  private pacing state and deadline delivery live in focused runtime leaves.
+  Renderer present pacing remains in the Phase E Vulkan boundary, while the UI
+  scheduler owns animation callback and element-render cadence only.
+- Step 648 evidence: focused behavior freezes a single shared 16ms wakeup for
+  16/16/32ms animations, a 20ms late delivery, drift-free 32ms continuation,
+  mutation-safe co-delivery, cancellation teardown, and exact diagnostics;
+  lifecycle and sequence regressions freeze `{16,14}` and `{16,13,4}` cadence.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.

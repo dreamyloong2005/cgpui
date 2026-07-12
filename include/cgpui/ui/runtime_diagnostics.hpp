@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/animation_cancellation.hpp"
+#include "cgpui/ui/animation_frame_pacing.hpp"
 #include "cgpui/ui/runtime_renderer_diagnostics.hpp"
 #include "cgpui/ui/runtime_events.hpp"
 
@@ -89,6 +90,7 @@ struct RuntimeDiagnosticsSnapshot {
   std::size_t completed_animation_count = 0;
   std::size_t cancelled_animation_count = 0;
   std::optional<AnimationCancellationDiagnostic> last_animation_cancellation;
+  AnimationFramePacingSnapshot animation_frame_pacing;
   std::size_t task_count = 0;
   std::size_t active_task_count = 0;
   std::size_t queued_task_count = 0;

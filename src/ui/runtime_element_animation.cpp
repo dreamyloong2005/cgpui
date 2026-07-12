@@ -20,20 +20,10 @@ void WindowRuntime::layout_element_tree_with_animations(
   const ElementAnimationFrameResult result =
       element_animation_state_store_.finish_frame(scope_id);
   if (!result.requests_next_frame()) {
-    if (element_animation_timer_id_.value != 0) {
-      (void)cancel_timer(element_animation_timer_id_);
-      element_animation_timer_id_ = {};
-    }
+    clear_element_animation_frame();
     return;
   }
-  if (element_animation_timer_id_.value != 0) return;
-
-  element_animation_timer_id_ = schedule_timer(
-      result.next_frame_delay_ms,
-      [this](const WindowRuntimeContext&) {
-        element_animation_timer_id_ = {};
-        request_render();
-      });
+  request_element_animation_frame(result.next_frame_delay_ms);
 }
 
 } // namespace cgpui

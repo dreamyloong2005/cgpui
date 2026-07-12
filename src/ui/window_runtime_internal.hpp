@@ -31,6 +31,7 @@ void handle_wakeup(); void drain_cross_thread_entity_operations();
 void drain_deferred_callbacks();
 void fire_due_timers(); void sync_platform_time(); void schedule_next_timer_wakeup();
 void tick_animation(AnimationId id);
+#include "runtime_animation_frame_pacing_internal.hpp"
 void layout_element_tree_with_animations(FrameStatistics& frame_statistics);
 void update_platform_accessibility_tree();
 [[nodiscard]] PlatformAccessibilityTreeUpdate build_platform_accessibility_update()

@@ -162,7 +162,7 @@ int main() {
   if (contains(core_parity, "timer integration and cross-thread entity access") ||
       contains(core_parity, "complete async timer integration") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 648 animation frame pacing "
+                "\"phase_f_current_handoff\": \"Step 649 style interpolation "
                 "production behavior\"")) {
     return 11;
   }

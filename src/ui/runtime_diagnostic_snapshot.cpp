@@ -64,6 +64,7 @@ RuntimeDiagnosticsSnapshot WindowRuntime::diagnostics_snapshot() const {
       .completed_animation_count = completed_animation_count,
       .cancelled_animation_count = cancelled_animation_count,
       .last_animation_cancellation = last_animation_cancellation_,
+      .animation_frame_pacing = animation_frame_pacing_snapshot(),
       .task_count = task_counts.task_count,
       .active_task_count = task_counts.active_task_count,
       .queued_task_count = task_counts.queued_task_count,

@@ -91,7 +91,7 @@ int main() {
       !contains(behavior, "test_repeat_wraps_progress_and_never_advances") ||
       !contains(behavior, "test_chain_delivers_stage_final_before_advancing") ||
       !contains(behavior, "test_invalid_sequences_preserve_the_child") ||
-      !contains(behavior, "std::vector<std::uint64_t>({16, 16, 16})")) {
+      !contains(behavior, "std::vector<std::uint64_t>({16, 13, 4})")) {
     return 5;
   }
   if (!contains(aggregate, "cgpui/ui/element_animation_sequence.hpp") ||
@@ -125,7 +125,7 @@ int main() {
   if (!contains(vocabulary, "`ElementAnimationStage`") ||
       !contains(core_parity, "indexed one-shot animation chains") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 648 animation frame pacing "
+                "\"phase_f_current_handoff\": \"Step 649 style interpolation "
                 "production behavior\"")) return 9;
   return 0;
 }

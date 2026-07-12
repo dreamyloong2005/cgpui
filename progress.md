@@ -23694,3 +23694,30 @@
   continued compiling after their Windows callers returned and later WSL
   probes consistently returned `WSL_E_DISTRO_NOT_FOUND`. No distribution was
   restored or installed; Step 647 WSL focused verification remains pending.
+
+## 2026-07-13 Phase G Step 648 Animation Frame Pacing
+
+- Added the focused behavior target first. It requires three runtime animations
+  with 16/16/32ms cadences to share one wakeup, coalesce equal deadlines,
+  diagnose a 4ms late first frame, retain the original 32ms deadline instead
+  of drifting to 36ms, deliver all three at 32ms, and tear down the shared
+  wakeup after cancellation.
+- The first GREEN implementation passed the focused pacing test. Existing
+  lifecycle and sequence tests then failed only on their old fixed-delay
+  vectors; tagged probes recorded cadence-preserving `{16,14}` and
+  `{16,13,4}` schedules after deliberately late 50/51ms frames. The probes
+  were removed and the regression expectations now freeze non-drifting delays.
+- Added the focused public pacing snapshot, private scheduler state leaf,
+  deadline implementation source, aggregate/header authoring, global source
+  inventory, and dedicated structure guard. The guard reaches only the
+  expected five-document RED at direct exit 9.
+- Synchronized the vocabulary, core parity boundary, roadmap, Markdown/JSON
+  ledgers, task plan, and findings with the exact Step 648 completion sentence,
+  20 JSON evidence sources, and the Step 649 handoff.
+- Final review routed initial deadlines through the same saturation-safe helper,
+  stopped due-callback delivery after runtime quit, and added callback-mutation
+  coverage that starts a new animation and cancels a marked same-frame peer.
+- Final Windows focused animation/source/header/ledger verification passes
+  13/13. The complete current-handoff chain passes 95/95 including the native-
+  menu target-name exception. Arch Linux WSL still returns
+  `WSL_E_DISTRO_NOT_FOUND`, so no WSL result is claimed for this slice.

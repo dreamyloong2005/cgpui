@@ -101,6 +101,7 @@ remain outside this freeze.
 - `AnimationTransitionHandle`
 - `start_animation_transition(...)`
 - `AnimationCancellationDiagnostic`
+- `AnimationFramePacingSnapshot`
 - `ElementAnimationSnapshot`
 - `ElementAnimationFrameResult`
 - `ElementAnimationStateStore`
@@ -127,6 +128,11 @@ transition handles. Cancelled animations freeze elapsed progress, release
 their callback capture immediately, tear down timers idempotently, suppress
 later ticks, and expose aggregate plus last-cancellation diagnostics through
 the runtime snapshot.
+Step 648 coalesces ordinary and element animation deadlines onto one shared
+one-shot frame timer. Late deliveries advance from the prior deadline instead
+of `now`, due callbacks are marked before mutation-safe delivery without a
+per-frame callback-list allocation, and runtime diagnostics expose pending,
+scheduled, delivered, coalesced, and late-frame state.
 
 ## Platform service vocabulary
 

@@ -13,13 +13,10 @@ bool WindowRuntime::cancel_animation(AnimationId id) {
   if (animation->complete || animation->cancelled || !snapshot.has_value() ||
       snapshot->complete) return false;
 
-  const bool timer_was_active = animation->timer_id.value != 0;
-  if (timer_was_active) {
-    (void)cancel_timer(animation->timer_id);
-    animation->timer_id = {};
-  }
+  const bool timer_was_active = animation->frame_pending;
   animation->cancelled_elapsed_ms = snapshot->elapsed_ms;
   animation->cancelled = true;
+  animation->frame_pending = false;
   animation->callback = {};
   last_animation_cancellation_ = AnimationCancellationDiagnostic{
       .id = id,
@@ -27,6 +24,7 @@ bool WindowRuntime::cancel_animation(AnimationId id) {
       .duration_ms = snapshot->duration_ms,
       .timer_was_active = timer_was_active,
   };
+  schedule_animation_frame_wakeup(false);
   return true;
 }
 

@@ -148,7 +148,7 @@ int test_runtime_preserves_animation_across_rendered_wrapper_instances() {
   if (view.render_count != 4 || view.paint_count != 4 ||
       fixture.renderer.begin_frame_count != 4 ||
       fixture.window.request_redraw_count != 4 ||
-      fixture.app.delayed_wakeup_delays != std::vector<std::uint64_t>({16, 16}) ||
+      fixture.app.delayed_wakeup_delays != std::vector<std::uint64_t>({16, 14}) ||
       fixture.app.delayed_wakeup_pending) return 11;
   return 0;
 }

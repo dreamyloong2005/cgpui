@@ -3733,6 +3733,18 @@ target("phase_g_animation_cancellation_structure_test")
     add_files("tests/architecture/phase_g_animation_cancellation_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_animation_frame_pacing_test")
+    set_kind("binary")
+    add_files("tests/animation/animation_frame_pacing_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs, "tests/ui")
+    add_tests("default")
+
+target("phase_g_animation_frame_pacing_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_animation_frame_pacing_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 target("window_runtime_frame_scheduling_test")
     set_kind("binary")
     set_rundir(os.projectdir())

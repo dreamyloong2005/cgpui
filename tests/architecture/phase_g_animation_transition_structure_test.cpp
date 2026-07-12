@@ -88,7 +88,8 @@ int main() {
       contains(source, "animations_")) return 3;
   if (!contains(animation_start, "options.duration_ms == 0") ||
       !contains(animation_start, "immediate_callback(context(), *snapshot)") ||
-      !contains(animation_start, "schedule_repeating_timer(")) return 4;
+      !contains(animation_start, "schedule_animation_frame_wakeup(true)") ||
+      contains(animation_start, "schedule_repeating_timer(")) return 4;
   if (!contains(behavior, "cgpui/prelude.hpp") ||
       !contains(behavior, "quarter->animation.eased_progress") ||
       !contains(behavior, "near(quarter->value, 14.375F)") ||
@@ -125,7 +126,7 @@ int main() {
   if (!contains(vocabulary, "`AnimationTransition`") ||
       !contains(core_parity, "typed scalar animation transitions") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 648 animation frame pacing "
+                "\"phase_f_current_handoff\": \"Step 649 style interpolation "
                 "production behavior\"")) return 9;
   return 0;
 }

@@ -102,7 +102,7 @@ int WindowRuntime::run(
     root_record->input = input_state();
   }
   activate_pending_native_windows();
-
+  schedule_animation_frame_wakeup(false);
   if (options.request_initial_redraw) {
     redraw_scheduled_ = true;
     set_root_redraw_scheduled(true);

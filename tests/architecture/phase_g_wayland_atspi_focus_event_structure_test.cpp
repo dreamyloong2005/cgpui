@@ -104,7 +104,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 648 animation frame pacing production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 649 style interpolation production behavior\"")) {
     return 10;
   }
   return 0;

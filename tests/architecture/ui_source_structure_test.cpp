@@ -62,6 +62,7 @@ int main() {
       "include/cgpui/ui/accessibility.hpp",
       "include/cgpui/ui/paint.hpp",
       "include/cgpui/ui/animation_cancellation.hpp",
+      "include/cgpui/ui/animation_frame_pacing.hpp",
       "include/cgpui/ui/animation_curve.hpp",
       "include/cgpui/ui/animation_transition.hpp",
       "include/cgpui/ui/element_animation.hpp",
@@ -1999,6 +2000,8 @@ int main() {
       "src/ui/runtime_animation_state_internal.hpp",
       "src/ui/runtime_animation_start.cpp",
       "src/ui/runtime_animation_cancellation.cpp",
+      "src/ui/runtime_animation_frame_pacing_internal.hpp",
+      "src/ui/runtime_animation_frame_pacing.cpp",
       "src/ui/runtime_animation_state.cpp",
       "src/ui/runtime_animation_tick.cpp",
       "src/ui/runtime_animations.cpp",
@@ -3473,6 +3476,8 @@ int main() {
       read_source("src/ui/runtime_animation_start.cpp");
   const std::string runtime_animation_cancellation_source =
       read_source("src/ui/runtime_animation_cancellation.cpp");
+  const std::string runtime_animation_frame_pacing_source =
+      read_source("src/ui/runtime_animation_frame_pacing.cpp");
   const std::string runtime_animation_state_source =
       read_source("src/ui/runtime_animation_state.cpp");
   const std::string runtime_animation_tick_source =
@@ -3481,6 +3486,7 @@ int main() {
       read_source("src/ui/runtime_animations.cpp");
   if (runtime_animation_start_source.empty() ||
       runtime_animation_cancellation_source.empty() ||
+      runtime_animation_frame_pacing_source.empty() ||
       runtime_animation_state_source.empty() ||
       runtime_animation_tick_source.empty() ||
       runtime_animations_source.empty()) {
@@ -3523,6 +3529,17 @@ int main() {
       contains(runtime_animation_cancellation_source,
                "void WindowRuntime::tick_animation(")) {
     return 166;
+  }
+  if (line_count(runtime_animation_frame_pacing_source) > 150 ||
+      !contains(runtime_animation_frame_pacing_source,
+                "WindowRuntime::schedule_animation_frame_wakeup(") ||
+      !contains(runtime_animation_frame_pacing_source,
+                "WindowRuntime::deliver_animation_frame()") ||
+      !contains(runtime_animation_frame_pacing_source, "add_interval(") ||
+      !contains(runtime_animation_frame_pacing_source, "due_for_frame") ||
+      contains(runtime_animation_frame_pacing_source,
+               "schedule_repeating_timer(")) {
+    return 167;
   }
   if (line_count(runtime_animation_tick_source) > 70 ||
       !contains(runtime_animation_tick_source,

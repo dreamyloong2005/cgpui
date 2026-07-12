@@ -3295,7 +3295,31 @@
       "xmake.lua"
     ],
     "phase_g_step_647_remaining_gap": "Step 648 animation frame pacing production behavior",
-    "phase_f_current_handoff": "Step 648 animation frame pacing production behavior"
+    "phase_g_step_648_surface": "Phase G Step 648 coalesces ordinary and element animations onto one deadline-driven frame timer, preserves cadence across late frames, delivers mutation-safe due callbacks without a per-frame allocation, tears down cancelled participation, and reports pending, scheduled, delivered, coalesced, and late-frame diagnostics. Step 649 style interpolation production behavior is next.",
+    "phase_g_step_648_sources": [
+      "include/cgpui/ui/animation_frame_pacing.hpp",
+      "include/cgpui/ui/runtime_diagnostics.hpp",
+      "include/cgpui/ui/ui.hpp",
+      "src/ui/runtime_animation_frame_pacing_internal.hpp",
+      "src/ui/runtime_animation_frame_pacing.cpp",
+      "src/ui/runtime_animation_state_internal.hpp",
+      "src/ui/runtime_animation_start.cpp",
+      "src/ui/runtime_animation_cancellation.cpp",
+      "src/ui/runtime_animation_tick.cpp",
+      "src/ui/runtime_element_animation.cpp",
+      "src/ui/runtime_run.cpp",
+      "src/ui/runtime_diagnostic_snapshot.cpp",
+      "tests/animation/animation_frame_pacing_test.cpp",
+      "tests/animation/element_lifecycle_animation_test.cpp",
+      "tests/animation/element_animation_sequence_test.cpp",
+      "tests/architecture/phase_g_animation_frame_pacing_structure_test.cpp",
+      "tests/architecture/phase_g_animation_cancellation_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_648_remaining_gap": "Step 649 style interpolation production behavior",
+    "phase_f_current_handoff": "Step 649 style interpolation production behavior"
   },
   "categories": [
     "application_and_app_context",

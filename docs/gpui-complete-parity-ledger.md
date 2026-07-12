@@ -774,6 +774,7 @@ consume C: drive space again.
 - Phase G Step 645 adds pinned-upstream-compatible infinite element animation repetition and indexed one-shot chains, with iteration observability, final-stage value delivery before advancement, reconstructed-wrapper persistence, invalid-sequence rejection, and shared runtime frame wakeups. Step 646 spring and tween variant production behavior is next.
 - Phase G Step 646 adds zero-allocation animation curve variants with pinned-upstream quadratic, ease-out-quint, bounce, and pulsating tween behavior plus parameterized under-, critical-, and over-damped springs shared by runtime, element, sequence, and style animation paths. Step 647 animation cancellation production behavior is next.
 - Phase G Step 647 makes runtime animation cancellation a distinct terminal state with frozen progress, immediate callback release, idempotent timer teardown, ordinary and transition handle observability, runtime/context/async forwarding, and aggregate plus last-cancellation diagnostics. Step 648 animation frame pacing production behavior is next.
+- Phase G Step 648 coalesces ordinary and element animations onto one deadline-driven frame timer, preserves cadence across late frames, delivers mutation-safe due callbacks without a per-frame allocation, tears down cancelled participation, and reports pending, scheduled, delivered, coalesced, and late-frame diagnostics. Step 649 style interpolation production behavior is next.
 
 ## Categories
 

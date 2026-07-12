@@ -11415,3 +11415,33 @@
   Linux run did not produce a valid test report before the existing distro
   became unavailable, so WSL verification remains explicitly pending.
 - Phase G Step 647 makes runtime animation cancellation a distinct terminal state with frozen progress, immediate callback release, idempotent timer teardown, ordinary and transition handle observability, runtime/context/async forwarding, and aggregate plus last-cancellation diagnostics. Step 648 animation frame pacing production behavior is next.
+
+## 2026-07-13 Phase G Step 648 Animation Frame Pacing Baseline
+
+- Ordinary runtime animations currently allocate one repeating runtime timer
+  per animation, while element lifecycle animations own a separate one-shot
+  timer. Equal deadlines therefore do not share one animation-frame wakeup.
+- Repeating timers advance their due time from the prior deadline, but the
+  element timer is recreated as `now + interval` after every rendered frame;
+  late element frames therefore drift rather than preserving cadence.
+- The focused Step 648 boundary should own ordinary and element animation
+  deadlines together, use one one-shot runtime timer, deliver all due ordinary
+  animations without allocating a callback list, and continue late frames from
+  their prior deadlines.
+- Compact runtime diagnostics should expose pending ordinary animations,
+  element-frame state, the next deadline, shared wakeup scheduling/delivery,
+  coalescing, and late-frame counts. Renderer present pacing remains the
+  existing Phase E boundary rather than being duplicated in UI runtime code.
+- The implemented scheduler marks due runtime records before callbacks, then
+  repeatedly resolves marked ids from the live vector. Callback-driven starts
+  and cancellations therefore cannot invalidate an iterator or require an
+  allocated per-frame id/callback list.
+- Focused mutation coverage starts a new animation and cancels another due
+  animation from the first callback. The due-marker loop survives vector
+  reallocation, suppresses the cancelled callback, and defers the newly added
+  record to its own next deadline.
+- Ordinary completion and cancellation clear only their `frame_pending`
+  participation. The scheduler recomputes the earliest remaining ordinary or
+  element deadline and cancels the shared one-shot timer only when no work is
+  left.
+- Phase G Step 648 coalesces ordinary and element animations onto one deadline-driven frame timer, preserves cadence across late frames, delivers mutation-safe due callbacks without a per-frame allocation, tears down cancelled participation, and reports pending, scheduled, delivered, coalesced, and late-frame diagnostics. Step 649 style interpolation production behavior is next.
