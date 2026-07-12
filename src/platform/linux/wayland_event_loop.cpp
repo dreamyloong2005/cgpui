@@ -1,4 +1,5 @@
 #include "wayland_internal.hpp"
+#include "wayland_timer_wakeup_internal.hpp"
 
 namespace cgpui {
 namespace {
@@ -28,6 +29,7 @@ void dispatch_wakeup(std::vector<WaylandWindow*>& windows) {
 int wayland_run_event_loop(
     wl_display* display,
     int wakeup_read_fd,
+    WaylandTimerWakeup& timer_wakeup,
     std::atomic_bool& running,
     std::vector<WaylandWindow*>& windows) {
   while (running.load() && display != nullptr) {
@@ -41,7 +43,7 @@ int wayland_run_event_loop(
       return 1;
     }
 
-    std::array<pollfd, 2> fds{
+    std::array<pollfd, 3> fds{
         pollfd{
             .fd = wl_display_get_fd(display),
             .events = static_cast<short>(POLLIN | (flush_pending ? POLLOUT : 0)),
@@ -49,6 +51,11 @@ int wayland_run_event_loop(
         },
         pollfd{
             .fd = wakeup_read_fd,
+            .events = POLLIN,
+            .revents = 0,
+        },
+        pollfd{
+            .fd = timer_wakeup.descriptor(),
             .events = POLLIN,
             .revents = 0,
         },
@@ -72,6 +79,10 @@ int wayland_run_event_loop(
     }
     if ((fds[1].revents & POLLIN) != 0) {
       drain_wakeup_pipe(wakeup_read_fd);
+      if (running.load()) dispatch_wakeup(windows);
+    }
+    if ((fds[2].revents & POLLIN) != 0) {
+      timer_wakeup.drain();
       if (running.load()) dispatch_wakeup(windows);
     }
   }

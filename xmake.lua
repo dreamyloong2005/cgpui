@@ -702,6 +702,14 @@ if is_plat("windows") then
         add_includedirs(public_includedirs, {public = true})
         add_syslinks("user32", "gdi32", "shell32", "imm32", "ole32", "oleaut32", "dwrite", "uiautomationcore", "uuid")
 
+    target("phase_g_win32_timer_wakeup_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_timer_wakeup_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs, "src/platform/win32")
+        add_syslinks("user32")
+        add_tests("default")
+
     target("win32_input_event_test")
         set_kind("binary")
         add_files("tests/platform/win32_input_event_test.cpp")
@@ -1075,6 +1083,13 @@ if is_plat("linux") then
             add_defines("CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND")
         end
         add_includedirs(public_includedirs, {public = true})
+
+    target("phase_g_wayland_timer_wakeup_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_timer_wakeup_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_includedirs(public_includedirs, "src/platform/linux")
+        add_tests("default")
 
     target("phase_g_wayland_atspi_dbus_object_test")
         set_kind("binary")
@@ -3628,6 +3643,18 @@ target("phase_g_runtime_async_io_hook_structure_test")
     set_kind("binary")
     add_files("tests/architecture/phase_g_runtime_async_io_hook_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("phase_g_runtime_async_timer_integration_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_runtime_async_timer_integration_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("phase_g_runtime_async_timer_integration_test")
+    set_kind("binary")
+    add_files("tests/async/runtime_async_timer_integration_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs, "tests/ui")
+    add_tests("default")
 
 target("window_runtime_frame_scheduling_test")
     set_kind("binary")

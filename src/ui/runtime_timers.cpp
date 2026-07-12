@@ -8,6 +8,7 @@ TimerId WindowRuntime::schedule_timer(
   if (!callback) {
     return {};
   }
+  sync_platform_time();
   const TimerId id{next_timer_id_++};
   timers_.push_back(RuntimeTimer{
       .id = id,
@@ -16,7 +17,7 @@ TimerId WindowRuntime::schedule_timer(
       .repeating = false,
       .callback = std::move(callback),
   });
-  request_platform_wakeup();
+  schedule_next_timer_wakeup();
   return id;
 }
 
@@ -26,6 +27,7 @@ TimerId WindowRuntime::schedule_repeating_timer(
   if (!callback || interval_ms == 0) {
     return {};
   }
+  sync_platform_time();
   const TimerId id{next_timer_id_++};
   timers_.push_back(RuntimeTimer{
       .id = id,
@@ -34,7 +36,7 @@ TimerId WindowRuntime::schedule_repeating_timer(
       .repeating = true,
       .callback = std::move(callback),
   });
-  request_platform_wakeup();
+  schedule_next_timer_wakeup();
   return id;
 }
 
@@ -52,10 +54,12 @@ bool WindowRuntime::cancel_timer(TimerId id) {
     return false;
   }
   timers_.erase(timer);
+  schedule_next_timer_wakeup();
   return true;
 }
 
 void WindowRuntime::advance_time(std::uint64_t delta_ms) {
+  sync_platform_time();
   current_time_ms_ += delta_ms;
   fire_due_timers();
   flush_deferred_redraw_request();
@@ -98,6 +102,7 @@ void WindowRuntime::fire_due_timers() {
     }
   }
   firing_timers_ = false;
+  schedule_next_timer_wakeup();
 }
 
 } // namespace cgpui

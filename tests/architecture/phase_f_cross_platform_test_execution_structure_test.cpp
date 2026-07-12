@@ -60,7 +60,7 @@ int main() {
       return 10 + static_cast<int>(index);
     }
   }
-  if (!contains(wsl_guard, "Step 640 async timer integration production behavior")) return 30;
+  if (!contains(wsl_guard, "Step 641 cross-thread entity access production behavior")) return 30;
 
   constexpr const char* completion =
       "Phase F Step 613 audits cross-platform test execution by requiring repository-inspection targets to run from the project root with CGPUI_SOURCE_ROOT, preserving identical Windows and Linux path semantics. Step 614 platform production-path audit is next.";
@@ -68,6 +68,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 31;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 640 async timer integration production behavior\"")) return 32;
+                "\"phase_f_current_handoff\": \"Step 641 cross-thread entity access production behavior\"")) return 32;
   return 0;
 }

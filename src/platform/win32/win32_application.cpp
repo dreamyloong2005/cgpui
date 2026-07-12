@@ -1,6 +1,7 @@
 #include "win32_window_factory_internal.hpp"
 #include "win32_message_dialog_internal.hpp"
 #include "win32_open_url_internal.hpp"
+#include "win32_timer_wakeup_internal.hpp"
 
 #include <memory>
 #include <utility>
@@ -43,7 +44,7 @@ class Win32Application final : public PlatformApplication {
   }
 
   int run() override {
-    running_thread_id_ = GetCurrentThreadId();
+    running_thread_id_ = GetCurrentThreadId(); timer_wakeup_.set_thread_id(running_thread_id_);
     MSG message{};
     while (running_ && GetMessageW(&message, nullptr, 0, 0) > 0) {
       if (message.message == cgpui_wakeup_message) {
@@ -54,15 +55,12 @@ class Win32Application final : public PlatformApplication {
       TranslateMessage(&message);
       DispatchMessageW(&message);
     }
-    running_thread_id_ = 0;
+    running_thread_id_ = 0; timer_wakeup_.set_thread_id(0);
     windows_.clear();
     return 0;
   }
 
-  void request_wakeup() override {
-    if (running_thread_id_ != 0)
-      PostThreadMessageW(running_thread_id_, cgpui_wakeup_message, 0, 0);
-  }
+  void request_wakeup() override { timer_wakeup_.request_now(); }
 
   PlatformMenuInstallationResult install_native_menu(
       NativeMenuModel menu) override {
@@ -83,6 +81,10 @@ class Win32Application final : public PlatformApplication {
         native_file_dialog_state_.show_native_file_dialog(std::move(options));
     return last_file_dialog_result_;
   }
+
+  void request_wakeup_after(std::uint64_t delay_ms) override { timer_wakeup_.request(delay_ms); }
+
+  void cancel_wakeup_after() override { timer_wakeup_.cancel(); }
 
   NativeMessageDialogResult show_native_message_dialog(
       NativeMessageDialogOptions options) override {
@@ -155,8 +157,7 @@ class Win32Application final : public PlatformApplication {
   PlatformMenuInstallationResult last_menu_installation_;
   Win32NativeFileDialogState native_file_dialog_state_;
   NativeFileDialogResult last_file_dialog_result_;
-  DWORD running_thread_id_ = 0;
-  bool running_ = true;
+  DWORD running_thread_id_ = 0; Win32TimerWakeup timer_wakeup_; bool running_ = true;
   std::vector<Win32Window*> windows_;
 };
 

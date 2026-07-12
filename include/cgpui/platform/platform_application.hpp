@@ -10,6 +10,7 @@
 #include "cgpui/platform/platform_lifecycle.hpp"
 #include "cgpui/platform/platform_window.hpp"
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -31,7 +32,10 @@ class PlatformApplication {
   [[nodiscard]] virtual std::vector<FontFaceDescriptor> discover_font_records()
       const;
   [[nodiscard]] virtual FontDatabase discover_fonts() const;
+  [[nodiscard]] virtual std::uint64_t monotonic_time_ms() const;
   virtual void request_wakeup();
+  virtual void request_wakeup_after(std::uint64_t delay_ms);
+  virtual void cancel_wakeup_after();
   virtual PlatformMenuInstallationResult install_native_menu(
       NativeMenuModel menu);
   virtual NativeFileDialogResult show_native_file_dialog(

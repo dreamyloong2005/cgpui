@@ -1294,6 +1294,12 @@ Windows/Linux core API is stable enough for parity work.
   delivery, cancellation, duplicate suppression, all three creation surfaces,
   and post-shutdown detachment; dedicated structure coverage freezes public
   and private ownership, wakeup/shutdown integration, inventory, and line caps.
+- Completed: Phase G Step 640 integrates runtime timers with platform monotonic clocks and nearest-deadline delayed wakeups on Win32 and Wayland, preserving deterministic time advancement, cancellation, repeating cadence, and zero-delay compatibility. Step 641 cross-thread entity access production behavior is next.
+- Step 640 evidence: runtime behavior freezes 50/20/10ms deadline replacement,
+  repeating cadence, cancellation and zero-delay compatibility; focused Win32
+  threadpool-timer and Wayland timerfd tests freeze platform wake/cancel paths;
+  dedicated structure coverage freezes all production leaves, inventories,
+  registrations, and existing broad-file caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1309,6 +1315,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 640 structure/inventory patch expected the longer set-rundir Xmake target template and was atomically rejected | Step 640 structure guard registration | Re-read the exact compact Step 639 target block and apply the inventory, target, guard, and planning changes as focused patches |
 | The Step 638 dedicated structure guard exited 10 after all API, parent/child ownership, recursive state/cancellation, behavior, inventory, Xmake, and line-cap assertions passed | Step 638 authority-document RED | Synchronize the five authority documents, public vocabulary/core parity, and Step 639 handoff |
 | Step 638 focused regression passed 6/7 because the historical Step 637 guard still required completion aggregation in the membership source after the propagation split | Step 638 structure regression | Require `std::ranges::all_of` in the focused propagation leaf while preserving Step 637 membership and cancellation evidence |
 | The first Step 638 behavior build failed because `TaskGroup::create_child_group()` does not exist | Step 638 behavior RED | Add parent/child records and recursive subtree state/cancellation in a focused propagation leaf |

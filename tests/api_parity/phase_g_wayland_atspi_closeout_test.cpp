@@ -113,7 +113,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 640 async timer integration production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 641 cross-thread entity access production behavior\"")) {
     return 7;
   }
   return 0;

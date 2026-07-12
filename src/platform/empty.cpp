@@ -1,5 +1,7 @@
 #include "cgpui/platform/platform.hpp"
 
+#include <chrono>
+
 namespace cgpui {
 namespace {
 
@@ -40,6 +42,16 @@ void PlatformWindow::update_accessibility_tree(
 }
 
 void PlatformApplication::request_wakeup() {}
+
+std::uint64_t PlatformApplication::monotonic_time_ms() const {
+  return static_cast<std::uint64_t>(
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          std::chrono::steady_clock::now().time_since_epoch()).count());
+}
+
+void PlatformApplication::request_wakeup_after(std::uint64_t) {}
+
+void PlatformApplication::cancel_wakeup_after() {}
 
 PlatformMenuInstallationResult PlatformApplication::install_native_menu(
     NativeMenuModel menu) {

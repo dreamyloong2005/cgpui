@@ -1,8 +1,8 @@
 #pragma once
-
 #include "wayland_internal.hpp"
 #include "wayland_cursor_theme_internal.hpp"
 #include "wayland_pointer_scroll_frame_internal.hpp"
+#include "wayland_timer_wakeup_internal.hpp"
 
 namespace cgpui {
 
@@ -20,6 +20,8 @@ class WaylandApplication final : public PlatformApplication {
       PlatformEventCallback callback) override;
   int run() override;
   void request_wakeup() override;
+  void request_wakeup_after(std::uint64_t delay_ms) override;
+  void cancel_wakeup_after() override;
   void quit() override;
   PlatformMenuInstallationResult install_native_menu(
       NativeMenuModel menu) override;
@@ -63,6 +65,7 @@ class WaylandApplication final : public PlatformApplication {
   WaylandWindow* pointer_window_ = nullptr;
   WaylandWindow* keyboard_window_ = nullptr;
   int wakeup_pipe_[2] = {-1, -1};
+  WaylandTimerWakeup timer_wakeup_;
   Point pointer_position_{};
   WaylandPointerScrollFrameState pointer_scroll_frame_;
   std::string initialization_error_;

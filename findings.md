@@ -11201,3 +11201,36 @@
   priority overload. OS-specific polling or readiness APIs remain outside this
   cross-platform hook boundary.
 - Phase G Step 639 adds one-shot async I/O hooks with thread-safe success/failure notification, priority-aware runtime-thread dispatch, explicit cancellation, duplicate suppression, and shutdown detachment. Step 640 async timer integration production behavior is next.
+
+## 2026-07-12 Phase G Step 640 Async Timer Integration Design
+
+- Existing timers only compare against `current_time_ms_`, which advances
+  through the explicit test helper `advance_time(...)`. Scheduling a future
+  timer requests one immediate platform wakeup, but real Win32/Wayland event
+  loops never advance the runtime clock or schedule a delayed wake, so a
+  production future timer cannot naturally become due.
+- Step 640 adds a platform monotonic-clock and delayed-wakeup contract. The
+  runtime synchronizes elapsed platform time on wakeup and always arms the
+  nearest timer deadline, while explicit `advance_time(...)` remains available
+  as a deterministic test-clock offset.
+- Win32 delayed wakeup belongs in a focused threadpool-timer helper that safely
+  posts the existing wakeup message and preserves requests made before the
+  run-loop thread id is installed. Wayland delayed wakeup belongs in a focused
+  `timerfd` helper polled beside the display and wakeup pipe.
+- Fake/test applications expose a controlled monotonic time and delayed-wakeup
+  dispatch so behavior tests do not depend on wall-clock sleeps. Cancellation,
+  earlier-deadline replacement, repeating cadence, and stale wakeup rearming
+  need focused coverage.
+- The initial regression group exposed three structure-only gaps: the Wayland
+  application core header exceeded its frozen 80-line cap by one line, the
+  shared runtime test support exceeded 1800 lines, and the Win32 source audit
+  did not yet inventory the focused timer helper where wakeup posting moved.
+  Removing a blank line restored the Wayland cap, moving `FakeApplication` to
+  a focused 101-line test-support leaf restored the shared cap, and registering
+  both Win32 timer files restored complete source evidence without raising caps.
+- The Step 640 structure guard owns the complete vertical slice: public
+  monotonic/delayed-wakeup hooks, portable defaults, runtime clock/deadline
+  coordination, Win32 threadpool-timer and Wayland timerfd leaves, three
+  behavior tests, global UI/platform source inventories, Xmake registrations,
+  frozen line budgets, five authority documents, and the Step 641 handoff.
+- Phase G Step 640 integrates runtime timers with platform monotonic clocks and nearest-deadline delayed wakeups on Win32 and Wayland, preserving deterministic time advancement, cancellation, repeating cadence, and zero-delay compatibility. Step 641 cross-thread entity access production behavior is next.

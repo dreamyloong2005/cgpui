@@ -335,6 +335,7 @@ int main() {
 
   const std::vector<const char*> runtime_test_files{
       "tests/ui/window_runtime_test_support.hpp",
+      "tests/ui/window_runtime_platform_test_support.hpp",
       "tests/ui/window_runtime_input_test.cpp",
       "tests/ui/window_runtime_pointer_capture_platform_test.cpp",
       "tests/ui/window_runtime_focus_test.cpp",
@@ -363,6 +364,8 @@ int main() {
   }
   if (line_count(read_source("tests/ui/window_runtime_test_support.hpp")) >
           1800 ||
+      line_count(read_source(
+          "tests/ui/window_runtime_platform_test_support.hpp")) > 140 ||
       line_count(read_source("tests/ui/window_runtime_input_test.cpp")) >
           2600 ||
       line_count(read_source(
@@ -1964,6 +1967,7 @@ int main() {
       "src/ui/runtime_platform_service_state_internal.hpp",
       "src/ui/runtime_scheduling.cpp",
       "src/ui/runtime_timers.cpp",
+      "src/ui/runtime_timer_integration.cpp",
       "src/ui/runtime_animation_start.cpp",
       "src/ui/runtime_animation_state.cpp",
       "src/ui/runtime_animation_tick.cpp",

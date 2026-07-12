@@ -15,6 +15,8 @@
 
 namespace cgpui {
 
+class WaylandTimerWakeup;
+
 class WaylandWindow;
 class WaylandTextInput;
 class WaylandDataDevice;
@@ -82,6 +84,7 @@ struct WaylandCursorThemeState {
 int wayland_run_event_loop(
     wl_display* display,
     int wakeup_read_fd,
+    WaylandTimerWakeup& timer_wakeup,
     std::atomic_bool& running,
     std::vector<WaylandWindow*>& windows);
 void wayland_request_wakeup(int wakeup_write_fd);

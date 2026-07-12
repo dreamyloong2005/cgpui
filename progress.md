@@ -23328,3 +23328,67 @@
   async-context leaf, behavior test, and structure guard are
   50/41/57/121/20/16/16/151/133 lines; `window_runtime.hpp` and its private
   class-body header remain at 259/260 lines; and `git diff --check` succeeds.
+
+## 2026-07-12 Phase G Step 640 Async Timer Integration
+
+- Started from committed Step 639 at `4128905d` with only unrelated untracked
+  `.vscode/` present.
+- Repository inspection proves future runtime timers are deterministic-test
+  timers only: real event-loop wakeups never synchronize a monotonic clock or
+  arm a delayed platform wakeup. Chosen production boundary adds platform
+  monotonic/delayed-wakeup hooks, focused Win32 and Wayland timer helpers, and
+  runtime nearest-deadline scheduling while preserving explicit test time.
+- Two exploratory reads referenced nonexistent guessed paths
+  `win32_application_internal.hpp`, `wayland_application_dispatch.cpp`,
+  `wayland_event_loop_internal.hpp`, and `src/platform/platform_application.cpp`;
+  redirected to the actual Win32 application source, Wayland lifecycle/event-
+  loop leaves, application core header, and `src/platform/empty.cpp`.
+- The focused runtime behavior passes 1/1 and the Win32 platform library
+  compiles with the new threadpool timer helper. The first WSL Wayland build
+  failed because the event-loop implementation only saw the timer helper's
+  forward declaration through `wayland_input_internal.hpp`; added the focused
+  helper include to the implementation leaf.
+- The first direct Win32 timer-helper build collided with the Windows
+  `min`/`max` macros in the overflow clamp. Replaced the standard-algorithm
+  calls with an explicit bounded comparison in the focused helper.
+- The next Win32 compile showed the same macro also expands the
+  `numeric_limits::max()` member name; used the standard parenthesized member
+  form to suppress function-like macro expansion.
+- A preceding WSL build attempt passed two targets to `xmake build`, which
+  accepts only one target and exited with an invalid-argument help screen;
+  subsequent platform and behavior builds are run separately.
+- Recovered the Step 640 worktree through the planning-with-files session
+  catchup. The recovered code and planning records match committed Step 639 at
+  `4128905d` plus the uncommitted timer-integration slice.
+- Fixed all three initial structure regressions without raising established
+  caps: the Wayland core header is back to 80 lines, `FakeApplication` now
+  lives in focused `window_runtime_platform_test_support.hpp`, and the Win32
+  source audit inventories the timer helper header/source.
+- The corrected Wayland wakeup structure, UI source structure, and Win32
+  source inventory targets pass 3/3 on Windows.
+- Registered the new timer leaves in the global UI, platform, Win32, and
+  Wayland inventories and added the dedicated Step 640 structure target.
+  Its first execution returns 10 at the expected authority-document RED after
+  every production, behavior, inventory, registration, and line-cap assertion
+  passes.
+- Synchronized the Step 640 completion sentence across the roadmap, Markdown
+  and JSON ledgers, task plan, and findings; advanced core parity to leave only
+  cross-thread entity access incomplete in this async band.
+- Advanced all current-handoff consumers from Step 640 to Step 641 while
+  preserving the historical Step 639 completion sentence. The dedicated Step
+  640 structure target now passes, the JSON ledger parses, and `git diff
+  --check` succeeds.
+- Final Step 640 focused verification passes Windows 12/12 and Arch Linux WSL
+  12/12, including the Win32 threadpool timer, Wayland timerfd, shared runtime
+  integration, prior async-I/O behavior, scheduling, header cleanliness, and
+  global UI/platform source inventories. The complete Windows dynamic-handoff
+  chain passes 86/86.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 86 current-handoff consumers plus the JSON
+  ledger point to Step 641 with zero stale Step 640 handoffs; JSON parses with
+  24 Step 640 source entries; runtime integration, Win32 helper header/source,
+  Wayland helper header/source, runtime behavior, Win32 behavior, Wayland
+  behavior, test-support leaf, dedicated structure guard, Wayland application
+  core, and private runtime header are 33/35/67/24/42/104/35/24/93/170/80/260
+  lines; and `git diff --check` succeeds.
+- Phase G Step 640 integrates runtime timers with platform monotonic clocks and nearest-deadline delayed wakeups on Win32 and Wayland, preserving deterministic time advancement, cancellation, repeating cadence, and zero-delay compatibility. Step 641 cross-thread entity access production behavior is next.
