@@ -2895,7 +2895,19 @@
       "xmake.lua"
     ],
     "phase_g_step_624_remaining_gap": "Step 625 Win32 UIA lifecycle stress production behavior",
-    "phase_f_current_handoff": "Step 625 Win32 UIA lifecycle stress production behavior"
+    "phase_g_step_625_surface": "Phase G Step 625 verifies Win32 UIA lifecycle diagnostics and stress behavior across 128 concurrent stable updates and 64 remove/recreate cycles. Step 626 Win32 UIA production closeout audit is next.",
+    "phase_g_step_625_sources": [
+      "src/platform/win32/win32_uia_lifetime_internal.hpp",
+      "src/platform/win32/win32_uia_lifetime.cpp",
+      "src/platform/win32/win32_accessibility_internal.hpp",
+      "src/platform/win32/win32_accessibility.cpp",
+      "src/platform/win32/win32_uia_updates.cpp",
+      "tests/platform/win32_uia_lifecycle_stress_test.cpp",
+      "tests/architecture/phase_g_win32_uia_lifecycle_stress_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_625_remaining_gap": "Step 626 Win32 UIA production closeout audit",
+    "phase_f_current_handoff": "Step 626 Win32 UIA production closeout audit"
   },
   "categories": [
     "application_and_app_context",

@@ -10948,3 +10948,13 @@
   navigation tree state already serializes its maps and should remain the
   authority for current relationships and action availability.
 - Phase G Step 624 preserves Win32 UIA provider COM identity across stable element updates, refreshes provider state in place, and retires removed or destroyed providers with element-unavailable semantics. Step 625 Win32 UIA lifecycle stress production behavior is next.
+
+## 2026-07-12 Phase G Step 625 Lifecycle Stress
+
+- Per-reconcile created, reused, retired, and active counts are accumulated
+  inside the existing lifecycle loops without another provider scan.
+- A retained provider remains safe for concurrent property, runtime-id, and
+  navigation calls while the single writer installs 128 new snapshots.
+- Sixty-four remove/recreate cycles verify each retired external reference is
+  unavailable and each replacement receives a distinct COM identity.
+- Phase G Step 625 verifies Win32 UIA lifecycle diagnostics and stress behavior across 128 concurrent stable updates and 64 remove/recreate cycles. Step 626 Win32 UIA production closeout audit is next.

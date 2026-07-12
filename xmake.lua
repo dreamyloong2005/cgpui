@@ -623,6 +623,13 @@ target("phase_g_win32_uia_provider_lifetime_structure_test")
     add_files("tests/architecture/phase_g_win32_uia_provider_lifetime_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_win32_uia_lifecycle_stress_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_g_win32_uia_lifecycle_stress_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -722,6 +729,14 @@ if is_plat("windows") then
     target("win32_uia_provider_lifetime_test")
         set_kind("binary")
         add_files("tests/platform/win32_uia_provider_lifetime_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(public_includedirs, "src/platform/win32")
+        add_syslinks("user32", "uiautomationcore", "oleaut32")
+        add_tests("default")
+
+    target("win32_uia_lifecycle_stress_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_uia_lifecycle_stress_test.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
         add_includedirs(public_includedirs, "src/platform/win32")
         add_syslinks("user32", "uiautomationcore", "oleaut32")

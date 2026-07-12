@@ -5,7 +5,7 @@
 
 namespace cgpui {
 
-void reconcile_win32_uia_provider_lifetime(
+Win32UiaProviderLifetimeDiagnostics reconcile_win32_uia_provider_lifetime(
     Win32UiaProviderTreeHandle& tree,
     HWND hwnd,
     std::uint64_t root_element_id,
@@ -13,6 +13,7 @@ void reconcile_win32_uia_provider_lifetime(
     const std::vector<Win32UiaProviderNode>& current_nodes,
     std::function<void(AccessibilityActionRequested)> action_callback,
     std::vector<IRawElementProviderSimple*>& providers) {
+  Win32UiaProviderLifetimeDiagnostics diagnostics;
   if (!tree) {
     tree = create_win32_uia_provider_tree(
         hwnd, root_element_id, current_nodes, action_callback);
@@ -32,13 +33,18 @@ void reconcile_win32_uia_provider_lifetime(
   for (const Win32UiaProviderNode& node : current_nodes) {
     const auto existing = retained.find(node.element_id);
     if (existing == retained.end()) {
-      next.push_back(create_win32_uia_provider(
-          tree, node, node.element_id == root_element_id));
+      IRawElementProviderSimple* provider = create_win32_uia_provider(
+          tree, node, node.element_id == root_element_id);
+      next.push_back(provider);
+      diagnostics.created_count += provider != nullptr ? 1U : 0U;
+      diagnostics.active_count += provider != nullptr ? 1U : 0U;
       continue;
     }
     replace_win32_uia_provider_node(
         existing->second, node, node.element_id == root_element_id);
     next.push_back(existing->second);
+    diagnostics.reused_count += existing->second != nullptr ? 1U : 0U;
+    diagnostics.active_count += existing->second != nullptr ? 1U : 0U;
     retained.erase(existing);
   }
 
@@ -46,8 +52,10 @@ void reconcile_win32_uia_provider_lifetime(
     (void)element_id;
     retire_win32_uia_provider(provider);
     if (provider != nullptr) provider->Release();
+    diagnostics.retired_count += provider != nullptr ? 1U : 0U;
   }
   providers = std::move(next);
+  return diagnostics;
 }
 
 void retire_win32_uia_provider_lifetime(

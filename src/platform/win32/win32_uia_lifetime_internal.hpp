@@ -7,7 +7,14 @@
 
 namespace cgpui {
 
-void reconcile_win32_uia_provider_lifetime(
+struct Win32UiaProviderLifetimeDiagnostics {
+  std::size_t created_count = 0;
+  std::size_t reused_count = 0;
+  std::size_t retired_count = 0;
+  std::size_t active_count = 0;
+};
+
+Win32UiaProviderLifetimeDiagnostics reconcile_win32_uia_provider_lifetime(
     Win32UiaProviderTreeHandle& tree,
     HWND hwnd,
     std::uint64_t root_element_id,

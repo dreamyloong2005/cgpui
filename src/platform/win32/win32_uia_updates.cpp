@@ -35,7 +35,7 @@ void Win32UiaAccessibilityAdapter::update(
         .child_count = node.child_count,
     });
   }
-  reconcile_win32_uia_provider_lifetime(
+  last_lifetime_diagnostics_ = reconcile_win32_uia_provider_lifetime(
       provider_tree_, hwnd_, root_element_id_, previous_nodes,
       provider_nodes_, action_callback_, providers_);
   last_event_publication_ = publish_win32_uia_live_updates(

@@ -22923,3 +22923,19 @@
   shared Step 619-624 UIA/source structure targets using the established
   D-drive build/cache directories and `/dev/shm/cgpui` transient temp.
 - Phase G Step 624 preserves Win32 UIA provider COM identity across stable element updates, refreshes provider state in place, and retires removed or destroyed providers with element-unavailable semantics. Step 625 Win32 UIA lifecycle stress production behavior is next.
+
+## 2026-07-12 Phase G Step 625 Lifecycle Stress
+
+- Started from committed Step 624 at `6dfef103` with only unrelated untracked
+  `.vscode/` present.
+- The stress target reached the expected RED compile because the adapter did
+  not expose the planned per-reconcile lifecycle diagnostics.
+- Added created/reused/retired/active diagnostics and verified one reader thread
+  during 128 stable updates plus 64 remove/recreate cycles; the focused stress
+  test passes.
+- Active counts were folded into the existing create/reuse branches so the
+  diagnostics add no second provider-vector scan.
+- Expanded Windows UIA/accessibility verification passes 19/19, all Step 626
+  dynamic handoff guards pass 72/72, and the existing Arch Linux WSL shared
+  source/structure group passes 8/8.
+- Phase G Step 625 verifies Win32 UIA lifecycle diagnostics and stress behavior across 128 concurrent stable updates and 64 remove/recreate cycles. Step 626 Win32 UIA production closeout audit is next.

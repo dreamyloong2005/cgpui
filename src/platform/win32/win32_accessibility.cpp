@@ -69,6 +69,11 @@ Win32UiaAccessibilityAdapter::last_event_publication() const {
   return last_event_publication_;
 }
 
+Win32UiaProviderLifetimeDiagnostics
+Win32UiaAccessibilityAdapter::last_lifetime_diagnostics() const {
+  return last_lifetime_diagnostics_;
+}
+
 IRawElementProviderSimple* Win32UiaAccessibilityAdapter::root_provider() const {
   return provider_for_element(root_element_id_);
 }

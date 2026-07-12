@@ -1221,7 +1221,12 @@ Windows/Linux core API is stable enough for parity work.
   stable element id, mutex-protected provider snapshots refresh in place,
   retired providers unregister from navigation and return
   `UIA_E_ELEMENTNOTAVAILABLE`, and adapter teardown invalidates external refs.
-- In progress: Step 625 Win32 UIA lifecycle stress production behavior.
+- Completed: Phase G Step 625 verifies Win32 UIA lifecycle diagnostics and stress behavior across 128 concurrent stable updates and 64 remove/recreate cycles. Step 626 Win32 UIA production closeout audit is next.
+- Step 625 evidence: per-reconcile created/reused/retired/active diagnostics
+  remain allocation-free counters over existing loops; a reader thread queries
+  value, runtime id, and parent navigation during 128 stable updates, followed
+  by 64 remove/recreate cycles with exact diagnostic and unavailable checks.
+- In progress: Step 626 Win32 UIA production closeout audit.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.

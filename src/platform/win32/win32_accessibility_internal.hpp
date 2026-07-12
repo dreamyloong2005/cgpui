@@ -38,6 +38,8 @@ class Win32UiaAccessibilityAdapter {
   [[nodiscard]] const std::vector<PlatformAccessibilityLiveUpdate>&
       last_live_updates() const;
   [[nodiscard]] Win32UiaEventPublication last_event_publication() const;
+  [[nodiscard]] Win32UiaProviderLifetimeDiagnostics
+      last_lifetime_diagnostics() const;
   [[nodiscard]] IRawElementProviderSimple* root_provider() const;
   [[nodiscard]] IRawElementProviderSimple* provider_for_element(
       std::uint64_t element_id) const;
@@ -51,6 +53,7 @@ class Win32UiaAccessibilityAdapter {
   std::function<void(AccessibilityActionRequested)> action_callback_;
   Win32UiaEventOperations event_operations_;
   Win32UiaEventPublication last_event_publication_;
+  Win32UiaProviderLifetimeDiagnostics last_lifetime_diagnostics_;
   std::vector<PlatformAccessibilityLiveUpdate> live_updates_;
   HWND hwnd_ = nullptr;
   std::uint64_t root_element_id_ = 0;

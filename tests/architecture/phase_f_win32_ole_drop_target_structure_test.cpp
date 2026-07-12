@@ -75,6 +75,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_571_remaining_gap\": \"Step 572 Win32")) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 625 Win32 UIA lifecycle stress production behavior")) return 9;
+                "\"phase_f_current_handoff\": \"Step 626 Win32 UIA production closeout audit")) return 9;
   return 0;
 }
