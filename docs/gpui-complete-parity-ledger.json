@@ -3331,7 +3331,18 @@
       "xmake.lua"
     ],
     "phase_g_step_649_remaining_gap": "Step 650 official animation and opacity examples",
-    "phase_f_current_handoff": "Step 650 official animation and opacity examples"
+    "phase_g_step_650_surface": "Phase G Step 650 ports the pinned official animation and opacity examples to public C++ authoring, demonstrating two-second repeated bounce rotation, click-restarted opacity transitions, cancellation-safe restarts, shared frame pacing, and compile/run smoke coverage without direct runtime internals. Step 651 file-backed asset loading production behavior is next.",
+    "phase_g_step_650_sources": [
+      "examples/api_parity/public_animation_example/main.cpp",
+      "examples/api_parity/public_opacity_example/main.cpp",
+      "tests/api_parity/phase_g_official_animation_examples_test.cpp",
+      "tests/architecture/phase_g_animation_examples_structure_test.cpp",
+      "tests/architecture/phase_g_style_interpolation_structure_test.cpp",
+      "docs/gpui-upstream-pinned-revision.md",
+      "xmake.lua"
+    ],
+    "phase_g_step_650_remaining_gap": "Step 651 file-backed asset loading production behavior",
+    "phase_f_current_handoff": "Step 651 file-backed asset loading production behavior"
   },
   "categories": [
     "application_and_app_context",

@@ -1387,6 +1387,15 @@ Windows/Linux core API is stable enough for parity work.
   geometry, optional and discrete endpoint policy, and unchanged infinite max
   dimensions; dedicated structure coverage freezes ownership, registration,
   authority evidence, and line caps.
+- Completed: Phase G Step 650 ports the pinned official animation and opacity examples to public C++ authoring, demonstrating two-second repeated bounce rotation, click-restarted opacity transitions, cancellation-safe restarts, shared frame pacing, and compile/run smoke coverage without direct runtime internals. Step 651 file-backed asset loading production behavior is next.
+- Step 650 boundary: the two pinned examples live in independent public
+  example directories and include only `cgpui/prelude.hpp`. Asset-backed SVG,
+  image, and GIF content remains in the Step 651-658 asset band rather than
+  being mocked inside the animation closeout.
+- Step 650 evidence: both example binaries compile and pass no-launch smoke
+  tests; the source audit freezes pinned repeat/bounce and click-restart
+  semantics, while the structure guard freezes public-only dependencies,
+  registration, authority evidence, and line caps.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1402,6 +1411,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Sandboxed Step 650 Xmake reconfiguration repeatedly reported `cannot create filelock for package(ninja)` | Step 650 example target registration | `xmake show -l packages` exposed the underlying denied write to the user-local Xmake `references.txt`; rerun only `xmake f -c -m debug -P .` with approved package-cache access, then keep builds sandboxed |
+| The initial Step 650 source audit did not compile because a `std::string[]` was iterated as `const char*` | Step 650 RED test | Iterate by `const std::string&` and pass `c_str()` to the source matcher; the corrected audit then reached the intended missing-example RED |
+| The first Step 650 structure guard exited 5 because the Step 649 guard splits the next-step phrase across adjacent literals | Step 650 structure RED | Match both stable source fragments while retaining the exact completion sentence requirement across authority documents |
+| The first GREEN Step 650 source audit rejected public `WindowRuntimeContext` because its broad internal-runtime ban matched the type name | Step 650 public-only example audit | Spell the callback parameter through the equivalent public `ViewContext` alias, preserving both public-only authoring and the direct-runtime ban |
 | The Step 647 Arch Linux focused run started successfully, but two detached WSL Xmake processes outlived their Windows callers and subsequent probes returned `WSL_E_DISTRO_NOT_FOUND` | Step 647 WSL verification | Do not restore or install a distribution; retain Windows evidence, record WSL verification as pending, and retry the existing `archlinux` environment before the Phase G full cross-platform gate |
 | `Get-CimInstance Win32_Process` returned access denied while checking the interrupted Xmake filelock | Step 647 filelock diagnosis | Use the lower-privilege `Get-Process -Name xmake,ninja` query and the exact focused Xmake test as the red-capable feedback loop; the lock did not reproduce and no processes remained afterward |
 | Sandboxed pinned-upstream `animation.rs` reads failed with an authentication exception | Step 645 upstream semantic audit | Re-run the same read-only raw GitHub URLs with approved network access and keep the revision fixed at `5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0` |

@@ -1899,6 +1899,7 @@ apps rather than only demo windows.
 - [x] Phase G Step 647 makes runtime animation cancellation a distinct terminal state with frozen progress, immediate callback release, idempotent timer teardown, ordinary and transition handle observability, runtime/context/async forwarding, and aggregate plus last-cancellation diagnostics. Step 648 animation frame pacing production behavior is next.
 - [x] Phase G Step 648 coalesces ordinary and element animations onto one deadline-driven frame timer, preserves cadence across late frames, delivers mutation-safe due callbacks without a per-frame allocation, tears down cancelled participation, and reports pending, scheduled, delivered, coalesced, and late-frame diagnostics. Step 649 style interpolation production behavior is next.
 - [x] Phase G Step 649 broadens production style interpolation across layout geometry, percentage sizing, spacing, borders, shadows, clipping, flex, inset, typography, colors, opacity, and transforms, preserves discrete and one-sided optional values until the endpoint, and avoids NaNs for unchanged non-finite dimensions. Step 650 official animation and opacity examples is next.
+- [x] Phase G Step 650 ports the pinned official animation and opacity examples to public C++ authoring, demonstrating two-second repeated bounce rotation, click-restarted opacity transitions, cancellation-safe restarts, shared frame pacing, and compile/run smoke coverage without direct runtime internals. Step 651 file-backed asset loading production behavior is next.
 - [x] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
 - [x] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree
@@ -1906,7 +1907,7 @@ apps rather than only demo windows.
 - [x] Steps 635-642: Complete async runtime: task pool, priorities, structured
   groups, cancellation propagation, async I/O hooks, timer integration, and
   cross-thread entity access rules.
-- [ ] Steps 643-650: Complete animation: transitions, element lifecycle
+- [x] Steps 643-650: Complete animation: transitions, element lifecycle
   animations, spring/tween variants, cancellation, frame pacing, style
   interpolation, and the official animation/opacity examples.
 - [ ] Steps 651-658: Complete assets: file-backed loading, PNG/JPEG/GIF/SVG

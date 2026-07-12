@@ -3757,6 +3757,50 @@ target("phase_g_style_interpolation_structure_test")
     add_files("tests/architecture/phase_g_style_interpolation_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_official_animation_examples_test")
+    set_kind("binary")
+    add_files("tests/api_parity/phase_g_official_animation_examples_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("api_parity_public_animation_example")
+    set_kind("binary")
+    add_files("examples/api_parity/public_animation_example/main.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    if is_plat("windows") then
+        add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
+    elseif is_plat("linux") then
+        add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
+    elseif is_plat("macosx") then
+        add_deps("cgpui_platform_macos", "cgpui_renderer_metal")
+        add_frameworks("AppKit", "QuartzCore", "Metal")
+    else
+        add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
+    end
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("api_parity_public_opacity_example")
+    set_kind("binary")
+    add_files("examples/api_parity/public_opacity_example/main.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    if is_plat("windows") then
+        add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
+    elseif is_plat("linux") then
+        add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
+    elseif is_plat("macosx") then
+        add_deps("cgpui_platform_macos", "cgpui_renderer_metal")
+        add_frameworks("AppKit", "QuartzCore", "Metal")
+    else
+        add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
+    end
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("phase_g_animation_examples_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_animation_examples_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 target("window_runtime_frame_scheduling_test")
     set_kind("binary")
     set_rundir(os.projectdir())

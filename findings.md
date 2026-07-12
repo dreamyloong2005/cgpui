@@ -11461,3 +11461,22 @@
   public API. Keeping it in a focused source/header pair leaves the public
   style animation leaf thin and the field-composition source readable.
 - Phase G Step 649 broadens production style interpolation across layout geometry, percentage sizing, spacing, borders, shadows, clipping, flex, inset, typography, colors, opacity, and transforms, preserves discrete and one-sided optional values until the endpoint, and avoids NaNs for unchanged non-finite dimensions. Step 650 official animation and opacity examples is next.
+
+## 2026-07-13 Phase G Step 650 Official Animation Examples
+
+- Pinned `examples/animation.rs` uses a two-second infinitely repeated
+  `bounce(ease_in_out)` animation and applies its progress to a rotation.
+  CGPUI maps that directly to `with_animations(...)`, a repeated
+  `ElementAnimationStage`, `AnimationCurve::bounce(...)`, and an affine
+  transform applied through the animated public element.
+- Pinned `examples/opacity.rs` resets opacity to zero on click and requests
+  animation frames until opacity reaches one. CGPUI maps the same interaction
+  to a click-dispatched action and a typed `AnimationTransition`; restarting
+  cancels the prior transition before beginning the next one.
+- The upstream opacity example also embeds PNG, SVG, and GIF assets. Those
+  remain the explicit Steps 651-658 asset band, so Step 650 uses styled
+  geometry while preserving the animation interaction and frame behavior.
+- Both examples include only `cgpui/prelude.hpp`, compile as real application
+  binaries, and default to no-launch smoke execution unless their explicit
+  environment variable is set.
+- Phase G Step 650 ports the pinned official animation and opacity examples to public C++ authoring, demonstrating two-second repeated bounce rotation, click-restarted opacity transitions, cancellation-safe restarts, shared frame pacing, and compile/run smoke coverage without direct runtime internals. Step 651 file-backed asset loading production behavior is next.

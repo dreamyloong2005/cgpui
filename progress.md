@@ -23754,3 +23754,35 @@
   each authority file, JSON parses with 8 present evidence sources, key files
   are 19/28/90/57/157/124 lines, no `[DEBUG-*]` markers remain, and
   `git diff --check` reports no whitespace errors.
+
+## 2026-07-13 Phase G Step 650 Official Animation Examples
+
+- Committed Step 649 as `e641bcdd feat: broaden style interpolation`; only
+  unrelated `.vscode/` remained untracked afterward.
+- Read the pinned upstream `examples/animation.rs` and `examples/opacity.rs`.
+  The fixed sources confirm two-second repeated bounce rotation and click-
+  restarted frame-driven opacity recovery semantics.
+- Added the source audit first. After correcting its own `std::string` loop,
+  it reached the intended RED because both public example files were absent.
+- Added independent `public_animation_example` and `public_opacity_example`
+  modules with only `cgpui/prelude.hpp`. Their real application targets build,
+  link, and pass no-launch smoke execution; the source audit passes after
+  switching its transition callback spelling to public `ViewContext`.
+- Xmake reconfiguration initially reported a Ninja package filelock. The
+  underlying diagnostic was sandbox denial when updating user-local package
+  `references.txt`; approved reconfiguration succeeded without deleting any
+  cache or lock file.
+- Added the animation-example structure closeout guard. After accounting for
+  the prior guard's split Step 650 phrase, it reached the expected five-
+  document RED and then passed after authority synchronization.
+- Marked Steps 643-650 complete, closed the animation ledger row for the
+  requested Windows/Linux target, added 7 JSON evidence sources, and advanced
+  96 existing JSON handoff consumers plus three parent-child source checks to
+  Step 651.
+- Final Windows verification passes 4/4 for the two example smoke targets,
+  pinned source audit, and structure guard; ledger/vocabulary/header/source
+  regression passes 4/4; the complete dynamic handoff chain passes 97/97.
+- Final audits pass: the exact Step 650 completion sentence appears once in
+  each authority file, all 7 JSON sources exist, key files are
+  116/124/69/112 lines, and `git diff --check` reports no whitespace errors.
+  WSL still reports no installed distribution, so no Linux result is claimed.

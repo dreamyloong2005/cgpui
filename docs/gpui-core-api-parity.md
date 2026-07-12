@@ -57,7 +57,8 @@ desktop integration surfaces remain separate future work.
   plus one deadline-driven frame timer shared by ordinary and element
   animations with cadence-preserving late-frame delivery, and
   broad production style interpolation across layout, paint, and typography
-  fields.
+  fields. The pinned official animation and opacity examples compile and run
+  through the same public authoring surface without direct runtime internals.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -144,10 +145,6 @@ desktop integration surfaces remain separate future work.
 
 ## Missing
 
-- Full upstream GPUI animation and easing system beyond typed scalar
-  transitions, runtime-owned keyed element lifecycle animations, repeat,
-  chaining, curve variants, cancellation, and deadline-driven frame pacing,
-  including official animation and opacity examples.
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.
 - Asset, image, SVG, and texture upload pipelines.
