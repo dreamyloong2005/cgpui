@@ -37,7 +37,7 @@ class WaylandAtspiAccessibilityAdapter {
   WaylandAtspiBusConnection bus_connection_;
   WaylandAtspiDbusRegistry dbus_registry_;
   WaylandAtspiEventPublisher event_publisher_;
-  bool automatic_connection_attempted_ = false;
+  bool automatic_connection_enabled_ = true;
   bool dbus_attached_ = false;
   std::uint64_t root_element_id_ = 0;
   std::size_t node_count_ = 0;

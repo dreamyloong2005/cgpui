@@ -954,11 +954,14 @@ int main(int argc, char** argv) {
       read_source("src/platform/linux/wayland_atspi_object_internal.hpp");
   const std::string atspi_dbus =
       read_source("src/platform/linux/wayland_atspi_dbus.cpp");
+  const std::string atspi_bus_health =
+      read_source("src/platform/linux/wayland_atspi_bus_health.cpp");
   const std::string accessibility =
       read_source("src/platform/linux/wayland_accessibility.cpp");
   if (!contains(accessibility_header,
                 "class WaylandAtspiAccessibilityAdapter") ||
       !contains(atspi_object, "struct WaylandAtspiObjectNode") ||
+      !contains(atspi_bus_health, "WaylandAtspiBusConnection::is_connected") ||
       !contains(accessibility, "PlatformAccessibilityTreeUpdate") ||
       !contains(atspi_dbus, "dbus_connection_register_object_path")) {
     return 8;

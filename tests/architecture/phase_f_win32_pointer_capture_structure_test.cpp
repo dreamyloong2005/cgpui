@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 633 Linux AT-SPI disconnect and reconnect production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 634 Linux AT-SPI production closeout audit")) {
     return 11;
   }
   return 0;

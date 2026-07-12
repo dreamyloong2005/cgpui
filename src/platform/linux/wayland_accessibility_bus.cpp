@@ -5,9 +5,14 @@ namespace cgpui {
 bool WaylandAtspiAccessibilityAdapter::ensure_dbus_connection(
     WaylandAtspiBusOperations bus_operations,
     WaylandAtspiDbusOperations dbus_operations) {
-  if (dbus_attached_) return true;
-  if (automatic_connection_attempted_) return false;
-  automatic_connection_attempted_ = true;
+  if (!automatic_connection_enabled_) return dbus_attached_;
+  if (dbus_attached_ && bus_connection_.is_connected()) return true;
+  if (dbus_attached_) {
+    event_publisher_.detach();
+    dbus_registry_.detach();
+    dbus_attached_ = false;
+  }
+  bus_connection_.disconnect();
   if (!bus_connection_.connect(bus_operations)) return false;
   dbus_registry_.attach(bus_connection_.connection(), dbus_operations);
   event_publisher_.attach(bus_connection_.connection(), dbus_operations);
@@ -19,7 +24,7 @@ bool WaylandAtspiAccessibilityAdapter::ensure_dbus_connection(
 void WaylandAtspiAccessibilityAdapter::attach_dbus(
     DBusConnection* connection, WaylandAtspiDbusOperations operations) {
   detach_dbus();
-  automatic_connection_attempted_ = true;
+  automatic_connection_enabled_ = false;
   if (connection == nullptr) return;
   dbus_registry_.attach(connection, operations);
   event_publisher_.attach(connection, operations);

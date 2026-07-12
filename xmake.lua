@@ -680,6 +680,13 @@ target("phase_g_wayland_atspi_bus_connection_structure_test")
     add_files("tests/architecture/phase_g_wayland_atspi_bus_connection_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_wayland_atspi_bus_reconnect_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_g_wayland_atspi_bus_reconnect_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 if is_plat("windows") then
     target("cgpui_platform_win32")
         set_kind("static")
@@ -1105,6 +1112,14 @@ if is_plat("linux") then
     target("phase_g_wayland_atspi_bus_connection_test")
         set_kind("binary")
         add_files("tests/platform/wayland_atspi_bus_connection_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_packages("dbus")
+        add_includedirs(public_includedirs, "src/platform/linux", "tests/platform")
+        add_tests("default")
+
+    target("phase_g_wayland_atspi_bus_reconnect_test")
+        set_kind("binary")
+        add_files("tests/platform/wayland_atspi_bus_reconnect_test.cpp")
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
         add_packages("dbus")
         add_includedirs(public_includedirs, "src/platform/linux", "tests/platform")

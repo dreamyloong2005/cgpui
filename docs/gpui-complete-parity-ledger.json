@@ -3002,7 +3002,24 @@
       "xmake.lua"
     ],
     "phase_g_step_632_remaining_gap": "Step 633 Linux AT-SPI disconnect and reconnect production behavior",
-    "phase_f_current_handoff": "Step 633 Linux AT-SPI disconnect and reconnect production behavior"
+    "phase_g_step_633_surface": "Phase G Step 633 detects owned Linux AT-SPI bus connection loss, detaches stale object and event registrations, retries discovery and registration until recovery, resynchronizes the accessibility tree, and reports reconnect lifecycle diagnostics. Step 634 Linux AT-SPI production closeout audit is next.",
+    "phase_g_step_633_sources": [
+      "src/platform/linux/wayland_atspi_bus_internal.hpp",
+      "src/platform/linux/wayland_atspi_bus.cpp",
+      "src/platform/linux/wayland_atspi_bus_health.cpp",
+      "src/platform/linux/wayland_accessibility_internal.hpp",
+      "src/platform/linux/wayland_accessibility_bus.cpp",
+      "tests/platform/wayland_atspi_bus_test_support.hpp",
+      "tests/platform/wayland_atspi_bus_connection_test.cpp",
+      "tests/platform/wayland_atspi_bus_reconnect_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_bus_connection_structure_test.cpp",
+      "tests/architecture/phase_g_wayland_atspi_bus_reconnect_structure_test.cpp",
+      "tests/architecture/platform_source_structure_test.cpp",
+      "tests/architecture/wayland_window_source_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_633_remaining_gap": "Step 634 Linux AT-SPI production closeout audit",
+    "phase_f_current_handoff": "Step 634 Linux AT-SPI production closeout audit"
   },
   "categories": [
     "application_and_app_context",

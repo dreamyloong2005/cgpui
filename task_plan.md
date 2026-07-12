@@ -1259,8 +1259,12 @@ Windows/Linux core API is stable enough for parity work.
   GetAddress discovery, private open/register, exit policy, close/unref, and
   failure cleanup; focused adapter coordination attaches registry/events, and
   the Wayland window triggers discovery once before its first tree update.
-- In progress: Step 633 Linux AT-SPI disconnect and reconnect production
-  behavior.
+- Completed: Phase G Step 633 detects owned Linux AT-SPI bus connection loss, detaches stale object and event registrations, retries discovery and registration until recovery, resynchronizes the accessibility tree, and reports reconnect lifecycle diagnostics. Step 634 Linux AT-SPI production closeout audit is next.
+- Step 633 evidence: a focused bus-health leaf detects remote connection loss;
+  adapter coordination detaches stale registrations before releasing the old
+  connection; retry state survives a failed reconnect; recovery resynchronizes
+  retained objects; injected connections continue to bypass automatic discovery.
+- In progress: Step 634 Linux AT-SPI production closeout audit.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1276,6 +1280,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 633 structure run exited 9 after behavior, ownership, ordering, inventory, Xmake, and line-cap assertions passed | Step 633 structure RED | Synchronize the five authority documents and advance the current handoff to Step 634 before rerunning GREEN |
+| The first shared Step 632/633 structure regression passed platform and Wayland inventories but failed the Step 632 guard because disconnect accounting moved to the new health leaf | Step 633 modular extraction | Make the historical Step 632 guard read the focused health leaf and freeze its inventory/line budget |
+| A Step 633 Xmake source search used a regex whose PowerShell quoting produced an unclosed-group parse error | Step 633 source ownership check | Use fixed-string `rg -F` searches for Xmake target/source literals |
+| The first Step 633 reconnect build failed on the intentionally missing `get_is_connected` operation and also showed the test omitted the explicit Wayland service declaration include | Step 633 behavior RED | Add connection-health/reconnect diagnostics in a focused production leaf and include `wayland_services_internal.hpp` directly in the behavior test |
 | A Step 632 historical-guard search again passed a Windows wildcard path directly to `rg` and failed with OS error 123 | Step 632 historical structure diagnosis | Search the explicit architecture directory with `--glob 'phase_g_wayland_atspi_*_structure_test.cpp'` |
 | The first Step 632 historical structure group failed because Step 630 still expected event attach/detach in the old adapter source | Step 632 ownership regression gate | Read `wayland_accessibility_bus.cpp` in the Step 630 guard and preserve the existing adapter/event line caps |
 | The first Step 632 structure run exited 11 after implementation and layout assertions passed | Step 632 structure RED | Synchronize the five authority documents and advance the current handoff to Step 633 before rerunning GREEN |

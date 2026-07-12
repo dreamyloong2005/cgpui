@@ -23078,3 +23078,31 @@
   window source, behavior test, and structure guard are
   52/145/60/65/75/102/175/166/151 lines; and `git diff --check` succeeds.
 - Phase G Step 632 discovers the Linux AT-SPI accessibility bus through org.a11y.Bus, opens and registers an owned private connection, attaches it lazily on first accessibility update, and reports discovery/connection lifecycle diagnostics. Step 633 Linux AT-SPI disconnect and reconnect production behavior is next.
+
+## 2026-07-12 Phase G Step 633 AT-SPI Disconnect And Reconnect
+
+- Started from committed Step 632 at `fcd43148` with only unrelated untracked
+  `.vscode/` present.
+- Added a shared bus-operation recorder and a reconnect behavior target covering
+  owned connection loss, failed reconnect, later retry, object resynchronization,
+  and injected-connection bypass.
+- The first WSL build reached the expected RED because production has no
+  `get_is_connected` operation or reconnect diagnostics yet; it also identified
+  a missing explicit Wayland service declaration include in the new test.
+- Added the focused bus-health implementation, owned/injected adapter modes,
+  retry-pending diagnostics, and shared Step 632/633 test support. Both bus
+  behavior targets pass 2/2 in WSL.
+- The Step 633 structure guard reached the expected authority-document RED at
+  exit 9 after all behavior, ownership, ordering, inventory, Xmake, historical
+  Step 632, and line-cap assertions passed.
+- Final Step 633 verification passes the Windows dynamic handoff chain 80/80
+  and the Arch Linux WSL AT-SPI object, navigation, role/state, event, bus,
+  reconnect, structure, source, and ledger regression group 17/17.
+- Final audits pass: the exact completion sentence appears once in each of the
+  five authority documents; all 80 handoff guards plus the ledger point to
+  Step 634 with zero stale Step 633 current handoffs; JSON parses; the bus
+  header/discovery/health leaves, adapter header/coordination leaf, shared bus
+  test support, discovery test, reconnect test, Step 632 guard, and Step 633
+  guard are 59/139/34/60/80/110/76/73/161/138 lines; and
+  `git diff --check` succeeds.
+- Phase G Step 633 detects owned Linux AT-SPI bus connection loss, detaches stale object and event registrations, retries discovery and registration until recovery, resynchronizes the accessibility tree, and reports reconnect lifecycle diagnostics. Step 634 Linux AT-SPI production closeout audit is next.

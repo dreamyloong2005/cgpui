@@ -170,6 +170,7 @@ std::string read_wayland_source() {
       "src/platform/linux/wayland_atspi_role_state.cpp",
       "src/platform/linux/wayland_atspi_bus_internal.hpp",
       "src/platform/linux/wayland_atspi_bus.cpp",
+      "src/platform/linux/wayland_atspi_bus_health.cpp",
       "src/platform/linux/wayland_atspi_events_internal.hpp",
       "src/platform/linux/wayland_atspi_events.cpp",
       "src/platform/linux/wayland_accessibility_internal.hpp",

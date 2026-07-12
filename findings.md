@@ -11058,3 +11058,20 @@
   connected/disconnect state. Step 633 can build reconnect policy on this
   explicit lifecycle boundary.
 - Phase G Step 632 discovers the Linux AT-SPI accessibility bus through org.a11y.Bus, opens and registers an owned private connection, attaches it lazily on first accessibility update, and reports discovery/connection lifecycle diagnostics. Step 633 Linux AT-SPI disconnect and reconnect production behavior is next.
+
+## 2026-07-12 Phase G Step 633 AT-SPI Reconnect Design
+
+- Production reconnect should apply only to the adapter-owned private bus
+  connection. Explicitly injected test connections remain attached without
+  triggering automatic discovery or ownership changes.
+- Connection health belongs in a focused bus-health implementation leaf using
+  `dbus_connection_get_is_connected`; the existing discovery source remains
+  responsible for GetAddress/open/register and cleanup.
+- On owned connection loss, adapter coordination must detach stale event and
+  object registrations before closing/unreferencing the old connection, then
+  retry discovery and resynchronize the retained object snapshot. A failed
+  reconnect remains pending so the next accessibility update can retry.
+- Diagnostics need distinct connection-loss, reconnect-attempt, reconnect-
+  success, and reconnect-failure counts in addition to Step 632 lifecycle
+  totals.
+- Phase G Step 633 detects owned Linux AT-SPI bus connection loss, detaches stale object and event registrations, retries discovery and registration until recovery, resynchronizes the accessibility tree, and reports reconnect lifecycle diagnostics. Step 634 Linux AT-SPI production closeout audit is next.

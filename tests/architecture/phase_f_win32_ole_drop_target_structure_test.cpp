@@ -75,6 +75,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_571_remaining_gap\": \"Step 572 Win32")) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 633 Linux AT-SPI disconnect and reconnect production behavior")) return 9;
+                "\"phase_f_current_handoff\": \"Step 634 Linux AT-SPI production closeout audit")) return 9;
   return 0;
 }

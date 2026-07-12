@@ -31,6 +31,10 @@ void set_exit_on_disconnect(DBusConnection* connection, dbus_bool_t value) {
   dbus_connection_set_exit_on_disconnect(connection, value);
 }
 
+dbus_bool_t get_is_connected(DBusConnection* connection) {
+  return dbus_connection_get_is_connected(connection);
+}
+
 void close_connection(DBusConnection* connection) {
   dbus_connection_close(connection);
 }
@@ -52,6 +56,7 @@ WaylandAtspiBusOperations default_wayland_atspi_bus_operations() {
       .open_private = &open_private,
       .register_connection = &register_connection,
       .set_exit_on_disconnect = &set_exit_on_disconnect,
+      .get_is_connected = &get_is_connected,
       .close = &close_connection,
       .unref = &unref_connection,
   };
@@ -64,6 +69,8 @@ WaylandAtspiBusConnection::~WaylandAtspiBusConnection() {
 bool WaylandAtspiBusConnection::connect(
     WaylandAtspiBusOperations operations) {
   disconnect();
+  const bool reconnecting = reconnect_pending_;
+  if (reconnecting) diagnostics_.reconnect_attempt_count += 1;
   operations_ = operations;
   diagnostics_.discovery_attempt_count += 1;
 
@@ -96,6 +103,7 @@ bool WaylandAtspiBusConnection::connect(
   free_error(error);
   if (!address_available) {
     diagnostics_.discovery_failure_count += 1;
+    if (reconnecting) diagnostics_.reconnect_failure_count += 1;
     return false;
   }
 
@@ -114,6 +122,7 @@ bool WaylandAtspiBusConnection::connect(
     }
     free_error(error);
     diagnostics_.connection_failure_count += 1;
+    if (reconnecting) diagnostics_.reconnect_failure_count += 1;
     return false;
   }
   free_error(error);
@@ -122,24 +131,9 @@ bool WaylandAtspiBusConnection::connect(
   }
   connection_ = connection;
   diagnostics_.connected = true;
+  if (reconnecting) diagnostics_.reconnect_success_count += 1;
+  reconnect_pending_ = false;
   return true;
-}
-
-void WaylandAtspiBusConnection::disconnect() {
-  if (connection_ == nullptr) return;
-  if (operations_.close != nullptr) operations_.close(connection_);
-  if (operations_.unref != nullptr) operations_.unref(connection_);
-  connection_ = nullptr;
-  diagnostics_.connected = false;
-  diagnostics_.disconnect_count += 1;
-}
-
-DBusConnection* WaylandAtspiBusConnection::connection() const {
-  return connection_;
-}
-
-WaylandAtspiBusDiagnostics WaylandAtspiBusConnection::diagnostics() const {
-  return diagnostics_;
 }
 
 } // namespace cgpui
