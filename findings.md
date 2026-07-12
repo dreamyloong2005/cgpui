@@ -10716,3 +10716,16 @@
   coalesces them into one dispatched wakeup that fires every callback and leaves
   TimerIds 33-64 in the bounded tail.
 - Phase F Step 608 records fired timer diagnostics with stable TimerIds, and verifies 64 zero-delay timers request platform wakeups and drain into a bounded 32-event tail. Step 609 task wakeup diagnostics and stress production behavior is next.
+
+## 2026-07-12 Phase F Step 609 Task Wakeup Diagnostics And Stress
+
+- Task completions already queue under a mutex, request platform wakeups, and
+  drain callbacks on the runtime thread, but completion identity was absent
+  from the platform diagnostic stream.
+- The existing scheduling kind is sufficient. Recording after the task state
+  is marked completed and after releasing the mutex keeps diagnostics out of
+  the task lock while preserving callback-observable ordering.
+- Sixty-four queued completions issue sixty-four wakeup requests; one dispatched
+  wakeup runs all callbacks, leaves zero queued tasks, reports 64 completed
+  tasks, and retains TaskIds 33-64 in the bounded tail.
+- Phase F Step 609 records completed task diagnostics with stable TaskIds, and verifies 64 completions request platform wakeups and drain into a bounded 32-event tail. Step 610 platform diagnostics and stress closeout audit is next.

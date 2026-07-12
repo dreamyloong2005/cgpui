@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 609 task wakeup diagnostics and stress production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 610 platform diagnostics and stress closeout audit")) {
     return 11;
   }
   return 0;

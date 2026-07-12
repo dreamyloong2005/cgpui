@@ -131,6 +131,13 @@ void WindowRuntime::drain_task_completions() {
         task->queued = false;
         task->completed = true;
       }
+      record_platform_diagnostic(PlatformDiagnosticEvent{
+          .kind = PlatformDiagnosticKind::scheduling,
+          .backend = "runtime",
+          .operation = "task-completed",
+          .supported = true, .succeeded = true,
+          .value_count = static_cast<std::size_t>(id.value),
+      });
       if (callback) {
         callback(context());
       }

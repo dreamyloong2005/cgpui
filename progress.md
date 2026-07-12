@@ -22536,3 +22536,32 @@
 - JSON parsing, five-document completion phrase, 57 Step 609 handoffs, zero
   stale Step 608 handoffs, 41/103/127/56/72/260 line budgets, and
   `git diff --check` pass.
+
+## 2026-07-12 Phase F Step 609 Task Wakeup Diagnostics And Stress
+
+- Started from committed Step 608 at `15315620`; unrelated `.vscode/` remains
+  untracked.
+- Added runtime behavior RED; all 64 tasks completed but the diagnostic stream
+  remained empty, so the new target exited 1.
+- Recorded `task-completed` scheduling diagnostics after task state mutation
+  and mutex release, before invoking each completion callback.
+- Added a 64-task stress that verifies wakeup requests, one platform drain,
+  completed/queued task snapshot counts, and the bounded TaskId 33-64 tail.
+- Focused task wakeup, existing scheduling, and TestContext async behavior pass
+  3/3.
+- Added the Step 609 structure guard; it reached the intended five-document RED
+  at exit 7 after task state/order, wakeup drain, stress, prior-step, Xmake, and
+  line-budget checks passed.
+- Phase F Step 609 records completed task diagnostics with stable TaskIds, and verifies 64 completions request platform wakeups and drain into a bounded 32-event tail. Step 610 platform diagnostics and stress closeout audit is next.
+- The first expanded Windows structure run failed only because
+  `runtime_tasks.cpp` reached 151 lines over its existing 150-line cap.
+  Combining the adjacent supported/succeeded initializers restored the cap
+  without relaxing it.
+- Final Windows task/scheduling/TestContext/structure/header/ledger verification
+  passes 9/9.
+- Final WSL incremental task runtime, real Wayland event-loop wakeup,
+  TestContext, structure, header, and ledger verification passes 10/10. WSL
+  full debug remains batched.
+- JSON parsing, five-document completion phrase, 58 Step 610 handoffs, zero
+  stale Step 609 handoffs, 150/59/73/260 line budgets, and
+  `git diff --check` pass.

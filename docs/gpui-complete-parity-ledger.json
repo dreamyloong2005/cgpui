@@ -2728,7 +2728,17 @@
       "xmake.lua"
     ],
     "phase_f_step_608_remaining_gap": "Step 609 task wakeup diagnostics and stress production behavior",
-    "phase_f_current_handoff": "Step 609 task wakeup diagnostics and stress production behavior"
+    "phase_f_step_609_surface": "Phase F Step 609 records completed task diagnostics with stable TaskIds, and verifies 64 completions request platform wakeups and drain into a bounded 32-event tail. Step 610 platform diagnostics and stress closeout audit is next.",
+    "phase_f_step_609_sources": [
+      "include/cgpui/platform/platform_diagnostics.hpp",
+      "src/ui/runtime_tasks.cpp",
+      "src/ui/runtime_scheduling.cpp",
+      "tests/ui/window_runtime_task_wakeup_diagnostics_test.cpp",
+      "tests/architecture/phase_f_task_wakeup_diagnostics_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_f_step_609_remaining_gap": "Step 610 platform diagnostics and stress closeout audit",
+    "phase_f_current_handoff": "Step 610 platform diagnostics and stress closeout audit"
   },
   "categories": [
     "application_and_app_context",
