@@ -23567,3 +23567,37 @@
   state, behavior, and structure files are 112/179/64/85/39/13/163/144 lines;
   public/private broad runtime headers remain 260/252 lines; and
   `git diff --check` succeeds.
+
+## 2026-07-13 Phase G Step 645 Animation Repeat And Chaining
+
+- Started from committed Step 644 at `67d11af7` with only unrelated untracked
+  `.vscode/` present.
+- Audited the pinned upstream element animation implementation and official
+  animation example. Selected infinite repeat, indexed one-shot chaining,
+  final-value-before-stage-advance, and next-frame stage start semantics.
+- Added the focused Step 645 behavior target first. It requires exact repeat
+  iteration/progress behavior, a repeating stage blocking later stages,
+  indexed two-stage store transitions, invalid empty/zero-duration-repeat
+  rejection, and runtime reconstruction with 0/final/half/final snapshots and
+  exactly three shared delayed wakeups.
+- Implemented the focused public sequence leaf, shared private animation-state
+  record boundary, separate single-stage and sequence state sources, and an
+  explicit sequence branch in the transparent wrapper. Single-stage authoring
+  retains an empty stage vector and its existing allocation-free state path.
+- The focused behavior and Step 644 lifecycle regression pass on Windows.
+  Added the dedicated structure guard, public aggregate/header authoring,
+  global UI inventories, Xmake registration, and synchronized authority
+  documents for the Step 646 handoff.
+- Final Step 645 focused verification passes Windows 9/9 and Arch Linux WSL
+  9/9 across repeat/chaining behavior and structure, Step 644 lifecycle
+  regressions, scheduling, global UI structure, public header cleanliness, and
+  ledger authority. The historical native-menu replacement target also passes
+  separately under its non-basename target name.
+- Final handoff verification passes all 92 basename-derived changed authority
+  targets plus the separate native-menu naming exception, with zero stale
+  Step 645 current handoffs and the JSON ledger pointing to Step 646.
+- Final audits pass: the exact Step 645 completion sentence appears once in
+  each of the five authority documents; JSON parses with 16 Step 645 sources;
+  the base/sequence headers, store, private state, element, sequence,
+  sequence-state, and behavior files are 130/22/148/55/88/33/124/198 lines;
+  and `git diff --check` succeeds.

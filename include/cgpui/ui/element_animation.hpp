@@ -7,8 +7,12 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <span>
+#include <vector>
 
 namespace cgpui {
+
+struct ElementAnimationStage;
 
 struct ElementAnimationSnapshot {
   std::uint64_t scope_id = 0;
@@ -18,6 +22,9 @@ struct ElementAnimationSnapshot {
   float linear_progress = 0.0F;
   float eased_progress = 0.0F;
   AnimationEasing easing = AnimationEasing::linear;
+  std::size_t stage_index = 0;
+  std::uint64_t iteration = 0;
+  bool repeating = false;
   bool mounted = false;
   bool complete = false;
 };
@@ -47,6 +54,9 @@ class ElementAnimationStateStore {
   [[nodiscard]] ElementAnimationSnapshot resolve(
       const ElementKey& key,
       AnimationOptions options);
+  [[nodiscard]] ElementAnimationSnapshot resolve(
+      const ElementKey& key,
+      std::span<const ElementAnimationStage> stages);
   [[nodiscard]] ElementAnimationFrameResult finish_frame(
       std::uint64_t scope_id);
   [[nodiscard]] bool contains(
@@ -69,6 +79,12 @@ class AnimationElement final : public Element {
       AnimationOptions options,
       AnyElement child,
       ElementAnimationCallback callback);
+  AnimationElement(
+      ElementKey key,
+      std::vector<ElementAnimationStage> stages,
+      AnyElement child,
+      ElementAnimationCallback callback);
+  ~AnimationElement() override;
 
   [[nodiscard]] Element* child();
   [[nodiscard]] const Element* child() const;
@@ -99,8 +115,10 @@ class AnimationElement final : public Element {
  private:
   ElementKey animation_key_;
   AnimationOptions options_;
+  std::vector<ElementAnimationStage> stages_;
   AnyElement child_;
   ElementAnimationCallback callback_;
+  bool sequence_ = false;
 };
 
 [[nodiscard]] AnyElement with_animation(

@@ -1,58 +1,25 @@
-#include "cgpui/ui/element_animation.hpp"
+#include "element_animation_state_internal.hpp"
 
 #include <algorithm>
 #include <limits>
-#include <unordered_map>
 #include <utility>
 
 namespace cgpui {
-namespace {
+namespace detail {
 
-struct ScopedElementAnimationKey {
-  std::uint64_t scope_id = 0;
-  std::string value;
+std::size_t ScopedElementAnimationKeyHash::operator()(
+    const ScopedElementAnimationKey& key) const {
+  const std::size_t scope_hash = std::hash<std::uint64_t>{}(key.scope_id);
+  const std::size_t value_hash = std::hash<std::string>{}(key.value);
+  return scope_hash ^ (value_hash + 0x9e3779b9U + (scope_hash << 6U) +
+                       (scope_hash >> 2U));
+}
 
-  friend bool operator==(
-      const ScopedElementAnimationKey&,
-      const ScopedElementAnimationKey&) = default;
-};
-
-struct ScopedElementAnimationKeyHash {
-  std::size_t operator()(const ScopedElementAnimationKey& key) const {
-    const std::size_t scope_hash = std::hash<std::uint64_t>{}(key.scope_id);
-    const std::size_t value_hash = std::hash<std::string>{}(key.value);
-    return scope_hash ^ (value_hash + 0x9e3779b9U + (scope_hash << 6U) +
-                         (scope_hash >> 2U));
-  }
-};
-
-struct ElementAnimationRecord {
-  AnimationOptions options;
-  std::uint64_t started_ms = 0;
-  std::uint64_t seen_generation = 0;
-};
-
-struct ElementAnimationFrame {
-  std::uint64_t now_ms = 0;
-  std::uint64_t generation = 0;
-};
-
-std::uint64_t normalized_tick_interval(AnimationOptions options) {
+std::uint64_t normalized_animation_tick_interval(AnimationOptions options) {
   return options.tick_interval_ms == 0 ? 16 : options.tick_interval_ms;
 }
 
-} // namespace
-
-class ElementAnimationStateStore::Impl {
- public:
-  std::unordered_map<
-      ScopedElementAnimationKey,
-      ElementAnimationRecord,
-      ScopedElementAnimationKeyHash>
-      records;
-  std::unordered_map<std::uint64_t, ElementAnimationFrame> frames;
-  std::uint64_t active_scope_id = 0;
-};
+} // namespace detail
 
 bool ElementAnimationFrameResult::requests_next_frame() const {
   return active_count != 0;
@@ -70,7 +37,7 @@ ElementAnimationStateStore& ElementAnimationStateStore::operator=(
 void ElementAnimationStateStore::begin_frame(
     std::uint64_t scope_id,
     std::uint64_t now_ms) {
-  ElementAnimationFrame& frame = impl_->frames[scope_id];
+  detail::ElementAnimationFrame& frame = impl_->frames[scope_id];
   frame.now_ms = now_ms;
   frame.generation += 1;
   impl_->active_scope_id = scope_id;
@@ -85,19 +52,22 @@ ElementAnimationSnapshot ElementAnimationStateStore::resolve(
     return {.scope_id = scope_id, .key = key};
   }
 
-  const ScopedElementAnimationKey scoped_key{
+  const detail::ScopedElementAnimationKey scoped_key{
       .scope_id = scope_id,
       .value = key.value,
   };
   auto [record, inserted] = impl_->records.try_emplace(
       scoped_key,
-      ElementAnimationRecord{
+      detail::ElementAnimationRecord{
           .options = options,
           .started_ms = frame->second.now_ms,
           .seen_generation = frame->second.generation,
       });
   record->second.options = options;
   record->second.seen_generation = frame->second.generation;
+  record->second.stage_index = 0;
+  record->second.iteration = 0;
+  record->second.repeating = false;
 
   const std::uint64_t duration_ms = options.duration_ms;
   const std::uint64_t raw_elapsed_ms =
@@ -112,6 +82,7 @@ ElementAnimationSnapshot ElementAnimationStateStore::resolve(
           : clamp_animation_progress(
                 static_cast<float>(elapsed_ms) /
                 static_cast<float>(duration_ms));
+  record->second.complete = linear_progress >= 1.0F;
 
   return ElementAnimationSnapshot{
       .scope_id = scope_id,
@@ -121,8 +92,11 @@ ElementAnimationSnapshot ElementAnimationStateStore::resolve(
       .linear_progress = linear_progress,
       .eased_progress = ease(options.easing, linear_progress),
       .easing = options.easing,
+      .stage_index = 0,
+      .iteration = 0,
+      .repeating = false,
       .mounted = inserted,
-      .complete = linear_progress >= 1.0F,
+      .complete = record->second.complete,
   };
 }
 
@@ -144,18 +118,13 @@ ElementAnimationFrameResult ElementAnimationStateStore::finish_frame(
       continue;
     }
 
-    const std::uint64_t elapsed_ms =
-        frame->second.now_ms >= record->second.started_ms
-            ? frame->second.now_ms - record->second.started_ms
-            : 0;
-    if (record->second.options.duration_ms == 0 ||
-        elapsed_ms >= record->second.options.duration_ms) {
+    if (record->second.complete) {
       result.completed_count += 1;
     } else {
       result.active_count += 1;
       result.next_frame_delay_ms = std::min(
           result.next_frame_delay_ms,
-          normalized_tick_interval(record->second.options));
+          detail::normalized_animation_tick_interval(record->second.options));
     }
     ++record;
   }
@@ -166,7 +135,7 @@ ElementAnimationFrameResult ElementAnimationStateStore::finish_frame(
 bool ElementAnimationStateStore::contains(
     std::uint64_t scope_id,
     const ElementKey& key) const {
-  return impl_->records.contains(ScopedElementAnimationKey{
+  return impl_->records.contains(detail::ScopedElementAnimationKey{
       .scope_id = scope_id,
       .value = key.value,
   });

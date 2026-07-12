@@ -125,8 +125,8 @@ int main() {
       contains(core_parity, "Async I/O integration and cross-thread") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 645 animation repeat and "
-          "chaining production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 646 spring and tween variant "
+          "production behavior\"")) {
     return 11;
   }
   return 0;

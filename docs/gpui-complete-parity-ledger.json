@@ -3230,7 +3230,27 @@
       "xmake.lua"
     ],
     "phase_g_step_644_remaining_gap": "Step 645 animation repeat and chaining production behavior",
-    "phase_f_current_handoff": "Step 645 animation repeat and chaining production behavior"
+    "phase_g_step_645_surface": "Phase G Step 645 adds pinned-upstream-compatible infinite element animation repetition and indexed one-shot chains, with iteration observability, final-stage value delivery before advancement, reconstructed-wrapper persistence, invalid-sequence rejection, and shared runtime frame wakeups. Step 646 spring and tween variant production behavior is next.",
+    "phase_g_step_645_sources": [
+      "include/cgpui/ui/element_animation.hpp",
+      "include/cgpui/ui/element_animation_sequence.hpp",
+      "include/cgpui/ui/ui.hpp",
+      "src/ui/element_animation_state_internal.hpp",
+      "src/ui/element_animation_state_store.cpp",
+      "src/ui/element_animation.cpp",
+      "src/ui/element_animation_sequence.cpp",
+      "src/ui/element_animation_sequence_state.cpp",
+      "tests/animation/element_animation_sequence_test.cpp",
+      "tests/architecture/phase_g_element_animation_sequence_structure_test.cpp",
+      "tests/architecture/ui_source_structure_test.cpp",
+      "tests/header_cleanliness/ui_header_cleanliness.cpp",
+      "docs/gpui-upstream-pinned-revision.md",
+      "docs/gpui-public-authoring-vocabulary.md",
+      "docs/gpui-core-api-parity.md",
+      "xmake.lua"
+    ],
+    "phase_g_step_645_remaining_gap": "Step 646 spring and tween variant production behavior",
+    "phase_f_current_handoff": "Step 646 spring and tween variant production behavior"
   },
   "categories": [
     "application_and_app_context",

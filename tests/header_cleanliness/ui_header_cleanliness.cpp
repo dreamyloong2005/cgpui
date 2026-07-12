@@ -15,6 +15,7 @@
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/animation_transition.hpp"
 #include "cgpui/ui/element_animation.hpp"
+#include "cgpui/ui/element_animation_sequence.hpp"
 #include "cgpui/ui/async_context.hpp"
 #include "cgpui/ui/async_io_hook.hpp"
 #include "cgpui/ui/cross_thread_entity.hpp"
@@ -521,9 +522,17 @@ int main() {
       cgpui::AnimationOptions{.duration_ms = 100},
       cgpui::into_element(cgpui::div().size(1.0F, 1.0F)),
       [](cgpui::Element&, const cgpui::ElementAnimationSnapshot&) {});
+  cgpui::AnyElement animated_sequence = cgpui::with_animations(
+      cgpui::ElementKey{.value = "header-animation-sequence"},
+      {cgpui::ElementAnimationStage{
+           .animation = cgpui::AnimationOptions{.duration_ms = 100},
+       }.repeat()},
+      cgpui::into_element(cgpui::div().size(1.0F, 1.0F)),
+      [](cgpui::Element&, const cgpui::ElementAnimationSnapshot&) {});
   (void)animation_snapshot;
   (void)animation_frame;
   (void)animated_element;
+  (void)animated_sequence;
   style_state.base = cgpui::Style{}
                          .with_background_color(cgpui::rgb(0, 0, 0))
                          .with_align_items(cgpui::AlignItems::center)

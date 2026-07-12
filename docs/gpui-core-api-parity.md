@@ -48,7 +48,8 @@ desktop integration surfaces remain separate future work.
   deferred work, plus typed scalar animation transitions with eased from/to
   value snapshots across runtime, runtime-context, and async-context surfaces,
   and runtime-owned keyed element lifecycle animation state with scoped
-  mount/update/unmount tracking and shared delayed frame wakeups.
+  mount/update/unmount tracking and shared delayed frame wakeups, including
+  infinite repeated stages and indexed one-shot animation chains.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -136,8 +137,8 @@ desktop integration surfaces remain separate future work.
 ## Missing
 
 - Full upstream GPUI animation and easing system beyond typed scalar
-  transitions and runtime-owned keyed element lifecycle animations, including
-  repeat/chaining, springs, cancellation diagnostics, frame pacing, broad
+  transitions, runtime-owned keyed element lifecycle animations, repeat, and
+  chaining, including springs, cancellation diagnostics, frame pacing, broad
   style interpolation, and official examples.
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.

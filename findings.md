@@ -11335,3 +11335,23 @@
   null is required for animation unmount semantics; otherwise the old wrapper
   would be laid out again and falsely remain seen in the scoped state store.
 - Phase G Step 644 adds runtime-owned keyed element lifecycle animations with mount/update/unmount tracking, cross-window scope isolation, per-frame eased snapshots across reconstructed wrappers, transparent element forwarding, and one shared delayed frame wakeup. Step 645 animation repeat and chaining production behavior is next.
+
+## 2026-07-13 Phase G Step 645 Repeat And Chaining Design
+
+- Pinned upstream `src/elements/animation.rs` defines `Animation::repeat()` as
+  infinite repetition by changing the animation from one-shot to looping. A
+  repeating stage wraps progress with modulo and never advances to a later
+  chained stage.
+- Upstream `with_animations(...)` supplies the animator with the current stage
+  index. When a one-shot stage crosses its duration, it applies that stage at
+  progress 1, advances stored stage index/start time, and requests another
+  frame; the next stage begins on the following render rather than being
+  collapsed into the same callback.
+- The official pinned animation example uses a two-second repeated animation
+  with composed bounce/ease-in-out easing. Step 645 should add repeat/chain
+  lifecycle semantics but leave new spring/tween easing families for Step 646.
+- A focused `element_animation_sequence.hpp` leaf can own stage and chain
+  authoring while `element_animation.hpp` retains the allocation-free single
+  stage path. Sequence-only state resolution belongs in a separate source so
+  the Step 644 store and wrapper leaves remain below their structure caps.
+- Phase G Step 645 adds pinned-upstream-compatible infinite element animation repetition and indexed one-shot chains, with iteration observability, final-stage value delivery before advancement, reconstructed-wrapper persistence, invalid-sequence rejection, and shared runtime frame wakeups. Step 646 spring and tween variant production behavior is next.

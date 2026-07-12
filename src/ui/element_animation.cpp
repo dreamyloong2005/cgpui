@@ -1,4 +1,4 @@
-#include "cgpui/ui/element_animation.hpp"
+#include "cgpui/ui/element_animation_sequence.hpp"
 
 #include <utility>
 
@@ -24,6 +24,29 @@ AnimationElement::AnimationElement(
   }
 }
 
+AnimationElement::AnimationElement(
+    ElementKey key,
+    std::vector<ElementAnimationStage> stages,
+    AnyElement child,
+    ElementAnimationCallback callback)
+    : animation_key_(std::move(key)),
+      stages_(std::move(stages)),
+      child_(std::move(child)),
+      callback_(std::move(callback)),
+      sequence_(true) {
+  set_key(animation_key_);
+  if (child_ != nullptr) {
+    set_enabled(child_->enabled());
+    set_focus_metadata(child_->focus_metadata());
+    set_flex_grow(child_->flex_grow());
+    set_flex_shrink(child_->flex_shrink());
+    set_position(child_->position());
+    set_inset(child_->inset());
+  }
+}
+
+AnimationElement::~AnimationElement() = default;
+
 Element* AnimationElement::child() {
   return child_.get();
 }
@@ -35,8 +58,9 @@ const Element* AnimationElement::child() const {
 LayoutOutput AnimationElement::layout(LayoutInput input) const {
   if (child_ == nullptr) return Element::layout(input);
   if (input.animation_state_store != nullptr && callback_) {
-    const ElementAnimationSnapshot snapshot =
-        input.animation_state_store->resolve(animation_key_, options_);
+    const ElementAnimationSnapshot snapshot = sequence_
+        ? input.animation_state_store->resolve(animation_key_, stages_)
+        : input.animation_state_store->resolve(animation_key_, options_);
     callback_(*child_, snapshot);
   }
   const LayoutOutput output = child_->layout(input);

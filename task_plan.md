@@ -1337,6 +1337,18 @@ Windows/Linux core API is stable enough for parity work.
   exact 0/0.5/1 progress, unmount pruning, and two shared delayed wakeups;
   dedicated structure coverage freezes public/private leaves, layout-context
   propagation, inventories, registrations, and broad runtime line caps.
+- Completed: Phase G Step 645 adds pinned-upstream-compatible infinite element animation repetition and indexed one-shot chains, with iteration observability, final-stage value delivery before advancement, reconstructed-wrapper persistence, invalid-sequence rejection, and shared runtime frame wakeups. Step 646 spring and tween variant production behavior is next.
+- Step 645 boundary: mirror the pinned upstream element-animation semantics
+  with explicit `ElementAnimationStage` values, infinite stage repetition,
+  indexed one-shot chains, final-value delivery before advancing a stage, and
+  stable stage/iteration snapshots across reconstructed wrappers. Keep the
+  existing single-animation path allocation-free; springs/tween variants,
+  cancellation diagnostics, and display-aligned pacing remain Steps 646-647.
+- Step 645 evidence: focused behavior covers repeat boundary/wrap/iteration
+  values, repeat-stage chain blocking, two-stage final-value handoff, invalid
+  sequence preservation, and four reconstructed runtime wrappers using three
+  shared delayed wakeups; dedicated structure coverage freezes the public,
+  private, source, inventory, pinned-upstream, and line-cap boundaries.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1352,6 +1364,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Sandboxed pinned-upstream `animation.rs` reads failed with an authentication exception | Step 645 upstream semantic audit | Re-run the same read-only raw GitHub URLs with approved network access and keep the revision fixed at `5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0` |
 | The first Step 644 WSL build failed because `layout.hpp` used `std::uint64_t` through an MSVC-tolerated indirect include | Step 644 Arch Linux focused verification | Add the required direct `<cstdint>` include to the public layout leaf, then rerun the identical WSL target set |
 | The first eight-target Step 644 regression exposed `window_runtime_scheduling_test` return 521 because clearing every prior tree on an empty `View::render()` also removed caller-installed persistent trees | Step 644 runtime lifecycle compatibility | Track whether the tree came from the prior dynamic View render; clear only that tree on a later empty render and preserve explicit `set_element_tree()` installations |
 | `xmake test` was first invoked with target names rather than `target/default` test names and reported `nothing to test` | Step 644 focused verification | Use each registered `target/default` name in the multi-test invocation |

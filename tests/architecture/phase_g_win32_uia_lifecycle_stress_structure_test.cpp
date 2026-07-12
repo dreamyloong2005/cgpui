@@ -86,6 +86,6 @@ int main() {
     if (!contains(*document, completion)) return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 645 animation repeat and chaining production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 646 spring and tween variant production behavior\"")) return 9;
   return 0;
 }

@@ -96,13 +96,17 @@ remain outside this freeze.
 - `ElementAnimationStateStore`
 - `AnimationElement`
 - `with_animation(...)`
+- `ElementAnimationStage`
+- `ElementAnimationStage::repeat()`
+- `with_animations(...)`
 
 Phase G Step 643 adds typed scalar from/to transitions over the existing
 deterministic animation scheduler. Direct runtime, runtime-context, and
 async-context starts share the same value snapshot and handle vocabulary.
 Step 644 adds runtime-owned keyed lifecycle state and a transparent element
-wrapper with mount/update/unmount tracking across reconstructed render trees;
-repeat/chaining remains later work.
+wrapper with mount/update/unmount tracking across reconstructed render trees.
+Step 645 adds pinned-upstream-compatible infinite repeated stages and indexed
+one-shot chains, with final stage values delivered before the next stage begins.
 
 ## Platform service vocabulary
 
