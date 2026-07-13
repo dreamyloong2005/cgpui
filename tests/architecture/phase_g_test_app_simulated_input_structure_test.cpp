@@ -69,7 +69,7 @@ int main() {
       !contains(behavior, "Second Input Window") ||
       !contains(behavior, "second.input_state().pointer_position") ||
       contains(behavior, "[DEBUG-step660]")) return 4;
-  if (!contains(previous, "Step 666 GPUI-style") ||
+  if (!contains(previous, "Step 667 Windows debug") ||
       !contains(xmake, "target(\"phase_g_test_app_simulated_input_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_simulated_input_structure_test\")")) {
@@ -94,7 +94,7 @@ int main() {
       !contains(core, "Window-scoped `TestAppWindow` input simulation") ||
       !contains(ledger_json, "\"phase_g_step_660_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 666 GPUI-style "
-                "test support closeout audit\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 667 Windows debug "
+                "build and packaging coverage\"")) return 8;
   return 0;
 }

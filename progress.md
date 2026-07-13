@@ -24347,3 +24347,39 @@
   environment seed plans, bounded retries, final-failure callbacks,
   reproducible summaries, invalid configuration rejection, and fresh contexts
   per attempt.
+
+## 2026-07-13 Phase G Step 666 Start
+
+- Committed Step 665 as `82c84df3 feat: add GPUI-style test runner`; the
+  worktree returned to only the unrelated untracked `.vscode/` directory.
+- Added an audit-only closeout target for Steps 659-665. The first RED returned
+  `2` because the aggregate used an unstable simulated-input token; a focused
+  probe isolated that mismatch, and the corrected tracer returns `4` only on
+  the intentionally open roadmap band.
+- Closed the Steps 659-666 roadmap band, recorded the aggregate behavior,
+  structure, header-cleanliness, source, and Xmake evidence, and advanced the
+  handoff to Step 667 Windows debug build and packaging coverage without
+  changing production code.
+- Mechanically advanced the complete test-tree handoff chain: 106 tracked C++
+  tests changed, no stale Step 666 current handoff remains under `tests/`, and
+  the Step 667 phrase now appears in 109 test-tree locations including the new
+  closeout tracer.
+- Windows focused verification initially exposed six split current-handoff
+  literals plus five short predecessor-chain prefixes that the exact bulk
+  replacement could not update. After targeted fixes, the complete Steps
+  659-666 behavior, structure, header-cleanliness, closeout, and parity-ledger
+  group passes 19 targets / 20 registered tests serially.
+- Arch Linux WSL verification reused `.build-wsl/master` plus
+  `/dev/shm/cgpui`. After one rejected JavaScript wrapper and one reproduced
+  cross-shell empty-target loop, the established explicit-literal `bash -s`
+  path completed all 19 targets / 20 registered tests with zero failures.
+- The complete Windows dynamic current-handoff chain maps 112 consumer files
+  to 112 unique Xmake targets and passes 112/112 serially with zero failures.
+- Standards review found one weak broad-glob ownership assertion; replacing it
+  with concrete TestApp/TestRunner source paths passes the closeout target on
+  Windows and WSL. Spec review finds the audit-only Step 666 boundary complete
+  with no production edits or scope creep.
+- Final audits pass: the exact completion sentence appears once in all five
+  authority files; JSON parses with 19 present Step 666 sources; 112 handoff
+  consumers have zero stale entries; production file changes and Step 666
+  debug markers are both zero; and `git diff --check` is clean.

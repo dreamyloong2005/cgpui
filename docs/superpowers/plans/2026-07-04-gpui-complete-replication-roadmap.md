@@ -1915,6 +1915,7 @@ apps rather than only demo windows.
 - [x] Phase G Step 663 adds per-window TestApp rendering control with resize and redraw simulation, fallible and throwing frame draws, private renderer/frame snapshots, real additional-window rendering, and cross-window counter isolation. Step 664 GPUI-style platform service fake production behavior is next.
 - [x] Phase G Step 664 adds deterministic TestApp platform service fakes for isolated clipboard state, FIFO path and prompt responses with cancellation and fail-closed empty queues, supported menu/open URL/reopen behavior, opened-URL inspection, and service call snapshots. Step 665 GPUI-style test runner ergonomics production behavior is next.
 - [x] Phase G Step 665 adds GPUI-style C++ test runner ergonomics with ordinary executable entry macros, typed injection of multiple isolated TestApp contexts and deterministic seeds, iteration and explicit/environment seed planning, bounded retries, final-failure callbacks, reproducible failure summaries, and header-clean public modules. Step 666 GPUI-style test support closeout audit is next.
+- [x] Phase G Step 666 audits and closes the GPUI-style test support band, freezing standalone app/window setup, simulated input, deterministic timer and async control, rendering control, platform service fakes, test runner ergonomics, public header cleanliness, and modular source evidence. Step 667 Windows debug build and packaging coverage is next.
 - [x] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
 - [x] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree
@@ -1928,7 +1929,7 @@ apps rather than only demo windows.
 - [x] Steps 651-658: Complete assets: file-backed loading, PNG/JPEG/GIF/SVG
   decode boundaries, cache keys, reload invalidation, async loading, and
   image/GIF examples.
-- [ ] Steps 659-666: Add GPUI-style test macro/context equivalents in C++:
+- [x] Steps 659-666: Add GPUI-style test macro/context equivalents in C++:
   app setup, window setup, simulated input, timers, async, rendering, and
   platform service fakes.
 - [ ] Steps 667-672: Add packaging and CI coverage for Windows and Linux:

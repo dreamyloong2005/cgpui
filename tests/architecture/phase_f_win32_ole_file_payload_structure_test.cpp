@@ -52,6 +52,6 @@ int main() {
       "Phase F Step 576 adds a strict Win32 OLE file IDataObject, enumerates CF_HDROP through an owned wide DROPFILES HGLOBAL, preserves Unicode multi-file ordering, rejects invalid or empty paths before drag, and composes with the drag runner. Step 577 Wayland non-local URI-list drag policy production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 7;
-  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 666 GPUI-style test support closeout audit")) return 8;
+  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 667 Windows debug build and packaging coverage")) return 8;
   return 0;
 }

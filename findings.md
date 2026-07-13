@@ -11917,3 +11917,103 @@
   macro behavior tracer to the default `CGPUI_TEST` entry and adding the retry
   overflow guard. Windows passes 19/19 focused plus 112/112 current handoff;
   Arch Linux WSL passes the same focused 19/19 group.
+
+## 2026-07-13 Phase G Step 666 Test Support Closeout Boundary
+
+- Step 666 is an audit-only closeout for Steps 659-665; it must not add or
+  widen production behavior.
+- The closeout seam is a dedicated repository-inspection target that requires
+  all eight test-support behavior targets across the seven steps, all seven
+  modular structure guards, both public-header cleanliness targets, focused
+  TestApp/TestRunner source ownership, Xmake registration, the closed roadmap
+  band, and a Step 667 packaging/CI handoff.
+- The roadmap band remains incomplete until this closeout target passes and the
+  `Steps 659-666` checkbox is closed in the authoritative roadmap.
+- The first RED closeout run built successfully and returned `2`. A focused
+  seven-marker probe showed only the simulated-input marker failed: that
+  structure test does not contain the literal `simulate_key_sequence(` even
+  though the underlying behavior does. The aggregate must use a token that is
+  part of the structure guard's own stable contract.
+- An attempted progress-log patch used a stale section heading and failed
+  without changing the file. Subsequent planning updates must anchor to the
+  current Step 666 findings section instead of repeating that patch context.
+- Replacing the unstable input token with the structure guard's own
+  `TestAppWindow::simulate_keystrokes(` contract moves the closeout tracer to
+  deterministic RED return `4`: all module/target/header evidence passes and
+  only the unchecked `Steps 659-666` roadmap band remains.
+- Phase G Step 666 audits and closes the GPUI-style test support band, freezing standalone app/window setup, simulated input, deterministic timer and async control, rendering control, platform service fakes, test runner ergonomics, public header cleanliness, and modular source evidence. Step 667 Windows debug build and packaging coverage is next.
+- The first bulk-handoff command failed in the tool's JavaScript parser because
+  its nested quote construction was invalid. No shell command ran and no file
+  changed; retry with one raw multiline PowerShell command rather than the same
+  concatenation shape.
+- The corrected command ran but matched zero files: the JSON handoff had
+  already changed, while C++ repository-inspection tests encode the same text
+  with escaped quotes. No file changed. Enumerate escaped and split literals
+  before the next restricted replacement.
+- The completed closeout executable returns `0` when run with
+  `CGPUI_SOURCE_ROOT`. Bare `xmake run` returned failure because it does not
+  apply the target's `add_tests(... runenvs=...)` environment and therefore
+  launched the repository-inspection binary without its source root. Use the
+  registered `xmake test` entry, matching all existing closeout targets.
+- `xmake test -v phase_g_test_support_closeout_test` matched no registered test
+  because Xmake addresses named tests as `target/testname`; query the test list
+  and invoke the exact `/default` registration instead of repeating the target-
+  only filter.
+- Xmake 3.0.8 documents target-scoped filtering as `targetname/*`; the correct
+  serial closeout command is
+  `xmake test -j 1 -v phase_g_test_support_closeout_test/*`.
+- The first Windows focused-band run passed setup behavior and header
+  cleanliness, then the setup structure guard returned `8`. Its predecessor
+  image/GIF structure test held the current handoff as two adjacent string
+  literals, so the exact-phrase bulk update could not match it. Updating that
+  one split literal closes the detected stale Step 666 test handoff.
+- The first patch for that split literal used a larger context that did not
+  match and changed nothing; the retry uses only the two literal lines shown by
+  the targeted source read.
+- Re-running the Windows band still failed setup structure with return `8`.
+  The predecessor split literal was fixed, but the setup structure guard's own
+  current-handoff assertion is also split across adjacent literals. Enumerate
+  every remaining Step 666 occurrence adjacent to `phase_f_current_handoff`
+  and repair the whole split-literal set before another band run.
+- After the six split current-handoff literals were fixed, the band advanced to
+  simulated-input structure and failed its predecessor check. Five TestApp
+  structure guards still used the short prefix `Step 666 GPUI-style`; those
+  checks had been accidentally satisfied by stale text in their predecessors.
+  Advance the chain prefix itself to `Step 667 Windows debug`.
+- Before Step 666 Linux verification, `wsl.exe --list --verbose` confirms the
+  registered `archlinux` WSL2 distribution is available (currently stopped and
+  ready for on-demand start). Reuse `.build-wsl/master` and `/dev/shm/cgpui` as
+  in the immediately preceding Phase G test-support runs.
+- The current WSL cache layout is intact: `.xmake-wsl/global` plus
+  `.build-wsl/master/{build-root,pkg-cache,pkg-install,...}`. Linux commands
+  must keep `XMAKE_GLOBALDIR`, `XMAKE_PKG_CACHEDIR`, `XMAKE_PKG_INSTALLDIR`,
+  and transient temp pointed at these D-drive or `/dev/shm/cgpui` locations.
+- The proven master-checkout configure shape is `xmake f -P . -y -m debug
+  --ccache=n -o /mnt/d/Dev/Projects/cgpui/.build-wsl/master/build-root` under
+  the established environment. Pass the test-target loop through a PowerShell
+  single-quoted here-string so Bash owns `$target` expansion.
+- The first Step 666 WSL command was rejected by the tool's JavaScript parser
+  before execution because Bash `${targets[@]}` collided with JavaScript
+  template interpolation. Inject the dollar sign separately in the wrapper;
+  no WSL process or filesystem change occurred.
+- The corrected wrapper started WSL and configured successfully, but its first
+  Bash loop iteration again passed an empty target through the PowerShell/native
+  argument boundary. This matches the Step 664 warning. Do not iterate targets
+  across `bash -lc`; pipe a script to `bash -s` and emit explicit literal
+  build/test commands for every target.
+- Step 666 Standards review found one weak audit assertion: checking Xmake's
+  broad `src/ui/*.cpp` glob does not prove focused TestApp/TestRunner source
+  ownership. Replace it with concrete source-path evidence from each of the
+  seven dedicated structure guards; no production refactor is required.
+- After strengthening ownership evidence, Windows closeout passed. The WSL
+  rebuild also succeeded, but the one-line test filter piped through `bash -s`
+  matched no test; use a literal `bash -lc` command for this single target so
+  there is no loop variable and the registered `/default` test actually runs.
+- The first final-audit script used the wrong JSON container (`.meta`) and a
+  generic debug-marker regex that counted an existing structure guard's
+  forbidden `[DEBUG-step660]` literal. The already reported completion,
+  handoff, production-boundary, and diff checks passed; rerun source/debug
+  checks against the actual top-level key and Step 666-only marker.
+- The ledger's established schema keeps later Phase F/G evidence under the
+  legacy `phase_d_text_evidence` object. Step 666 source verification must read
+  `.phase_d_text_evidence.phase_g_step_666_sources`.

@@ -792,6 +792,7 @@ consume C: drive space again.
 - Phase G Step 663 adds per-window TestApp rendering control with resize and redraw simulation, fallible and throwing frame draws, private renderer/frame snapshots, real additional-window rendering, and cross-window counter isolation. Step 664 GPUI-style platform service fake production behavior is next.
 - Phase G Step 664 adds deterministic TestApp platform service fakes for isolated clipboard state, FIFO path and prompt responses with cancellation and fail-closed empty queues, supported menu/open URL/reopen behavior, opened-URL inspection, and service call snapshots. Step 665 GPUI-style test runner ergonomics production behavior is next.
 - Phase G Step 665 adds GPUI-style C++ test runner ergonomics with ordinary executable entry macros, typed injection of multiple isolated TestApp contexts and deterministic seeds, iteration and explicit/environment seed planning, bounded retries, final-failure callbacks, reproducible failure summaries, and header-clean public modules. Step 666 GPUI-style test support closeout audit is next.
+- Phase G Step 666 audits and closes the GPUI-style test support band, freezing standalone app/window setup, simulated input, deterministic timer and async control, rendering control, platform service fakes, test runner ergonomics, public header cleanliness, and modular source evidence. Step 667 Windows debug build and packaging coverage is next.
 
 ## Categories
 

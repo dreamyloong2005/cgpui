@@ -164,7 +164,7 @@ int main() {
       contains(core_parity, "task priority scheduling") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 666 GPUI-style test support closeout audit\"")) {
+          "\"phase_f_current_handoff\": \"Step 667 Windows debug build and packaging coverage\"")) {
     return 14;
   }
   return 0;

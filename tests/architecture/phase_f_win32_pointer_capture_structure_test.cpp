@@ -160,7 +160,7 @@ int main() {
     return 10;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 666 GPUI-style test support closeout audit")) {
+                "\"phase_f_current_handoff\": \"Step 667 Windows debug build and packaging coverage")) {
     return 11;
   }
   return 0;

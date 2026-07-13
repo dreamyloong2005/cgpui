@@ -1489,6 +1489,11 @@ Windows/Linux core API is stable enough for parity work.
   plans, retries, invalid configuration, null functions, final failures, and
   callbacks; a macro-authored ordinary executable proves multiple fresh
   TestApp arguments and deterministic seed injection without private fixtures.
+- Completed: Phase G Step 666 audits and closes the GPUI-style test support band, freezing standalone app/window setup, simulated input, deterministic timer and async control, rendering control, platform service fakes, test runner ergonomics, public header cleanliness, and modular source evidence. Step 667 Windows debug build and packaging coverage is next.
+- Step 666 evidence: the audit-only closeout target aggregates all eight
+  behavior targets, seven dedicated structure guards, both public-header
+  cleanliness targets, focused source ownership, Xmake registrations, and the
+  closed Steps 659-666 roadmap band without production edits.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.

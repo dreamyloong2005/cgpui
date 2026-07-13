@@ -60,7 +60,7 @@ int main() {
   if (!contains(xmake,
                 "target(\"phase_f_wsl_full_debug_verification_structure_test\")") ||
       !contains(windows_guard,
-                "Step 666 GPUI-style test support closeout audit")) {
+                "Step 667 Windows debug build and packaging coverage")) {
     return 20;
   }
 
@@ -70,6 +70,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 21;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 666 GPUI-style test support closeout audit\"")) return 22;
+                "\"phase_f_current_handoff\": \"Step 667 Windows debug build and packaging coverage\"")) return 22;
   return 0;
 }

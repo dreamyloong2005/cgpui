@@ -77,7 +77,7 @@ int main() {
       !contains(behavior, "alpha.txt") ||
       !contains(behavior, "std::nullopt") ||
       !contains(behavior, "platform_service_snapshot()")) return 5;
-  if (!contains(previous, "Step 666 GPUI-style") ||
+  if (!contains(previous, "Step 667 Windows debug") ||
       !contains(xmake, "target(\"phase_g_test_app_platform_services_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_platform_services_structure_test\")")) {
@@ -102,6 +102,6 @@ int main() {
   if (!contains(vocabulary, "`TestPlatformServiceSnapshot`") ||
       !contains(core, "Deterministic `TestApp` platform service fakes") ||
       !contains(ledger_json, "\"phase_g_step_664_sources\"") ||
-      !contains(ledger_json, "\"phase_f_current_handoff\": \"Step 666 GPUI-style test support closeout audit\"")) return 9;
+      !contains(ledger_json, "\"phase_f_current_handoff\": \"Step 667 Windows debug build and packaging coverage\"")) return 9;
   return 0;
 }

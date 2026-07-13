@@ -3553,7 +3553,30 @@
       "xmake.lua"
     ],
     "phase_g_step_665_remaining_gap": "Step 666 GPUI-style test support closeout audit",
-    "phase_f_current_handoff": "Step 666 GPUI-style test support closeout audit"
+    "phase_g_step_666_surface": "Phase G Step 666 audits and closes the GPUI-style test support band, freezing standalone app/window setup, simulated input, deterministic timer and async control, rendering control, platform service fakes, test runner ergonomics, public header cleanliness, and modular source evidence. Step 667 Windows debug build and packaging coverage is next.",
+    "phase_g_step_666_sources": [
+      "tests/ui/test_app_window_setup_test.cpp",
+      "tests/ui/test_app_simulated_input_test.cpp",
+      "tests/ui/test_app_timer_control_test.cpp",
+      "tests/ui/test_app_async_control_test.cpp",
+      "tests/ui/test_app_rendering_control_test.cpp",
+      "tests/ui/test_app_platform_services_test.cpp",
+      "tests/ui/test_runner_test.cpp",
+      "tests/ui/test_runner_macro_test.cpp",
+      "tests/header_cleanliness/test_app_header_cleanliness.cpp",
+      "tests/header_cleanliness/test_runner_header_cleanliness.cpp",
+      "tests/architecture/phase_g_test_app_window_setup_structure_test.cpp",
+      "tests/architecture/phase_g_test_app_simulated_input_structure_test.cpp",
+      "tests/architecture/phase_g_test_app_timer_control_structure_test.cpp",
+      "tests/architecture/phase_g_test_app_async_control_structure_test.cpp",
+      "tests/architecture/phase_g_test_app_rendering_control_structure_test.cpp",
+      "tests/architecture/phase_g_test_app_platform_services_structure_test.cpp",
+      "tests/architecture/phase_g_test_runner_structure_test.cpp",
+      "tests/api_parity/phase_g_test_support_closeout_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_666_remaining_gap": "Step 667 Windows debug build and packaging coverage",
+    "phase_f_current_handoff": "Step 667 Windows debug build and packaging coverage"
   },
   "categories": [
     "application_and_app_context",

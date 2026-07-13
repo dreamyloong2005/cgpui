@@ -146,6 +146,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationFramePacingSnapshot`") ||
       !contains(core, "deadline-driven frame timer") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 666 GPUI-style test support closeout audit\"")) return 10;
+                "\"phase_f_current_handoff\": \"Step 667 Windows debug build and packaging coverage\"")) return 10;
   return 0;
 }
