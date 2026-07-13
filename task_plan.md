@@ -1459,6 +1459,11 @@ Windows/Linux core API is stable enough for parity work.
   focused facade/platform/renderer sources own implementation; behavior proves
   two persistent windows, unique handles, descriptors, typed roots, lookup,
   and empty-root rejection without private fixture includes.
+- Completed: Phase G Step 660 routes GPUI-style keyboard, key-sequence, pointer, scroll, activation, window-focus, and element-focus simulation through TestAppWindow and the private test-platform callback, with window-scoped input snapshots and invalid grammar rejection. Step 661 GPUI-style timer control production behavior is next.
+- Step 660 evidence: the public test-window seam drives the private platform
+  callback and real per-window runtime path; focused behavior covers direct and
+  parsed keys, invalid grammar, pointer/button/scroll events, activation,
+  window and element focus, plus two-window input snapshot isolation.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1474,6 +1479,14 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The Step 660 semantic review guessed singular `src/ui/test_context_keystroke.cpp`; the actual existing implementation is plural `test_context_keystrokes.cpp` | Step 660 pre-commit API consistency review | Locate the symbol with `rg` and compare the real implementation; TestAppWindow uses the same parser, single-key path, and sequence dispatch semantics |
+| The first long WSL Step 660 build returned a live session without its id being retained by the outer loop, leaving xmake temporarily attached to an unconsumed output pipe | Step 660 WSL focused build | Wait for that process to exit, rerun the same target with quiet output to obtain exit 0, and retain every later yielded session id until completion |
+| The first Step 660 WSL focused build loop again delivered an empty `$target` through the Windows outer shell, so Xmake rejected `''` before building | Step 660 WSL focused build | Invoke each literal target name in a serial Windows-side tool loop, preserving task-first `xmake build --root <target>` syntax |
+| The Step 659 structure target passed when invoked directly but `xmake test` failed before `main` with Windows error 740 because its executable basename contained `setup` | Step 660 adjacent regression diagnosis | Keep the registered target name, set its output basename to `phase_g_test_app_window_fixture_structure_test`, and freeze that Windows-safe basename in the structure guard |
+| `xmake -vD test phase_g_test_app_window_setup_structure_test/default` put global flags before the task and printed build help instead of executing the test | Step 659 structure failure diagnosis | Use task-first `xmake test -vD <registered-test>`; its error log exposed Windows error 740 |
+| The first post-sync Step 660 structure run returned 5 because the new guard still expected the Step 659 guard to contain the old Step 660 handoff | Step 660 structure GREEN | Update the new guard to require the correctly advanced Step 661 timer-control handoff from the previous structure consumer |
+| The first Step 660 handoff rewrite updated 55 complete JSON literals but left 49 prefix-only consumers and three nested Windows/WSL/cross-platform source assertions on Step 660 | Step 660 dynamic handoff synchronization | Apply a second key-bounded prefix rewrite, then advance the three explicit nested-source assertions to Step 661 while preserving historical completion sentences |
+| The first Step 660 GREEN run exited 3 even though all pointer events reached the view; targeted `[DEBUG-step660]` output showed the public window snapshot remained at `{0,0}` | Step 660 simulated pointer input | Fix existing `Window::input_state()` to return the addressed `WindowRuntimeRecord::input` instead of the root runtime's global input, then remove the tagged diagnostic |
 | The first Step 659 WSL probe invoked Xmake as the distro root user without `--root` | Step 659 WSL environment audit | Keep the existing distro and add Xmake's explicit `--root` acknowledgement; do not install or restore anything |
 | The first two WSL configuration attempts used shell variables that the Windows outer shell emptied, then placed `--root` before the `f` task so `-p` was parsed as a build option | Step 659 WSL configuration | Use literal mkdir paths and task-first `xmake f --root -p linux -a x86_64 -m debug -o .build-wsl/master -y` with direct environment assignments |
 | The first WSL focused build loop expanded `$target` to an empty string before Bash received it | Step 659 WSL focused build | Invoke the three target names explicitly under Bash; all then built and ran 3/3 |

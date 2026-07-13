@@ -145,7 +145,7 @@ int main() {
       contains(core_parity, "cross-thread entity access remains incomplete") ||
       contains(core_parity, "Cross-thread entity access guarantees") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 660 GPUI-style simulated input production behavior\"")) {
+                "\"phase_f_current_handoff\": \"Step 661 GPUI-style timer control production behavior\"")) {
     return 11;
   }
   return 0;

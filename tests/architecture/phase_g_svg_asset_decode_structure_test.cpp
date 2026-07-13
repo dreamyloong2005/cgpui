@@ -122,6 +122,6 @@ int main() {
       !contains(core, "Bounded SVG asset decoding") ||
       !contains(ledger_json, "\"phase_g_step_654_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 660 GPUI-style simulated input production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 661 GPUI-style timer control production behavior\"")) return 9;
   return 0;
 }

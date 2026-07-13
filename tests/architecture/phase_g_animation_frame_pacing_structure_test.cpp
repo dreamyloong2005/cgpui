@@ -146,6 +146,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationFramePacingSnapshot`") ||
       !contains(core, "deadline-driven frame timer") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 660 GPUI-style simulated input production behavior\"")) return 10;
+                "\"phase_f_current_handoff\": \"Step 661 GPUI-style timer control production behavior\"")) return 10;
   return 0;
 }

@@ -3477,7 +3477,19 @@
       "xmake.lua"
     ],
     "phase_g_step_659_remaining_gap": "Step 660 GPUI-style simulated input production behavior",
-    "phase_f_current_handoff": "Step 660 GPUI-style simulated input production behavior"
+    "phase_g_step_660_surface": "Phase G Step 660 routes GPUI-style keyboard, key-sequence, pointer, scroll, activation, window-focus, and element-focus simulation through TestAppWindow and the private test-platform callback, with window-scoped input snapshots and invalid grammar rejection. Step 661 GPUI-style timer control production behavior is next.",
+    "phase_g_step_660_sources": [
+      "include/cgpui/ui/test_app.hpp",
+      "src/ui/test_app_internal.hpp",
+      "src/ui/test_app_platform.cpp",
+      "src/ui/test_app_input.cpp",
+      "src/ui/window.cpp",
+      "tests/ui/test_app_simulated_input_test.cpp",
+      "tests/architecture/phase_g_test_app_simulated_input_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_660_remaining_gap": "Step 661 GPUI-style timer control production behavior",
+    "phase_f_current_handoff": "Step 661 GPUI-style timer control production behavior"
   },
   "categories": [
     "application_and_app_context",

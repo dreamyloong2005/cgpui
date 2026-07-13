@@ -11773,3 +11773,28 @@
   root-view ids, descriptor/viewport/scale inspection, typed root access,
   optional public lookup, hidden-parent isolation, empty-root rejection, and
   Windows plus WSL execution through the same public API.
+
+## 2026-07-13 Phase G Step 660 Simulated Input
+
+- The Step 660 tracer proved keyboard, pointer, focus, and activation events
+  can enter through the private test platform callback and real additional-
+  window runtime route.
+- That tracer exposed an existing multi-window facade bug: `Window::input_state`
+  ignored its runtime id and returned the root runtime's global state. The
+  correct window-scoped source is `WindowRuntimeRecord::input`.
+- Resume review found the new structure guard coupled the public behavior test
+  to an internal `WindowRuntimeId{1}` literal that the test did not contain.
+  Step 660 should instead prove the bug fix through two public `TestAppWindow`
+  instances whose pointer and focus snapshots remain isolated.
+- Phase G Step 660 routes GPUI-style keyboard, key-sequence, pointer, scroll, activation, window-focus, and element-focus simulation through TestAppWindow and the private test-platform callback, with window-scoped input snapshots and invalid grammar rejection. Step 661 GPUI-style timer control production behavior is next.
+- Step 660 adjacent regression exposed that the Step 659 structure target's
+  output basename still contained `setup`; Windows returned error 740 before
+  `main`. A Windows-safe fixture basename preserves the target/test identity.
+- Final Standards review keeps the public API in the focused test-app leaf,
+  routes behavior through the private platform callback, places bodies in the
+  dedicated `test_app_input.cpp`, and leaves broad runtime/platform entry files
+  unchanged except for the addressed window input snapshot fix.
+- Final Spec review confirms direct and grammar-based keyboard simulation,
+  invalid grammar rejection, pointer/button/scroll delivery, activation,
+  window and element focus, two-window input isolation, and parity with the
+  existing `TestContextCapability` input grammar.

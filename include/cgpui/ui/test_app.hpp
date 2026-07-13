@@ -2,11 +2,13 @@
 
 #include "cgpui/app/window.hpp"
 #include "cgpui/core/error.hpp"
+#include "cgpui/core/events.hpp"
 #include "cgpui/ui/view.hpp"
 
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 namespace cgpui {
 
@@ -25,6 +27,19 @@ class TestAppWindow {
   [[nodiscard]] Window window() const;
   [[nodiscard]] View* root_view();
   [[nodiscard]] const View* root_view() const;
+  [[nodiscard]] ViewInputState input_state() const;
+  void dispatch_keystroke(KeyboardKey key) const;
+  [[nodiscard]] bool simulate_keystrokes(std::string_view keystrokes) const;
+  void dispatch_pointer_move(Point position) const;
+  void dispatch_pointer_button(
+      MouseButton button,
+      bool pressed,
+      Point position) const;
+  void dispatch_pointer_scroll(Point delta, Point position) const;
+  void dispatch_window_activation(bool active) const;
+  void dispatch_window_focus(bool focused) const;
+  void focus(ElementId element_id) const;
+  void release_focus(ElementId element_id) const;
 
   template <typename T>
   [[nodiscard]] T* root_view_as() {

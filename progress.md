@@ -24109,3 +24109,50 @@
 - Standards self-review moved the runtime friend declaration into the private
   runtime internal header and made `TestApp::window(...)` mirror the existing
   optional lookup convention, preventing exposure of the hidden parent window.
+
+## 2026-07-13 Phase G Step 660 Resume
+
+- Restored the uncommitted Step 660 implementation and confirmed the worktree
+  matches the prior handoff: behavior is implemented, while the structure
+  guard, authority synchronization, cross-platform verification, and commit
+  remain open.
+- Pre-build review found the structure guard expected an internal runtime-id
+  literal instead of a public behavior guarantee. The Step 660 tracer will be
+  extended to prove two-window input-state isolation through `TestAppWindow`.
+- Replaced that internal-id source assertion with a second public test window;
+  the tracer now sends a pointer event to each window and checks both snapshots
+  retain independent positions.
+- Synchronized the five authority documents, public vocabulary, core API
+  summary, and Step 660 JSON evidence. Advanced 104 handoff consumers through
+  complete-literal and prefix-only bounded rewrites, then moved the three
+  nested Windows/WSL/cross-platform source assertions to Step 661.
+- The first post-sync structure run returned 5 because its previous-guard
+  check still named Step 660; updated it to require the advanced Step 661
+  timer-control handoff.
+- A bounded key-window audit found two split C++ handoff literals missed by
+  the exact replacements: the Step 658 image/GIF guard and Step 659 test-app
+  setup guard. Both now require Step 661.
+- The new guard reads previous-guard source text rather than compiled adjacent
+  literals, so its nested check now uses the unique same-line Step 661 timer
+  prefix while the ledger assertion continues to require the complete value.
+- The 4/5 adjacent run failure was not a source assertion: Xmake's error log
+  recorded Windows error 740 before `main` for the structure executable whose
+  basename contained `setup`. Added a safe fixture basename and a guard for it.
+- The dynamic handoff inventory contains 106 tracked guard sources plus the
+  new Step 660 guard, for 107 executable consumers; the only source/target
+  basename exception remains the historical native-menu replacement guard.
+- Windows verification now passes the focused Step 659/660 group 5/5, input
+  and multi-window regressions 6/6, ledger/vocabulary/module/grammar regressions
+  7/7, and the complete dynamic handoff chain 107/107.
+- Reconfigured the existing Arch Linux WSL debug build against
+  `.build-wsl/master` with `/dev/shm/cgpui` temp. The first target loop expanded
+  its Bash variable to empty before Xmake; WSL builds continue with literal
+  target invocations.
+- All ten literal WSL targets build serially and pass together 10/10: Step 659
+  and 660 behavior/header/structure, multi-window input, existing TestContext
+  keyboard/pointer/focus simulation, and key-binding grammar.
+- Final audits confirm the exact Step 660 sentence once in each of five
+  authority files, JSON parses with eight present sources and the Step 661
+  handoff, 108 total current-handoff consumers have zero stale Step 660 values,
+  focused files remain within 95/90/75/120/80/125 caps, and no production
+  debug marker remains.

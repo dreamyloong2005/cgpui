@@ -24,6 +24,7 @@ class TestPlatformWindow final : public PlatformWindow {
   void set_cursor(CursorShape cursor_shape) override;
   void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) override;
+  void dispatch_event(const PlatformEvent& event);
 
  private:
   WindowDescriptor descriptor_;
@@ -63,6 +64,11 @@ class TestRootView final : public View {
 
 struct TestAppState {
   TestAppState();
+  [[nodiscard]] bool dispatch_event(
+      WindowRuntimeId runtime_id,
+      const PlatformEvent& event);
+  void focus(WindowRuntimeId runtime_id, ElementId element_id);
+  void release_focus(WindowRuntimeId runtime_id, ElementId element_id);
 
   TestPlatformApplication application;
   TestRootView root_view;

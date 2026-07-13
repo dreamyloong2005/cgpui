@@ -121,7 +121,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 660 GPUI-style simulated input production behavior")) {
+                "\"phase_f_current_handoff\": \"Step 661 GPUI-style timer control production behavior")) {
     return 8;
   }
   return 0;

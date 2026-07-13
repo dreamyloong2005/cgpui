@@ -92,6 +92,11 @@ setup. `TestApp` owns the private platform, renderer, and runtime state;
 `TestAppWindow` exposes stable window/root-view handles and typed root-view
 access without requiring tests to include private runtime fixtures.
 
+Phase G Step 660 adds `TestAppWindow::simulate_keystrokes(...)` plus direct
+keyboard, pointer, scroll, activation, window-focus, and element-focus
+simulation. Input snapshots are scoped to the addressed test window, and
+invalid key-sequence grammar is rejected without dispatching an event.
+
 ## Animation vocabulary
 
 - `AnimationSpring`

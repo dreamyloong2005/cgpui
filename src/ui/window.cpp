@@ -47,7 +47,8 @@ DpiScale Window::scale() const {
 }
 
 ViewInputState Window::input_state() const {
-  return runtime_->input_state();
+  const WindowRuntimeRecord* runtime_record = record();
+  return runtime_record == nullptr ? ViewInputState{} : runtime_record->input;
 }
 
 bool Window::focused() const {

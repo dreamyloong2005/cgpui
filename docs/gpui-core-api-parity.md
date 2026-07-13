@@ -83,6 +83,10 @@ desktop integration surfaces remain separate future work.
   platform and renderer, creates persistent test windows without a production
   event loop, exposes stable runtime/root-view handles and typed root access,
   and rejects empty root views without changing runtime state.
+- Window-scoped `TestAppWindow` input simulation routes keyboard sequences,
+  pointer movement/buttons/scrolling, activation, window focus, and element
+  focus through the deterministic platform callback while preserving isolated
+  per-window input snapshots and rejecting invalid key grammar.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,

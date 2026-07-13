@@ -37,6 +37,10 @@ void TestPlatformWindow::set_cursor(CursorShape) {}
 void TestPlatformWindow::set_ime_text_input_placement(
     std::optional<ImeTextInputPlacement>) {}
 
+void TestPlatformWindow::dispatch_event(const PlatformEvent& event) {
+  if (callback_) callback_(event);
+}
+
 Result<std::unique_ptr<PlatformWindow>>
 TestPlatformApplication::create_window(
     const WindowDescriptor& descriptor,

@@ -87,10 +87,12 @@ int main() {
       !contains(xmake, "target(\"phase_g_test_app_window_fixture_test\")") ||
       !contains(xmake, "target(\"test_app_header_cleanliness\")") ||
       !contains(xmake,
-                "target(\"phase_g_test_app_window_setup_structure_test\")")) {
+                "target(\"phase_g_test_app_window_setup_structure_test\")") ||
+      !contains(xmake,
+                "set_basename(\"phase_g_test_app_window_fixture_structure_test\")")) {
     return 5;
   }
-  if (line_count(header) > 85 || line_count(internal) > 90 ||
+  if (line_count(header) > 95 || line_count(internal) > 90 ||
       line_count(facade) > 135 || line_count(platform) > 75 ||
       line_count(renderer) > 30 || line_count(behavior) > 75) return 6;
 
@@ -110,7 +112,7 @@ int main() {
       !contains(core, "Standalone `TestApp` and `TestAppWindow`") ||
       !contains(ledger_json, "\"phase_g_step_659_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 660 GPUI-style "
-                "simulated input production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 661 GPUI-style timer "
+                "control production behavior\"")) return 8;
   return 0;
 }
