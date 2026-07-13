@@ -3579,6 +3579,7 @@
     "phase_g_step_667_surface": "Phase G Step 667 adds a Windows Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 668 Linux debug build and packaging coverage is next.",
     "phase_g_step_667_sources": [
       "scripts/ci/windows-debug.ps1",
+      "scripts/ci/windows-package.ps1",
       ".github/workflows/phase-g-windows-linux.yml",
       "tests/architecture/phase_g_windows_debug_packaging_structure_test.cpp",
       "xmake.lua"
@@ -3587,12 +3588,24 @@
     "phase_g_step_668_surface": "Phase G Step 668 adds a Linux Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 669 Windows and Linux release build and packaging coverage is next.",
     "phase_g_step_668_sources": [
       "scripts/ci/linux-debug.sh",
+      "scripts/ci/linux-package.sh",
       ".github/workflows/phase-g-windows-linux.yml",
       "tests/architecture/phase_g_linux_debug_packaging_structure_test.cpp",
       "xmake.lua"
     ],
     "phase_g_step_668_remaining_gap": "Step 669 Windows and Linux release build and packaging coverage",
-    "phase_f_current_handoff": "Step 669 Windows and Linux release build and packaging coverage"
+    "phase_g_step_669_surface": "Phase G Step 669 adds Windows and Linux Release CI packaging paths with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executables, README, manifest validation, and uploaded artifact coverage. Step 670 examples and smoke test matrix coverage is next.",
+    "phase_g_step_669_sources": [
+      "scripts/ci/windows-package.ps1",
+      "scripts/ci/windows-release.ps1",
+      "scripts/ci/linux-package.sh",
+      "scripts/ci/linux-release.sh",
+      ".github/workflows/phase-g-windows-linux.yml",
+      "tests/architecture/phase_g_release_packaging_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_669_remaining_gap": "Step 670 examples and smoke test matrix coverage",
+    "phase_f_current_handoff": "Step 670 examples and smoke test matrix coverage"
   },
   "categories": [
     "application_and_app_context",

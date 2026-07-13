@@ -26,7 +26,8 @@ std::size_t line_count(const std::string& text) {
 } // namespace
 
 int main() {
-  const std::string script = read_source("scripts/ci/linux-debug.sh");
+  const std::string wrapper = read_source("scripts/ci/linux-debug.sh");
+  const std::string core = read_source("scripts/ci/linux-package.sh");
   const std::string workflow =
       read_source(".github/workflows/phase-g-windows-linux.yml");
   const std::string previous = read_source(
@@ -41,20 +42,22 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &script, &workflow, &previous, &xmake, &roadmap, &ledger_md,
+      &wrapper, &core, &workflow, &previous, &xmake, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
-  if (!contains(script, "set -euo pipefail") ||
-      !contains(script, "realpath -m") ||
-      !contains(script, "rm -rf -- \"$output_root\"") ||
-      !contains(script, "CGPUI_CI_TMPDIR") ||
-      !contains(script, "mktemp -d") ||
-      !contains(script, "xmake f") ||
-      !contains(script, "--ccache=n") ||
-      !contains(script, "xmake build") ||
-      !contains(script, "-j 1") ||
-      !contains(script, "hello_window")) return 2;
+  if (!contains(wrapper, "linux-package.sh") ||
+      !contains(wrapper, "debug") ||
+      !contains(core, "set -euo pipefail") ||
+      !contains(core, "realpath -m") ||
+      !contains(core, "rm -rf -- \"$output_root\"") ||
+      !contains(core, "CGPUI_CI_TMPDIR") ||
+      !contains(core, "mktemp -d") ||
+      !contains(core, "xmake f") ||
+      !contains(core, "--ccache=n") ||
+      !contains(core, "xmake build") ||
+      !contains(core, "-j 1") ||
+      !contains(core, "hello_window")) return 2;
 
   const char* artifacts[]{
       "libcgpui_core.a", "libcgpui_platform.a",
@@ -62,11 +65,11 @@ int main() {
       "libcgpui_renderer_vulkan.a", "libcgpui_ui.a", "libcgpui_app.a",
       "hello_window", "include/cgpui", "README.md", "manifest.json"};
   for (const char* artifact : artifacts) {
-    if (!contains(script, artifact)) return 3;
+    if (!contains(core, artifact)) return 3;
   }
-  if (!contains(script, "python3") ||
-      !contains(script, "schema_version") ||
-      !contains(script, "linux-debug") ||
+  if (!contains(core, "python3") ||
+      !contains(core, "schema_version") ||
+      !contains(core, "cgpui-linux-{mode}") ||
       !contains(workflow, "linux-debug:") ||
       !contains(workflow, "runs-on: ubuntu-latest") ||
       !contains(workflow, "scripts/ci/linux-debug.sh") ||
@@ -83,7 +86,8 @@ int main() {
                 "- [x] Phase G Step 668 adds a Linux Debug CI packaging")) {
     return 5;
   }
-  if (line_count(script) > 190 || line_count(workflow) > 100 ||
+  if (line_count(wrapper) > 20 || line_count(core) > 190 ||
+      line_count(workflow) > 150 ||
       line_count(xmake) > 4320) return 6;
 
   constexpr const char* completion =
@@ -98,9 +102,10 @@ int main() {
     if (!contains(*document, completion)) return 7;
   }
   if (!contains(ledger_json, "\"phase_g_step_668_sources\"") ||
+      !contains(ledger_json, "scripts/ci/linux-package.sh") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 669 Windows and Linux release build and packaging coverage\"")) {
+          "\"phase_f_current_handoff\": \"Step 670 examples and smoke test matrix coverage\"")) {
     return 8;
   }
   return 0;

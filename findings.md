@@ -12181,3 +12181,85 @@
   validated manifest; the Ubuntu job invokes and uploads that package; authority
   records hand off to Step 669. Release, example/smoke, architecture/header, and
   reproducibility work remains correctly open for Steps 669-672.
+
+## 2026-07-14 Phase G Step 669 Windows/Linux Release Packaging Boundary
+
+- Step 669 owns Windows and Linux Release build/package jobs, manifests, uploads,
+  and their modular structure evidence. Example/smoke, architecture/header, and
+  reproducible dependency matrices remain Steps 670-672.
+- Copying each complete Debug script into a Release variant would create real
+  mode-only duplication. The intended ownership is one mode-aware packaging core
+  per platform with thin Debug and Release entry scripts, keeping PowerShell and
+  Bash platform concerns separate while sharing each platform's package contract.
+- Existing Step 667/668 structure guards and ledger source inventories must move
+  with that ownership change so historical completion remains current and does
+  not falsely claim the thin wrappers still own implementation details.
+- The Step 669 structure target compiles and reaches deterministic RED exit `1`
+  because the two mode-aware cores and the two Release entry scripts do not yet
+  exist. This is the intended missing-module boundary before implementation.
+- After adding the shared cores, thin entry scripts, Release jobs, and migrated
+  Step 667/668 ownership guards, PowerShell and Bash syntax pass. The Windows and
+  Linux cores are 154/152 lines, wrappers are 6-7 lines, both historical Debug
+  structure guards pass, and the Step 669 tracer advances to authority-only RED
+  exit `8`.
+- The first real Windows Release run fails before project compilation on the
+  LunaSVG prebuilt dependency: downloaded SHA-256 starts `94de31ce`, while the
+  isolated Xmake repository expects `2c65751b`. The retained 391,109-byte file has
+  a valid 7z signature, ruling out an HTML/proxy response and focusing diagnosis
+  on repository metadata or upstream artifact checksum drift.
+- Refreshing only the isolated Xmake repository changes the package recipe
+  dependency set (including plutovg 1.3.3) and makes the exact Release configure
+  pass with LunaSVG precompiled installation. The shared cores must perform this
+  refresh for clean-output reliability; Step 672 still owns replacing this
+  floating setup with pinned, cacheable dependency inputs.
+- The corrected clean Windows Release run succeeds end to end. It compiles all
+  Phase G production sources plus the Win32 and Vulkan backends in Release mode,
+  then emits an exact `cgpui-windows-release` package with 186 public headers,
+  seven expected libraries, one demo executable, README, and valid manifest.
+- The first Linux Release configure reveals that Wayland/libxkbcommon pull Meson,
+  whose recipe depends on an Xmake-managed Python binary. The refreshed graph
+  selects Python 3.14.3 and performs a full PGO build on DrvFS even though Arch
+  already provides Python 3.14.6. Reuse system Python explicitly and use the
+  available system Wayland package; Ubuntu must install `libwayland-dev`.
+- The same run exhausted both plutovg archive and Git clone downloads. This is a
+  separate transient network failure. The retained dependency output and revised
+  system-tool graph allow the next configure to retry only the remaining packages
+  instead of repeating the Python/Wayland work.
+- Xmake's system `python` package lookup expects package/development metadata and
+  does not accept the existing interpreter as a binary-only Meson tool. Instead,
+  declare Meson 1.11.1 and Ninja >=1.8.2 as system binary requirements. Ubuntu
+  installs them directly; other Linux hosts fall back to a script-owned venv with
+  pinned Meson 1.11.1 and Ninja 1.13.0, removing Xmake Python from the graph.
+- Corrected fallback verification installs Meson 1.11.1 and Ninja 1.13.0, then
+  configures Release successfully using system Wayland and without any Xmake
+  Python build. The same run installs libxkbcommon 1.13.1, plutovg 1.3.3, and
+  LunaSVG 3.5.0 successfully, proving the revised dependency graph is viable.
+- A prior manual PowerShell-to-WSL venv probe expanded Bash `$tool_root` to an
+  empty value before Bash ran. Python therefore created a venv at the repository
+  root, overwrote `.gitignore` with `*`, and left `bin`, `lib`, `lib64`, and
+  `pyvenv.cfg`. The production Linux package script is not affected: it derives
+  a non-root output path, rejects the repository root, and quotes the
+  output-confined `python-tools` path. Restoring the tracked ignore file and
+  removing only the verified root venv artifacts makes all five Step 669 new
+  files visible to Git again while preserving unrelated `.vscode/`.
+- The clean Linux Release script completes the full Vulkan and demo build and
+  emits `cgpui-linux-release` with Linux/x86_64/release identity, 186 public
+  headers, seven expected archives, one x86-64 ELF demo, README, exact manifest,
+  and zero external temporary-directory leftovers.
+- Phase G Step 669 adds Windows and Linux Release CI packaging paths with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executables, README, manifest validation, and uploaded artifact coverage. Step 670 examples and smoke test matrix coverage is next.
+- The dynamic handoff inventory now contains 116 consumer files and 116 unique
+  Xmake targets. Exact key/value, prefix-only, and adjacent-string forms require
+  separate synchronization; after following the predecessor chain through the
+  Windows/WSL verification and TestApp guards, every mapped target passes on
+  Windows and no live Step 669 handoff prefix remains.
+- Standards review found the Windows package core's new repository refresh was
+  not yet isolated by `XMAKE_GLOBALDIR`, unlike Linux. Adding an output-root
+  `global` directory and freezing it in the Step 667/669 guards prevents
+  repository refreshes from touching the user-level Xmake global state.
+- Final Standards review has no blocking findings: packaging logic is owned by
+  one focused core per platform, Debug/Release wrappers remain thin, the
+  workflow only orchestrates jobs/uploads, Xmake only registers the guard, and
+  all changed files remain within structure caps. Final Spec review also has no
+  blocking findings: both clean Release paths, exact package contents,
+  manifests, uploads, authority records, and Step 670 handoff are proven.
+  Floating dependency refresh remains explicitly open for Step 672.

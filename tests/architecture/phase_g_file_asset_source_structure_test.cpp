@@ -115,6 +115,6 @@ int main() {
       !contains(core, "root-confined file-backed asset loading") ||
       !contains(ledger_json, "\"phase_g_step_651_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 669 Windows and Linux release build and packaging coverage\"")) return 10;
+                "\"phase_f_current_handoff\": \"Step 670 examples and smoke test matrix coverage\"")) return 10;
   return 0;
 }

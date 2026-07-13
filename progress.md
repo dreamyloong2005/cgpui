@@ -24520,3 +24520,92 @@
 - Sequential Standards and Spec review both report no blocking findings. Modular
   ownership and Step 668 scope are correct; the dynamic handoff rewrite is fully
   executable, while dependency pinning remains explicitly deferred to Step 672.
+
+## 2026-07-14 Phase G Step 669 Windows/Linux Release Packaging
+
+- Committed Step 668 as `793696d0 ci: add Linux debug packaging`; the tracked
+  worktree returned clean and only unrelated `.vscode/` remains untracked.
+- Established the Step 669 boundary as mode-aware Windows and Linux packaging
+  cores with thin Debug/Release entry scripts, two Release workflow jobs, one
+  dedicated structure guard, authority synchronization, and a Step 670 handoff.
+- Added and registered the Step 669 structure tracer. Its first serial Windows
+  run builds successfully and fails at the intended missing-source boundary with
+  exit code 1 before any Release implementation exists.
+- Added mode-aware Windows/Linux package cores, thin Debug/Release entry scripts,
+  two Release workflow jobs, and migrated the Step 667/668 structure guards plus
+  ledger source inventories to the new ownership. All script syntax and line caps
+  pass; the two historical guards pass 1/1 and Step 669 now returns the intended
+  authority-only exit code 8.
+- The first clean Windows Release package attempt reached isolated dependency
+  setup but failed on a LunaSVG prebuilt checksum mismatch before compiling CGPUI.
+  The cached payload is a valid 7z with the reported hash, so diagnosis proceeds
+  through an isolated Xmake repository refresh rather than repeating the full run.
+- An isolated `xrepo update-repo` followed by the same Release configure succeeds,
+  proving stale bundled package metadata was the cause. Added that refresh to both
+  platform package cores as the temporary Step 669 reliability path pending the
+  pinned dependency work in Step 672.
+- The corrected Windows Release entry succeeds from a removed isolated output
+  root. Exact post-build audit passes: `cgpui-windows-release`, Windows/x64/release,
+  186/186 headers, seven expected `.lib` files, one `hello_window.exe`, README,
+  and manifest consistency.
+- The first Linux Release configure updated its isolated repository, then exposed
+  two failures: plutovg archive/clone network exhaustion and an unnecessary Xmake-
+  managed Python 3.14.3 PGO build on DrvFS. After all Python children exited, the
+  childless top-level configure remained stuck and was terminated by verified PID.
+- Recipe inspection shows Meson owns the Python dependency. The next attempt will
+  bind Meson to system Python 3.14.6 and Wayland to the system package, with Ubuntu
+  installing `libwayland-dev`; this changes the failed dependency graph rather
+  than repeating it.
+- Xmake's system Python lookup still rejected the interpreter because it expects
+  full package metadata. Replaced that approach with system Meson/Ninja binary
+  requirements: CI installs them, while non-CI Linux creates an output-confined
+  venv with pinned Meson/Ninja versions. This removes Xmake Python/PGO entirely.
+- Arch creates the venv without pip by default. Added an explicit venv-local
+  `ensurepip --upgrade` before installing pinned Meson/Ninja; no system or user
+  Python state is modified.
+- PyPI does not publish Ninja 1.13.2. Adjusted only the fallback pin to 1.13.0,
+  which remains above Xmake's required 1.8.2 minimum; Meson stays pinned at 1.11.1.
+- The corrected direct WSL verification installs the pinned tools, avoids Xmake
+  Python entirely, and completes Linux Release configuration with system Wayland,
+  libxkbcommon 1.13.1, plutovg 1.3.3, and LunaSVG 3.5.0. A clean full script run
+  is next to exclude partial-cache dependence.
+- The resumed Git audit exposed an accidental repository-root Python venv from
+  an earlier cross-shell probe: `.gitignore` had been replaced by the venv `*`
+  template, hiding all five new Step 669 files, and `bin`, `lib`, `lib64`, plus
+  `pyvenv.cfg` remained untracked. Restored the exact tracked ignore rules,
+  verified every venv artifact resolved directly under the repository root,
+  removed only those four artifacts, and confirmed the Step 669 core scripts,
+  Release wrappers, and structure test are now visible while `.vscode/` remains
+  untouched.
+- The first resumed Windows structure build omitted Xmake's non-interactive
+  `-y` flag and waited at plutovg confirmation after stdin had closed. Stopped
+  only the verified Windows Xmake process for the Step 669 target, reran with
+  `-y -j 1`, installed plutovg 1.3.3, and reproduced the intended authority-only
+  RED exit `8`.
+- The clean Arch Linux WSL Release script finishes successfully after the full
+  serial Vulkan build. Independent package audit confirms exact
+  `cgpui-linux-release` Linux/x86_64/release identity, 186 headers, seven
+  archives, one x86-64 ELF demo, README, manifest consistency, exact top-level
+  contents, and zero `/dev/shm/cgpui` temporary leftovers.
+- Phase G Step 669 adds Windows and Linux Release CI packaging paths with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executables, README, manifest validation, and uploaded artifact coverage. Step 670 examples and smoke test matrix coverage is next.
+- Synchronized all 116 live handoff consumers to Step 670 while preserving
+  historical Step 668/669 completion text. The first complete run exposed three
+  predecessor prefixes, the second two, and the third two; return-code-guided
+  fixes advanced only those live chain checks. The final Windows dynamic chain
+  maps 116 files to 116 unique targets and passes 116/116 serially.
+- Reconfigured the existing Arch Linux WSL Debug tree using D-drive caches and
+  the output-confined Meson/Ninja tools. The Step 667, 668, and 669 packaging
+  structure targets build serially and pass 3/3 on WSL.
+- Standards review identified that Windows `xrepo update-repo` lacked the Linux
+  core's `XMAKE_GLOBALDIR` isolation. Added an output-root `global` directory,
+  exported it before repository refresh/configuration, and froze the invariant
+  in both Windows Debug and Release packaging structure guards.
+- The corrected Windows Release script succeeds from a removed output root and
+  populates only its output-confined global repository. Independent audit passes
+  exact Windows/x64/release manifest identity, 186 headers, seven libraries,
+  one x64 PE (`0x8664`) demo, README, and exact package top-level contents.
+- Post-review verification passes packaging guards 3/3 on Windows and 3/3 on
+  Arch Linux WSL, then the complete Windows dynamic handoff chain passes
+  116/116 again. Final Standards and Spec reviews report no blocking findings;
+  Step 672 still owns replacing floating repository refresh with pinned,
+  cacheable dependency setup.

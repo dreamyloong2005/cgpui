@@ -13,7 +13,9 @@ if is_plat("windows") then
 end
 
 if is_plat("linux") then
-    add_requires("wayland")
+    add_requires("wayland", {system = true})
+    add_requires("meson 1.11.1", {system = true, kind = "binary"})
+    add_requires("ninja >=1.8.2", {system = true, kind = "binary"})
     add_requires("dbus", {system = true})
     add_requires("libxkbcommon", {configs = {x11 = false, wayland = false, tools = false}})
     add_requires("fontconfig", {system = true, optional = true})
@@ -4072,6 +4074,11 @@ target("phase_g_windows_debug_packaging_structure_test")
 target("phase_g_linux_debug_packaging_structure_test")
     set_kind("binary")
     add_files("tests/architecture/phase_g_linux_debug_packaging_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("phase_g_release_packaging_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_release_packaging_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
 target("window_runtime_frame_scheduling_test")

@@ -115,7 +115,7 @@ int main() {
     if (!contains(*document, completion)) return 6;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 669 Windows and Linux release build and packaging coverage\"")) {
+                "\"phase_f_current_handoff\": \"Step 670 examples and smoke test matrix coverage\"")) {
     return 7;
   }
   return 0;

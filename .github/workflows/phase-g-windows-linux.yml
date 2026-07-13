@@ -36,7 +36,7 @@ jobs:
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev
+          sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev libwayland-dev meson ninja-build python3-venv
       - name: Build and package Linux Debug
         run: bash ./scripts/ci/linux-debug.sh
       - name: Upload Linux Debug package
@@ -44,4 +44,41 @@ jobs:
         with:
           name: cgpui-linux-debug
           path: build/phase-g-ci/linux-debug/package
+          if-no-files-found: error
+
+  windows-release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+      - name: Build and package Windows Release
+        shell: pwsh
+        run: ./scripts/ci/windows-release.ps1
+      - name: Upload Windows Release package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cgpui-windows-release
+          path: build/phase-g-ci/windows-release/package
+          if-no-files-found: error
+
+  linux-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev libwayland-dev meson ninja-build python3-venv
+      - name: Build and package Linux Release
+        run: bash ./scripts/ci/linux-release.sh
+      - name: Upload Linux Release package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cgpui-linux-release
+          path: build/phase-g-ci/linux-release/package
           if-no-files-found: error

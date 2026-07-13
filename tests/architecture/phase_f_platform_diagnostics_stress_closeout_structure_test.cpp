@@ -71,6 +71,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 5;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 669 Windows and Linux release build and packaging coverage\"")) return 6;
+                "\"phase_f_current_handoff\": \"Step 670 examples and smoke test matrix coverage\"")) return 6;
   return 0;
 }

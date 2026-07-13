@@ -4,4 +4,4 @@ param(
 )
 
 & (Join-Path $PSScriptRoot "windows-package.ps1") `
-  -Mode Debug -OutputRoot $OutputRoot
+  -Mode Release -OutputRoot $OutputRoot
