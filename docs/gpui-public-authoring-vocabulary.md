@@ -112,6 +112,11 @@ Phase G Step 663 adds `TestAppWindow::simulate_resize(...)`,
 `TestWindowRenderSnapshot`. Renderer/frame counts are window-scoped and come
 from the private deterministic renderer.
 
+Phase G Step 664 adds `TestApp::write_to_clipboard(...)`,
+`TestApp::read_from_clipboard()`, `TestApp::opened_url()`, prequeued path and
+prompt responses, and `TestPlatformServiceSnapshot` for deterministic service
+inspection without exposing the private fake platform.
+
 ## Animation vocabulary
 
 - `AnimationSpring`

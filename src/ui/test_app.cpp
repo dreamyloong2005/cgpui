@@ -33,6 +33,7 @@ TestAppState::TestAppState()
   root_record->active = true;
   runtime.window_ = &parent_window;
   runtime.renderer_ = &parent_renderer;
+  runtime.set_clipboard(&clipboard);
 }
 
 } // namespace cgpui::detail

@@ -76,14 +76,14 @@ int main() {
       !contains(behavior, "first.simulate_resize(") ||
       !contains(behavior, "first.render_snapshot()") ||
       !contains(behavior, "second.try_draw_frame()")) return 5;
-  if (!contains(previous, "Step 664 GPUI-style") ||
+  if (!contains(previous, "Step 665 GPUI-style") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_rendering_control_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_rendering_control_structure_test\")")) {
     return 6;
   }
-  if (line_count(header) > 115 || line_count(internal) > 105 ||
+  if (line_count(header) > 125 || line_count(internal) > 140 ||
       line_count(renderer) > 45 || line_count(rendering) > 70 ||
       line_count(behavior) > 85) return 7;
 
@@ -103,7 +103,7 @@ int main() {
       !contains(core, "Per-window `TestAppWindow` rendering control") ||
       !contains(ledger_json, "\"phase_g_step_663_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 664 GPUI-style "
-                "platform service fake production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 665 GPUI-style "
+                "test runner ergonomics production behavior\"")) return 9;
   return 0;
 }

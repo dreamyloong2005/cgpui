@@ -66,6 +66,8 @@ std::uint64_t TestPlatformApplication::monotonic_time_ms() const { return 0; }
 
 int TestPlatformApplication::run() { return 0; }
 
-void TestPlatformApplication::quit() {}
+void TestPlatformApplication::quit() {
+  service_snapshot_.quit_count += 1;
+}
 
 } // namespace cgpui::detail

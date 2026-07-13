@@ -69,13 +69,13 @@ int main() {
       !contains(behavior, "Second Input Window") ||
       !contains(behavior, "second.input_state().pointer_position") ||
       contains(behavior, "[DEBUG-step660]")) return 4;
-  if (!contains(previous, "Step 664 GPUI-style") ||
+  if (!contains(previous, "Step 665 GPUI-style") ||
       !contains(xmake, "target(\"phase_g_test_app_simulated_input_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_simulated_input_structure_test\")")) {
     return 5;
   }
-  if (line_count(header) > 115 || line_count(internal) > 105 ||
+  if (line_count(header) > 125 || line_count(internal) > 140 ||
       line_count(input) > 120 || line_count(platform) > 75 ||
       line_count(window) > 80 || line_count(behavior) > 125) return 6;
 
@@ -94,7 +94,7 @@ int main() {
       !contains(core, "Window-scoped `TestAppWindow` input simulation") ||
       !contains(ledger_json, "\"phase_g_step_660_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 664 GPUI-style "
-                "platform service fake production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 665 GPUI-style "
+                "test runner ergonomics production behavior\"")) return 8;
   return 0;
 }

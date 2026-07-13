@@ -96,6 +96,9 @@ desktop integration surfaces remain separate future work.
 - Per-window `TestAppWindow` rendering control simulates resize and redraw,
   exposes fallible and throwing frame draws, runs the production additional-
   window render path, and reports isolated private renderer/frame snapshots.
+- Deterministic `TestApp` platform service fakes isolate clipboard and opened
+  URL state, consume FIFO file/prompt responses, fail closed when queues are
+  empty, and expose menu/dialog/URL/reopen/quit call snapshots.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,

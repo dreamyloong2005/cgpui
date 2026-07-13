@@ -3526,7 +3526,21 @@
       "xmake.lua"
     ],
     "phase_g_step_663_remaining_gap": "Step 664 GPUI-style platform service fake production behavior",
-    "phase_f_current_handoff": "Step 664 GPUI-style platform service fake production behavior"
+    "phase_g_step_664_surface": "Phase G Step 664 adds deterministic TestApp platform service fakes for isolated clipboard state, FIFO path and prompt responses with cancellation and fail-closed empty queues, supported menu/open URL/reopen behavior, opened-URL inspection, and service call snapshots. Step 665 GPUI-style test runner ergonomics production behavior is next.",
+    "phase_g_step_664_sources": [
+      "include/cgpui/ui/test_app.hpp",
+      "include/cgpui/ui/test_app_services.hpp",
+      "src/ui/test_app_internal.hpp",
+      "src/ui/test_app.cpp",
+      "src/ui/test_app_platform.cpp",
+      "src/ui/test_app_platform_services.cpp",
+      "src/ui/test_app_services.cpp",
+      "tests/ui/test_app_platform_services_test.cpp",
+      "tests/architecture/phase_g_test_app_platform_services_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_664_remaining_gap": "Step 665 GPUI-style test runner ergonomics production behavior",
+    "phase_f_current_handoff": "Step 665 GPUI-style test runner ergonomics production behavior"
   },
   "categories": [
     "application_and_app_context",

@@ -11865,3 +11865,28 @@
 - Final Spec review proves resize geometry/scale propagation, redraw requests,
   fallible and throwing direct draws, begin/clear/rect/present counters, and
   two-window renderer isolation on Windows and Arch Linux WSL.
+
+## 2026-07-13 Phase G Step 664 Platform Service Fakes
+
+- Pinned upstream clean `TestApp` exposes clipboard read/write, opened URL,
+  path-response, and prompt-response simulation over its private TestPlatform.
+- CGPUI platform services are synchronous, so deterministic parity queues the
+  next path/prompt responses before a public AppContext service call. Empty
+  queues must return the existing unsupported result instead of inventing an
+  async completion channel outside the production contract.
+- Native menu, open URL, and reopen fakes can return supported test-backend
+  results directly; file/message response queues preserve FIFO and explicit
+  cancellation, while a public snapshot exposes counts without leaking fake
+  platform types.
+- Phase G Step 664 adds deterministic TestApp platform service fakes for isolated clipboard state, FIFO path and prompt responses with cancellation and fail-closed empty queues, supported menu/open URL/reopen behavior, opened-URL inspection, and service call snapshots. Step 665 GPUI-style test runner ergonomics production behavior is next.
+- Windows PowerShell expands bash-style `$target` references before a quoted
+  WSL script reaches `bash -lc` in this command path. WSL verification should
+  keep the repository's proven explicit literal Xmake target calls instead of
+  a cross-shell loop variable.
+- Final Standards review keeps the snapshot vocabulary in a thin leaf, makes
+  `test_app.hpp` own the standard-library types used by its declarations, and
+  places all fake-platform behavior in focused private implementation files.
+- Final Spec review confirms independent TestApp clipboard and URL state,
+  ordered success/cancellation response consumption, unsupported empty queues,
+  supported menu/open-URL/reopen results, and public call/pending-response
+  snapshots on both Windows and Arch Linux WSL.

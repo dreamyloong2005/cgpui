@@ -1479,6 +1479,11 @@ Windows/Linux core API is stable enough for parity work.
   through resize, redraw request, fallible direct draw, and throwing draw
   controls; private snapshots prove resize/begin/clear/draw/present counts and
   cross-window isolation.
+- Completed: Phase G Step 664 adds deterministic TestApp platform service fakes for isolated clipboard state, FIFO path and prompt responses with cancellation and fail-closed empty queues, supported menu/open URL/reopen behavior, opened-URL inspection, and service call snapshots. Step 665 GPUI-style test runner ergonomics production behavior is next.
+- Step 664 evidence: independent TestApp instances isolate clipboard and URL
+  state; a public view invokes menu, file dialog, message dialog, URL, and
+  reopen services through `AppContext`, while queued responses prove success,
+  cancellation, FIFO consumption, empty-queue failure, and call counts.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1494,6 +1499,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The resumed Step 664 WSL build loop passed an empty target because outer PowerShell expanded bash's `$target` | Step 664 WSL focused verification | Reproduce with a minimal print loop, then use explicit literal Xmake target invocations across the PowerShell/WSL boundary |
+| The first Step 664 GREEN link could not resolve `WindowRuntimeContext::app_context()` | Step 664 public service tracer | Add the owning public `cgpui_app` module to the behavior target instead of bypassing the AppContext service seam |
 | The first Step 663 WSL build invocation passed multiple target names to `xmake build`, which accepts one target and rejected the second as an invalid argument | Step 663 WSL focused verification | Keep task-first syntax but issue one explicit literal build command per target, then run the multi-target test command |
 | The first Step 663 Windows regression passed 10/11 because the historical Step 659 guard retained a 30-line cap for the shared test renderer after Step 663 added counters | Step 663 focused regression | Raise only the shared renderer cap to the Step 663-owned 45-line limit and rerun the original failing target plus the full focused group |
 | The first Step 663 split-handoff audit omitted a space in `Write-Output $f`, producing PowerShell command-not-found errors for each match | Step 663 handoff synchronization | Correct the read-only audit syntax, identify five split literals, and update them plus the TestApp previous-source chain to Step 664 |

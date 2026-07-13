@@ -1913,6 +1913,7 @@ apps rather than only demo windows.
 - [x] Phase G Step 661 adds deterministic TestApp timer control with a fixed private platform clock, explicit time advancement, parked-work draining, combined advance-and-drain behavior, timer cancellation, and runnable hidden-parent wakeups. Step 662 GPUI-style async control production behavior is next.
 - [x] Phase G Step 662 adds deterministic TestApp async control for manual task completion, priority-ordered and FIFO draining, nested ready-task completion, invalid or repeated id rejection, and parked draining without a test-only executor. Step 663 GPUI-style rendering control production behavior is next.
 - [x] Phase G Step 663 adds per-window TestApp rendering control with resize and redraw simulation, fallible and throwing frame draws, private renderer/frame snapshots, real additional-window rendering, and cross-window counter isolation. Step 664 GPUI-style platform service fake production behavior is next.
+- [x] Phase G Step 664 adds deterministic TestApp platform service fakes for isolated clipboard state, FIFO path and prompt responses with cancellation and fail-closed empty queues, supported menu/open URL/reopen behavior, opened-URL inspection, and service call snapshots. Step 665 GPUI-style test runner ergonomics production behavior is next.
 - [x] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
 - [x] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree

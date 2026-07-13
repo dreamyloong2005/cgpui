@@ -92,7 +92,7 @@ int main() {
                 "set_basename(\"phase_g_test_app_window_fixture_structure_test\")")) {
     return 5;
   }
-  if (line_count(header) > 115 || line_count(internal) > 105 ||
+  if (line_count(header) > 125 || line_count(internal) > 140 ||
       line_count(facade) > 135 || line_count(platform) > 75 ||
       line_count(renderer) > 45 || line_count(behavior) > 75) return 6;
 
@@ -112,7 +112,7 @@ int main() {
       !contains(core, "Standalone `TestApp` and `TestAppWindow`") ||
       !contains(ledger_json, "\"phase_g_step_659_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 664 GPUI-style "
-                "platform service fake production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 665 GPUI-style "
+                "test runner ergonomics production behavior\"")) return 8;
   return 0;
 }

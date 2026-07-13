@@ -24269,3 +24269,44 @@
   Step 664 handoff; 110 executable consumers plus JSON have zero stale Step 663
   current handoffs; focused files are 109/101/71/33/61/77 lines within caps;
   no active debug marker remains; and `git diff --check` is clean.
+
+## 2026-07-13 Phase G Step 664 Start
+
+- Committed Step 663 as `3c37da5d feat: add test app rendering control`; the
+  worktree returned to only the unrelated untracked `.vscode/` directory.
+- Established Step 664 as deterministic fake-platform services on TestApp,
+  reusing existing AppContext/WindowRuntime service results and diagnostics.
+- The first tracer reached API RED on missing TestApp clipboard and opened-URL
+  helpers. GREEN installs a private MemoryClipboard and records supported test-
+  backend URL opens through the existing runtime service path.
+- Extending the tracer to path/prompt responses and service snapshots reached
+  API RED only on those missing methods/types. GREEN adds a focused public
+  service snapshot leaf, FIFO private response queues, supported menu/URL/
+  reopen results, explicit cancellation, and fail-closed empty queues.
+- The first GREEN link failed only because the behavior target omitted the
+  owning `cgpui_app` module for `WindowRuntimeContext::app_context()`; adding
+  that public dependency made the behavior test pass.
+- Resumed the existing serial dynamic current-handoff verification session;
+  all 111 executable consumers, including the Step 664 structure guard, built
+  and passed with zero failures.
+- The first resumed WSL build loop passed an empty target to Xmake because the
+  outer PowerShell expanded bash's `$target` before WSL received the script.
+  A minimal print loop reproduced the empty value; explicit literal target
+  invocations removed the cross-shell quoting ambiguity.
+- Reused the Arch Linux WSL build at `.build-wsl/master` and
+  `/dev/shm/cgpui` transient temp. All Steps 659-664 TestApp behavior and
+  structure targets plus `ui_header_cleanliness` built serially and passed
+  13/13.
+- Standards review found and fixed one transitive-include dependency:
+  `test_app.hpp` now owns its `<string>` and `<vector>` requirements, while the
+  focused service snapshot leaf no longer includes unused `<vector>`.
+- After that fix, final Windows and Arch Linux WSL focused verification both
+  pass 13/13. Standards review has no remaining findings; Spec review confirms
+  isolated clipboard/URL state, FIFO success and cancellation responses,
+  fail-closed empty queues, supported menu/open-URL/reopen results, and service
+  snapshot counts through the public AppContext path.
+- Final audits pass: the exact Step 664 sentence appears once in each of five
+  authority files; JSON parses with ten present sources and the Step 665
+  handoff; the 111-consumer dynamic handoff chain passed with zero stale Step
+  664 test handoffs; focused files remain within their structure caps; no
+  active debug marker remains; and `git diff --check` is clean.

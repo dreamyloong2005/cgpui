@@ -1,10 +1,12 @@
 #pragma once
 
+#include "cgpui/platform/clipboard.hpp"
 #include "cgpui/platform/platform_application.hpp"
 #include "cgpui/renderer/renderer.hpp"
 #include "cgpui/ui/test_app.hpp"
 #include "cgpui/ui/window_runtime.hpp"
 
+#include <deque>
 #include <memory>
 #include <vector>
 
@@ -43,8 +45,26 @@ class TestPlatformApplication final : public PlatformApplication {
       PlatformWindow& parent,
       PlatformEventCallback callback) override;
   [[nodiscard]] std::uint64_t monotonic_time_ms() const override;
+  PlatformMenuInstallationResult install_native_menu(
+      NativeMenuModel menu) override;
+  NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) override;
+  NativeMessageDialogResult show_native_message_dialog(
+      NativeMessageDialogOptions options) override;
+  PlatformOpenUrlResult open_url(std::string url) override;
+  PlatformReopenResult request_reopen() override;
+  void simulate_path_prompt_response(
+      std::optional<std::vector<std::string>> paths);
+  void simulate_prompt_answer(NativeMessageDialogResponse response);
+  [[nodiscard]] std::optional<std::string> opened_url() const;
+  [[nodiscard]] TestPlatformServiceSnapshot service_snapshot() const;
   int run() override;
   void quit() override;
+
+ private:
+  std::deque<std::optional<std::vector<std::string>>> path_responses_;
+  std::deque<NativeMessageDialogResponse> prompt_responses_;
+  TestPlatformServiceSnapshot service_snapshot_;
 };
 
 class TestRenderFrame final : public RenderFrame {
@@ -89,12 +109,20 @@ struct TestAppState {
   [[nodiscard]] Result<void> try_draw_frame(WindowRuntimeId runtime_id);
   [[nodiscard]] TestWindowRenderSnapshot render_snapshot(
       WindowRuntimeId runtime_id) const;
+  [[nodiscard]] bool write_to_clipboard(std::string_view text);
+  [[nodiscard]] std::optional<std::string> read_from_clipboard();
+  [[nodiscard]] std::optional<std::string> opened_url() const;
+  void simulate_path_prompt_response(
+      std::optional<std::vector<std::string>> paths);
+  void simulate_prompt_answer(NativeMessageDialogResponse response);
+  [[nodiscard]] TestPlatformServiceSnapshot service_snapshot() const;
 
   TestPlatformApplication application;
   TestRootView root_view;
   TestPlatformWindow parent_window;
   TestRenderer parent_renderer;
   std::vector<std::unique_ptr<Renderer>> renderers;
+  MemoryClipboard clipboard;
   WindowRuntime runtime;
 };
 

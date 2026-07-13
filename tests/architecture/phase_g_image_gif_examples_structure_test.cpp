@@ -119,7 +119,7 @@ int main() {
       !contains(ledger_md, "Phase G assets band closed") ||
       !contains(ledger_json, "\"phase_g_step_658_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 664 GPUI-style "
-                "platform service fake production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 665 GPUI-style "
+                "test runner ergonomics production behavior\"")) return 8;
   return 0;
 }

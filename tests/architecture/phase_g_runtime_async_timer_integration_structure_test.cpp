@@ -162,7 +162,7 @@ int main() {
   if (contains(core_parity, "timer integration and cross-thread entity access") ||
       contains(core_parity, "complete async timer integration") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 664 GPUI-style platform service fake production behavior\"")) {
+                "\"phase_f_current_handoff\": \"Step 665 GPUI-style test runner ergonomics production behavior\"")) {
     return 11;
   }
   return 0;

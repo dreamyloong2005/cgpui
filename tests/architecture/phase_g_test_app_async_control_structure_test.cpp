@@ -61,13 +61,13 @@ int main() {
       !contains(behavior, "normal_second") ||
       !contains(behavior, "TaskId{999999}") ||
       !contains(behavior, "app.run_until_parked()")) return 4;
-  if (!contains(previous, "Step 664 GPUI-style") ||
+  if (!contains(previous, "Step 665 GPUI-style") ||
       !contains(xmake, "target(\"phase_g_test_app_async_control_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_async_control_structure_test\")")) {
     return 5;
   }
-  if (line_count(header) > 115 || line_count(internal) > 105 ||
+  if (line_count(header) > 125 || line_count(internal) > 140 ||
       line_count(async) > 40 || line_count(behavior) > 105) return 6;
 
   constexpr const char* completion =
@@ -85,7 +85,7 @@ int main() {
       !contains(core, "Deterministic `TestApp` async control") ||
       !contains(ledger_json, "\"phase_g_step_662_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 664 GPUI-style "
-                "platform service fake production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 665 GPUI-style "
+                "test runner ergonomics production behavior\"")) return 8;
   return 0;
 }

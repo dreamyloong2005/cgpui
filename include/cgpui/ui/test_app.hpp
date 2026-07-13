@@ -4,13 +4,16 @@
 #include "cgpui/core/error.hpp"
 #include "cgpui/core/events.hpp"
 #include "cgpui/ui/runtime_ids.hpp"
+#include "cgpui/ui/test_app_services.hpp"
 #include "cgpui/ui/view.hpp"
 
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <vector>
 
 namespace cgpui {
 
@@ -101,6 +104,13 @@ class TestApp {
   [[nodiscard]] bool cancel_timer(TimerId id) const;
   [[nodiscard]] bool complete_task(TaskId id) const;
   void drain_task_completions() const;
+  [[nodiscard]] bool write_to_clipboard(std::string_view text) const;
+  [[nodiscard]] std::optional<std::string> read_from_clipboard() const;
+  [[nodiscard]] std::optional<std::string> opened_url() const;
+  void simulate_path_prompt_response(
+      std::optional<std::vector<std::string>> paths) const;
+  void simulate_prompt_answer(NativeMessageDialogResponse response) const;
+  [[nodiscard]] TestPlatformServiceSnapshot platform_service_snapshot() const;
 
  private:
   std::shared_ptr<detail::TestAppState> state_;
