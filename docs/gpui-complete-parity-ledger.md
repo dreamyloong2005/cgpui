@@ -794,6 +794,7 @@ consume C: drive space again.
 - Phase G Step 665 adds GPUI-style C++ test runner ergonomics with ordinary executable entry macros, typed injection of multiple isolated TestApp contexts and deterministic seeds, iteration and explicit/environment seed planning, bounded retries, final-failure callbacks, reproducible failure summaries, and header-clean public modules. Step 666 GPUI-style test support closeout audit is next.
 - Phase G Step 666 audits and closes the GPUI-style test support band, freezing standalone app/window setup, simulated input, deterministic timer and async control, rendering control, platform service fakes, test runner ergonomics, public header cleanliness, and modular source evidence. Step 667 Windows debug build and packaging coverage is next.
 - Phase G Step 667 adds a Windows Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 668 Linux debug build and packaging coverage is next.
+- Phase G Step 668 adds a Linux Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 669 Windows and Linux release build and packaging coverage is next.
 
 ## Categories
 

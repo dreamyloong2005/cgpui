@@ -25,3 +25,23 @@ jobs:
           name: cgpui-windows-debug
           path: build/phase-g-ci/windows-debug/package
           if-no-files-found: error
+
+  linux-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev
+      - name: Build and package Linux Debug
+        run: bash ./scripts/ci/linux-debug.sh
+      - name: Upload Linux Debug package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cgpui-linux-debug
+          path: build/phase-g-ci/linux-debug/package
+          if-no-files-found: error

@@ -26,11 +26,11 @@ std::size_t line_count(const std::string& text) {
 } // namespace
 
 int main() {
-  const std::string script = read_source("scripts/ci/windows-debug.ps1");
+  const std::string script = read_source("scripts/ci/linux-debug.sh");
   const std::string workflow =
       read_source(".github/workflows/phase-g-windows-linux.yml");
-  const std::string previous =
-      read_source("tests/api_parity/phase_g_test_support_closeout_test.cpp");
+  const std::string previous = read_source(
+      "tests/architecture/phase_g_windows_debug_packaging_structure_test.cpp");
   const std::string xmake = read_source("xmake.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
@@ -45,54 +45,59 @@ int main() {
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
-  if (!contains(script, "[System.IO.Path]::GetFullPath") ||
-      !contains(script, "Remove-Item -LiteralPath $outputRoot") ||
+  if (!contains(script, "set -euo pipefail") ||
+      !contains(script, "realpath -m") ||
+      !contains(script, "rm -rf -- \"$output_root\"") ||
+      !contains(script, "CGPUI_CI_TMPDIR") ||
+      !contains(script, "mktemp -d") ||
       !contains(script, "xmake f") ||
       !contains(script, "--ccache=n") ||
       !contains(script, "xmake build") ||
-      !contains(script, "-j") ||
+      !contains(script, "-j 1") ||
       !contains(script, "hello_window")) return 2;
 
   const char* artifacts[]{
-      "cgpui_core.lib", "cgpui_platform.lib", "cgpui_platform_win32.lib",
-      "cgpui_renderer.lib", "cgpui_renderer_vulkan.lib", "cgpui_ui.lib",
-      "cgpui_app.lib", "hello_window.exe", "include/cgpui", "README.md",
-      "manifest.json"};
+      "libcgpui_core.a", "libcgpui_platform.a",
+      "libcgpui_platform_linux_wayland.a", "libcgpui_renderer.a",
+      "libcgpui_renderer_vulkan.a", "libcgpui_ui.a", "libcgpui_app.a",
+      "hello_window", "include/cgpui", "README.md", "manifest.json"};
   for (const char* artifact : artifacts) {
     if (!contains(script, artifact)) return 3;
   }
-  if (!contains(script, "ConvertTo-Json") ||
+  if (!contains(script, "python3") ||
       !contains(script, "schema_version") ||
-      !contains(script, "windows-debug") ||
-      !contains(workflow, "runs-on: windows-latest") ||
-      !contains(workflow, "scripts/ci/windows-debug.ps1") ||
+      !contains(script, "linux-debug") ||
+      !contains(workflow, "linux-debug:") ||
+      !contains(workflow, "runs-on: ubuntu-latest") ||
+      !contains(workflow, "scripts/ci/linux-debug.sh") ||
       !contains(workflow, "actions/upload-artifact@v4") ||
-      !contains(workflow, "build/phase-g-ci/windows-debug/package")) {
+      !contains(workflow, "build/phase-g-ci/linux-debug/package")) {
     return 4;
   }
 
-  if (!contains(previous, "Step 667 Windows debug build and packaging coverage") ||
+  if (!contains(previous,
+                "Phase G Step 667 adds a Windows Debug CI packaging path") ||
       !contains(xmake,
-                "target(\"phase_g_windows_debug_packaging_structure_test\")") ||
+                "target(\"phase_g_linux_debug_packaging_structure_test\")") ||
       !contains(roadmap,
-                "- [x] Phase G Step 667 adds a Windows Debug CI packaging")) {
+                "- [x] Phase G Step 668 adds a Linux Debug CI packaging")) {
     return 5;
   }
-  if (line_count(script) > 180 || line_count(workflow) > 65 ||
-      line_count(xmake) > 4300) return 6;
+  if (line_count(script) > 190 || line_count(workflow) > 100 ||
+      line_count(xmake) > 4320) return 6;
 
   constexpr const char* completion =
-      "Phase G Step 667 adds a Windows Debug CI packaging path with "
+      "Phase G Step 668 adds a Linux Debug CI packaging path with "
       "workspace-confined output cleanup, serial Xmake configuration and "
       "build, public headers, framework libraries, demo executable, README, "
-      "manifest validation, and uploaded artifact coverage. Step 668 Linux "
-      "debug build and packaging coverage is next.";
+      "manifest validation, and uploaded artifact coverage. Step 669 Windows "
+      "and Linux release build and packaging coverage is next.";
   const std::string* documents[]{
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) {
     if (!contains(*document, completion)) return 7;
   }
-  if (!contains(ledger_json, "\"phase_g_step_667_sources\"") ||
+  if (!contains(ledger_json, "\"phase_g_step_668_sources\"") ||
       !contains(
           ledger_json,
           "\"phase_f_current_handoff\": \"Step 669 Windows and Linux release build and packaging coverage\"")) {

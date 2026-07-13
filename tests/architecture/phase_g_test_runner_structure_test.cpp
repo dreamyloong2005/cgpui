@@ -73,7 +73,8 @@ int main() {
       !contains(macro_behavior, "cgpui::TestApp& second")) return 4;
   if (!contains(cleanliness, "#include \"cgpui/ui/test_runner.hpp\"") ||
       !contains(aggregate, "#include \"cgpui/ui/test_runner.hpp\"") ||
-      !contains(previous, "Step 668 Linux debug build and packaging coverage")) {
+      !contains(previous,
+                "Step 669 Windows and Linux release build and packaging coverage")) {
     return 5;
   }
   if (!contains(xmake, "target(\"phase_g_test_runner_test\")") ||
@@ -102,7 +103,7 @@ int main() {
       !contains(core, "GPUI-style C++ test runner") ||
       !contains(ledger_json, "\"phase_g_step_665_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 668 Linux debug "
+                "\"phase_f_current_handoff\": \"Step 669 Windows and Linux release "
                 "build and packaging coverage\"")) return 9;
   return 0;
 }

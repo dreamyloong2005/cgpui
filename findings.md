@@ -12097,3 +12097,87 @@
   global audit contract and has exact dynamic verification. Spec: Windows Debug
   configuration, build, package contents, manifest, CI invocation, upload, and
   Step 668 handoff are complete without pulling later Linux/Release work forward.
+
+## 2026-07-13 Phase G Step 668 Linux Debug Build And Packaging Boundary
+
+- Linux production outputs mirror the Windows seven-library contract with
+  `libcgpui_platform_linux_wayland.a` replacing the Win32 backend and the same
+  core, platform, renderer, Vulkan, UI, and app libraries.
+- The existing WSL output confirms Xmake places Linux Debug artifacts under
+  `linux/x86_64/debug`; the package script can use an isolated output root and
+  the established `XMAKE_GLOBALDIR`, package cache, and package install variables.
+- Step 668 owns Linux Debug only. Windows/Linux Release, example/smoke matrices,
+  architecture/header matrices, and reproducible dependency closeout remain
+  Steps 669-672.
+- The Step 668 structure tracer reaches deterministic RED at the missing-script
+  boundary, so subsequent implementation can stay confined to `scripts/ci`, the
+  shared workflow, the focused structure test, Xmake registration, and authority
+  records.
+- After implementation, the tracer advances to return 5. The Linux script's
+  path confinement, isolated Xmake directories, serial builds, seven-library
+  contract, Python-generated manifest, Ubuntu job, and artifact upload evidence
+  all satisfy the structural checks before any completion claim is written.
+- Local Arch Linux WSL defaults to root and Xmake intentionally rejects that
+  unless `XMAKE_ROOT=y`; this is a verification-host condition, not a Linux CI
+  script defect. The initial version probe used a pipeline that masked the
+  failure, so later probes and long runs must preserve the direct exit code.
+- The first isolated WSL package run shows repository-local TMPDIR on `/mnt/d`
+  is not sufficient for dependency builds that use `mkfifo`; this matches the
+  repository's established `/dev/shm/cgpui` transient-temp rule. Linux CI on an
+  ext4 workspace can keep the default local temp, while WSL needs an explicit
+  opt-in temp parent outside DrvFS.
+- The safe compatibility seam is an optional temp parent, not a broad external
+  output path. `CGPUI_CI_TMPDIR` is converted into a script-owned unique
+  directory and removed by the exit trap, while every persistent build/cache/
+  package artifact remains under the workspace-confined output root.
+- A fully cold Linux WSL build is correct but expensive on DrvFS: isolated
+  dependency bootstrap plus serial framework/demo compilation took roughly 2.5
+  hours. Step 672 should pin/cache dependencies, while the current Step 668
+  result proves the Linux package path independently of the warmed master build.
+- DrvFS reports the installed demo as mode 0777 even though the script requests
+  0755; the ELF is valid and GitHub's ext4 workspace will preserve the requested
+  mode. WSL may reclaim the `/dev/shm` parent between invocations, so absence of
+  that parent is stronger cleanup evidence, not an audit failure.
+- Phase G Step 668 adds a Linux Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 669 Windows and Linux release build and packaging coverage is next.
+- Step 668 authority synchronization adds one new dynamic consumer, bringing the
+  current-handoff chain to 115 files. The context-aware rewrite preserves the
+  Step 667 completion's Step 668 handoff while every live consumer advances to
+  Step 669.
+- The synchronized handoff is executable across the full Windows repository-
+  inspection chain: all 115 targets build with `-j 1` and all 115 tests pass.
+- PowerShell here-strings piped to WSL `bash -s` must remove carriage returns.
+  A trailing CR on the final test filter is accepted as a non-matching pattern,
+  producing misleading `nothing to test`; target metadata exposed the hidden
+  character explicitly.
+- For a single WSL command, direct `wsl.exe --cd <path> -- env ... <command>` is
+  more reliable than piping a PowerShell here-string. It preserves the Xmake
+  wildcard argument and yields the required explicit 1/1 test report.
+- Step 668 pre-commit Standards inspection confirms the implementation remains
+  in the intended modular boundary: one Linux CI script owns packaging, the
+  workflow only orchestrates setup/run/upload, the focused structure guard owns
+  repository assertions, and `xmake.lua` only registers that guard. There are
+  no `include/` or `src/` changes.
+- The widespread test diff is limited to the repository's established dynamic
+  handoff contract moving from Step 668 to Step 669; sampled predecessor and
+  historical completion assertions remain intact.
+- The workflow still requests `xmake-version: latest` and installs unpinned apt
+  dependencies. This is intentionally not a Step 668 completion claim: exact
+  dependency/toolchain reproducibility is the explicit Step 672 requirement and
+  must be closed there before the packaging/CI band is complete.
+- The first final handoff audit falsely reported six stale consumers because it
+  searched raw source for one contiguous Step 669 phrase. Each file intentionally
+  splits the exact ledger JSON value across adjacent C++ literals; inspecting the
+  minimized sources and running all six compiled structure targets proves the
+  concatenated assertion is correct. The final audit must trust executable chain
+  guards and the parsed JSON value rather than raw source formatting.
+- Final Step 668 Standards review has no blocking findings. The change follows
+  `AGENTS.md` modular ownership with a focused shell script, orchestration-only
+  workflow job, dedicated structure test, and thin Xmake registration. The 115-
+  file handoff update is a possible Shotgun Surgery smell, but it is the existing
+  repository-wide audit contract and passes all 115 executable consumers.
+- Final Step 668 Spec review has no blocking findings. The Linux-only script
+  confines persistent output to the workspace, builds serially in Debug mode,
+  packages the exact public headers, seven framework archives, demo, README, and
+  validated manifest; the Ubuntu job invokes and uploads that package; authority
+  records hand off to Step 669. Release, example/smoke, architecture/header, and
+  reproducibility work remains correctly open for Steps 669-672.

@@ -114,6 +114,6 @@ int main() {
       !contains(core, "Signature-detected PNG and JPEG decoding") ||
       !contains(ledger_json, "\"phase_g_step_652_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 668 Linux debug build and packaging coverage\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 669 Windows and Linux release build and packaging coverage\"")) return 9;
   return 0;
 }

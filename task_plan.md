@@ -1499,6 +1499,15 @@ Windows/Linux core API is stable enough for parity work.
   `hello_window` serially, packages 186 public headers, seven framework
   libraries, one demo, README, and a validated manifest, while the workflow
   invokes that script and uploads the exact package directory.
+- Active: Phase G Step 668 adds the symmetric Linux Debug build/package path in
+  a focused shell script, extends the shared workflow with an Ubuntu job, and
+  proves the seven-library Wayland/Vulkan package contract before handing off
+  to Step 669 Windows and Linux Release packaging.
+- Completed: Phase G Step 668 adds a Linux Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 669 Windows and Linux release build and packaging coverage is next.
+- Step 668 evidence: the cold Arch Linux WSL run installs isolated dependencies,
+  builds `cgpui_app` and `hello_window` serially, packages 186 public headers,
+  seven framework archives, one ELF demo, README, and an exact validated manifest,
+  with zero temporary-directory leftovers.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1514,6 +1523,17 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 668 final handoff audit required the full Step 669 phrase to appear contiguously in raw C++ source and falsely flagged six valid adjacent-string assertions | Step 668 final authority audit | Minimize to the six files, inspect the split literals, and run all six compiled structure tests; use executable assertions plus exact ledger JSON for handoff authority instead of a raw contiguous-source requirement |
+| The first CR-normalization retry used a PowerShell backtick inside the tool's JavaScript template and failed before any shell command ran | Step 668 WSL filter repair | Avoid embedded backticks; ultimately bypass the here-string entirely with direct `wsl.exe --cd ... -- env ... xmake test` argument passing |
+| Removing carriage returns inside the here-string still produced `nothing to test` because the PowerShell pipeline reintroduced native line endings | Step 668 WSL focused test repair | Invoke the single Xmake test command directly through `wsl.exe --cd` with explicit environment arguments; the registered target then reports 1/1 passed |
+| Both Step 668 WSL test filters matched nothing because the PowerShell here-string left a hidden trailing `\r` on the final Bash argument | Step 668 WSL focused test diagnosis | Normalize the verification script with `.Replace("`r", "")` before piping to `bash -s`, then require an explicit one-test pass report |
+| The first Step 668 WSL structure invocation used the exact `target/default` filter and Xmake reported `nothing to test` despite a successful build | Step 668 Arch Linux focused test | Use the repository-proven quoted `target/*` filter and require an explicit one-test report before accepting WSL evidence |
+| The first Step 668 package audit treated a missing `/dev/shm/cgpui` parent as a `find` failure after WSL reclaimed the tmpfs directory | Step 668 package artifact verification | Treat an absent temp parent as zero leftovers; retain the successful manifest/header/library/ELF evidence and rerun the corrected read-only audit |
+| The first Step 668 FIFO probe passed Bash variables through `wsl ... bash -lc`, and PowerShell/native argument handling expanded them to empty paths | Step 668 DrvFS temp diagnosis | Pipe a PowerShell single-quoted here-string to `wsl ... bash -s`, remove the exact `/fifo` probe artifact, and rerun the two-location comparison |
+| The first clean Step 668 WSL package run hit a GitHub download failure and then hung after Python's DrvFS FIFO error left only top-level `xmake f` alive | Step 668 real package verification | Terminate only the confirmed Xmake PID, add an opt-in `/dev/shm` temp parent for WSL, and rerun from a clean isolated output root |
+| The first Step 668 WSL tool probe piped `xmake --version` into `head`, masking Xmake's root refusal behind pipeline exit 0 | Step 668 Arch Linux environment check | Use a direct red-capable `xmake --version >/dev/null` loop; confirm UID 0 with `XMAKE_ROOT` unset, then inject `XMAKE_ROOT=y` only in the local WSL verification wrapper |
+| The Step 668 structure test advances from RED 1 to return 5 after adding the Linux script and workflow | Step 668 implementation boundary | Run the script on Arch Linux WSL and synchronize authority/handoff only after the real clean package succeeds |
+| The first Step 668 structure run returns 1 because `scripts/ci/linux-debug.sh` does not exist | Step 668 TDD RED | Add the focused Linux Debug script and Ubuntu workflow job, then advance through authority/handoff failures without changing production modules |
 | Xmake 3.0.8 rejects `xmake test -l` because the test task has no list option | Step 667 dynamic handoff target enumeration | Use the supported `xmake show -l targets`, then validate each consumer file stem against explicit Xmake target registration before serial build/test execution |
 | The first Step 665 focused regression passed 18/19 because five TestApp guards still read Step 665 from their predecessor source | Step 665 Windows focused verification | Advance only the five live previous-source assertions to Step 666 while preserving the Step 664 historical completion sentence |
 | The first Step 665 dynamic chain passed 111/112 because the image/GIF structure guard split its stale Step 665 current handoff across literals | Step 665 complete handoff verification | Update that single current-handoff assertion to Step 666 and rerun the failing target plus all 112 mapped targets |

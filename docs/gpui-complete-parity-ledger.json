@@ -3584,7 +3584,15 @@
       "xmake.lua"
     ],
     "phase_g_step_667_remaining_gap": "Step 668 Linux debug build and packaging coverage",
-    "phase_f_current_handoff": "Step 668 Linux debug build and packaging coverage"
+    "phase_g_step_668_surface": "Phase G Step 668 adds a Linux Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 669 Windows and Linux release build and packaging coverage is next.",
+    "phase_g_step_668_sources": [
+      "scripts/ci/linux-debug.sh",
+      ".github/workflows/phase-g-windows-linux.yml",
+      "tests/architecture/phase_g_linux_debug_packaging_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_668_remaining_gap": "Step 669 Windows and Linux release build and packaging coverage",
+    "phase_f_current_handoff": "Step 669 Windows and Linux release build and packaging coverage"
   },
   "categories": [
     "application_and_app_context",

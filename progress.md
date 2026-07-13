@@ -24434,3 +24434,89 @@
   finds no blocking issue. Modular ownership and Step 667 scope are correct;
   the broad handoff rewrite is the repository's existing audit mechanism and is
   fully covered by the 114/114 dynamic-chain run.
+
+## 2026-07-13 Phase G Step 668 Linux Debug Packaging
+
+- Committed Step 667 as `4380ad86 ci: add Windows debug packaging`; the tracked
+  worktree returned clean and only unrelated `.vscode/` remains untracked.
+- Confirmed Arch Linux WSL2 is registered and the existing D-drive build/cache
+  layout contains the expected Linux artifacts, including seven production
+  libraries and `hello_window`.
+- Defined Step 668 as a focused Linux shell script plus Ubuntu workflow job,
+  package structure test, Xmake registration, authority synchronization, and a
+  Step 669 Windows/Linux Release handoff.
+- Added the Step 668 structure tracer and Xmake target. It compiles successfully
+  and returns the intended RED exit code 1 because the Linux packaging script is
+  not present yet.
+- Added the Linux Debug script and Ubuntu workflow job. The structure test now
+  returns 5, proving script/workflow/artifact/Xmake checks pass and only the
+  deliberately unsynchronized authority completion remains.
+- Diagnosed the WSL Xmake root refusal with a direct deterministic loop: the
+  distro runs as UID 0 with `XMAKE_ROOT` unset, and the same command passes when
+  `XMAKE_ROOT=y` is injected. Keep that override in the local verification
+  wrapper because GitHub Ubuntu runs the script as a non-root user.
+- The first clean Linux package run downloaded several isolated dependencies,
+  then hit a transient lunasvg fetch failure and a deterministic Python build
+  failure because DrvFS does not support the required FIFO under repository TMPDIR.
+  The failed Xmake process was terminated only after it had no child work left.
+- The first FIFO minimization command repeated the known PowerShell/Bash variable
+  boundary mistake. Switch to a literal here-string piped to `bash -s` and clean
+  the exact probe artifact before drawing conclusions.
+- The corrected two-location FIFO probe returns `repo_rc=1` on DrvFS and
+  `shm_rc=0` on `/dev/shm`. Added `CGPUI_CI_TMPDIR` support that creates and
+  cleans only a unique `mktemp` subdirectory; WSL syntax passes and the structure
+  tracer remains at the expected authority-only return 5.
+- The corrected clean WSL run succeeds end to end with `XMAKE_ROOT=y` and
+  `CGPUI_CI_TMPDIR=/dev/shm/cgpui`: isolated dependencies install, `cgpui_app`
+  and `hello_window` build serially, and the Linux Debug package is emitted with
+  exit code 0.
+- Initial package inspection confirms the manifest, 186 headers, seven archives,
+  one x86-64 ELF demo, and Wayland archive. Its only audit error was assuming the
+  `/dev/shm/cgpui` parent would survive WSL tmpfs reclamation.
+- Corrected package audit passes: exact Linux/x86_64/debug manifest, 186/186
+  headers, seven libraries, one demo, README, and zero `/dev/shm` temp leftovers.
+  Synchronized the five authority records and advanced the handoff to Step 669.
+- Rewrote the dynamic handoff and predecessor chain without changing Step 667/
+  Step 668 history. All 115 consumers contain the full Step 669 phrase, and the
+  completed Step 668 structure target passes 1/1 on Windows.
+- Built all 115 mapped handoff targets serially on Windows and ran all 115
+  registered tests. The complete Step 669 dynamic chain passes 115/115.
+- Arch Linux WSL builds the new Step 668 structure target in the warmed master
+  output. Its first exact `/default` test filter matched nothing, so rerun with
+  the proven quoted `target/*` filter before accepting the result.
+- Diagnosed the empty WSL test match: the PowerShell here-string's final line
+  retained a hidden carriage return, confirmed by Xmake reporting a target name
+  ending in `\r`. Normalize CRLF before the final focused rerun.
+- Direct `wsl.exe --cd ... -- env ... xmake test` invocation bypasses the line-
+  ending boundary and produces an explicit Arch Linux Step 668 structure result:
+  1/1 passed.
+
+## 2026-07-14 Phase G Step 668 Resume
+
+- Restored the active Phase G plan from the live worktree. Step 668 remains
+  implemented but uncommitted at `4380ad86`; the intended Linux Debug script,
+  workflow job, package structure guard, Xmake registration, authority records,
+  and 115-consumer Step 669 handoff are present.
+- Current verification evidence remains: clean isolated Arch Linux WSL package
+  build, exact 186-header/seven-library/one-demo package audit, Windows and WSL
+  Step 668 structure tests at 1/1, Windows dynamic handoff chain at 115/115,
+  shell syntax validation, and clean diff hygiene.
+- The unrelated untracked `.vscode/` directory remains outside Phase G scope.
+  Next action is the final Step 668 authority/source/line-cap/debug-marker audit,
+  sequential Standards and Spec review, intended-path staging, executable-bit
+  verification for `scripts/ci/linux-debug.sh`, and commit.
+- The first resumed final audit produced a false stale-handoff result for six
+  split C++ literals. `diagnosing-bugs` minimization confirmed each assertion
+  concatenates to the exact Step 669 ledger value, and all six affected structure
+  targets build and pass serially (6/6). No product or test source fix is needed;
+  the audit now uses parsed JSON plus executable structure guards.
+- The corrected final audit passes all five authority records, four JSON source
+  paths, 115 handoff consumers, zero production diffs, focused line caps, debug-
+  marker cleanup, WSL Bash syntax, and `git diff --check`.
+- Current Windows verification passes the Step 668 structure target 1/1 and the
+  full dynamic handoff chain 115/115. Current Arch Linux WSL verification passes
+  the Step 668 structure target 1/1; the existing clean package re-audits at 186
+  headers, seven libraries, one x86-64 ELF demo, README, and exact manifest.
+- Sequential Standards and Spec review both report no blocking findings. Modular
+  ownership and Step 668 scope are correct; the dynamic handoff rewrite is fully
+  executable, while dependency pinning remains explicitly deferred to Step 672.

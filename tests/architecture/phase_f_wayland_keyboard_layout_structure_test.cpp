@@ -110,7 +110,7 @@ int main() {
     return 7;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 668 Linux debug build and packaging coverage")) {
+                "\"phase_f_current_handoff\": \"Step 669 Windows and Linux release build and packaging coverage")) {
     return 8;
   }
   return 0;
