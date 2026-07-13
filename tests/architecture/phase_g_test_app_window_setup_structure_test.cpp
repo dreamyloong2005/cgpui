@@ -112,7 +112,7 @@ int main() {
       !contains(core, "Standalone `TestApp` and `TestAppWindow`") ||
       !contains(ledger_json, "\"phase_g_step_659_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 661 GPUI-style timer "
+                "\"phase_f_current_handoff\": \"Step 662 GPUI-style async "
                 "control production behavior\"")) return 8;
   return 0;
 }

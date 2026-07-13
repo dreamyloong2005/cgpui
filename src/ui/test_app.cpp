@@ -31,6 +31,8 @@ TestAppState::TestAppState()
   root_record->owns_window = false;
   root_record->owns_renderer = false;
   root_record->active = true;
+  runtime.window_ = &parent_window;
+  runtime.renderer_ = &parent_renderer;
 }
 
 } // namespace cgpui::detail

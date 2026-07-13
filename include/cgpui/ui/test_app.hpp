@@ -3,9 +3,11 @@
 #include "cgpui/app/window.hpp"
 #include "cgpui/core/error.hpp"
 #include "cgpui/core/events.hpp"
+#include "cgpui/ui/runtime_ids.hpp"
 #include "cgpui/ui/view.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -80,6 +82,10 @@ class TestApp {
   [[nodiscard]] std::size_t window_count() const;
   [[nodiscard]] std::optional<TestAppWindow> window(
       WindowRuntimeId runtime_id) const;
+  void advance_time(std::uint64_t delta_ms) const;
+  void run_until_parked() const;
+  void advance_time_until_parked(std::uint64_t delta_ms) const;
+  [[nodiscard]] bool cancel_timer(TimerId id) const;
 
  private:
   std::shared_ptr<detail::TestAppState> state_;

@@ -40,6 +40,7 @@ class TestPlatformApplication final : public PlatformApplication {
       const WindowDescriptor& descriptor,
       PlatformWindow& parent,
       PlatformEventCallback callback) override;
+  [[nodiscard]] std::uint64_t monotonic_time_ms() const override;
   int run() override;
   void quit() override;
 };
@@ -69,6 +70,9 @@ struct TestAppState {
       const PlatformEvent& event);
   void focus(WindowRuntimeId runtime_id, ElementId element_id);
   void release_focus(WindowRuntimeId runtime_id, ElementId element_id);
+  void advance_time(std::uint64_t delta_ms);
+  void run_until_parked();
+  [[nodiscard]] bool cancel_timer(TimerId id);
 
   TestPlatformApplication application;
   TestRootView root_view;

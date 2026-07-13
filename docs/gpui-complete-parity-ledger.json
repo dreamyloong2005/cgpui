@@ -3489,7 +3489,20 @@
       "xmake.lua"
     ],
     "phase_g_step_660_remaining_gap": "Step 661 GPUI-style timer control production behavior",
-    "phase_f_current_handoff": "Step 661 GPUI-style timer control production behavior"
+    "phase_g_step_661_surface": "Phase G Step 661 adds deterministic TestApp timer control with a fixed private platform clock, explicit time advancement, parked-work draining, combined advance-and-drain behavior, timer cancellation, and runnable hidden-parent wakeups. Step 662 GPUI-style async control production behavior is next.",
+    "phase_g_step_661_sources": [
+      "include/cgpui/ui/test_app.hpp",
+      "src/ui/test_app_internal.hpp",
+      "src/ui/test_app.cpp",
+      "src/ui/test_app_platform.cpp",
+      "src/ui/test_app_timer.cpp",
+      "src/ui/test_context_scheduling.cpp",
+      "tests/ui/test_app_timer_control_test.cpp",
+      "tests/architecture/phase_g_test_app_timer_control_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_661_remaining_gap": "Step 662 GPUI-style async control production behavior",
+    "phase_f_current_handoff": "Step 662 GPUI-style async control production behavior"
   },
   "categories": [
     "application_and_app_context",

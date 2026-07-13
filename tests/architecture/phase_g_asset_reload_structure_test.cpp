@@ -110,6 +110,6 @@ int main() {
       !contains(core, "Thread-safe asset reload invalidation") ||
       !contains(ledger_json, "\"phase_g_step_656_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 661 GPUI-style timer control production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 662 GPUI-style async control production behavior\"")) return 9;
   return 0;
 }

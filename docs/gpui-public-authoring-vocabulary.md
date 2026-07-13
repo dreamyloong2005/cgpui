@@ -97,6 +97,11 @@ keyboard, pointer, scroll, activation, window-focus, and element-focus
 simulation. Input snapshots are scoped to the addressed test window, and
 invalid key-sequence grammar is rejected without dispatching an event.
 
+Phase G Step 661 adds `TestApp::advance_time(...)`,
+`TestApp::run_until_parked()`, combined advance-and-drain control, and timer
+cancellation. The private test platform clock is fixed, so timer progress is
+caused only by explicit test-app time advancement.
+
 ## Animation vocabulary
 
 - `AnimationSpring`

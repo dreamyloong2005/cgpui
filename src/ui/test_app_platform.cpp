@@ -56,6 +56,8 @@ TestPlatformApplication::create_child_window(
   return create_window(descriptor, std::move(callback));
 }
 
+std::uint64_t TestPlatformApplication::monotonic_time_ms() const { return 0; }
+
 int TestPlatformApplication::run() { return 0; }
 
 void TestPlatformApplication::quit() {}

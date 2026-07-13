@@ -131,6 +131,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationCurve`") ||
       !contains(core_parity, "parameterized spring curves") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 661 GPUI-style timer control production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 662 GPUI-style async control production behavior\"")) return 9;
   return 0;
 }

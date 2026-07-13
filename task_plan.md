@@ -1464,6 +1464,11 @@ Windows/Linux core API is stable enough for parity work.
   callback and real per-window runtime path; focused behavior covers direct and
   parsed keys, invalid grammar, pointer/button/scroll events, activation,
   window and element focus, plus two-window input snapshot isolation.
+- Completed: Phase G Step 661 adds deterministic TestApp timer control with a fixed private platform clock, explicit time advancement, parked-work draining, combined advance-and-drain behavior, timer cancellation, and runnable hidden-parent wakeups. Step 662 GPUI-style async control production behavior is next.
+- Step 661 evidence: public behavior schedules one-shot, nested zero-delay, and
+  repeating timers through an ordinary view runtime context, then proves exact
+  TestApp advancement, parked draining, cancellation, and deterministic clock
+  behavior through the focused timer source and structure guard.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1479,6 +1484,11 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 661 focused regression passed 11/12; the Step 660 structure guard returned 5 because its previous-guard source check still named the prior Step 661 timer handoff | Step 661 adjacent structure chain | Advance that nested source prefix to Step 662 async control; keep the historical Step 660 completion sentence unchanged |
+| The first Step 661 GREEN executable returned 2 because the hidden-parent record existed but root `WindowRuntime::window_`/`renderer_` were null, so `handle_wakeup()` returned before firing the zero-delay timer | Step 661 parked drain | Install the private parent window/renderer on the root runtime and override the test platform clock with a fixed zero value so only explicit TestApp advancement moves time |
+| The corrected Step 661 tracer still saw only the forward-declared `WindowRuntime` through `runtime_context.hpp` | Step 661 timer scheduling seam | Include the public `window_runtime.hpp` owner because the tracer intentionally calls its public timer scheduling methods from the context |
+| The first Step 661 RED compile also lacked the complete runtime-context type and guessed nonexistent `EventResult::handled()` | Step 661 timer-control tracer | Include the public `runtime_context.hpp` seam and use the established `EventResult::consumed_event()` factory, leaving only the intended missing TestApp API errors |
+| The Step 661 entry read guessed singular `src/ui/test_context_time_async.cpp`; timer control actually lives in `src/ui/test_context_scheduling.cpp` | Step 661 timer-control ownership discovery | Locate scheduling symbols with `rg`; reuse the existing TestContext timing semantics rather than inventing a second drain loop |
 | The Step 660 semantic review guessed singular `src/ui/test_context_keystroke.cpp`; the actual existing implementation is plural `test_context_keystrokes.cpp` | Step 660 pre-commit API consistency review | Locate the symbol with `rg` and compare the real implementation; TestAppWindow uses the same parser, single-key path, and sequence dispatch semantics |
 | The first long WSL Step 660 build returned a live session without its id being retained by the outer loop, leaving xmake temporarily attached to an unconsumed output pipe | Step 660 WSL focused build | Wait for that process to exit, rerun the same target with quiet output to obtain exit 0, and retain every later yielded session id until completion |
 | The first Step 660 WSL focused build loop again delivered an empty `$target` through the Windows outer shell, so Xmake rejected `''` before building | Step 660 WSL focused build | Invoke each literal target name in a serial Windows-side tool loop, preserving task-first `xmake build --root <target>` syntax |

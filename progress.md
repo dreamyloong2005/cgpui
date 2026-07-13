@@ -24156,3 +24156,43 @@
   handoff, 108 total current-handoff consumers have zero stale Step 660 values,
   focused files remain within 95/90/75/120/80/125 caps, and no production
   debug marker remains.
+
+## 2026-07-13 Phase G Step 661 Start
+
+- Committed Step 660 as `49ced30c feat: add test app simulated input`; the
+  worktree returned to only the unrelated untracked `.vscode/` directory.
+- Established the Step 661 public boundary as runtime-wide deterministic timer
+  control on `TestApp`, reusing existing TestContext scheduling semantics.
+- Added the Step 661 public behavior tracer and Xmake target. Its seam schedules
+  one-shot, nested zero-delay, and repeating timers through an ordinary view
+  context, then controls them only through `TestApp`.
+- The first compile also found two tracer-only issues: the complete runtime
+  context requires its own public include, and consumed events use
+  `EventResult::consumed_event()`. Corrected both before evaluating API RED.
+- The corrected tracer reached the intended RED with only the four missing
+  TestApp timer-control methods. Added their declarations and a focused
+  `test_app_timer.cpp` implementation that reuses the existing parked drain.
+- The first executable returned 2. Runtime inspection showed the test fixture's
+  hidden-parent record was populated but root wakeup pointers were null; fixed
+  those private pointers and froze the private platform clock at zero.
+- Added the Step 661 modular structure guard and Xmake target. It freezes the
+  public TestApp seam, focused timer implementation, deterministic clock,
+  runnable hidden parent, behavior tracer, line caps, and authority evidence.
+- Synchronized Step 661 authority and JSON evidence, advanced 104 complete or
+  prefix current-handoff consumers, then updated three split C++ literals and
+  the new previous-guard source check to Step 662 async control.
+- Advanced the three nested Windows/WSL/cross-platform guard-source assertions
+  to the same Step 662 async-control handoff while preserving the historical
+  Step 660 completion sentence that names Step 661.
+- The first 12-target timer/TestApp regression passed 11/12. The remaining
+  Step 660 guard still checked its Step 659 predecessor for the old Step 661
+  handoff; advanced only that source-prefix assertion to Step 662.
+- Final Windows timer/TestApp/platform regression passes 12/12 and the complete
+  dynamic current-handoff chain passes 108/108.
+- Reused the existing Arch Linux WSL build and `/dev/shm/cgpui` temp; the Step
+  661 timer/TestApp/runtime group builds serially and passes 9/9.
+- Final audits pass: the exact Step 661 sentence appears once in each of five
+  authority files, JSON parses with nine present sources and Step 662 handoff,
+  108 executable consumers plus the JSON ledger have zero stale Step 661
+  handoffs, focused files are 94/85/131/65/42/80 lines within caps, no debug
+  marker remains, and `git diff --check` is clean.

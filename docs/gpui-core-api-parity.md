@@ -87,6 +87,9 @@ desktop integration surfaces remain separate future work.
   pointer movement/buttons/scrolling, activation, window focus, and element
   focus through the deterministic platform callback while preserving isolated
   per-window input snapshots and rejecting invalid key grammar.
+- Deterministic `TestApp` timer control advances runtime time explicitly,
+  drains only ready work until parked, combines both operations, cancels timers
+  by id, and uses a fixed private platform clock plus runnable hidden parent.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,

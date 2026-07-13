@@ -11798,3 +11798,33 @@
   invalid grammar rejection, pointer/button/scroll delivery, activation,
   window and element focus, two-window input isolation, and parity with the
   existing `TestContextCapability` input grammar.
+
+## 2026-07-13 Phase G Step 661 Timer Control
+
+- Runtime timers, deferred callbacks, task completions, and redraw parking are
+  runtime-wide rather than window-scoped. Step 661 control therefore belongs
+  on `TestApp`, while timer scheduling remains available through ordinary
+  public runtime contexts used by test views.
+- `TestContextCapability` already defines the required deterministic semantics:
+  advance time without implicit future jumps, drain ready work until parked,
+  combine both operations, and cancel by `TimerId`.
+- `TestAppState` already has private friend access to the runtime and can reuse
+  the root runtime context's test capability instead of duplicating private
+  timer/task/deferred queue inspection.
+- The first GREEN attempt exposed a Step 659 fixture gap: the hidden-parent
+  record had valid window/renderer pointers, but the root runtime members were
+  unset, so `handle_wakeup()` returned before draining due timers. Installing
+  those private pointers makes the deterministic fixture runnable without a
+  production event loop.
+- The private test platform must override `monotonic_time_ms()` with a fixed
+  value. Otherwise real milliseconds can make short repeating timers due while
+  a test is only asking to drain already-ready work.
+- Phase G Step 661 adds deterministic TestApp timer control with a fixed private platform clock, explicit time advancement, parked-work draining, combined advance-and-drain behavior, timer cancellation, and runnable hidden-parent wakeups. Step 662 GPUI-style async control production behavior is next.
+- Final Standards review keeps runtime-wide controls on `TestApp`, places all
+  non-template bodies in focused `test_app_timer.cpp`, keeps the clock override
+  private to the fake platform, and changes broad runtime state only inside the
+  already-friended TestApp fixture constructor.
+- Final Spec review confirms parked drain does not jump to future deadlines,
+  explicit 5/10ms advancement fires exact one-shot and repeating timers,
+  combined advancement drains a nested zero-delay timer, cancellation is
+  idempotent, and the same behavior passes on Windows and Arch Linux WSL.
