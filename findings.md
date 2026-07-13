@@ -12017,3 +12017,83 @@
 - The ledger's established schema keeps later Phase F/G evidence under the
   legacy `phase_d_text_evidence` object. Step 666 source verification must read
   `.phase_d_text_evidence.phase_g_step_666_sources`.
+
+## 2026-07-13 Phase G Step 667 Windows Debug Build And Packaging Boundary
+
+- Step 667 begins the Steps 667-672 packaging/CI band and owns Windows Debug
+  build plus package-artifact coverage only; Linux, Release, example/smoke,
+  architecture/header, and dependency-closeout matrices remain later steps.
+- The repository currently exposes Xmake Debug/Release modes and many smoke
+  tests but no visible `.github` workflow or proven install/package contract.
+- New CI work must live under focused workflow/script/test files from its first
+  version. `xmake.lua` should remain target registration/orchestration rather
+  than absorbing shell packaging logic.
+- The Step 667 seam is `scripts/ci/windows-debug.ps1` plus one orchestration
+  workflow and one repository-inspection structure test. The script owns safe
+  output-root validation, serial Debug configuration/build, and a staged
+  package containing public headers, seven framework libraries, the demo
+  executable, README, and a machine-readable manifest.
+- The workflow should only install Xmake, invoke the focused script, and upload
+  its package directory. Linux and Release jobs must not be folded into this
+  first slice.
+- The Step 667 structure tracer builds and returns deterministic RED `1`
+  because `scripts/ci/windows-debug.ps1` and the workflow do not exist yet.
+  This is the intended missing-boundary failure.
+- Installed Xmake 3.0.8 reads `XMAKE_CONFIGDIR`; Step 667 can isolate CI
+  configuration under its validated output root instead of mutating the
+  developer's repository `.xmake` state or attempting backup/restore moves.
+- After adding the Windows script and workflow, the structure tracer advances
+  from RED `1` to `5`: every script/workflow/artifact/Xmake assertion passes,
+  and only Step 667 authority records plus the Step 668 handoff remain open.
+- The first clean Windows Debug script run compiled and linked `hello_window`
+  successfully, then failed package validation on missing `cgpui_app.lib`.
+  `hello_window` does not depend on the separate app library, so the script
+  must explicitly build `cgpui_app` before the demo while preserving the full
+  seven-library package contract.
+- The corrected default script passes from a freshly removed output root:
+  `cgpui_app` and `hello_window` build serially, then packaging produces 186
+  public headers, seven static libraries, one demo executable, README, and a
+  parsed `cgpui-windows-debug` manifest declaring all seven libraries.
+- `XMAKE_CONFIGDIR` is present only under the CI output root for this run; the
+  ordinary repository config remains separate, and Git sees only the intended
+  script/workflow/test/document changes plus unrelated `.vscode/`.
+- Phase G Step 667 adds a Windows Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 668 Linux debug build and packaging coverage is next.
+- Advancing the Step 667 handoff with the exact escaped JSON value updates 57
+  test files. Remaining consumers use shortened or split C++ literals and must
+  be updated by current-handoff context, while historical Step 666/667
+  completion sentences remain unchanged.
+- Session catchup confirms the worktree, planning files, and prior handoff agree:
+  Step 667 is implemented but not yet proven or committed. The next authoritative
+  action is a context-aware audit of every `phase_f_current_handoff` consumer,
+  preserving historical completion text while requiring the full Step 668 phrase.
+- The live audit finds 114 test files that consume `phase_f_current_handoff`.
+  Sixty-two still contain a Step 667 phrase, but that count includes historical
+  Step 666 completion text and the Step 667 predecessor check. Update only the
+  current JSON handoff assertions and current chain prefixes; retain those two
+  historical contracts.
+- The context-aware rewrite closes the dynamic chain without erasing history:
+  114/114 consumers contain `Step 668 Linux debug build and packaging coverage`,
+  while only the Step 666 completion sentence and Step 667 predecessor assertion
+  still mention the Step 667 handoff in the test tree.
+- The completed Step 667 repository-inspection target now returns success under
+  its registered Xmake environment, proving the script/workflow/package contract,
+  authority records, predecessor evidence, and Step 668 handoff are coherent.
+- Dynamic handoff target mapping is one-to-one for 113/114 consumer files. The
+  sole established alias maps `phase_f_win32_native_menu_update_structure_test.cpp`
+  to Xmake target `phase_f_win32_native_menu_replacement_structure_test`.
+- The full Windows dynamic handoff chain is executable, not just textually
+  synchronized: every one of the 114 mapped targets builds with `-j 1`, and all
+  114 registered tests pass serially.
+- The Step 667 script is independently reproducible from a removed output root:
+  isolated dependency setup, framework build, Vulkan/demo build, packaging, and
+  manifest validation all complete without relying on the ordinary build tree.
+- The generated manifest and filesystem agree exactly on the required artifact
+  classes: 186 public headers, seven framework libraries, one demo executable,
+  and README for Windows x64 Debug. The focused script/workflow/test stay small
+  and keep packaging logic out of `xmake.lua`.
+- Step 667 two-axis review is clean. Standards: focused ownership, thin Xmake
+  orchestration, and a structure guard satisfy `AGENTS.md`; the 114-file handoff
+  update is a possible Shotgun Surgery smell but is inherited from the repository's
+  global audit contract and has exact dynamic verification. Spec: Windows Debug
+  configuration, build, package contents, manifest, CI invocation, upload, and
+  Step 668 handoff are complete without pulling later Linux/Release work forward.

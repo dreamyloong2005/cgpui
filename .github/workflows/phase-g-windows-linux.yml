@@ -1,0 +1,27 @@
+name: Phase G Windows and Linux
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-debug:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+      - name: Build and package Windows Debug
+        shell: pwsh
+        run: ./scripts/ci/windows-debug.ps1
+      - name: Upload Windows Debug package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cgpui-windows-debug
+          path: build/phase-g-ci/windows-debug/package
+          if-no-files-found: error

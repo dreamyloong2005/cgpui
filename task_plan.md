@@ -1494,6 +1494,11 @@ Windows/Linux core API is stable enough for parity work.
   behavior targets, seven dedicated structure guards, both public-header
   cleanliness targets, focused source ownership, Xmake registrations, and the
   closed Steps 659-666 roadmap band without production edits.
+- Completed: Phase G Step 667 adds a Windows Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 668 Linux debug build and packaging coverage is next.
+- Step 667 evidence: the isolated clean script builds `cgpui_app` and
+  `hello_window` serially, packages 186 public headers, seven framework
+  libraries, one demo, README, and a validated manifest, while the workflow
+  invokes that script and uploads the exact package directory.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1509,6 +1514,7 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Xmake 3.0.8 rejects `xmake test -l` because the test task has no list option | Step 667 dynamic handoff target enumeration | Use the supported `xmake show -l targets`, then validate each consumer file stem against explicit Xmake target registration before serial build/test execution |
 | The first Step 665 focused regression passed 18/19 because five TestApp guards still read Step 665 from their predecessor source | Step 665 Windows focused verification | Advance only the five live previous-source assertions to Step 666 while preserving the Step 664 historical completion sentence |
 | The first Step 665 dynamic chain passed 111/112 because the image/GIF structure guard split its stale Step 665 current handoff across literals | Step 665 complete handoff verification | Update that single current-handoff assertion to Step 666 and rerun the failing target plus all 112 mapped targets |
 | The first synchronized `gpui_parity_ledger_test` returned 8 after the new JSON row omitted exact helper strings frozen by the existing ledger test | Step 665 ledger synchronization | Retain the existing helper evidence names inside the expanded macro/runner target description |

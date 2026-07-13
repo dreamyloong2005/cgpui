@@ -24383,3 +24383,54 @@
   authority files; JSON parses with 19 present Step 666 sources; 112 handoff
   consumers have zero stale entries; production file changes and Step 666
   debug markers are both zero; and `git diff --check` is clean.
+
+## 2026-07-13 Phase G Step 667 Windows Debug Packaging
+
+- Committed Step 666 as `de4e4eca test: close GPUI-style test support band`;
+  the worktree returned to only unrelated `.vscode/`.
+- Added a workspace-confined Windows Debug packaging script with isolated
+  Xmake config/package/build output, strict serial builds, explicit package
+  validation, and one orchestration-only GitHub Actions job.
+- The first clean script run built `hello_window` but correctly failed because
+  that target does not produce the separately packaged `cgpui_app.lib`.
+  Building `cgpui_app` explicitly before the demo preserves the package
+  contract and fixes the root cause.
+- The corrected default script passes from a clean output root and packages
+  186 public headers, seven static libraries, `hello_window.exe`, README, and
+  a parsed manifest under `build/phase-g-ci/windows-debug/package`.
+- Resumed the persistent Phase G goal from the live worktree. Step 667 remains
+  the active slice until every dynamic current-handoff consumer points to Step
+  668, the focused structure/package checks pass, the two-axis review is clean,
+  and the intended files are committed. Steps 668-678 remain in scope.
+- Audited all 114 dynamic handoff consumers. The remaining Step 667 occurrences
+  are now partitioned into current JSON/chain assertions that must advance and
+  historical completion/predecessor evidence that must stay unchanged.
+- Rewrote the remaining current JSON and predecessor-chain assertions. All
+  114 handoff consumers now contain the full Step 668 phrase; the only test-tree
+  Step 667 occurrences are the Step 666 completion sentence and the Step 667
+  structure test's predecessor proof. `git diff --check` passes.
+- Built `phase_g_windows_debug_packaging_structure_test` serially and ran its
+  registered `/default` test; the focused Step 667 structure gate passes 1/1.
+- `xmake test -l` is unsupported by Xmake 3.0.8 and exited before running tests.
+  Switched to the supported target listing plus explicit source-stem/Xmake
+  registration checks; no repository or build output was changed by the error.
+- Resolved all 114 dynamic handoff consumers to 114 unique Xmake targets; 113
+  use the file stem and the native-menu update guard uses its historical
+  `phase_f_win32_native_menu_replacement_structure_test` target alias.
+- Built all 114 mapped targets serially and ran all 114 registered `/default`
+  tests in one `xmake test -j 1` invocation. The complete dynamic handoff chain
+  passes 114/114 with zero failures.
+- Re-ran `scripts/ci/windows-debug.ps1` from its clean-output path. The isolated
+  serial build completed `cgpui_app` and `hello_window`, then emitted a validated
+  package at `build/phase-g-ci/windows-debug/package` with exit code 0.
+- Inspected the generated manifest and package tree: Windows/x64/debug metadata,
+  186 headers, seven declared libraries, one demo executable, and README all
+  match the Step 667 contract. Focused files remain within their structure caps.
+- Final Step 667 audit passes: five authority files contain one exact completion
+  sentence each, four JSON sources exist, 114 handoff consumers are current,
+  two historical Step 667 references remain intentionally, production changes
+  and debug markers are zero, and diff hygiene is clean.
+- Sequential Standards/Spec review (sub-agents disabled for this Phase G run)
+  finds no blocking issue. Modular ownership and Step 667 scope are correct;
+  the broad handoff rewrite is the repository's existing audit mechanism and is
+  fully covered by the 114/114 dynamic-chain run.

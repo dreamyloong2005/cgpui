@@ -138,6 +138,6 @@ int main() {
   if (!contains(vocabulary, "`ElementAnimationStateStore`") ||
       !contains(core_parity, "runtime-owned keyed element lifecycle") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 667 Windows debug build and packaging coverage\"")) return 11;
+                "\"phase_f_current_handoff\": \"Step 668 Linux debug build and packaging coverage\"")) return 11;
   return 0;
 }

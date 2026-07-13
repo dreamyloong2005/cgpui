@@ -71,6 +71,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 5;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 667 Windows debug build and packaging coverage\"")) return 6;
+                "\"phase_f_current_handoff\": \"Step 668 Linux debug build and packaging coverage\"")) return 6;
   return 0;
 }

@@ -145,7 +145,7 @@ int main() {
       contains(core_parity, "cross-thread entity access remains incomplete") ||
       contains(core_parity, "Cross-thread entity access guarantees") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 667 Windows debug build and packaging coverage\"")) {
+                "\"phase_f_current_handoff\": \"Step 668 Linux debug build and packaging coverage\"")) {
     return 11;
   }
   return 0;
