@@ -33,8 +33,8 @@
     }
   },
   "status_counts": {
-    "required": 16,
-    "adapted": 16,
+    "required": 15,
+    "adapted": 17,
     "deferred": 2,
     "non_goal": 1
   },
@@ -3540,7 +3540,20 @@
       "xmake.lua"
     ],
     "phase_g_step_664_remaining_gap": "Step 665 GPUI-style test runner ergonomics production behavior",
-    "phase_f_current_handoff": "Step 665 GPUI-style test runner ergonomics production behavior"
+    "phase_g_step_665_surface": "Phase G Step 665 adds GPUI-style C++ test runner ergonomics with ordinary executable entry macros, typed injection of multiple isolated TestApp contexts and deterministic seeds, iteration and explicit/environment seed planning, bounded retries, final-failure callbacks, reproducible failure summaries, and header-clean public modules. Step 666 GPUI-style test support closeout audit is next.",
+    "phase_g_step_665_sources": [
+      "include/cgpui/ui/test_runner.hpp",
+      "include/cgpui/ui/ui.hpp",
+      "src/ui/test_runner.cpp",
+      "tests/ui/test_runner_test.cpp",
+      "tests/ui/test_runner_macro_test.cpp",
+      "tests/header_cleanliness/test_runner_header_cleanliness.cpp",
+      "tests/architecture/phase_g_test_runner_structure_test.cpp",
+      "tests/api_parity/gpui_parity_ledger_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_665_remaining_gap": "Step 666 GPUI-style test support closeout audit",
+    "phase_f_current_handoff": "Step 666 GPUI-style test support closeout audit"
   },
   "categories": [
     "application_and_app_context",
@@ -3628,7 +3641,7 @@
       "upstream_gpui": "gpui::TestAppContext",
       "cgpui_target": "TestContextCapability groups runtime id/view id, live input/event/action observability, invalidation/diagnostics snapshots with entity/window/view observer counts, timer advancement, timer cancellation, task completion draining, run_until_parked() and advance_time_until_parked(...) helpers, request_redraw(), try_draw_frame() -> Result<void>, and draw_frame() frame pump helpers, direct dispatch_keystroke(...), grammar-backed simulate_keystrokes(...), direct pointer move/button/scroll simulation, direct window activation/focus dispatch, element focus/release helpers, direct clipboard read/write helpers, and copy/cut/paste clipboard forwarding from Context<T>::test_context(), covered by src/ui/test_context_scheduling.cpp, src/ui/test_context_rendering.cpp, src/ui/test_context_keystrokes.cpp, src/ui/test_context_pointer.cpp, src/ui/test_context_focus.cpp, src/ui/test_context_clipboard.cpp, src/ui/runtime_clipboard.cpp, examples/api_parity/public_async_test_workflow/main.cpp, examples/api_parity/public_phase_b_surface_closure/main.cpp, tests/api_parity/renderer_frame_result_conventions_test.cpp, tests/api_parity/public_async_test_workflow_example_test.cpp, tests/api_parity/public_phase_b_surface_closure_example_test.cpp, tests/ui/test_context_time_async_test.cpp, tests/ui/test_context_frame_pump_test.cpp, tests/ui/test_context_keystroke_simulation_test.cpp, tests/ui/test_context_pointer_simulation_test.cpp, tests/ui/test_context_focus_activation_test.cpp, and tests/ui/test_context_clipboard_test.cpp",
       "status": "adapted",
-      "next_step": "Phase G fuller simulated input/test macro depth"
+      "next_step": "Phase G test support closeout"
     },
     {
       "upstream_gpui": "gpui::IntoElement",
@@ -3662,9 +3675,9 @@
     },
     {
       "upstream_gpui": "gpui::test",
-      "cgpui_target": "TestContextCapability exists with simulate_keystrokes(...), dispatch_pointer_* helpers, dispatch_window_* helpers, focus(...), release_focus(...), write_to_clipboard(...), read_from_clipboard(...), copy/cut/paste helpers, run_until_parked(), advance_time_until_parked(...), request_redraw(), try_draw_frame(), and draw_frame(), but upstream-style test macro and fuller simulation helpers remain missing",
-      "status": "required",
-      "next_step": "Phase G"
+      "cgpui_target": "CGPUI_TEST and CGPUI_TEST_WITH_OPTIONS ordinary executable entry macros over run_test(...) and test_main(...), typed injection of multiple isolated TestApp references and TestRunSeed values, deterministic iteration plus explicit or SEED/ITERATIONS environment seed planning, bounded retries, final-failure callbacks, reproducible TestRunSummary failure records, standalone header cleanliness, and the existing TestApp/TestAppWindow/TestContextCapability simulation surface including dispatch_pointer_* helpers, dispatch_window_* helpers, write_to_clipboard, read_from_clipboard, copy/cut/paste helpers, run_until_parked, advance_time_until_parked, request_redraw, try_draw_frame, draw_frame, test_context_clipboard_test, test_context_time_async_test, and test_context_frame_pump_test",
+      "status": "adapted",
+      "next_step": "Phase G test support closeout"
     },
     {
       "upstream_gpui": "gpui platform services",

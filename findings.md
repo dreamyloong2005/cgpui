@@ -11890,3 +11890,30 @@
   ordered success/cancellation response consumption, unsupported empty queues,
   supported menu/open-URL/reopen results, and public call/pending-response
   snapshots on both Windows and Arch Linux WSL.
+
+## 2026-07-13 Phase G Step 665 Test Runner Ergonomics
+
+- Pinned upstream `crates/gpui/src/test.rs` documents `#[gpui::test]` as a
+  normal test-runner-compatible entry that injects one or more deterministic
+  test contexts.
+- Upstream `run_test(...)` runs seed zero by default, supports `SEED` and
+  `ITERATIONS` environment overrides plus explicit seeds, retries failed runs
+  up to a configured bound, reports a reproducible failing seed, invokes an
+  optional final-failure callback, and closes the scheduler after every run.
+- The C++ adaptation should preserve ordinary executable/test-runner
+  compatibility, deterministic TestApp injection, iteration/seed/retry
+  control, and structured failure reporting. Rust futures, property-test
+  strategies, and scheduler randomization are outside the existing CGPUI C++
+  runtime contract and should not be invented in this step.
+- Phase G Step 665 adds GPUI-style C++ test runner ergonomics with ordinary executable entry macros, typed injection of multiple isolated TestApp contexts and deterministic seeds, iteration and explicit/environment seed planning, bounded retries, final-failure callbacks, reproducible failure summaries, and header-clean public modules. Step 666 GPUI-style test support closeout audit is next.
+- A function-pointer template plus erased synchronous callback preserves
+  arbitrary TestApp argument counts without `std::function` or heap-backed
+  type erasure. Each attempt constructs a new tuple of TestApp/TestRunSeed
+  storage, invokes the typed function, and drains successful app contexts.
+- `max_retries == SIZE_MAX` must be rejected before the loop; otherwise the
+  one-based attempt counter can wrap and retry forever. The final behavior
+  suite locks this as an invalid configuration with zero attempts.
+- Final Standards and Spec review found no remaining issue after switching the
+  macro behavior tracer to the default `CGPUI_TEST` entry and adding the retry
+  overflow guard. Windows passes 19/19 focused plus 112/112 current handoff;
+  Arch Linux WSL passes the same focused 19/19 group.

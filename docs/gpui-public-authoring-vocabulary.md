@@ -117,6 +117,11 @@ Phase G Step 664 adds `TestApp::write_to_clipboard(...)`,
 prompt responses, and `TestPlatformServiceSnapshot` for deterministic service
 inspection without exposing the private fake platform.
 
+Phase G Step 665 adds `CGPUI_TEST`, `CGPUI_TEST_WITH_OPTIONS`,
+`TestRunOptions`, `TestRunSeed`, `TestRunSummary`, `run_test(...)`, and
+`test_main(...)`. Test functions may request multiple isolated `TestApp&`
+arguments and a deterministic seed while remaining ordinary executable tests.
+
 ## Animation vocabulary
 
 - `AnimationSpring`

@@ -4029,6 +4029,36 @@ target("phase_g_test_app_platform_services_structure_test")
     add_files("tests/architecture/phase_g_test_app_platform_services_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_test_runner_test")
+    set_kind("binary")
+    add_files("tests/ui/test_runner_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default", {runenvs = {SEED = "50", ITERATIONS = "2"}})
+    add_tests("invalid_environment", {runenvs = {
+        ITERATIONS = "invalid",
+        CGPUI_EXPECT_INVALID_ENV = "1"
+    }})
+
+target("phase_g_test_runner_macro_test")
+    set_kind("binary")
+    add_files("tests/ui/test_runner_macro_test.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("test_runner_header_cleanliness")
+    set_kind("binary")
+    add_files("tests/header_cleanliness/test_runner_header_cleanliness.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("phase_g_test_runner_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_test_runner_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 target("window_runtime_frame_scheduling_test")
     set_kind("binary")
     set_rundir(os.projectdir())

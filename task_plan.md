@@ -1484,6 +1484,11 @@ Windows/Linux core API is stable enough for parity work.
   state; a public view invokes menu, file dialog, message dialog, URL, and
   reopen services through `AppContext`, while queued responses prove success,
   cancellation, FIFO consumption, empty-queue failure, and call counts.
+- Completed: Phase G Step 665 adds GPUI-style C++ test runner ergonomics with ordinary executable entry macros, typed injection of multiple isolated TestApp contexts and deterministic seeds, iteration and explicit/environment seed planning, bounded retries, final-failure callbacks, reproducible failure summaries, and header-clean public modules. Step 666 GPUI-style test support closeout audit is next.
+- Step 665 evidence: direct runner tests cover fixed and environment seed
+  plans, retries, invalid configuration, null functions, final failures, and
+  callbacks; a macro-authored ordinary executable proves multiple fresh
+  TestApp arguments and deterministic seed injection without private fixtures.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1499,6 +1504,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 665 focused regression passed 18/19 because five TestApp guards still read Step 665 from their predecessor source | Step 665 Windows focused verification | Advance only the five live previous-source assertions to Step 666 while preserving the Step 664 historical completion sentence |
+| The first Step 665 dynamic chain passed 111/112 because the image/GIF structure guard split its stale Step 665 current handoff across literals | Step 665 complete handoff verification | Update that single current-handoff assertion to Step 666 and rerun the failing target plus all 112 mapped targets |
+| The first synchronized `gpui_parity_ledger_test` returned 8 after the new JSON row omitted exact helper strings frozen by the existing ledger test | Step 665 ledger synchronization | Retain the existing helper evidence names inside the expanded macro/runner target description |
+| The first Step 665 structure run returned 5 after API and header checks passed because authority and the predecessor handoff still named Step 665 | Step 665 structure RED | Synchronize the five authority files and advance current handoff consumers to Step 666 |
 | The resumed Step 664 WSL build loop passed an empty target because outer PowerShell expanded bash's `$target` | Step 664 WSL focused verification | Reproduce with a minimal print loop, then use explicit literal Xmake target invocations across the PowerShell/WSL boundary |
 | The first Step 664 GREEN link could not resolve `WindowRuntimeContext::app_context()` | Step 664 public service tracer | Add the owning public `cgpui_app` module to the behavior target instead of bypassing the AppContext service seam |
 | The first Step 663 WSL build invocation passed multiple target names to `xmake build`, which accepts one target and rejected the second as an invalid argument | Step 663 WSL focused verification | Keep task-first syntax but issue one explicit literal build command per target, then run the multi-target test command |

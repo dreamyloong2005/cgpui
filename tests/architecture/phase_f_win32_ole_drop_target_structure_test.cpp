@@ -75,6 +75,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_571_remaining_gap\": \"Step 572 Win32")) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 665 GPUI-style test runner ergonomics production behavior")) return 9;
+                "\"phase_f_current_handoff\": \"Step 666 GPUI-style test support closeout audit")) return 9;
   return 0;
 }

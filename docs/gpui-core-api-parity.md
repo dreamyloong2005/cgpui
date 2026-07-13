@@ -99,6 +99,9 @@ desktop integration surfaces remain separate future work.
 - Deterministic `TestApp` platform service fakes isolate clipboard and opened
   URL state, consume FIFO file/prompt responses, fail closed when queues are
   empty, and expose menu/dialog/URL/reopen/quit call snapshots.
+- A GPUI-style C++ test runner provides ordinary executable entry macros,
+  typed multi-TestApp and deterministic-seed injection, explicit/environment
+  seed plans, bounded retries, failure callbacks, and reproducible summaries.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,

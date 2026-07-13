@@ -307,8 +307,17 @@ int main() {
       !contains(ledger, "tests/ui/test_context_time_async_test.cpp") ||
       !contains(ledger, "tests/ui/test_context_frame_pump_test.cpp") ||
       !contains(ledger,
-                "Phase G fuller simulated input/test macro depth")) {
+                "Phase G test support closeout")) {
     return 18;
+  }
+  if (!contains(ledger, "| gpui::test | `CGPUI_TEST`") ||
+      !contains(ledger, "`CGPUI_TEST_WITH_OPTIONS`") ||
+      !contains(ledger, "typed injection of multiple isolated `TestApp&`") ||
+      !contains(ledger, "`SEED`/`ITERATIONS` environment seed planning") ||
+      !contains(ledger, "reproducible `TestRunSummary` failures") ||
+      !contains(ledger, "tests/ui/test_runner_macro_test.cpp") ||
+      !contains(ledger, "| Adapted |")) {
+    return 42;
   }
   if (!contains(ledger, "| gpui::actions! / action macro |") ||
       !contains(ledger, "`Action<T>` typed action concept") ||

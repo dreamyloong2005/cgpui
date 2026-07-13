@@ -24310,3 +24310,40 @@
   handoff; the 111-consumer dynamic handoff chain passed with zero stale Step
   664 test handoffs; focused files remain within their structure caps; no
   active debug marker remains; and `git diff --check` is clean.
+
+## 2026-07-13 Phase G Step 665 Start
+
+- Committed Step 664 as `ad7be421 feat: add test app platform services`; the
+  worktree returned to only the unrelated untracked `.vscode/` directory.
+- Read the pinned upstream GPUI test runner and established the Step 665 C++
+  boundary as ordinary test-entry compatibility, deterministic TestApp
+  injection, seed/iteration/retry controls, and reproducible failure results.
+- Added the first public runner behavior tracer for multi-TestApp injection,
+  deterministic seeds, environment overrides, retries, and final failure
+  reporting. RED failed only because `cgpui/ui/test_runner.hpp` does not exist.
+- Added the focused public runner leaf and non-template implementation. Direct
+  behavior GREEN covers fixed seeds 0/1/9, `SEED`/`ITERATIONS` overrides,
+  per-seed retries, final-failure callbacks, invalid environment values, null
+  functions, and retry-count overflow rejection.
+- Added `CGPUI_TEST`/`CGPUI_TEST_WITH_OPTIONS`; the ordinary macro executable
+  receives two fresh isolated TestApp references plus deterministic seed zero.
+- Added direct header cleanliness, thin `ui.hpp` aggregate export, dedicated
+  modular structure coverage, Xmake targets, and synchronized the GPUI test
+  ledger row from Required to Adapted with the Step 666 closeout handoff.
+- The first 19-target Windows regression exposed five TestApp previous-source
+  assertions still looking for Step 665. Advancing only those current-source
+  checks made the full focused group pass 19/19.
+- The first complete handoff chain passed 111/112; the remaining image/GIF
+  structure guard had a split stale Step 665 current-handoff literal. Updating
+  that one live assertion made the rebuilt chain pass 112/112.
+- Arch Linux WSL `.build-wsl/master` verification passes the same 19/19
+  focused TestApp/runner/ledger/header group. Post-review macro-default and
+  retry-overflow changes pass their focused Windows and WSL reruns.
+- Final Standards review keeps macro/template adaptation in the focused public
+  leaf, environment/retry mechanics in one `.cpp`, the aggregate include-only,
+  and avoids `std::function`, private runtime types, or broad-file growth.
+- Final Spec review confirms ordinary executable compatibility, arbitrary
+  multiple TestApp injection, deterministic seed injection, default/explicit/
+  environment seed plans, bounded retries, final-failure callbacks,
+  reproducible summaries, invalid configuration rejection, and fresh contexts
+  per attempt.

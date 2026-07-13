@@ -76,7 +76,7 @@ int main() {
       !contains(behavior, "first.simulate_resize(") ||
       !contains(behavior, "first.render_snapshot()") ||
       !contains(behavior, "second.try_draw_frame()")) return 5;
-  if (!contains(previous, "Step 665 GPUI-style") ||
+  if (!contains(previous, "Step 666 GPUI-style") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_rendering_control_test\")") ||
       !contains(xmake,
@@ -103,7 +103,7 @@ int main() {
       !contains(core, "Per-window `TestAppWindow` rendering control") ||
       !contains(ledger_json, "\"phase_g_step_663_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 665 GPUI-style "
-                "test runner ergonomics production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 666 GPUI-style "
+                "test support closeout audit\"")) return 9;
   return 0;
 }

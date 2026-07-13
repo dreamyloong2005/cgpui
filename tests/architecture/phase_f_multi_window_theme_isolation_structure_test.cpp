@@ -66,6 +66,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 9;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 665 GPUI-style test runner ergonomics production behavior")) return 10;
+                "\"phase_f_current_handoff\": \"Step 666 GPUI-style test support closeout audit")) return 10;
   return 0;
 }
