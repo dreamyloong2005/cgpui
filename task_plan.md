@@ -1441,6 +1441,14 @@ Windows/Linux core API is stable enough for parity work.
   assets/sources remain stable, source-wide invalidation is atomic, 800
   concurrent increments are lossless, invalid identities fail, and snapshots
   expose exact tracked/invalidation counts.
+- Completed: Phase G Step 657 adds bounded priority-aware async asset loading with owned source lifetimes, normalized cache identities, worker-thread reads, runtime-thread success, missing, and error completion, cancellation suppression, and submission diagnostics. Step 658 official image/GIF examples and asset closeout is next.
+- Step 657 boundary: request/result/callback vocabulary lives in one focused
+  public UI leaf, and one focused UI source delegates reads to the existing
+  bounded priority-aware task pool without creating a loader executor.
+- Step 657 evidence: behavior proves worker/runtime thread separation, success,
+  missing, and I/O-error outcomes, input validation, cache-key normalization,
+  cancellation completion suppression, owned source lifetime, task handles,
+  and bounded-pool diagnostics.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1456,6 +1464,14 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The Step 657 throwing-source tracer patch appended the new `+4` wait threshold after the old `+3;`, creating an invalid expression before compilation | Step 657 review regression test | Replace the two lines with one `initial + 4` threshold before running the intended behavioral RED |
+| The second Step 657 handoff run reached the asset guards with Step 658 in the split JSON prefix but the old `loading production behavior` tail | Step 657 split-handoff rewrite | The bulk script over-escaped the tail's opening source quote; patch the six exact JSON tail literals to `examples and asset closeout` while preserving historical completion text |
+| The first Step 657 full handoff chain stopped at the Windows verification guard because three nested parent-child source checks still named the Step 657 handoff | Step 657 104-target handoff chain | Advance only the Windows/WSL/cross-platform nested dynamic checks to Step 658, verify the three layers directly, then rerun the complete chain |
+| The first Step 657 structure run exited 5 because the Step 656 guard splits the Step 657 handoff across adjacent string literals | Step 657 structure RED | Match the two stable source fragments while retaining exact full completion matching across the authority documents |
+| The Step 657 empty-source RED entered Windows native crash handling and left the hidden test process alive instead of returning an error | Step 657 source validation tracer | Stop the agent-created process and validate `request.source` before key normalization or context access; use the ordinary passing executable after the guard lands |
+| The first Step 657 GREEN executable remained alive and directly reproduced a deterministic five-second timeout | Step 657 first runtime GREEN | Stop the agent-created stale process, inspect the fake application exit model and async completion ordering with the focused executable as the red-capable loop, then change one variable at a time |
+| The first Step 657 behavior build could not include `cgpui/ui/async_asset_loading.hpp` | Step 657 TDD RED | Expected public-seam failure; add the focused public leaf and UI scheduler adapter without changing the runtime queue or creating threads |
+| Step 657 async ownership discovery guessed nonexistent `include/cgpui/ui/task.hpp` | Step 657 task API audit | Read the actual focused owners `runtime_callbacks.hpp`, `runtime_handles.hpp`, and `task_priority.hpp`; keep the new asset API in its own public leaf |
 | The resumed Step 656 phrase audit incorrectly included the core API summary among the five full completion-sentence documents | Step 656 final authority audit | Follow the structure guard contract: full sentence once in roadmap, Markdown ledger, JSON ledger, task plan, and findings; core API keeps its focused `Thread-safe asset reload invalidation` summary |
 | The resumed Step 656 debug-marker audit matched historical prose containing the literal `` `[DEBUG-*]` `` in `progress.md` | Step 656 final hygiene audit | Search production, test, example, and build sources for actual `[DEBUG-` instrumentation; the corrected source audit reports zero markers |
 | `xmake run` deterministically failed to launch `phase_g_animation_cancellation_structure_test` with `execv(...exe) failed(1)` while the same executable returned 0 directly and its registered `/default` test passed | Step 656 103-target handoff chain | Treat this as an Xmake Windows run-wrapper failure, keep serial builds, and execute each built target file directly with `CGPUI_SOURCE_ROOT` set |

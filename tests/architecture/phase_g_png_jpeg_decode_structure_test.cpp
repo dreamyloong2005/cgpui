@@ -114,7 +114,7 @@ int main() {
       !contains(core, "Signature-detected PNG and JPEG decoding") ||
       !contains(ledger_json, "\"phase_g_step_652_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 657 async asset "
-                "loading production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 658 official image/GIF "
+                "examples and asset closeout\"")) return 9;
   return 0;
 }

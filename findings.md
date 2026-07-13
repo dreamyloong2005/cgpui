@@ -11580,3 +11580,73 @@
   produce revision 800 with exact diagnostics and no public synchronization or
   map details.
 - Phase G Step 656 adds thread-safe asset reload invalidation with shared source/path revisions across decoded variants, atomic single-asset and source-wide updates, saturation-safe fail-closed behavior, and observable tracking and invalidation diagnostics. Step 657 async asset loading production behavior is next.
+
+## 2026-07-13 Phase G Step 657 Async Asset Loading
+
+- No relevant `CONTEXT.md` or ADR exists in the checkout. Live ownership puts
+  `AssetSource` and encoded bytes in core, while the bounded worker pool,
+  priorities, cancellation tokens, and runtime-thread completion dispatch are
+  owned by the UI runtime.
+- The agreed public test seam is an async asset-loading request submitted from
+  `AsyncContextCapability`: background work calls `AssetSource::load(...)`,
+  completion receives a structured result on the owning runtime thread, and
+  the returned `TaskHandle` preserves existing priority and cancellation
+  behavior. Step 657 must not create a thread per load.
+- To preserve dependency direction, core must not depend on UI runtime types.
+  Request/result/callback vocabulary belongs in a focused public asset leaf,
+  while the scheduler adapter belongs in focused UI implementation source and
+  delegates to the existing bounded background-task API.
+- `AsyncAssetLoadRequest` must own a `shared_ptr<const AssetSource>` rather
+  than capture a reference because the read can outlive the submitting stack.
+  It also carries the `AssetCacheKey`; completion returns the normalized key
+  beside the source result so downstream caches do not reconstruct identity.
+- The focused implementation can share one result slot between worker and
+  runtime completion. Existing task-queue mutex synchronization provides the
+  happens-before edge, existing `TaskHandle` supplies cancellation state, and
+  existing runtime diagnostics prove work used the bounded pool. No loader-
+  owned thread, executor, mutex, or global queue is required.
+- The first executable build hangs deterministically rather than failing an
+  assertion. `FakeApplication` is not defined in the broad test support file;
+  its real owner is `tests/ui/window_runtime_platform_test_support.hpp`, so
+  runtime-exit diagnosis must compare that implementation with an existing
+  passing async test instead of searching the aggregate include alone.
+- The timeout was test setup, not loader behavior. `spawn_task(...)` registers
+  a foreground task but does not queue it for execution; existing runtime tests
+  call `complete_task(id)` before `drain_task_completions()`. Without that step
+  the loader submission never ran, and 2000 one-millisecond Windows sleeps made
+  the bounded wait look like a hang. The focused fix is to complete the setup
+  task before draining it.
+- Runtime cancellation is cooperative. An `AssetSource::load(...)` already in
+  progress cannot receive the task token, but cancelling its `TaskHandle`
+  removes/suppresses runtime completion, and runtime shutdown waits for pooled
+  work to leave safely. Step 657 should prove callback suppression and source
+  release after work finishes, not claim that arbitrary file I/O is forcibly
+  interruptible.
+- The first behavior file is 181 lines because it covers public submission,
+  worker/runtime thread identity, bounded-pool diagnostics, key normalization,
+  and argument guards. Missing/error/cancellation/lifetime outcomes should live
+  in a second focused behavior file rather than raising that file further.
+- The live roadmap has no finer Step 658 breakdown beyond final image/GIF
+  examples in the Steps 651-658 asset band. Step 657 should hand off to
+  `Step 658 official image/GIF examples and asset closeout`, allowing that last
+  step to carry both public examples and the band audit before Step 659.
+- Step 657 source sizes before structure synchronization are 36 lines for the
+  public leaf, 57 for the focused adapter, 181 for submission/thread/validation
+  behavior, and 165 for outcome/cancellation/lifetime behavior. Structure caps
+  of 45/80/200/180 preserve the module split without forcing compression.
+- Phase G Step 657 adds bounded priority-aware async asset loading with owned source lifetimes, normalized cache identities, worker-thread reads, runtime-thread success, missing, and error completion, cancellation suppression, and submission diagnostics. Step 658 official image/GIF examples and asset closeout is next.
+- Pre-commit two-axis review uses the Step 656 `HEAD` as fixed point, the Phase G
+  roadmap/Step 657 structure contract as spec, and root `AGENTS.md` plus the
+  modular-development instructions as standards. The new public leaf and
+  focused source satisfy the intended ownership split so far.
+- Spec review must still prove three fail-closed edges before acceptance:
+  throwing `AssetSource` implementations must not silently complete without a
+  callback, an empty `AsyncContextCapability` must not be dereferenced, and a
+  lower-level submission rejection must not surface as a successful empty
+  `TaskHandle`.
+- Review fixes now convert thrown source exceptions into runtime-thread
+  `asset_io_failed` results and add `AsyncContextCapability::valid()` plus
+  synchronous empty-context rejection. The lower-level empty-handle case is
+  confined to task-pool shutdown racing a valid runtime call; normal valid
+  runtime contexts keep the pool accepting, so it remains a runtime lifecycle
+  invariant rather than a new asset API error surface.

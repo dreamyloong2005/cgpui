@@ -23922,3 +23922,80 @@
   the Step 657 handoff, key files are 55/112/113/116 lines within their caps,
   no source `[DEBUG-` marker remains, and `git diff --check` is clean. WSL
   remains unavailable, so no Linux result is claimed for this slice.
+
+## 2026-07-13 Phase G Step 657 Async Asset Loading
+
+- Committed Step 656 as `f3c27d07 feat: add asset reload invalidation`; only
+  unrelated `.vscode/` remained untracked afterward.
+- Confirmed the public seam before TDD: a focused async asset-loading leaf
+  submits source reads through `AsyncContextCapability`, owns source lifetime,
+  preserves cache identity and priority, and completes on the runtime thread
+  through the existing bounded task pool.
+- Added the first behavior tracer before production code. It requires one
+  successful high-priority source read on a worker, normalized key plus bytes
+  on the owning runtime thread, observable task-pool completion, and a
+  completed existing `TaskHandle`.
+- After debug reconfiguration, the focused build reached the intended RED at
+  `async_asset_loading_test.cpp(1)`: the new public
+  `cgpui/ui/async_asset_loading.hpp` leaf did not exist.
+- The minimal focused implementation compiled and linked, but the first test
+  run left the executable alive without a report. A direct hidden-process
+  repro also exceeded a five-second timeout, proving a deterministic runtime
+  hang rather than an Xmake reporting issue; the agent-created stale process
+  was stopped before diagnosis continued.
+- Diagnosis found the test spawned its setup as a foreground task without
+  calling `complete_task(id)` before draining. Adding that required scheduling
+  transition made the same direct five-second feedback loop exit 0; no runtime
+  production change was needed.
+- The first vertical slice is GREEN: `load_asset_async(...)` owns the source,
+  delegates to the existing priority-aware bounded worker pool, and moves the
+  keyed source result into a completion callback on the owning runtime thread.
+- The second tracer rejects a forged zero-source cache key before queueing. It
+  first exited 1 against the permissive implementation, then returned to 0
+  after the adapter reused `make_asset_cache_key(...)` for validation and
+  canonicalization.
+- The third tracer rejects an empty completion before queueing. It first exited
+  1, then returned to 0 after `load_asset_async(...)` added a synchronous
+  `invalid_argument` result with a focused diagnostic message.
+- The empty-source tracer demonstrated the missing guard by entering Windows
+  native crash handling before it could touch the intentionally empty context.
+  The hidden agent-created process was terminated; this crash-shaped RED is
+  not reused after the source precondition is fixed.
+- Added the outcome behavior target; its first build and direct run passed,
+  proving missing/error delivery, cancellation callback suppression, and
+  source ownership until pooled work finishes.
+- Added a dedicated self-contained header-cleanliness target plus the Step 657
+  structure guard. After correcting the prior guard's split-string handoff
+  match, the structure test reached the intended prelude RED at exit 6.
+- Added prelude and prelude-cleanliness coverage, synchronized the five
+  authority documents, public vocabulary, core parity summary, image-assets
+  ledger row, 12 JSON evidence sources, and the Step 658 image/GIF examples
+  plus asset-closeout handoff. The Step 657 structure guard is GREEN.
+- Advanced the dynamic JSON handoff in exactly 103 historical consumers: 97
+  continuous replacements and six split-string asset-guard replacements, with
+  historical Step completion sentences unchanged.
+- The full handoff audit exposed three nested platform checks and six split
+  JSON tail literals outside the first mechanical replacement. After targeted
+  fixes and direct layer verification, the complete chain passed 104/104.
+- Pre-commit Standards/Spec review found two real fail-closed gaps. A throwing
+  source previously produced a completed task with no callback; a new RED at
+  exit 2 now passes after exceptions are converted to `asset_io_failed`.
+  A default empty async context previously had no safe state query; a compile
+  RED now passes with `AsyncContextCapability::valid()` and synchronous context
+  rejection. The focused source remains 82 lines.
+- Review-adjusted focused loader/outcome/structure/header targets pass 5/5.
+  Independent ledger, vocabulary, UI/prelude header, task pool, priority,
+  cancellation, and runtime scheduling regressions pass 8/8.
+- Two-axis review closes with no remaining Standards finding. The two concrete
+  Spec findings were fixed and regression-tested; task-pool submission refusal
+  remains governed by the existing valid-runtime lifecycle invariant rather
+  than a reachable asset-loader state.
+- Final current-source structure verification passes all five existing
+  `async_context.hpp` consumers plus the new Step 657 guard, and the complete
+  dynamic handoff chain passes 104/104 after review fixes.
+- Final audits pass: the exact Step 657 sentence occurs once in each of five
+  authority documents, JSON parses with 12 present sources and the Step 658
+  handoff, key files are 36/82/200/186/124 lines within their caps, no source
+  `[DEBUG-` marker or continuous old handoff remains, and `git diff --check` is
+  clean. `wsl.exe --list --verbose` still reports no installed distribution
+  and the Lxss key has no distro entry, so no Linux result is claimed.

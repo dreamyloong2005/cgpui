@@ -129,6 +129,8 @@ int main() {
   cgpui::AssetReloadState prelude_reloads;
   const auto prelude_reload_key = prelude_reloads.key(
       cgpui::AssetSourceId{1}, "prelude.bin", cgpui::AssetCacheKind::bytes);
+  cgpui::AsyncAssetLoadRequest prelude_async_asset_request;
+  cgpui::AsyncAssetLoadCallback prelude_async_asset_callback;
   (void)view;
   (void)options;
   return root_id.value != 0 && tree.root_id() == root_id &&
@@ -138,6 +140,8 @@ int main() {
                  prelude_asset_key && prelude_asset_key->revision == 0 &&
                  prelude_reload_key &&
                  prelude_reloads.snapshot().tracked_assets == 1 &&
+                 prelude_async_asset_request.source == nullptr &&
+                 !prelude_async_asset_callback &&
                  window_descriptor.title == "Prelude Window" &&
                  window_descriptor.size.height == 13.0F &&
                  scroll != nullptr && scroll->state() == &scroll_state &&

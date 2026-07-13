@@ -18,6 +18,7 @@
 #include "cgpui/renderer/renderer.hpp"
 #include "cgpui/renderer/svg_asset_decode.hpp"
 #include "cgpui/ui/element.hpp"
+#include "cgpui/ui/async_asset_loading.hpp"
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/scroll.hpp"
 #include "cgpui/ui/style.hpp"

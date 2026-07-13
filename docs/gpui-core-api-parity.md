@@ -72,6 +72,9 @@ desktop integration surfaces remain separate future work.
   path, kind, and revision with deterministic FNV-1a hashing.
   Thread-safe asset reload invalidation advances shared source/path revisions
   atomically across decoded variants with saturation and diagnostics.
+  Bounded async asset loading owns source lifetimes, validates cache identity,
+  reads on priority-aware workers, and completes success, missing, or error
+  results on the owning runtime thread with cancellation suppression.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,
@@ -160,8 +163,7 @@ desktop integration surfaces remain separate future work.
 
 - Rich theme inheritance, dynamic runtime theme switching, and full design
   system integration.
-- Async asset loading,
-  and final image/GIF public examples.
+- Final image/GIF public examples.
 - Rich text editing, selection handles, undo/redo stacks, complex shaping,
   bidi text, emoji/color glyphs, and platform input-method depth beyond the
   current skeletons.

@@ -152,6 +152,10 @@ remain outside this freeze.
 - `AssetReloadState`
 - `AssetReloadState::invalidate(...)`
 - `AssetReloadState::invalidate_source(...)`
+- `AsyncAssetLoadRequest`
+- `AsyncAssetLoadResult`
+- `AsyncAssetLoadCallback`
+- `load_asset_async(...)`
 
 Phase G Step 643 adds typed scalar from/to transitions over the existing
 deterministic animation scheduler. Direct runtime, runtime-context, and

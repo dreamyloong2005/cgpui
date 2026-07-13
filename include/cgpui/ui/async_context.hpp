@@ -20,6 +20,7 @@ class AsyncContextCapability {
   constexpr explicit AsyncContextCapability(
       const WindowRuntimeContext& context)
       : context_(&context) {}
+  [[nodiscard]] constexpr bool valid() const { return context_ != nullptr; }
 
   void defer(DeferredCallback callback) const;
   [[nodiscard]] TimerId schedule_timer(

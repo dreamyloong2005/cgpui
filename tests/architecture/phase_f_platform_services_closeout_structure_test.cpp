@@ -70,6 +70,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 6;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 657 async asset loading production behavior")) return 7;
+                "\"phase_f_current_handoff\": \"Step 658 official image/GIF examples and asset closeout")) return 7;
   return 0;
 }

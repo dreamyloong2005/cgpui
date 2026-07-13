@@ -115,7 +115,7 @@ int main() {
       !contains(core, "root-confined file-backed asset loading") ||
       !contains(ledger_json, "\"phase_g_step_651_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 657 async asset "
-                "loading production behavior\"")) return 10;
+                "\"phase_f_current_handoff\": \"Step 658 official image/GIF "
+                "examples and asset closeout\"")) return 10;
   return 0;
 }

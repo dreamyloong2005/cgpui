@@ -106,6 +106,6 @@ int main() {
       !contains(core, "official animation and opacity examples") ||
       !contains(ledger_json, "\"phase_g_step_650_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 657 async asset loading production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 658 official image/GIF examples and asset closeout\"")) return 8;
   return 0;
 }

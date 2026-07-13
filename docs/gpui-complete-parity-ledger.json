@@ -3431,7 +3431,23 @@
       "xmake.lua"
     ],
     "phase_g_step_656_remaining_gap": "Step 657 async asset loading production behavior",
-    "phase_f_current_handoff": "Step 657 async asset loading production behavior"
+    "phase_g_step_657_surface": "Phase G Step 657 adds bounded priority-aware async asset loading with owned source lifetimes, normalized cache identities, worker-thread reads, runtime-thread success, missing, and error completion, cancellation suppression, and submission diagnostics. Step 658 official image/GIF examples and asset closeout is next.",
+    "phase_g_step_657_sources": [
+      "include/cgpui/ui/async_asset_loading.hpp",
+      "include/cgpui/prelude.hpp",
+      "src/ui/async_asset_loading.cpp",
+      "src/ui/runtime_task_pool.cpp",
+      "src/ui/runtime_task_priority.cpp",
+      "tests/assets/async_asset_loading_test.cpp",
+      "tests/assets/async_asset_loading_outcome_test.cpp",
+      "tests/architecture/phase_g_async_asset_loading_structure_test.cpp",
+      "tests/header_cleanliness/async_asset_loading_header_cleanliness.cpp",
+      "tests/header_cleanliness/prelude_header_cleanliness.cpp",
+      "include/cgpui/ui/async_context.hpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_657_remaining_gap": "Step 658 official image/GIF examples and asset closeout",
+    "phase_f_current_handoff": "Step 658 official image/GIF examples and asset closeout"
   },
   "categories": [
     "application_and_app_context",
