@@ -79,6 +79,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 10;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 663 GPUI-style rendering control production behavior")) return 11;
+                "\"phase_f_current_handoff\": \"Step 664 GPUI-style platform service fake production behavior")) return 11;
   return 0;
 }

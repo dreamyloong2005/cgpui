@@ -11845,3 +11845,23 @@
 - Final Spec review proves high-to-low priority, FIFO within normal priority,
   nested completion in the same drain, invalid/repeated id rejection, parked
   drain integration, and identical Windows/Arch Linux WSL behavior.
+
+## 2026-07-13 Phase G Step 663 Rendering Control
+
+- Rendering control is window-scoped: every TestApp additional window owns a
+  distinct root view, renderer, frame index, viewport, and invalidation state.
+  The public seam belongs on `TestAppWindow`, not TestApp.
+- Reuse the existing additional-window `try_draw_frame_for_record` production
+  path. The private test renderer/frame should expose a stable snapshot of
+  begin, clear, draw, present, and resize activity without widening the
+  production Renderer interface.
+- Pinned upstream `TestWindow::simulate_resize(...)` confirms resize belongs in
+  the same public window-scoped seam; the fake platform must update its own
+  framebuffer/scale state before forwarding `WindowResized` to the runtime.
+- Phase G Step 663 adds per-window TestApp rendering control with resize and redraw simulation, fallible and throwing frame draws, private renderer/frame snapshots, real additional-window rendering, and cross-window counter isolation. Step 664 GPUI-style platform service fake production behavior is next.
+- Final Standards review keeps public controls in the focused TestApp leaf,
+  non-template bodies in `test_app_rendering.cpp`, fake renderer/platform state
+  private, and production frame routing on `try_draw_frame_for_record`.
+- Final Spec review proves resize geometry/scale propagation, redraw requests,
+  fallible and throwing direct draws, begin/clear/rect/present counters, and
+  two-window renderer isolation on Windows and Arch Linux WSL.

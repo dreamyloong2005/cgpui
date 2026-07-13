@@ -93,6 +93,9 @@ desktop integration surfaces remain separate future work.
 - Deterministic `TestApp` async control manually completes runtime tasks,
   drains completions by priority and FIFO order, processes nested ready tasks,
   rejects invalid/repeated ids, and reuses the production queue and task pool.
+- Per-window `TestAppWindow` rendering control simulates resize and redraw,
+  exposes fallible and throwing frame draws, runs the production additional-
+  window render path, and reports isolated private renderer/frame snapshots.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,

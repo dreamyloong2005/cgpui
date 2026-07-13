@@ -3513,7 +3513,20 @@
       "xmake.lua"
     ],
     "phase_g_step_662_remaining_gap": "Step 663 GPUI-style rendering control production behavior",
-    "phase_f_current_handoff": "Step 663 GPUI-style rendering control production behavior"
+    "phase_g_step_663_surface": "Phase G Step 663 adds per-window TestApp rendering control with resize and redraw simulation, fallible and throwing frame draws, private renderer/frame snapshots, real additional-window rendering, and cross-window counter isolation. Step 664 GPUI-style platform service fake production behavior is next.",
+    "phase_g_step_663_sources": [
+      "include/cgpui/ui/test_app.hpp",
+      "src/ui/test_app_internal.hpp",
+      "src/ui/test_app_platform.cpp",
+      "src/ui/test_app_renderer.cpp",
+      "src/ui/test_app_rendering.cpp",
+      "src/ui/runtime_renderer_frame_results.cpp",
+      "tests/ui/test_app_rendering_control_test.cpp",
+      "tests/architecture/phase_g_test_app_rendering_control_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_663_remaining_gap": "Step 664 GPUI-style platform service fake production behavior",
+    "phase_f_current_handoff": "Step 664 GPUI-style platform service fake production behavior"
   },
   "categories": [
     "application_and_app_context",

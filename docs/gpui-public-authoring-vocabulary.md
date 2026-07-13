@@ -107,6 +107,11 @@ Phase G Step 662 adds `TestApp::complete_task(...)` and
 creation while the app controls deterministic priority/FIFO completion and
 uses parked draining for nested ready work.
 
+Phase G Step 663 adds `TestAppWindow::simulate_resize(...)`,
+`TestAppWindow::try_draw_frame()`, redraw and throwing draw controls, plus
+`TestWindowRenderSnapshot`. Renderer/frame counts are window-scoped and come
+from the private deterministic renderer.
+
 ## Animation vocabulary
 
 - `AnimationSpring`

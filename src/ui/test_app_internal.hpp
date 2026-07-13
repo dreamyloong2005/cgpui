@@ -28,6 +28,8 @@ class TestPlatformWindow final : public PlatformWindow {
 
  private:
   WindowDescriptor descriptor_;
+  Size framebuffer_size_;
+  DpiScale scale_{1.0F};
   PlatformEventCallback callback_;
 };
 
@@ -47,15 +49,23 @@ class TestPlatformApplication final : public PlatformApplication {
 
 class TestRenderFrame final : public RenderFrame {
  public:
+  explicit TestRenderFrame(TestWindowRenderSnapshot& snapshot);
   void clear(Color color) override;
   void draw_rect(const SolidRect& rect) override;
   Result<void> present() override;
+
+ private:
+  TestWindowRenderSnapshot* snapshot_ = nullptr;
 };
 
 class TestRenderer final : public Renderer {
  public:
   Result<void> resize(Size framebuffer_size, DpiScale scale) override;
   Result<std::unique_ptr<RenderFrame>> begin_frame() override;
+  [[nodiscard]] TestWindowRenderSnapshot snapshot() const;
+
+ private:
+  TestWindowRenderSnapshot snapshot_;
 };
 
 class TestRootView final : public View {
@@ -75,6 +85,10 @@ struct TestAppState {
   [[nodiscard]] bool cancel_timer(TimerId id);
   [[nodiscard]] bool complete_task(TaskId id);
   void drain_task_completions();
+  void request_redraw(WindowRuntimeId runtime_id);
+  [[nodiscard]] Result<void> try_draw_frame(WindowRuntimeId runtime_id);
+  [[nodiscard]] TestWindowRenderSnapshot render_snapshot(
+      WindowRuntimeId runtime_id) const;
 
   TestPlatformApplication application;
   TestRootView root_view;

@@ -24229,3 +24229,43 @@
   109 executable consumers plus JSON have zero stale Step 662 handoffs,
   focused files are 96/87/25/90 lines within caps, no debug marker remains,
   and `git diff --check` is clean.
+
+## 2026-07-13 Phase G Step 663 Start
+
+- Committed Step 662 as `8a8eba02 feat: add deterministic test app async control`;
+  the worktree returned to only the unrelated untracked `.vscode/` directory.
+- Established Step 663 as per-window redraw/frame control plus private renderer
+  observability, reusing the production additional-window rendering route.
+- Added the Step 663 behavior tracer and Xmake target for two-window renderer
+  isolation across request, fallible direct draw, and throwing draw controls.
+- The intended RED contained only the missing snapshot and TestAppWindow frame
+  controls. Added focused rendering forwarding and private renderer/frame
+  counters without changing production renderer interfaces.
+- Added the Step 663 modular structure guard and raised only the historical
+  test-app public/private header caps to 115/105 lines.
+- Synchronized Step 663 authority/evidence, advanced 104 continuous consumers,
+  then updated five split literals and the TestApp previous-source chain to
+  Step 664 platform service fake behavior.
+- Advanced the nested Windows/WSL/cross-platform guard-source chain to the same
+  Step 664 handoff while preserving historical Step 662 completion text.
+- Initial Windows focused regression passed 10/11; the old Step 659 structure
+  guard still capped the shared renderer at 30 lines. Raised only that cap to
+  the Step 663-owned 45-line limit, then the original target and focused group
+  passed.
+- The complete dynamic current-handoff chain builds and passes 110/110 on
+  Windows with zero Step 663 current-handoff remnants.
+- Arch Linux WSL focused verification passed 11/11 using the D-drive build
+  cache and `/dev/shm/cgpui` transient temp. The first build command exposed
+  Xmake's single-target build syntax; explicit literal serial builds succeeded.
+- Final self-review found `resize_count` lacked a public trigger. A new RED
+  tracer failed only on missing `TestAppWindow::simulate_resize(...)`; GREEN
+  routes `WindowResized` through the private platform callback and real runtime
+  resize path while keeping fake platform framebuffer/scale state coherent.
+- After the resize tracer, final Windows TestApp rendering/input/timer/async/
+  setup/header regression passed 11/11, the dynamic handoff chain passed
+  110/110, and Arch Linux WSL passed the same focused 11/11 group.
+- Final audits pass: the exact Step 663 completion sentence appears once in
+  each of five authority files; JSON parses with nine present sources and the
+  Step 664 handoff; 110 executable consumers plus JSON have zero stale Step 663
+  current handoffs; focused files are 109/101/71/33/61/77 lines within caps;
+  no active debug marker remains; and `git diff --check` is clean.

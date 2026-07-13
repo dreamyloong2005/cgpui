@@ -7,7 +7,9 @@ namespace cgpui::detail {
 TestPlatformWindow::TestPlatformWindow(
     WindowDescriptor descriptor,
     PlatformEventCallback callback)
-    : descriptor_(std::move(descriptor)), callback_(std::move(callback)) {}
+    : descriptor_(std::move(descriptor)),
+      framebuffer_size_(descriptor_.size),
+      callback_(std::move(callback)) {}
 
 NativeSurfaceHandle TestPlatformWindow::native_surface() const {
   return Win32SurfaceHandle{};
@@ -15,8 +17,8 @@ NativeSurfaceHandle TestPlatformWindow::native_surface() const {
 
 WindowState TestPlatformWindow::state() const {
   return WindowState{
-      .framebuffer_size = descriptor_.size,
-      .scale = DpiScale{1.0F},
+      .framebuffer_size = framebuffer_size_,
+      .scale = scale_,
       .close_requested = false};
 }
 
@@ -38,6 +40,10 @@ void TestPlatformWindow::set_ime_text_input_placement(
     std::optional<ImeTextInputPlacement>) {}
 
 void TestPlatformWindow::dispatch_event(const PlatformEvent& event) {
+  if (const auto* resized = std::get_if<WindowResized>(&event)) {
+    framebuffer_size_ = resized->size;
+    scale_ = resized->scale;
+  }
   if (callback_) callback_(event);
 }
 

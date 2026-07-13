@@ -164,7 +164,7 @@ int main() {
       contains(core_parity, "task priority scheduling") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 663 GPUI-style rendering control production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 664 GPUI-style platform service fake production behavior\"")) {
     return 14;
   }
   return 0;

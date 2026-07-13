@@ -789,6 +789,7 @@ consume C: drive space again.
 - Phase G Step 660 routes GPUI-style keyboard, key-sequence, pointer, scroll, activation, window-focus, and element-focus simulation through TestAppWindow and the private test-platform callback, with window-scoped input snapshots and invalid grammar rejection. Step 661 GPUI-style timer control production behavior is next.
 - Phase G Step 661 adds deterministic TestApp timer control with a fixed private platform clock, explicit time advancement, parked-work draining, combined advance-and-drain behavior, timer cancellation, and runnable hidden-parent wakeups. Step 662 GPUI-style async control production behavior is next.
 - Phase G Step 662 adds deterministic TestApp async control for manual task completion, priority-ordered and FIFO draining, nested ready-task completion, invalid or repeated id rejection, and parked draining without a test-only executor. Step 663 GPUI-style rendering control production behavior is next.
+- Phase G Step 663 adds per-window TestApp rendering control with resize and redraw simulation, fallible and throwing frame draws, private renderer/frame snapshots, real additional-window rendering, and cross-window counter isolation. Step 664 GPUI-style platform service fake production behavior is next.
 
 ## Categories
 

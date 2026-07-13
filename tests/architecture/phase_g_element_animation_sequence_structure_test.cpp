@@ -125,6 +125,6 @@ int main() {
   if (!contains(vocabulary, "`ElementAnimationStage`") ||
       !contains(core_parity, "indexed one-shot animation chains") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 663 GPUI-style rendering control production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 664 GPUI-style platform service fake production behavior\"")) return 9;
   return 0;
 }

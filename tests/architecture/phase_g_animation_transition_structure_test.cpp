@@ -126,6 +126,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationTransition`") ||
       !contains(core_parity, "typed scalar animation transitions") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 663 GPUI-style rendering control production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 664 GPUI-style platform service fake production behavior\"")) return 9;
   return 0;
 }

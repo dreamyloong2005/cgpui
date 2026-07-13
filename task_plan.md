@@ -1474,6 +1474,11 @@ Windows/Linux core API is stable enough for parity work.
   and parked tasks through the ordinary runtime context; TestApp alone controls
   completion and drain, with exact order and negative id behavior guarded by a
   focused async source and modular structure test.
+- Completed: Phase G Step 663 adds per-window TestApp rendering control with resize and redraw simulation, fallible and throwing frame draws, private renderer/frame snapshots, real additional-window rendering, and cross-window counter isolation. Step 664 GPUI-style platform service fake production behavior is next.
+- Step 663 evidence: two public test windows render distinct rectangle views
+  through resize, redraw request, fallible direct draw, and throwing draw
+  controls; private snapshots prove resize/begin/clear/draw/present counts and
+  cross-window isolation.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1489,6 +1494,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 663 WSL build invocation passed multiple target names to `xmake build`, which accepts one target and rejected the second as an invalid argument | Step 663 WSL focused verification | Keep task-first syntax but issue one explicit literal build command per target, then run the multi-target test command |
+| The first Step 663 Windows regression passed 10/11 because the historical Step 659 guard retained a 30-line cap for the shared test renderer after Step 663 added counters | Step 663 focused regression | Raise only the shared renderer cap to the Step 663-owned 45-line limit and rerun the original failing target plus the full focused group |
+| The first Step 663 split-handoff audit omitted a space in `Write-Output $f`, producing PowerShell command-not-found errors for each match | Step 663 handoff synchronization | Correct the read-only audit syntax, identify five split literals, and update them plus the TestApp previous-source chain to Step 664 |
 | Two Step 662 FIFO-extension patches were rejected by malformed multi-file hunk separators | Step 662 same-priority FIFO coverage | Split the focused test edit from planning-log edits and apply exact localized hunks; neither rejected patch made a partial change |
 | The first Step 662 implementation patch was rejected because adjacent file hunks were not separated after a context line | Step 662 async forwarding implementation | Reissue the same scoped changes with complete per-file hunks; no partial repository edit occurred |
 | The first Step 662 RED tracer tried to obtain a runtime context from `Window`, which is intentionally not public | Step 662 parked-task setup | Dispatch a second public keystroke and create the parked task inside the view's established `WindowRuntimeContext` event seam |

@@ -18,6 +18,14 @@ namespace detail {
 struct TestAppState;
 }
 
+struct TestWindowRenderSnapshot {
+  std::size_t resize_count = 0;
+  std::size_t begin_frame_count = 0;
+  std::size_t clear_count = 0;
+  std::size_t draw_rect_count = 0;
+  std::size_t present_count = 0;
+};
+
 class TestAppWindow {
  public:
   [[nodiscard]] WindowRuntimeId runtime_id() const;
@@ -42,6 +50,11 @@ class TestAppWindow {
   void dispatch_window_focus(bool focused) const;
   void focus(ElementId element_id) const;
   void release_focus(ElementId element_id) const;
+  void simulate_resize(Size framebuffer_size, DpiScale scale) const;
+  void request_redraw() const;
+  [[nodiscard]] Result<void> try_draw_frame() const;
+  void draw_frame() const;
+  [[nodiscard]] TestWindowRenderSnapshot render_snapshot() const;
 
   template <typename T>
   [[nodiscard]] T* root_view_as() {
