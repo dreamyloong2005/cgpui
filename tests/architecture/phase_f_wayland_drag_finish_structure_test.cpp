@@ -54,6 +54,6 @@ int main() {
       "Phase F Step 574 completes Wayland drop offers with exactly-once finish followed by immediate destroy, destroys rejected and pre-v3 offers without finish, and observes lifecycle completion before leave in focused test state. Step 575 Win32 OLE text drag payload production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 7;
-  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 671 architecture and header test matrix coverage")) return 8;
+  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup")) return 8;
   return 0;
 }

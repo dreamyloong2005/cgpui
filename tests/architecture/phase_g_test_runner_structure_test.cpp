@@ -74,7 +74,7 @@ int main() {
   if (!contains(cleanliness, "#include \"cgpui/ui/test_runner.hpp\"") ||
       !contains(aggregate, "#include \"cgpui/ui/test_runner.hpp\"") ||
       !contains(previous,
-                "Step 671 architecture and header test matrix coverage")) {
+                "Step 672 reproducible dependency setup")) {
     return 5;
   }
   if (!contains(xmake, "target(\"phase_g_test_runner_test\")") ||
@@ -103,7 +103,6 @@ int main() {
       !contains(core, "GPUI-style C++ test runner") ||
       !contains(ledger_json, "\"phase_g_step_665_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 671 architecture and header test "
-                "matrix coverage\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup\"")) return 9;
   return 0;
 }

@@ -24649,3 +24649,26 @@
 - Sequential Standards and Spec reviews report no blocking findings. The only
   Spec wording ambiguity was corrected so registration smokes and native display
   flows are recorded separately and accurately.
+
+## 2026-07-14 Phase G Step 671 Architecture And Header Matrix
+
+- Added `scripts/ci/architecture-header-targets.txt` with 142 unique target/source
+  mappings covering every architecture and header-cleanliness source, plus
+  focused Windows/Linux executors, two workflow jobs, the structure guard, and
+  Xmake registration.
+- Windows and Arch Linux WSL prepared Release roots each build all 142 targets
+  serially. Before authority synchronization, both 142-test reports pass every
+  existing target and fail only the new guard at deliberate exit `10`.
+- Synchronized the exact Step 671 completion sentence across roadmap, Markdown
+  ledger, JSON ledger, task plan, and findings; added the six-source JSON
+  inventory and moved `phase_f_current_handoff` to Step 672.
+- Updated all 118 live handoff consumers while preserving historical completion
+  sentences. The target set consists of 113 manifest-derived architecture/header
+  targets plus five explicit api-parity closeout targets.
+- Return-code-guided cascading checks advanced Windows full-debug, WSL full-debug,
+  cross-platform execution, and the TestApp/test-runner predecessor chain. Final
+  Windows handoff verification passes 118/118.
+- Phase G Step 671 adds Windows and Linux CI architecture/header matrices that serially build every registered architecture and header-cleanliness target, execute all 142 tests from a shared source-owned manifest, and fail closed on missing, duplicate, unmapped, or unregistered coverage. Step 672 reproducible dependency setup is next.
+- Final synchronized prepared-root reruns pass 142/142 on Windows and 142/142 on
+  Arch Linux WSL. Sequential Standards and Spec reviews report no blocking
+  findings.

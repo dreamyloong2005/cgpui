@@ -107,3 +107,28 @@ jobs:
           sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev libwayland-dev mesa-vulkan-drivers meson ninja-build python3-venv weston
       - name: Build and run Linux examples and smoke tests
         run: bash ./scripts/ci/linux-example-smoke.sh
+
+  windows-architecture-header:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+      - name: Build and run Windows architecture and header tests
+        shell: pwsh
+        run: ./scripts/ci/windows-architecture-header.ps1
+
+  linux-architecture-header:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev libwayland-dev meson ninja-build python3-venv
+      - name: Build and run Linux architecture and header tests
+        run: bash ./scripts/ci/linux-architecture-header.sh

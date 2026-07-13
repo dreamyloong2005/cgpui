@@ -1527,6 +1527,19 @@ Windows/Linux core API is stable enough for parity work.
   build and run all 21 public example targets serially, pass four animation/
   opacity/image/GIF registration smokes, and pass four native first-frame,
   resize, close, and demo-interaction flows on Win32 and Wayland/Vulkan.
+- Active: Phase G Step 671 adds one source-owned manifest for every architecture
+  and header-cleanliness target, focused Windows and Linux matrix executors, two
+  workflow jobs, and a dedicated structure guard before handing off to Step 672
+  reproducible dependency setup.
+- Completed: Phase G Step 671 adds Windows and Linux CI architecture/header matrices that serially build every registered architecture and header-cleanliness target, execute all 142 tests from a shared source-owned manifest, and fail closed on missing, duplicate, unmapped, or unregistered coverage. Step 672 reproducible dependency setup is next.
+- Step 671 evidence: Windows and Arch Linux WSL Release prepared roots each build
+  all 142 registered targets serially; both 142-test runs pass every existing
+  target and stop only at the new guard's authority-only RED exit `10` before
+  the synchronized completion records are applied. After authority sync, the
+  focused guard passes 1/1 and the complete 118-consumer handoff chain passes
+  118/118 with only the two historical Step 671 completion references retained.
+  Final synchronized matrix reruns pass 142/142 on Windows and 142/142 on Arch
+  Linux WSL; Standards and Spec review report no blocking findings.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1542,6 +1555,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 671 dynamic mapping found only 113 targets for 118 handoff consumers | Step 671 complete handoff verification | Compare consumer sources with the architecture/header manifest; the five missing sources are intentional `tests/api_parity` closeout consumers, so add their explicit Xmake targets to the 113 manifest-derived targets and require the corrected 118/118 mapping before execution |
+| The first Step 671 complete chain passed 115/118, then later runs exposed WSL/full cross-platform and TestApp timer/async/rendering/platform-service predecessor checks | Step 671 cascading handoff verification | Advance only the live predecessor assertions to Step 672 in return-code order, preserve the Step 670 and Step 671 completion constants, then prove the final 118-test chain and zero dynamic Step 671 references |
+| The first two-file Step 671 predecessor patch used a wider WSL context that did not match the live source and failed without editing | Step 671 focused predecessor repair | Read the exact minimal lines and patch only the stale string literal in each file; both focused targets then build and pass before the full-chain rerun |
 | The third Step 670 chain run exposed cross-platform and TestApp async predecessors; a complete remaining-text scan also found rendering and platform-services at the same nested seam | Step 670 final cascading handoff audit | Separate four dynamic predecessor checks from the split historical Step 669 completion constant, advance all four to Step 671, and require zero continuous old handoff text before the final 117-test run |
 | After fixing the first three Step 670 nested references, the next 117-test run exposed WSL full-debug and TestApp timer guards reading those newly advanced predecessor sources | Step 670 cascading handoff verification | Advance the next two nested source assertions to Step 671 and continue the full executable chain until no downstream predecessor remains stale |
 | The first 117-test Step 670 dynamic run passed 114/117; Windows full-debug, TestApp simulated-input, and test-runner guards still required Step 670 text from nested predecessor sources | Step 670 complete handoff verification | Use the three return codes as a focused loop, advance only those nested predecessor assertions to Step 671, preserve historical completion sentences, and rerun the three targets plus the entire chain |

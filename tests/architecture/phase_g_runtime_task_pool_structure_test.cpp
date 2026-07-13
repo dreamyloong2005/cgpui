@@ -131,7 +131,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 671 architecture and header test matrix coverage\"")) {
+          "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup\"")) {
     return 11;
   }
   return 0;

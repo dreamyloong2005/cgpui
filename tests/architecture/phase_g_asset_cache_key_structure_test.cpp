@@ -107,6 +107,6 @@ int main() {
       !contains(core, "Stable decoded-asset cache keys") ||
       !contains(ledger_json, "\"phase_g_step_655_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 671 architecture and header test matrix coverage\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup\"")) return 8;
   return 0;
 }

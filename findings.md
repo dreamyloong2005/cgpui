@@ -12295,3 +12295,32 @@
   resize, close, and interaction are the real Win32/Wayland display flows. Both
   platform matrices, prepared-root reuse, workflow dependencies, authority
   records, and the Step 671 handoff are proven.
+
+## 2026-07-14 Phase G Step 671 Architecture And Header Matrix
+
+- The shared manifest contains 142 one-to-one `target|source` entries: every
+  current `tests/architecture/*.cpp` and `tests/header_cleanliness/*.cpp` source
+  appears exactly once and maps to an Xmake target that registers that source.
+- Focused Windows and Linux executors reuse the prepared package roots, restore
+  their isolated Xmake dependency environment, build every manifest target with
+  `-j 1`, and execute the exact 142-target filter set in one serial test run.
+- Windows and Arch Linux WSL each build all 142 targets successfully. Both test
+  reports pass 141 existing targets and fail only the new Step 671 guard at its
+  deliberate authority-only exit `10`, proving the implementation and coverage
+  contract before completion records are synchronized.
+- Phase G Step 671 adds Windows and Linux CI architecture/header matrices that serially build every registered architecture and header-cleanliness target, execute all 142 tests from a shared source-owned manifest, and fail closed on missing, duplicate, unmapped, or unregistered coverage. Step 672 reproducible dependency setup is next.
+- Authority synchronization makes the focused Step 671 guard pass 1/1. The live
+  handoff inventory is 118 consumers: 113 architecture/header sources from the
+  manifest plus five `tests/api_parity` closeout targets outside that matrix.
+- The cascading predecessor audit advances only live Step 671 checks through
+  Windows full-debug, WSL full-debug, cross-platform execution, and TestApp
+  simulated-input/timer/async/rendering/platform-services/test-runner guards.
+  The final Windows dynamic chain passes 118/118; the only remaining Step 671
+  test-source references are the Step 670 handoff sentence and Step 671
+  completion constant.
+- Final synchronized prepared-root reruns pass the complete architecture/header
+  matrix directly on both platforms: Windows 142/142 and Arch Linux WSL
+  142/142. Standards review finds the manifest, focused platform executors,
+  orchestration-only workflow jobs, dedicated guard, and thin Xmake registration
+  consistent with the modularity rules. Spec review finds no missing coverage,
+  scope creep, or incorrect behavior.
