@@ -122,6 +122,6 @@ int main() {
       !contains(core, "Bounded SVG asset decoding") ||
       !contains(ledger_json, "\"phase_g_step_654_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 670 examples and smoke test matrix coverage\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 671 architecture and header test matrix coverage\"")) return 9;
   return 0;
 }

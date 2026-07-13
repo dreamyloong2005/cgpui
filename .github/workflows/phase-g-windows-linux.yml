@@ -82,3 +82,28 @@ jobs:
           name: cgpui-linux-release
           path: build/phase-g-ci/linux-release/package
           if-no-files-found: error
+
+  windows-examples-smoke:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+      - name: Build and run Windows examples and smoke tests
+        shell: pwsh
+        run: ./scripts/ci/windows-example-smoke.ps1
+
+  linux-examples-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
+      - name: Install Linux display and build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev libwayland-dev mesa-vulkan-drivers meson ninja-build python3-venv weston
+      - name: Build and run Linux examples and smoke tests
+        run: bash ./scripts/ci/linux-example-smoke.sh

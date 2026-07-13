@@ -112,7 +112,7 @@ int main() {
       !contains(core, "Standalone `TestApp` and `TestAppWindow`") ||
       !contains(ledger_json, "\"phase_g_step_659_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 670 examples and smoke test "
+                "\"phase_f_current_handoff\": \"Step 671 architecture and header test "
                 "matrix coverage\"")) return 8;
   return 0;
 }

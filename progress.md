@@ -24609,3 +24609,43 @@
   116/116 again. Final Standards and Spec reviews report no blocking findings;
   Step 672 still owns replacing floating repository refresh with pinned,
   cacheable dependency setup.
+
+## 2026-07-14 Phase G Step 670 Windows/Linux Example And Smoke Matrix
+
+- Added the shared 21-target public example inventory, focused Windows and Linux
+  smoke executors, two CI jobs, the Step 670 structure tracer, and Xmake target.
+- The initial structure test builds and returns the intended missing-module RED
+  exit `1`; after implementation and syntax/line-cap verification it advances to
+  the intended authority-only exit `8`.
+- Windows Release prepared-root verification passes all 21 serial example builds
+  and runs, four registration smokes, and four Win32 demo smoke flows.
+- The first Linux run fails because the package core's output-confined Meson/
+  Ninja PATH does not survive into a new prepared-root process. Added a failing
+  structure assertion for `python-tools`, restored the path in the executor, and
+  returned the tracer to authority-only exit `8`.
+- Corrected Arch Linux WSL Release prepared-root verification passes all 21
+  example builds/runs, four registration smokes, and four WSLg Wayland/Vulkan
+  first-frame, resize, close, and interaction flows.
+- Synchronized 116 existing dynamic consumers to Step 671; together with the new
+  Step 670 structure guard, the live filesystem inventory is 117 consumers. A
+  tracked-only count correctly reports 116 before the new guard is staged.
+- The first 117-test run passes 114/117 and exposes three nested predecessor
+  assertions still naming Step 670. Advanced only those Windows full-debug,
+  TestApp simulated-input, and test-runner source checks to Step 671 while
+  preserving historical completion text.
+- The next full run passes 115/117 and exposes the subsequent WSL full-debug and
+  TestApp timer predecessor checks. Advanced those two nested references and
+  continued the same executable-chain audit.
+- A remaining-text audit after the third run finds exactly four dynamic Step 670
+  references: cross-platform plus TestApp async, rendering, and platform-services.
+  Advanced all four while retaining the split Step 669 historical completion
+  constant in the Release packaging guard.
+- Phase G Step 670 adds Windows and Linux CI example/smoke matrices that serially build every public API example, run their noninteractive entry points, execute animation, opacity, image, and GIF registration smoke coverage, and pass first-frame, resize, close, and interaction smoke flows on platform display backends. Step 671 architecture and header test matrix coverage is next.
+- Final verification passes the Windows Step 670 guard 1/1, the complete dynamic
+  handoff chain 117/117, and the Arch Linux WSL Step 670 guard 1/1 after native
+  Release compilation. Exact target inventory is 21/21 with no missing or extra
+  public example target; JSON, PowerShell/Bash syntax, line caps, and diff hygiene
+  all pass.
+- Sequential Standards and Spec reviews report no blocking findings. The only
+  Spec wording ambiguity was corrected so registration smokes and native display
+  flows are recorded separately and accurately.

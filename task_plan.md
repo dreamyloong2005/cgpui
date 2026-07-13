@@ -1518,6 +1518,15 @@ Windows/Linux core API is stable enough for parity work.
   serially from removed isolated output roots and emit exact 186-header,
   seven-library, one-demo packages with README and validated manifests; the Linux
   demo is an x86-64 ELF and leaves zero external temporary directories.
+- Active: Phase G Step 670 adds one shared 21-target public example inventory,
+  focused Windows and Linux example/smoke executors, two workflow jobs, and a
+  dedicated structure guard before handing off to Step 671 architecture/header
+  matrix coverage.
+- Completed: Phase G Step 670 adds Windows and Linux CI example/smoke matrices that serially build every public API example, run their noninteractive entry points, execute animation, opacity, image, and GIF registration smoke coverage, and pass first-frame, resize, close, and interaction smoke flows on platform display backends. Step 671 architecture and header test matrix coverage is next.
+- Step 670 evidence: the Windows and Arch Linux WSL Release prepared roots each
+  build and run all 21 public example targets serially, pass four animation/
+  opacity/image/GIF registration smokes, and pass four native first-frame,
+  resize, close, and demo-interaction flows on Win32 and Wayland/Vulkan.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1533,6 +1542,11 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The third Step 670 chain run exposed cross-platform and TestApp async predecessors; a complete remaining-text scan also found rendering and platform-services at the same nested seam | Step 670 final cascading handoff audit | Separate four dynamic predecessor checks from the split historical Step 669 completion constant, advance all four to Step 671, and require zero continuous old handoff text before the final 117-test run |
+| After fixing the first three Step 670 nested references, the next 117-test run exposed WSL full-debug and TestApp timer guards reading those newly advanced predecessor sources | Step 670 cascading handoff verification | Advance the next two nested source assertions to Step 671 and continue the full executable chain until no downstream predecessor remains stale |
+| The first 117-test Step 670 dynamic run passed 114/117; Windows full-debug, TestApp simulated-input, and test-runner guards still required Step 670 text from nested predecessor sources | Step 670 complete handoff verification | Use the three return codes as a focused loop, advance only those nested predecessor assertions to Step 671, preserve historical completion sentences, and rerun the three targets plus the entire chain |
+| The first Step 670 current-handoff count used `git ls-files` and expected 117, but the new untracked Step 670 guard was intentionally absent and the audit reported 116 | Step 670 handoff synchronization audit | Count all `tests/**/*.cpp` files from the filesystem before staging, require 117 new current-handoff consumers and zero old current-handoff values, then use tracked mappings after explicit staging |
+| The first Linux Step 670 prepared-root run could not find Meson 1.11.1 or Ninja even though Step 669 had installed them under the output root | Step 670 Linux example/smoke matrix verification | Minimize to one `api_parity_hello_world` build, prove that `linux-package.sh` prepended `python-tools/bin` only in its own process, add that prepared-root PATH contract to the Step 670 guard, and restore the path in the Linux smoke executor; the complete 21-target matrix then passes |
 | The first Step 669 handoff rewrite expected 109 exact key/value replacements, but that source count included historical Step 668 completion text and only 59 live assertions used the fully escaped JSON value | Step 669 dynamic handoff synchronization | Restrict replacement to the escaped `phase_f_current_handoff` key, separately handle 49 prefix-only assertions and seven adjacent-string assertions, then prove all 116 mapped targets execute |
 | A focused Step 669 build passed three target names to one `xmake build` invocation, which accepts only one positional target | Step 669 focused authority GREEN | Build each literal target in a serial PowerShell loop, then pass the three registered test filters to one `xmake test -j 1` invocation |
 | A WSL focused verification embedded a Bash target loop under `wsl.exe`; the cross-shell boundary again expanded the loop variable to empty and Xmake rejected an empty target | Step 669 WSL structure verification | Keep the successful WSL configuration and invoke each literal target directly through `wsl.exe -- env`, then run the three test filters directly; all three pass |

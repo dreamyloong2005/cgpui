@@ -796,6 +796,7 @@ consume C: drive space again.
 - Phase G Step 667 adds a Windows Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 668 Linux debug build and packaging coverage is next.
 - Phase G Step 668 adds a Linux Debug CI packaging path with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executable, README, manifest validation, and uploaded artifact coverage. Step 669 Windows and Linux release build and packaging coverage is next.
 - Phase G Step 669 adds Windows and Linux Release CI packaging paths with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executables, README, manifest validation, and uploaded artifact coverage. Step 670 examples and smoke test matrix coverage is next.
+- Phase G Step 670 adds Windows and Linux CI example/smoke matrices that serially build every public API example, run their noninteractive entry points, execute animation, opacity, image, and GIF registration smoke coverage, and pass first-frame, resize, close, and interaction smoke flows on platform display backends. Step 671 architecture and header test matrix coverage is next.
 
 ## Categories
 

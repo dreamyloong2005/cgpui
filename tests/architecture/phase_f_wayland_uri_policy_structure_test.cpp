@@ -56,6 +56,6 @@ int main() {
       "Phase F Step 577 moves Wayland URI-list parsing into a focused policy leaf, accepts only absolute local file URIs with empty or localhost authority, preserves valid local entries, and rejects remote schemes/authorities, malformed escapes, queries/fragments, relative paths, and decoded NUL. Step 578 drag/drop cancellation and band closeout is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 7;
-  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 670 examples and smoke test matrix coverage")) return 8;
+  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Step 671 architecture and header test matrix coverage")) return 8;
   return 0;
 }

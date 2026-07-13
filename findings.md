@@ -12263,3 +12263,35 @@
   blocking findings: both clean Release paths, exact package contents,
   manifests, uploads, authority records, and Step 670 handoff are proven.
   Floating dependency refresh remains explicitly open for Step 672.
+
+## 2026-07-14 Phase G Step 670 Windows/Linux Example And Smoke Matrix
+
+- Step 670 owns a shared inventory of all 21 public `api_parity_*` examples,
+  one focused executor per platform, two workflow jobs, and a dedicated structure
+  guard. Architecture/header breadth and dependency reproducibility remain Steps
+  671 and 672.
+- The first Windows Release prepared-root run builds and runs all 21 examples,
+  passes the animation, opacity, image, and GIF registration tests, and passes
+  Win32 first-frame, resize, close, and complete demo-interaction smoke flows.
+- The first Linux prepared-root attempt deterministically fails before example
+  compilation because the output-confined Meson/Ninja venv PATH existed only in
+  the Step 669 package process. A one-target repro fails without the path and
+  passes with `linux-release/python-tools/bin`, proving the ownership gap.
+- The Linux executor now restores an existing output-root `python-tools/bin`
+  before invoking Xmake, and the structure guard freezes that contract for both
+  default preparation and prepared-root reuse.
+- The corrected Arch Linux WSL Release matrix builds and runs all 21 examples,
+  passes all four registration smokes, and passes Wayland/Vulkan first-frame,
+  resize, close, and full demo-interaction flows. WSLg reports the expected DZN
+  conformance warning without changing any test result.
+- Phase G Step 670 adds Windows and Linux CI example/smoke matrices that serially build every public API example, run their noninteractive entry points, execute animation, opacity, image, and GIF registration smoke coverage, and pass first-frame, resize, close, and interaction smoke flows on platform display backends. Step 671 architecture and header test matrix coverage is next.
+- Final Standards review has no blocking findings. The shared target inventory,
+  platform-specific executors, orchestration-only workflow jobs, dedicated
+  structure guard, and thin Xmake registration follow the repository's modular
+  ownership rules; the 116-file handoff rewrite is the established executable
+  audit contract and passes all 117 live consumers.
+- Final Spec review has no blocking findings after clarifying that animation,
+  opacity, image, and GIF coverage is registration smoke, while first-frame,
+  resize, close, and interaction are the real Win32/Wayland display flows. Both
+  platform matrices, prepared-root reuse, workflow dependencies, authority
+  records, and the Step 671 handoff are proven.

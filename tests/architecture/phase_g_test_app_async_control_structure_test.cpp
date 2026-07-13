@@ -61,7 +61,7 @@ int main() {
       !contains(behavior, "normal_second") ||
       !contains(behavior, "TaskId{999999}") ||
       !contains(behavior, "app.run_until_parked()")) return 4;
-  if (!contains(previous, "Step 670 examples and smoke test") ||
+  if (!contains(previous, "Step 671 architecture and header test") ||
       !contains(xmake, "target(\"phase_g_test_app_async_control_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_async_control_structure_test\")")) {
@@ -85,7 +85,7 @@ int main() {
       !contains(core, "Deterministic `TestApp` async control") ||
       !contains(ledger_json, "\"phase_g_step_662_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 670 examples and smoke test "
+                "\"phase_f_current_handoff\": \"Step 671 architecture and header test "
                 "matrix coverage\"")) return 8;
   return 0;
 }
