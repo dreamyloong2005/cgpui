@@ -115,6 +115,6 @@ int main() {
       !contains(core, "root-confined file-backed asset loading") ||
       !contains(ledger_json, "\"phase_g_step_651_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 659 GPUI-style app and window test setup production behavior\"")) return 10;
+                "\"phase_f_current_handoff\": \"Step 660 GPUI-style simulated input production behavior\"")) return 10;
   return 0;
 }

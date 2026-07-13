@@ -3461,7 +3461,23 @@
       "xmake.lua"
     ],
     "phase_g_step_658_remaining_gap": "Step 659 GPUI-style app and window test setup production behavior",
-    "phase_f_current_handoff": "Step 659 GPUI-style app and window test setup production behavior"
+    "phase_g_step_659_surface": "Phase G Step 659 adds standalone GPUI-style TestApp and TestAppWindow setup with private deterministic platform and renderer ownership, persistent multi-window creation, stable runtime/root-view handles, typed root-view access, and fail-closed empty-root rejection. Step 660 GPUI-style simulated input production behavior is next.",
+    "phase_g_step_659_sources": [
+      "include/cgpui/ui/test_app.hpp",
+      "include/cgpui/ui/ui.hpp",
+      "include/cgpui/ui/window_runtime.hpp",
+      "src/ui/test_app_internal.hpp",
+      "src/ui/window_runtime_internal.hpp",
+      "src/ui/test_app.cpp",
+      "src/ui/test_app_platform.cpp",
+      "src/ui/test_app_renderer.cpp",
+      "tests/ui/test_app_window_setup_test.cpp",
+      "tests/header_cleanliness/test_app_header_cleanliness.cpp",
+      "tests/architecture/phase_g_test_app_window_setup_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_659_remaining_gap": "Step 660 GPUI-style simulated input production behavior",
+    "phase_f_current_handoff": "Step 660 GPUI-style simulated input production behavior"
   },
   "categories": [
     "application_and_app_context",

@@ -1,4 +1,4 @@
-friend class AnimationHandle; friend class AsyncContextCapability; friend class AsyncIoHook; friend class TaskGroup; friend class TestContextCapability; friend class TaskHandle; friend class detail::CrossThreadEntityQueueState; friend struct WindowRuntimeContext;
+friend class AnimationHandle; friend class AsyncContextCapability; friend class AsyncIoHook; friend class TaskGroup; friend class TestContextCapability; friend class TaskHandle; friend class detail::CrossThreadEntityQueueState; friend struct detail::TestAppState; friend struct WindowRuntimeContext;
 class RuntimeAsyncIoRegistry; class RuntimeTaskPool; class RuntimeTaskGroupStore; struct RuntimeTaskDiagnostics;
 void handle_event(const PlatformEvent& event); [[nodiscard]] bool handle_native_menu_command_event(const PlatformEvent& event, ViewId target_view_id);
 [[nodiscard]] bool handle_window_control_event(const PlatformEvent& event);

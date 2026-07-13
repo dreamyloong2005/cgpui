@@ -79,6 +79,10 @@ desktop integration surfaces remain separate future work.
   image draws and are cleared with reused paint state. The pinned public image
   and GIF viewer examples compile and smoke-run through the prelude; GIF frames
   advance from decoded durations and loop metadata without bitmap copying.
+- Standalone `TestApp` and `TestAppWindow` setup owns a deterministic private
+  platform and renderer, creates persistent test windows without a production
+  event loop, exposes stable runtime/root-view handles and typed root access,
+  and rejects empty root views without changing runtime state.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,

@@ -11732,3 +11732,44 @@
 - Current WSL state includes the existing Arch Linux distribution. Reusing the
   established D-drive caches and `/dev/shm/cgpui`, the five Step 658 targets
   pass 5/5 and ten shared asset/UI regressions pass 10/10.
+
+## 2026-07-13 Phase G Step 659 Entry Boundary
+
+- Step 659 starts the Steps 659-666 GPUI-style test-support band. Its first
+  public seam is standalone test application plus window setup observed and
+  driven through public test context capabilities; private runtime fixtures
+  must not leak into the public header.
+- The Phase G goal remains all Steps 619-678. Completing Step 659 is progress,
+  not a redefinition of Phase G completion.
+- `TestContextCapability` already owns runtime/view/input/diagnostic queries,
+  timer and async draining, redraw/frame pumping, keyboard and pointer input,
+  activation/focus, and clipboard helpers in focused source files.
+- Existing tests still construct platform/runtime fixtures through the private
+  `tests/ui/window_runtime_test_support.hpp`; there is no standalone public
+  test application/window setup facade.
+- The parity ledger names `gpui::TestAppContext` as adapted only through the
+  per-window capability and names `gpui::test` as still required, confirming
+  that Step 659 should add setup ownership rather than duplicate simulation.
+- Application ownership is already split under `include/cgpui/app/`, while the
+  platform abstraction is `platform/platform_application.hpp`; the Step 659
+  leaf should follow those real boundaries rather than invent a broad UI file.
+- At the pinned upstream revision, the clean test setup API is `TestApp::new`,
+  `TestApp::open_window`, `open_window_with_options`, and `TestAppWindow`.
+  App updates automatically run pending work; the window wrapper adds input,
+  resize, and draw helpers in later layers.
+- CGPUI can preserve that ownership split without changing runtime lifecycle:
+  a test app can own a private fake platform, dummy root, renderer storage, and
+  `WindowRuntime`, then create persistent test windows through the existing
+  `WindowRuntime::open_window` path before any platform event loop is entered.
+- Step 659 therefore owns `TestApp` plus `TestAppWindow` construction and basic
+  window/root-view inspection only. Input, timers/async, rendering controls,
+  service fakes, and runner ergonomics remain separate Steps 660-665.
+- Phase G Step 659 adds standalone GPUI-style TestApp and TestAppWindow setup with private deterministic platform and renderer ownership, persistent multi-window creation, stable runtime/root-view handles, typed root-view access, and fail-closed empty-root rejection. Step 660 GPUI-style simulated input production behavior is next.
+- Final Standards review keeps public vocabulary in one thin leaf, fake
+  platform/renderer types in private focused files, and the runtime access
+  declaration inside `window_runtime_internal.hpp`; the broad runtime header
+  remains at its frozen 260-line cap.
+- Final Spec review confirms persistent multi-window setup, unique runtime and
+  root-view ids, descriptor/viewport/scale inspection, typed root access,
+  optional public lookup, hidden-parent isolation, empty-root rejection, and
+  Windows plus WSL execution through the same public API.

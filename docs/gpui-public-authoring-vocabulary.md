@@ -65,6 +65,8 @@ outside this freeze.
 - `ErrorCode`
 - `AsyncContextCapability`
 - `TestContextCapability`
+- `TestApp`
+- `TestAppWindow`
 - `TaskPriority::{low, normal, high}`
 - `TaskGroup`
 - `TaskGroup::create_child_group()`
@@ -84,6 +86,11 @@ Phase B public examples may use Result-returning async and test helpers. Phase G
 adds prioritized spawning, move-only structured task groups, and one-shot
 cross-thread async-I/O completion hooks; upstream test macro equivalents
 remain outside this freeze.
+
+Phase G Step 659 adds standalone deterministic test application and window
+setup. `TestApp` owns the private platform, renderer, and runtime state;
+`TestAppWindow` exposes stable window/root-view handles and typed root-view
+access without requiring tests to include private runtime fixtures.
 
 ## Animation vocabulary
 

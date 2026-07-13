@@ -66,6 +66,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 659 GPUI-style app and window test setup production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 660 GPUI-style simulated input production behavior\"")) return 9;
   return 0;
 }

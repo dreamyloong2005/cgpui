@@ -24068,3 +24068,44 @@
   values; focused files are 37/83/125/153/173/69/125 lines within their caps;
   no production debug marker or per-load thread primitive remains; and
   `git diff --check` is clean.
+
+## 2026-07-13 Phase G Step 659 Resume
+
+- Restored the persistent Phase G goal and confirmed the current checkout is
+  clean at `5c29317c` except for the unrelated untracked `.vscode/` directory.
+- Reconfirmed the remaining authoritative bands: Steps 659-666 test support,
+  Steps 667-672 packaging/CI, and Steps 673-678 final verification/closeout.
+- Session catchup found only the completed Step 658 closeout and the read-only
+  Phase H question; no unsynchronized production edits need recovery.
+- The first parallel read wrapper failed during JavaScript parsing before any
+  repository command ran; the simpler independent-command form succeeded.
+- Added the Step 659 public behavior tracer and Xmake target. The corrected
+  focused build reached the intended RED at `test_app_window_setup_test.cpp:1`
+  because `cgpui/ui/test_app.hpp` does not exist yet.
+- Runtime ownership inspection shows additional windows require an active root
+  parent. The focused test-app state will receive private friend access to
+  install an internal parent window without altering production event-loop
+  lifecycle or exposing private runtime types in the public test header.
+- Added the public `TestApp`/`TestAppWindow` leaf and split its implementation
+  across focused facade, private platform, and private renderer source files.
+  `WindowRuntime` only grants the private state friend access needed to install
+  a hidden parent window; production lifecycle remains unchanged.
+- The first production compile exposed two missing pure virtual test-window
+  adapters; compiler-directed no-op cursor and IME placement overrides fixed
+  the issue. The renamed focused target now builds and runs successfully.
+- A second public tracer proved empty root views were accepted by the lower
+  runtime registry. `TestApp::try_open_window` now rejects them synchronously
+  with `invalid_argument`; the tracer moved from exit 7 to exit 0.
+- Added the Step 659 header-cleanliness and modular structure guards, exposed
+  the focused leaf through the thin UI aggregate/prelude, synchronized the
+  authority documents, and advanced the JSON handoff to Step 660 simulated
+  input behavior.
+- Final Windows verification passes the Step 659 behavior/header/structure
+  group 3/3, the adjacent multi-window/context/UI/prelude/ledger/Step 658 group,
+  and the complete dynamic handoff chain 106/106.
+- Reused the existing Arch Linux WSL environment and D-drive build/package
+  caches with `/dev/shm/cgpui` transient temp. After task-first Xmake
+  configuration, the Step 659 behavior/header/structure group passes 3/3.
+- Standards self-review moved the runtime friend declaration into the private
+  runtime internal header and made `TestApp::window(...)` mirror the existing
+  optional lookup convention, preventing exposure of the hidden parent window.
