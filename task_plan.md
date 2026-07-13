@@ -1449,6 +1449,11 @@ Windows/Linux core API is stable enough for parity work.
   missing, and I/O-error outcomes, input validation, cache-key normalization,
   cancellation completion suppression, owned source lifetime, task handles,
   and bounded-pool diagnostics.
+- Completed: Phase G Step 658 ports the pinned official image and GIF viewer examples to public C++ authoring, adds frame-local image invalidation and upload transport, decodes file-backed PNG/JPEG and complete GIF frames through bounded async loading, schedules every GIF frame by its duration and loop metadata, and closes the Steps 651-658 asset band. Step 659 GPUI-style app and window test setup production behavior is next.
+- Step 658 evidence: frame-local clear/order behavior, focused source ownership,
+  two prelude-only applications, pinned-source semantics, async/reload/decode
+  paths, complete duration-driven GIF frames, no-launch smoke, and an asset-band
+  closeout guard are registered and focused GREEN on Windows.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1464,6 +1469,18 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 658 full handoff chain passed 103/104 and stopped at the Windows verification guard because the Windows/WSL/cross-platform nested source checks still required the Step 658 handoff | Step 658 104-target handoff chain | Advance the three nested source assertions to Step 659, verify the layers directly, then rerun the complete chain |
+| The first Step 658 authority audit repeated the PowerShell `foreach |` parser mistake and assumed the JSON evidence owner was `metadata` | Step 658 handoff closeout audit | Collect PowerShell rows before formatting and inspect actual JSON top-level owners; Phase G evidence remains under the established `phase_d_text_evidence` object |
+| The Step 658 structure rerun exited 6 after clear-reuse coverage raised the focused transport test to 125 lines; the first PowerShell line-count probe also had an invalid empty pipe | Step 658 frame-local clear audit | Use a collected `$rows` value for measurement and raise the focused single-boundary test cap from 115 to 135 while keeping production caps unchanged |
+| The first Step 658 structure run exited 4 because its ordering audit matched the earlier paint-command statistics read | Step 658 modular structure GREEN | Match the exact `for (const auto& command : paint_list.commands())` submission loop when comparing invalidation/upload/draw order |
+| Xmake treated the second name in a five-target `xmake build` invocation as an invalid argument | Step 658 example build | Build each target in a separate serial Xmake invocation; do not pass multiple target names to the build task |
+| Step 658 pattern discovery guessed `tests/structure/phase_g_official_animation_examples_structure_test.cpp` and flat `public_animation.cpp`/`public_opacity.cpp` paths | Step 658 example reference audit | Use the actual `tests/architecture/phase_g_animation_examples_structure_test.cpp` and `examples/api_parity/public_*_example/main.cpp` paths |
+| The first Step 658 focused test could not start and Xmake recorded Windows error 740 before the test body ran | Step 658 frame transport GREEN verification | Rename the executable target from `render_view_image_asset_updates_test` to `render_view_image_asset_transport_test` so Windows installer/update-name detection does not request elevation |
+| Two Step 658 production patch attempts failed in tool-input parsing before touching files, first on a raw newline and then on Markdown backticks inside a JavaScript template string | Step 658 PaintList GREEN write | Split production and planning patches; apply production with a backtick-free template and planning text with an escaped ordinary string |
+| The first Step 658 image update behavior build could not find `PaintList::upload_image` or `invalidate_image` | Step 658 frame transport RED | Add frame-local reference updates in focused `paint_image_assets.cpp` and submit them through `render_view` before draw commands |
+| Two additional Step 658 searches repeated wildcard paths such as `src/ui/runtime*` with `rg` on Windows | Step 658 render-path audit | Search the concrete `src/ui` directory and filter symbol matches; stop passing filesystem wildcards to `rg` |
+| Step 658 runtime transport search passed PowerShell wildcard paths directly to `rg` and Windows rejected them | Step 658 image upload ownership audit | Search the concrete `src/ui` directory and filter symbols/results instead of passing wildcard path arguments |
+| Step 658 example-pattern discovery guessed nonexistent `tests/api_parity/phase_g_animation_examples_source_test.cpp` | Step 658 source-audit reference | Use the actual `tests/api_parity/phase_g_official_animation_examples_test.cpp` target and its structure guard as the pinned-example pattern |
 | The Step 657 throwing-source tracer patch appended the new `+4` wait threshold after the old `+3;`, creating an invalid expression before compilation | Step 657 review regression test | Replace the two lines with one `initial + 4` threshold before running the intended behavioral RED |
 | The second Step 657 handoff run reached the asset guards with Step 658 in the split JSON prefix but the old `loading production behavior` tail | Step 657 split-handoff rewrite | The bulk script over-escaped the tail's opening source quote; patch the six exact JSON tail literals to `examples and asset closeout` while preserving historical completion text |
 | The first Step 657 full handoff chain stopped at the Windows verification guard because three nested parent-child source checks still named the Step 657 handoff | Step 657 104-target handoff chain | Advance only the Windows/WSL/cross-platform nested dynamic checks to Step 658, verify the three layers directly, then rerun the complete chain |

@@ -59,6 +59,12 @@ Result<void> render_view(
     statistics->paint_pass_count += 1;
     statistics->paint_command_count = paint_list.commands().size();
   }
+  for (const ImageAssetId asset_id : paint_list.image_invalidations()) {
+    (*frame)->invalidate_image(asset_id);
+  }
+  for (const ImageAsset* image : paint_list.image_uploads()) {
+    if (image != nullptr) (*frame)->upload_image(*image);
+  }
   for (const auto& command : paint_list.commands()) {
     submit_paint_command_to_frame(**frame, command, statistics);
   }

@@ -3447,7 +3447,21 @@
       "xmake.lua"
     ],
     "phase_g_step_657_remaining_gap": "Step 658 official image/GIF examples and asset closeout",
-    "phase_f_current_handoff": "Step 658 official image/GIF examples and asset closeout"
+    "phase_g_step_658_surface": "Phase G Step 658 ports the pinned official image and GIF viewer examples to public C++ authoring, adds frame-local image invalidation and upload transport, decodes file-backed PNG/JPEG and complete GIF frames through bounded async loading, schedules every GIF frame by its duration and loop metadata, and closes the Steps 651-658 asset band. Step 659 GPUI-style app and window test setup production behavior is next.",
+    "phase_g_step_658_sources": [
+      "include/cgpui/ui/paint.hpp",
+      "src/ui/paint.cpp",
+      "src/ui/paint_image_assets.cpp",
+      "src/ui/render_view.cpp",
+      "examples/api_parity/public_image_example/main.cpp",
+      "examples/api_parity/public_gif_viewer_example/main.cpp",
+      "tests/ui/render_view_image_asset_updates_test.cpp",
+      "tests/api_parity/phase_g_official_image_gif_examples_test.cpp",
+      "tests/architecture/phase_g_image_gif_examples_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_658_remaining_gap": "Step 659 GPUI-style app and window test setup production behavior",
+    "phase_f_current_handoff": "Step 659 GPUI-style app and window test setup production behavior"
   },
   "categories": [
     "application_and_app_context",

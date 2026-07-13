@@ -23999,3 +23999,72 @@
   `[DEBUG-` marker or continuous old handoff remains, and `git diff --check` is
   clean. `wsl.exe --list --verbose` still reports no installed distribution
   and the Lxss key has no distro entry, so no Linux result is claimed.
+
+## 2026-07-13 Phase G Step 658 Official Image/GIF Examples And Asset Closeout
+
+- Committed Step 657 as `31c048ba feat: add async asset loading`; only
+  unrelated `.vscode/` remained untracked afterward.
+- Read pinned upstream `examples/image/image.rs` and `examples/gif_viewer.rs`.
+  The C++ adaptation keeps local/asset image loading and contain-style GIF
+  presentation while explicitly omitting the unrequested HTTP client surface.
+- A transport audit found no UI path from decoded bitmap ownership to
+  `RenderFrame::upload_image`. Added a focused RED test requiring frame-local
+  PaintList upload and invalidation records to precede the image draw.
+- The first build reached the intended RED because `PaintList::upload_image`
+  and `invalidate_image` did not exist. Added frame-local reference uploads,
+  deduplicated invalidations, focused `paint_image_assets.cpp` ownership, and
+  render-view submission before draw commands without per-frame bitmap copies.
+- The first GREEN test launch failed before entering the executable with Windows
+  error 740. The target basename contained `updates`, which activated Windows
+  installer/update-name elevation detection; renamed only the executable target
+  to `render_view_image_asset_transport_test` while retaining the focused source
+  filename and test behavior.
+- Reconfigured debug Xmake, rebuilt the renamed target, and passed
+  `render_view_image_asset_transport_test/default` 1/1. The test proves upload
+  and invalidation reach `RenderFrame` before the image draw and presentation.
+- Renderer lifetime evidence requires same-id replacement to invalidate before
+  uploading the new bitmap. Reordered `render_view` submission and tightened
+  the transport test to invalidate, upload, and draw asset id 41.
+- Added the prelude-only public image and GIF viewer applications, pinned-source
+  semantic audit, modular structure guard, and all Xmake registrations. The
+  first combined build command was rejected because Xmake accepts one target;
+  verification continues with separate serial builds.
+- All five targets build. Four of five focused tests passed; the structure
+  guard exited 4 because it compared against the earlier command-count read
+  rather than the actual draw submission loop. Tightened the audit to the
+  exact command-loop spelling.
+- The corrected structure guard passes. A follow-up production audit found
+  `PaintList::clear()` did not clear the new update vectors; added direct reuse
+  coverage and cleared both vectors with the rest of the frame-local state.
+- The clear-reuse behavior passes. Its added tracer raised the focused transport
+  test to 125 lines, so the structure guard's test-only cap moves from 115 to
+  135; production source caps remain 55 and 95 lines.
+- Synchronized the roadmap, Markdown/JSON ledger, public vocabulary, core API
+  summary, task plan, findings, and Step 658 closeout guard. The exact Step 658
+  sentence occurs once in each of five authority documents and all ten JSON
+  evidence paths exist.
+- Advanced 104 historical JSON handoff consumers plus the new closeout guard to
+  Step 659 using a bounded field-local rewrite. The current consumer count is
+  105 with zero stale Step 658 values; historical Step completion sentences
+  remain unchanged.
+- The first registered handoff chain passed 103/104. The only failure was the
+  Windows verification guard's nested child-guard source assertion; advanced
+  it and the WSL/cross-platform nested chain to Step 659.
+- The corrected dynamic handoff chain passes 104/104. Focused Windows Step 658
+  behavior/source/smoke/structure passes 5/5, and the adjacent renderer,
+  decode, reload, async, header, UI structure, ledger, and vocabulary regression
+  group passes 17/17.
+- The existing WSL Arch Linux environment is available without installation or
+  recovery. Reconfigured against `.build-wsl/master`, rebuilt the shared UI and
+  both public applications, passed Step 658 5/5, then passed the Linux shared
+  asset/render/header/structure regression group 10/10.
+- Standards/Spec self-review closes with no remaining finding: focused module
+  ownership, public-only examples, pinned local semantics, complete duration-
+  driven GIF playback, stable texture replacement, and no copied frame pixels
+  or new executor are all directly covered by source/behavior evidence.
+- Final audits pass: JSON parses with ten present Step 658 sources and the Step
+  659 handoff; the exact completion sentence appears once in each of five
+  authority documents; 105 current handoff consumers have zero stale Step 658
+  values; focused files are 37/83/125/153/173/69/125 lines within their caps;
+  no production debug marker or per-load thread primitive remains; and
+  `git diff --check` is clean.

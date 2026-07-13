@@ -7,6 +7,8 @@ namespace cgpui {
 
 void PaintList::clear() {
   commands_.clear();
+  image_uploads_.clear();
+  image_invalidations_.clear();
   clip_stack_.clear();
   metadata_stack_.clear();
   scale_ = {};

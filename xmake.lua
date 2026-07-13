@@ -3363,6 +3363,13 @@ target("element_test")
     add_includedirs("tests/ui")
     add_tests("default")
 
+target("render_view_image_asset_transport_test")
+    set_kind("binary")
+    add_files("tests/ui/render_view_image_asset_updates_test.cpp")
+    add_deps("cgpui_core", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
 target("native_menu_action_dispatch_test")
     set_kind("binary")
     add_files("tests/ui/native_menu_action_dispatch_test.cpp")
@@ -3897,6 +3904,50 @@ target("async_asset_loading_header_cleanliness")
 target("phase_g_async_asset_loading_structure_test")
     set_kind("binary")
     add_files("tests/architecture/phase_g_async_asset_loading_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("phase_g_official_image_gif_examples_test")
+    set_kind("binary")
+    add_files("tests/api_parity/phase_g_official_image_gif_examples_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("api_parity_public_image_example")
+    set_kind("binary")
+    add_files("examples/api_parity/public_image_example/main.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    if is_plat("windows") then
+        add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
+    elseif is_plat("linux") then
+        add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
+    elseif is_plat("macosx") then
+        add_deps("cgpui_platform_macos", "cgpui_renderer_metal")
+        add_frameworks("AppKit", "QuartzCore", "Metal")
+    else
+        add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
+    end
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("api_parity_public_gif_viewer_example")
+    set_kind("binary")
+    add_files("examples/api_parity/public_gif_viewer_example/main.cpp")
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui", "cgpui_app")
+    if is_plat("windows") then
+        add_deps("cgpui_platform_win32", "cgpui_renderer_vulkan")
+    elseif is_plat("linux") then
+        add_deps("cgpui_platform_linux_wayland", "cgpui_renderer_vulkan")
+    elseif is_plat("macosx") then
+        add_deps("cgpui_platform_macos", "cgpui_renderer_metal")
+        add_frameworks("AppKit", "QuartzCore", "Metal")
+    else
+        add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
+    end
+    add_includedirs(public_includedirs)
+    add_tests("default")
+
+target("phase_g_image_gif_examples_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_image_gif_examples_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
 target("window_runtime_frame_scheduling_test")

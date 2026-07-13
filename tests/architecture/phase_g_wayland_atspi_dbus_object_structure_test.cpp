@@ -127,7 +127,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 658 official image/GIF examples and asset closeout\"")) {
+          "\"phase_f_current_handoff\": \"Step 659 GPUI-style app and window test setup production behavior\"")) {
     return 9;
   }
   return 0;

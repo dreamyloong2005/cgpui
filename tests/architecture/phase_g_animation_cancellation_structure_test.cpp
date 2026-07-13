@@ -143,6 +143,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationCancellationDiagnostic`") ||
       !contains(core_parity, "last-cancellation diagnostics") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 658 official image/GIF examples and asset closeout\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 659 GPUI-style app and window test setup production behavior\"")) return 9;
   return 0;
 }

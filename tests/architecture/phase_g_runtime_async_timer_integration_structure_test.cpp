@@ -162,7 +162,7 @@ int main() {
   if (contains(core_parity, "timer integration and cross-thread entity access") ||
       contains(core_parity, "complete async timer integration") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 658 official image/GIF examples and asset closeout\"")) {
+                "\"phase_f_current_handoff\": \"Step 659 GPUI-style app and window test setup production behavior\"")) {
     return 11;
   }
   return 0;

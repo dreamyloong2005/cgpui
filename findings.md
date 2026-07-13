@@ -11650,3 +11650,85 @@
   confined to task-pool shutdown racing a valid runtime call; normal valid
   runtime contexts keep the pool accepting, so it remains a runtime lifecycle
   invariant rather than a new asset API error surface.
+
+## 2026-07-13 Phase G Step 658 Official Image/GIF Examples And Asset Closeout
+
+- Step 657 was committed as `31c048ba feat: add async asset loading`; unrelated
+  `.vscode/` remains untracked.
+- Existing `examples/api_parity/public_svg_image_sources` covers Phase C source
+  authoring/registration only. Step 658 still needs production-facing public
+  image and animated-GIF examples that consume the Step 651-657 file, decode,
+  cache/reload, and async boundaries without private runtime includes.
+- Follow the Step 650 pattern: two independent app targets with no-launch smoke
+  execution, one pinned-upstream semantic audit, and one structure/authority
+  closeout that marks the Steps 651-658 band complete and hands off to Step 659.
+- Pinned `examples/image/image.rs` demonstrates local-file, remote-resource,
+  and asset-source images plus auto/max sizing. CGPUI has no requested HTTP
+  client surface, so the production C++ adaptation should keep local and asset
+  loading through public `AssetSource`/async/decode/registry APIs and explicitly
+  omit remote fetching rather than invent another network subsystem.
+- Pinned `examples/gif_viewer.rs` loads `black-cat-typing.gif`, fills the window,
+  and uses contain fit. CGPUI decodes all GIF frames but has no implicit animated
+  image element, so the public adaptation must schedule frame advancement from
+  decoded per-frame durations and re-register/render the current frame through
+  public APIs.
+- Live transport audit found `ImageAssetRegistry` stores raster bitmaps and
+  returns descriptors, while `ImageElement` emits only descriptor paint data;
+  no UI runtime path currently calls `RenderFrame::upload_image(...)` or
+  `invalidate_image(...)`. A Step 658 example that only decodes/registers would
+  compile but render no texture. Asset closeout therefore requires a focused
+  public runtime image upload/invalidation seam before the examples can be
+  considered production behavior.
+- The correct transport seam is frame-local `PaintList`, not a runtime-global
+  queue. `PaintList::upload_image(...)` and `invalidate_image(...)` can retain
+  updates for one window/frame; `render_view` submits them to `RenderFrame`
+  before draw commands. This preserves multi-window isolation and lets public
+  image/GIF examples upload and draw from their `paint(...)` override.
+- Keep method bodies in focused `src/ui/paint_image_assets.cpp`; `paint.hpp`
+  remains the owning public class declaration and `render_view.cpp` only gains
+  the orchestration calls. No renderer or platform entry file owns the new API.
+- Windows error 740 occurred before the first transport test entered `main`.
+  The executable basename contained `updates`, activating Windows installer/
+  update-name elevation detection. Renaming only the Xmake target to
+  `render_view_image_asset_transport_test` makes the same test pass.
+- The focused transport test now proves frame submission order is clear,
+  upload, invalidation, image draw, then present, with the expected asset ids
+  and uploaded byte count.
+- Step 650's reusable example pattern is one prelude-only application source
+  per example, default no-launch smoke behavior, an environment-variable launch
+  opt-in, a pinned-source semantic audit, and a separate structure guard.
+- `cgpui/prelude.hpp` already exposes the Step 651-657 asset source, cache-key,
+  reload, decode, async-loading, image registry, and paint APIs. The new examples
+  therefore do not need leaf or private includes.
+- A view can obtain `AsyncContextCapability` from its public render context.
+  Async byte completion receives a public runtime context that can request a
+  new render after decoding and updating view-owned image/GIF state.
+- Paint uploads retain frame-local references, so each example must keep every
+  uploaded `ImageAsset` alive in view-owned state through `render_view`; a
+  temporary decoded bitmap or temporary registry cannot be passed to paint.
+- The repository contains no tracked PNG/JPEG/GIF sample asset. Public launch
+  mode must therefore accept an explicit asset root and relative path while
+  the registered smoke test remains no-launch and filesystem-independent.
+- GIF frame state can move each decoded bitmap into a view-owned vector of
+  `ImageAsset` objects sharing one stable texture id. Frame advancement then
+  selects and uploads the next owned frame without copying its pixel vector.
+- Before finalizing the transport order, renderer invalidation semantics must
+  be checked for same-id replacement: upload followed by invalidation could
+  evict the newly uploaded GIF frame instead of the prior cached texture.
+- Existing Vulkan frame-lifetime coverage establishes the replacement contract
+  as invalidate first, upload second, then draw. The UI transport test now uses
+  the same asset id for all three operations so it guards the GIF use case.
+- `PaintList::clear()` initially left the new update vectors populated, which
+  would replay stale uploads and invalidations when a list is reused. Frame-
+  local ownership requires clearing both vectors beside paint commands.
+- Phase G Step 658 ports the pinned official image and GIF viewer examples to public C++ authoring, adds frame-local image invalidation and upload transport, decodes file-backed PNG/JPEG and complete GIF frames through bounded async loading, schedules every GIF frame by its duration and loop metadata, and closes the Steps 651-658 asset band. Step 659 GPUI-style app and window test setup production behavior is next.
+- Final Standards review finds the new public methods on their owning PaintList
+  class, all bodies in the focused `paint_image_assets.cpp`, orchestration only
+  in `render_view.cpp`, and no private/runtime/platform includes in examples.
+- Final Spec review confirms local/AssetSource loading without an invented HTTP
+  client, complete GIF frame ownership, per-frame duration scheduling, finite
+  and infinite loop behavior, contain sizing, stable-id replacement ordering,
+  no per-frame bitmap copy, and no loader-owned thread or executor.
+- Current WSL state includes the existing Arch Linux distribution. Reusing the
+  established D-drive caches and `/dev/shm/cgpui`, the five Step 658 targets
+  pass 5/5 and ten shared asset/UI regressions pass 10/10.

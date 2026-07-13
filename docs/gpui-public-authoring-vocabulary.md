@@ -156,6 +156,12 @@ remain outside this freeze.
 - `AsyncAssetLoadResult`
 - `AsyncAssetLoadCallback`
 - `load_asset_async(...)`
+- `PaintList::upload_image(...)`
+- `PaintList::invalidate_image(...)`
+- `examples/api_parity/public_image_example/main.cpp`
+- `examples/api_parity/public_gif_viewer_example/main.cpp`
+- `api_parity_public_image_example`
+- `api_parity_public_gif_viewer_example`
 
 Phase G Step 643 adds typed scalar from/to transitions over the existing
 deterministic animation scheduler. Direct runtime, runtime-context, and
@@ -179,6 +185,14 @@ one-shot frame timer. Late deliveries advance from the prior deadline instead
 of `now`, due callbacks are marked before mutation-safe delivery without a
 per-frame callback-list allocation, and runtime diagnostics expose pending,
 scheduled, delivered, coalesced, and late-frame state.
+
+Step 658 closes the production asset band with frame-local image invalidation
+and upload transport plus pinned, prelude-only image and GIF viewer examples.
+The image example combines file-backed async loading, revision invalidation,
+PNG/JPEG decoding, registry ownership, contain sizing, and same-id reload. The
+GIF viewer moves every decoded frame into view-owned image storage, schedules
+each frame from its own duration, observes finite/infinite loop metadata, and
+replaces the stable texture id without per-frame bitmap copies.
 
 ## Platform service vocabulary
 

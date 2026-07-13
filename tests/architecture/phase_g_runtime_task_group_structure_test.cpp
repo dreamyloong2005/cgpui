@@ -170,7 +170,7 @@ int main() {
       contains(core_parity, "priorities, structured task groups, pooled") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 658 official image/GIF examples and asset closeout\"")) {
+          "\"phase_f_current_handoff\": \"Step 659 GPUI-style app and window test setup production behavior\"")) {
     return 15;
   }
   return 0;

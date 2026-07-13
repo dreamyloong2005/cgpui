@@ -75,6 +75,10 @@ desktop integration surfaces remain separate future work.
   Bounded async asset loading owns source lifetimes, validates cache identity,
   reads on priority-aware workers, and completes success, missing, or error
   results on the owning runtime thread with cancellation suppression.
+  Frame-local `PaintList` invalidation/upload records reach the renderer before
+  image draws and are cleared with reused paint state. The pinned public image
+  and GIF viewer examples compile and smoke-run through the prelude; GIF frames
+  advance from decoded durations and loop metadata without bitmap copying.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,

@@ -167,6 +167,11 @@ class PaintList {
       std::optional<Rect> source_rect = std::nullopt,
       std::optional<Color> tint = std::nullopt,
       ImageSamplingMode sampling = ImageSamplingMode::linear);
+  void upload_image(const ImageAsset& image);
+  void upload_image(ImageAsset&& image) = delete;
+  void invalidate_image(ImageAssetId asset_id);
+  [[nodiscard]] std::span<const ImageAsset* const> image_uploads() const;
+  [[nodiscard]] std::span<const ImageAssetId> image_invalidations() const;
   void set_text_measurement_cache(TextMeasurementCache* cache);
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 
@@ -180,6 +185,8 @@ class PaintList {
       float border_width);
 
   std::vector<PaintCommand> commands_;
+  std::vector<const ImageAsset*> image_uploads_;
+  std::vector<ImageAssetId> image_invalidations_;
   std::vector<Rect> clip_stack_;
   std::vector<PaintMetadata> metadata_stack_;
   DpiScale scale_;
