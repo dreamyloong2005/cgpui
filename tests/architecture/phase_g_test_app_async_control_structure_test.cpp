@@ -28,13 +28,11 @@ std::size_t line_count(const std::string& text) {
 int main() {
   const std::string header = read_source("include/cgpui/ui/test_app.hpp");
   const std::string internal = read_source("src/ui/test_app_internal.hpp");
-  const std::string facade = read_source("src/ui/test_app.cpp");
-  const std::string platform = read_source("src/ui/test_app_platform.cpp");
-  const std::string timer = read_source("src/ui/test_app_timer.cpp");
+  const std::string async = read_source("src/ui/test_app_async.cpp");
   const std::string behavior =
-      read_source("tests/ui/test_app_timer_control_test.cpp");
+      read_source("tests/ui/test_app_async_control_test.cpp");
   const std::string previous = read_source(
-      "tests/architecture/phase_g_test_app_simulated_input_structure_test.cpp");
+      "tests/architecture/phase_g_test_app_timer_control_structure_test.cpp");
   const std::string xmake = read_source("xmake.lua");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
@@ -48,48 +46,44 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &header, &internal, &facade, &platform, &timer, &behavior, &previous,
-      &xmake, &vocabulary, &core, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &header, &internal, &async, &behavior, &previous, &xmake, &vocabulary,
+      &core, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
-  if (!contains(header, "void advance_time(std::uint64_t delta_ms) const") ||
-      !contains(header, "void run_until_parked() const") ||
-      !contains(header, "advance_time_until_parked(") ||
-      !contains(header, "bool cancel_timer(TimerId id) const")) return 2;
-  if (!contains(internal, "void run_until_parked()") ||
-      !contains(timer, "TestAppState::run_until_parked()") ||
-      !contains(timer, "runtime_context.test_context().run_until_parked()") ||
-      !contains(timer, "TestApp::advance_time_until_parked(")) return 3;
-  if (!contains(platform, "monotonic_time_ms() const { return 0; }") ||
-      !contains(facade, "runtime.window_ = &parent_window") ||
-      !contains(facade, "runtime.renderer_ = &parent_renderer") ||
-      !contains(behavior, "schedule_repeating_timer(") ||
-      !contains(behavior, "app.cancel_timer(view->repeating)")) return 4;
+  if (!contains(header, "bool complete_task(TaskId id) const") ||
+      !contains(header, "void drain_task_completions() const") ||
+      !contains(internal, "bool complete_task(TaskId id)") ||
+      !contains(internal, "void drain_task_completions()")) return 2;
+  if (!contains(async, "TestAppState::complete_task(") ||
+      !contains(async, "runtime.drain_task_completions()") ||
+      !contains(async, "TestApp::drain_task_completions() const")) return 3;
+  if (!contains(behavior, "TaskPriority::high") ||
+      !contains(behavior, "normal_second") ||
+      !contains(behavior, "TaskId{999999}") ||
+      !contains(behavior, "app.run_until_parked()")) return 4;
   if (!contains(previous, "Step 663 GPUI-style") ||
-      !contains(xmake, "target(\"phase_g_test_app_timer_control_test\")") ||
+      !contains(xmake, "target(\"phase_g_test_app_async_control_test\")") ||
       !contains(xmake,
-                "target(\"phase_g_test_app_timer_control_structure_test\")")) {
+                "target(\"phase_g_test_app_async_control_structure_test\")")) {
     return 5;
   }
   if (line_count(header) > 100 || line_count(internal) > 95 ||
-      line_count(facade) > 135 || line_count(platform) > 75 ||
-      line_count(timer) > 60 || line_count(behavior) > 95) return 6;
+      line_count(async) > 40 || line_count(behavior) > 105) return 6;
 
   constexpr const char* completion =
-      "Phase G Step 661 adds deterministic TestApp timer control with a fixed "
-      "private platform clock, explicit time advancement, parked-work "
-      "draining, combined advance-and-drain behavior, timer cancellation, and "
-      "runnable hidden-parent wakeups. Step 662 GPUI-style async control "
+      "Phase G Step 662 adds deterministic TestApp async control for manual "
+      "task completion, priority-ordered and FIFO draining, nested ready-task "
+      "completion, invalid or repeated id rejection, and parked draining "
+      "without a test-only executor. Step 663 GPUI-style rendering control "
       "production behavior is next.";
   const std::string* documents[]{
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) {
     if (!contains(*document, completion)) return 7;
   }
-  if (!contains(vocabulary, "`TestApp::advance_time(...)`") ||
-      !contains(core, "Deterministic `TestApp` timer control") ||
-      !contains(ledger_json, "\"phase_g_step_661_sources\"") ||
+  if (!contains(vocabulary, "`TestApp::complete_task(...)`") ||
+      !contains(core, "Deterministic `TestApp` async control") ||
+      !contains(ledger_json, "\"phase_g_step_662_sources\"") ||
       !contains(ledger_json,
                 "\"phase_f_current_handoff\": \"Step 663 GPUI-style "
                 "rendering control production behavior\"")) return 8;

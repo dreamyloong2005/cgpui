@@ -139,6 +139,6 @@ int main() {
       !contains(core, "Animated GIF decoding preserves bounded") ||
       !contains(ledger_json, "\"phase_g_step_653_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 662 GPUI-style async control production behavior\"")) return 10;
+                "\"phase_f_current_handoff\": \"Step 663 GPUI-style rendering control production behavior\"")) return 10;
   return 0;
 }

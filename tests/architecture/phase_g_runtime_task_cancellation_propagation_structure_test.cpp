@@ -123,7 +123,7 @@ int main() {
       contains(core_parity, "Cancellation propagation depth") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 662 GPUI-style async control production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 663 GPUI-style rendering control production behavior\"")) {
     return 11;
   }
   return 0;

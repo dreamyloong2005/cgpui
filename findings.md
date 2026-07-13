@@ -11828,3 +11828,20 @@
   explicit 5/10ms advancement fires exact one-shot and repeating timers,
   combined advancement drains a nested zero-delay timer, cancellation is
   idempotent, and the same behavior passes on Windows and Arch Linux WSL.
+
+## 2026-07-13 Phase G Step 662 Async Control
+
+- Deterministic async control is runtime-wide and belongs on `TestApp`.
+  Ordinary test views continue to create tasks through public runtime contexts;
+  TestApp should only expose completion and drain controls already proven by
+  `TestContextCapability`.
+- Reuse `complete_task(TaskId)`, `drain_task_completions()`, and the existing
+  Step 661 `run_until_parked()` instead of adding a second executor or waiting
+  policy for real background workers.
+- Phase G Step 662 adds deterministic TestApp async control for manual task completion, priority-ordered and FIFO draining, nested ready-task completion, invalid or repeated id rejection, and parked draining without a test-only executor. Step 663 GPUI-style rendering control production behavior is next.
+- Final Standards review keeps task creation on ordinary runtime contexts,
+  places TestApp forwarding in focused `test_app_async.cpp`, and leaves task
+  pool, queue, priority, and task-group production modules unchanged.
+- Final Spec review proves high-to-low priority, FIFO within normal priority,
+  nested completion in the same drain, invalid/repeated id rejection, parked
+  drain integration, and identical Windows/Arch Linux WSL behavior.

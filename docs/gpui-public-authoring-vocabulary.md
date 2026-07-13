@@ -102,6 +102,11 @@ Phase G Step 661 adds `TestApp::advance_time(...)`,
 cancellation. The private test platform clock is fixed, so timer progress is
 caused only by explicit test-app time advancement.
 
+Phase G Step 662 adds `TestApp::complete_task(...)` and
+`TestApp::drain_task_completions()`. Tests retain ordinary runtime task
+creation while the app controls deterministic priority/FIFO completion and
+uses parked draining for nested ready work.
+
 ## Animation vocabulary
 
 - `AnimationSpring`

@@ -73,6 +73,8 @@ struct TestAppState {
   void advance_time(std::uint64_t delta_ms);
   void run_until_parked();
   [[nodiscard]] bool cancel_timer(TimerId id);
+  [[nodiscard]] bool complete_task(TaskId id);
+  void drain_task_completions();
 
   TestPlatformApplication application;
   TestRootView root_view;

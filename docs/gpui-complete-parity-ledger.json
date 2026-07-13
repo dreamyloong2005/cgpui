@@ -3502,7 +3502,18 @@
       "xmake.lua"
     ],
     "phase_g_step_661_remaining_gap": "Step 662 GPUI-style async control production behavior",
-    "phase_f_current_handoff": "Step 662 GPUI-style async control production behavior"
+    "phase_g_step_662_surface": "Phase G Step 662 adds deterministic TestApp async control for manual task completion, priority-ordered and FIFO draining, nested ready-task completion, invalid or repeated id rejection, and parked draining without a test-only executor. Step 663 GPUI-style rendering control production behavior is next.",
+    "phase_g_step_662_sources": [
+      "include/cgpui/ui/test_app.hpp",
+      "src/ui/test_app_internal.hpp",
+      "src/ui/test_app_async.cpp",
+      "src/ui/test_context_scheduling.cpp",
+      "tests/ui/test_app_async_control_test.cpp",
+      "tests/architecture/phase_g_test_app_async_control_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_662_remaining_gap": "Step 663 GPUI-style rendering control production behavior",
+    "phase_f_current_handoff": "Step 663 GPUI-style rendering control production behavior"
   },
   "categories": [
     "application_and_app_context",

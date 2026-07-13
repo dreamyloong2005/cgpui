@@ -90,6 +90,9 @@ desktop integration surfaces remain separate future work.
 - Deterministic `TestApp` timer control advances runtime time explicitly,
   drains only ready work until parked, combines both operations, cancels timers
   by id, and uses a fixed private platform clock plus runnable hidden parent.
+- Deterministic `TestApp` async control manually completes runtime tasks,
+  drains completions by priority and FIFO order, processes nested ready tasks,
+  rejects invalid/repeated ids, and reuses the production queue and task pool.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,

@@ -75,6 +75,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_571_remaining_gap\": \"Step 572 Win32")) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 662 GPUI-style async control production behavior")) return 9;
+                "\"phase_f_current_handoff\": \"Step 663 GPUI-style rendering control production behavior")) return 9;
   return 0;
 }

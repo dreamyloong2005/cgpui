@@ -1469,6 +1469,11 @@ Windows/Linux core API is stable enough for parity work.
   repeating timers through an ordinary view runtime context, then proves exact
   TestApp advancement, parked draining, cancellation, and deterministic clock
   behavior through the focused timer source and structure guard.
+- Completed: Phase G Step 662 adds deterministic TestApp async control for manual task completion, priority-ordered and FIFO draining, nested ready-task completion, invalid or repeated id rejection, and parked draining without a test-only executor. Step 663 GPUI-style rendering control production behavior is next.
+- Step 662 evidence: a public test view creates high, two normal, low, nested,
+  and parked tasks through the ordinary runtime context; TestApp alone controls
+  completion and drain, with exact order and negative id behavior guarded by a
+  focused async source and modular structure test.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1484,6 +1489,9 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| Two Step 662 FIFO-extension patches were rejected by malformed multi-file hunk separators | Step 662 same-priority FIFO coverage | Split the focused test edit from planning-log edits and apply exact localized hunks; neither rejected patch made a partial change |
+| The first Step 662 implementation patch was rejected because adjacent file hunks were not separated after a context line | Step 662 async forwarding implementation | Reissue the same scoped changes with complete per-file hunks; no partial repository edit occurred |
+| The first Step 662 RED tracer tried to obtain a runtime context from `Window`, which is intentionally not public | Step 662 parked-task setup | Dispatch a second public keystroke and create the parked task inside the view's established `WindowRuntimeContext` event seam |
 | The first Step 661 focused regression passed 11/12; the Step 660 structure guard returned 5 because its previous-guard source check still named the prior Step 661 timer handoff | Step 661 adjacent structure chain | Advance that nested source prefix to Step 662 async control; keep the historical Step 660 completion sentence unchanged |
 | The first Step 661 GREEN executable returned 2 because the hidden-parent record existed but root `WindowRuntime::window_`/`renderer_` were null, so `handle_wakeup()` returned before firing the zero-delay timer | Step 661 parked drain | Install the private parent window/renderer on the root runtime and override the test platform clock with a fixed zero value so only explicit TestApp advancement moves time |
 | The corrected Step 661 tracer still saw only the forward-declared `WindowRuntime` through `runtime_context.hpp` | Step 661 timer scheduling seam | Include the public `window_runtime.hpp` owner because the tracer intentionally calls its public timer scheduling methods from the context |

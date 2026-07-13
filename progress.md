@@ -24196,3 +24196,36 @@
   108 executable consumers plus the JSON ledger have zero stale Step 661
   handoffs, focused files are 94/85/131/65/42/80 lines within caps, no debug
   marker remains, and `git diff --check` is clean.
+
+## 2026-07-13 Phase G Step 662 Start
+
+- Committed Step 661 as `6ee4853a feat: add deterministic test app timers`;
+  the worktree returned to only the unrelated untracked `.vscode/` directory.
+- Established Step 662 as deterministic runtime-task completion and draining
+  on TestApp, reusing the existing TestContext/runtime queue rather than adding
+  a test-only executor.
+- Added the Step 662 behavior tracer and Xmake target for priority-aware task
+  completion, nested completion, invalid/repeated ids, and parked draining.
+- The first RED compile confirmed the missing TestApp API and rejected a
+  nonexistent public Window context accessor; moved parked-task creation into
+  a second public input event handled by the view context.
+- The corrected tracer reached the intended API-only RED. Added focused
+  `test_app_async.cpp` forwarding for deterministic completion and drain.
+- Extended the GREEN tracer with a second normal-priority task so the public
+  seam proves both descending priority and FIFO order within one priority.
+- Added the Step 662 modular structure guard, registered it in Xmake, and
+  raised only the two older test-app header caps from 95 to 100 lines.
+- Synchronized Step 662 authority and evidence, advanced 104 continuous
+  handoff consumers, then updated four split literals plus the Step 660-662
+  previous-source chain to Step 663 rendering control.
+- Advanced the nested Windows/WSL/cross-platform guard-source chain to Step 663
+  while retaining the historical Step 661 completion text.
+- Final Windows async/TestApp/runtime regression passes 14/14 and the dynamic
+  current-handoff chain passes 109/109.
+- Reused the Arch Linux WSL build/cache and `/dev/shm/cgpui`; the Step 662
+  async/TestApp/runtime group builds serially and passes 11/11.
+- Final audits pass: the Step 662 sentence appears once in each of five
+  authority files, JSON has seven present sources and the Step 663 handoff,
+  109 executable consumers plus JSON have zero stale Step 662 handoffs,
+  focused files are 96/87/25/90 lines within caps, no debug marker remains,
+  and `git diff --check` is clean.
