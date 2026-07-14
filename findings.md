@@ -12459,3 +12459,82 @@
 - After the complete suite exposes the first two chain failures, rebuilding all
   nine affected guards and running their filters passes 9/9 in 0.719 seconds.
 - Phase G Step 673 completes Windows full-debug verification at 450/450 after updating the Phase C final ledger audit to guard stable historical SVG/image scope rather than mutable current asset status. Step 674 WSL full-debug verification is next.
+
+## 2026-07-14 Phase G Step 674 WSL Full-Debug Verification
+
+- The existing `archlinux` WSL2 distribution remains registered and starts on
+  demand; WSLg exposes `WAYLAND_DISPLAY=wayland-0`, `DISPLAY=:0`, and
+  `XDG_RUNTIME_DIR=/run/user/0`. No recovery, reinstall, or import is needed.
+- The distribution runs as root and `/usr/sbin/xmake` rejects root execution
+  unless `XMAKE_ROOT=y` is explicit. The repository's `.build-wsl/master`
+  cache remains intact, and Step 674 must continue using D-drive build/cache
+  state plus `/dev/shm/cgpui` transient temp.
+- `scripts/ci/linux-dependencies.sh` centralizes the reproducible Linux
+  dependency roots under `build/phase-g-ci/dependencies/linux/{global,pkg-cache,pkg-install}`.
+  The downloaded official Linux toolchain entry is
+  `build/phase-g-ci/toolchains/xmake-3.0.9/linux-bin/xmake`; its version and
+  target still require a literal-path WSL probe before the authoritative suite.
+- The literal official-bundle probe is a fast deterministic RED loop: the
+  symlink resolves to a valid stripped x86-64 ELF but `--version` fails only
+  because Arch cannot resolve `libncurses.so.6`. Ranked causes are an Arch
+  ncurses SONAME mismatch, an additional missing transitive library, a damaged
+  bundle, or a need to use the system package; `ldd` and package inventory own
+  the next discrimination step.
+- `ldd` proves the bundle has no other missing dependency, but Arch's
+  `libncursesw.so.6` cannot satisfy the non-wide `NCURSES6_*` symbol versions.
+  A private SONAME alias therefore fails correctly and must not be used. The
+  installed `/usr/sbin/xmake` reports the 3.0.9 base and links natively against
+  `libncursesw.so.6`; package provenance is the remaining acceptance check.
+- Arch owns `/usr/bin/xmake` through the signed `xmake 3.0.9-1` package from
+  `https://github.com/xmake-io/xmake`; it reports `v3.0.9+20260519` and is the
+  distro-native 3.0.9 executable for this WSL gate. The rejected compatibility
+  symlink was removed, leaving no system or toolchain mutation behind.
+- The live checkout retains Linux project configuration under
+  `.xmake/linux/x86_64` and reusable build artifacts under
+  `.build-wsl/master`; the current `xmake.conf` explicitly names that builddir
+  in Debug mode. Step 674 should reconfigure that output while consuming the
+  Step 672 dependency helper's unified D-drive roots, then run the complete
+  serial test suite from the project root.
+- D: has about 2.0 GB free while `.build-wsl/master` already holds the reusable
+  object graph, so a second build root is not viable. Arch has no system Meson
+  or Ninja, but the verified Linux Release output retains its output-confined
+  `python-tools/bin`; prepend that path for configuration. The live WSLg
+  Wayland socket exists at `/run/user/0/wayland-0`.
+- The first full suite proves every production library compiles under the new
+  locked dependency roots and reaches 81% of target linking. Its only failure
+  is linker ENOSPC on `window_runtime_focus_test`, not a source or dependency
+  error. The active config and every emitted command use `.build-wsl/master`;
+  the nested `.build-wsl/master/build-root` is an unused 8.4 GB historical
+  output and can be removed without invalidating the warmed active graph.
+- Workspace-confined cleanup removed only rebuildable completed outputs:
+  `build/phase-g-ci/windows-debug`, `windows-release`, `linux-debug`, and the
+  unused `.build-wsl/master/build-root`. Active objects, Linux Release
+  `python-tools`, Step 672 dependency roots, logs, and `.vscode/` remain. D:
+  free space recovered to about 8.97 GB for the serial resume.
+- The same serial suite resumes at the failed 81% link target, completes all
+  remaining binaries, and passes 431/431 tests in 62.087 seconds. This includes
+  active-display WSLg Wayland frame pixel capture and Wayland/Vulkan surface
+  execution; the only stderr is the established DZN non-conformance warning.
+  Linux has 431 registered tests versus Windows 450 because Win32-only targets
+  are correctly absent.
+- The dedicated Step 674 architecture guard is independently red-capable: after
+  Xmake and shared-manifest registration it compiles under the locked WSL
+  dependency roots, then fails its sole test before any completion authority or
+  Step 675 handoff is written. This proves the verification record is enforced
+  rather than inferred from registration alone.
+- Phase G Step 674 completes WSL full-debug verification at 431/431 with real WSLg Wayland frame pixel capture under the locked Xmake 3.0.9 dependency environment. Step 675 action macro production behavior is next.
+- Authority synchronization advances 119 continuous direct-handoff consumers,
+  one split-string Step 673 guard, and nine predecessor-chain expectations to
+  Step 675 while preserving the historical Step 673 completion and remaining-gap
+  records. The new Step 674 guard then passes 1/1 in WSL.
+- The expanded 432-test suite isolates two failures to obsolete `xmake.lua`
+  line caps: the new focused target raises the file to 4303 lines, while the
+  Step 667 and Step 673 guards still require at most 4300. Their other contract
+  branches and all 430 remaining tests pass. Align those two caps with the new
+  Step 674 guard's 4320 limit; no packaging or Windows verification behavior is
+  missing.
+- After aligning the two structural caps, the original two-target regression
+  loop passes 2/2 and the complete WSL Debug suite passes 432/432 in 66.534
+  seconds. Real WSLg frame pixel capture, Wayland/Vulkan surface execution,
+  the new Step 674 guard, and the full live-handoff chain are all green; no
+  debug instrumentation or throwaway compatibility files remain.

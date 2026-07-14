@@ -1923,6 +1923,7 @@ apps rather than only demo windows.
 - [x] Phase G Step 671 adds Windows and Linux CI architecture/header matrices that serially build every registered architecture and header-cleanliness target, execute all 142 tests from a shared source-owned manifest, and fail closed on missing, duplicate, unmapped, or unregistered coverage. Step 672 reproducible dependency setup is next.
 - [x] Phase G Step 672 pins Xmake 3.0.9, commits a dual-platform package lock, centralizes workspace-confined dependency roots, caches reproducible package state in CI, and removes floating repository refreshes from package setup. Step 673 Windows full-debug verification is next.
 - [x] Phase G Step 673 completes Windows full-debug verification at 450/450 after updating the Phase C final ledger audit to guard stable historical SVG/image scope rather than mutable current asset status. Step 674 WSL full-debug verification is next.
+- [x] Phase G Step 674 completes WSL full-debug verification at 431/431 with real WSLg Wayland frame pixel capture under the locked Xmake 3.0.9 dependency environment. Step 675 action macro production behavior is next.
 - [x] Steps 619-626: Implement Win32 UIA provider objects, tree navigation,
   patterns, live events, focus/value/text changes, and provider lifetime.
 - [x] Steps 627-634: Implement Linux AT-SPI D-Bus object exposure, tree

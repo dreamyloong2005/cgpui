@@ -24861,3 +24861,79 @@
   35.062 seconds with zero failures. This includes the repaired Phase C audit,
   the new Step 673 guard, all 119 existing handoff consumer files, and the nine
   predecessor-chain checks. Step 673 is ready to commit before the WSL gate.
+- Committed Step 673 as `a4fbb2e9 test: verify phase g on windows`. A resumed
+  session audit confirms `master` is clean except for the user's untracked
+  `.vscode/` directory, which remains outside Phase G commits.
+
+## 2026-07-14 Phase G Step 674 WSL Full-Debug Verification
+
+- Restored the persistent plan and advanced the active slice from the completed
+  Windows gate to the authoritative Arch Linux WSL gate. No distribution
+  recovery, reinstall, or import action is required or authorized.
+- Confirmed the existing Arch Linux WSL2 registration, live WSLg display
+  variables, root-user requirement for `XMAKE_ROOT=y`, intact
+  `.build-wsl/master`, and the reproducible D-drive dependency-root helper.
+  Located the downloaded official Linux toolchain entry under
+  `build/phase-g-ci/toolchains/xmake-3.0.9/linux-bin/xmake`; continue with a
+  literal-path version probe that avoids cross-shell variable expansion.
+- The literal probe resolves the symlink to a valid x86-64 ELF and reproduces
+  a deterministic pre-project failure: `libncurses.so.6` is missing on Arch.
+  Loaded `diagnosing-bugs`; the official `--version` invocation is the tight
+  feedback loop while dynamic dependencies and package contents are audited.
+- Tested an output-confined `libncurses.so.6` alias to Arch's wide-character
+  library. The loader then rejected missing `NCURSES6_*` symbol versions, so
+  the alias is ABI-incompatible and will be removed rather than used for the
+  gate. The system Xmake reports a 3.0.9 base and needs package-provenance audit.
+- Removed the rejected compatibility link. `pacman` proves `/usr/bin/xmake`
+  belongs to the signed `xmake 3.0.9-1` Arch package sourced from the official
+  Xmake repository; it reports `v3.0.9+20260519` and is accepted as the native
+  Step 674 executor.
+- Recovered the live WSL build shape from current repository state:
+  `.xmake/linux/x86_64` owns project configuration and
+  `.build-wsl/master` owns reusable output. The historical memory summary path
+  was stale, so no command evidence from it is being reused.
+- Preflight confirms about 2.0 GB free on D:, a live Wayland socket, and no
+  system Meson/Ninja. Reuse the existing `.build-wsl/master` object graph and
+  prepend the verified `build/phase-g-ci/linux-release/python-tools/bin` tools
+  rather than creating another full build root.
+- The native Xmake 3.0.9 Debug reconfiguration succeeds against the Step 672
+  locked dependency roots and existing `.build-wsl/master` output, identifying
+  `linux (x86_64)` without a dependency refresh. Start the authoritative serial
+  full suite with a persistent untracked log for its final count.
+- The first suite run rebuilds all production UI, renderer, Wayland/AT-SPI, and
+  Vulkan libraries successfully and links targets through 81%. It stops only
+  when `window_runtime_focus_test` reports linker `No space left on device`;
+  no code, dependency, shader, or platform failure precedes it.
+- Verified `.xmake/linux/x86_64/xmake.conf` names `.build-wsl/master` as the
+  active builddir and the run log never references the nested historical
+  `build-root`. Removed that unused 8.4 GB subtree after path confinement
+  checks, in addition to completed old Windows/Linux CI package outputs; D:
+  now has about 8.97 GB free while the warmed active graph remains intact.
+- Resumed the identical Xmake 3.0.9 serial suite from the warmed graph. It
+  links every remaining target, executes real WSLg Wayland/Vulkan coverage,
+  and passes 431/431 in 62.087 seconds with only the known DZN warning. Step
+  674 now needs its dedicated structure guard, authority synchronization,
+  Step 675 handoff, and one final expanded full-suite rerun.
+- Added the focused
+  `phase_g_wsl_full_debug_verification_structure_test.cpp` boundary and
+  registered it in Xmake plus the shared architecture/header manifest. The
+  WSL target builds successfully with native Xmake 3.0.9 and the Step 672
+  dependency roots, then the single test fails as intended before authority
+  synchronization. Proceed to completion-record and live-handoff updates.
+- Synchronized the Step 674 completion sentence across roadmap, Markdown/JSON
+  ledger, task plan, and findings; added JSON source/remaining-gap evidence;
+  and advanced the live handoff plus predecessor chain to Step 675. The focused
+  WSL guard now passes 1/1. Run the expanded full WSL suite before commit.
+- The expanded serial WSL suite rebuilds the changed guards and executes all
+  432 tests. It passes 430/432, including the new Step 674 guard and real WSLg
+  pixel capture; only the Windows packaging and Step 673 verification structure
+  guards fail. Loaded `diagnosing-bugs`; narrow to those two deterministic
+  targets before inspecting or changing their contracts.
+- The two-target diagnostic loop reproduces deterministically and the source
+  audit identifies the shared cause: both older guards cap `xmake.lua` at 4300
+  lines while the new modular target brings it to 4303. Aligning those caps to
+  the Step 674 guard's 4320 ceiling makes the focused loop pass 2/2.
+- The final serial WSL Debug suite passes 432/432 in 66.534 seconds, including
+  real WSLg frame pixel capture and Wayland/Vulkan surface coverage. Step 674
+  implementation, authority synchronization, handoff migration, regression
+  repair, and full verification are complete; proceed to audit and commit.

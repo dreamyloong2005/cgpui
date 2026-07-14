@@ -146,6 +146,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationFramePacingSnapshot`") ||
       !contains(core, "deadline-driven frame timer") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 674 WSL full-debug verification\"")) return 10;
+                "\"phase_f_current_handoff\": \"Step 675 action macro production behavior\"")) return 10;
   return 0;
 }

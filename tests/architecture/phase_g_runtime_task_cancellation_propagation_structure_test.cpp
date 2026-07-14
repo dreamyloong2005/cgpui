@@ -123,7 +123,7 @@ int main() {
       contains(core_parity, "Cancellation propagation depth") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 674 WSL full-debug verification\"")) {
+          "\"phase_f_current_handoff\": \"Step 675 action macro production behavior\"")) {
     return 11;
   }
   return 0;

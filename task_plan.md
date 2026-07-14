@@ -1563,10 +1563,16 @@ Windows/Linux core API is stable enough for parity work.
   defines no URLs or versions and only probes the locally installed Vulkan SDK
   through `find_vulkansdk()` and `find_library()`; the recipe identity itself is
   frozen by commit `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`.
-- Active: Phase G Step 673 runs the official Xmake 3.0.9 Windows full-debug
-  suite serially and requires an authoritative final pass count before the WSL
-  gate. The first complete run reports 448/449 with one historical Phase C
-  ledger audit failure; diagnosis and a focused regression rerun are in progress.
+- Active: Phase G Step 675 adds focused public unit-action macros with scoped
+  and unscoped naming, behavior/header/structure coverage, and candidate-ledger
+  corrections before the Step 676 closeout audit.
+- Step 674 final evidence: after the output-confined ENOSPC recovery, the
+  warmed native Xmake 3.0.9 Arch Linux Debug suite passes 431/431 in 62.087
+  seconds with real WSLg Wayland frame pixel capture. The dedicated guard moves
+  from authority-only RED to GREEN, all live consumers advance to Step 675,
+  the two obsolete Xmake line caps are aligned to the new modular target, and
+  the final expanded suite passes 432/432 in 66.534 seconds.
+- Completed: Phase G Step 674 completes WSL full-debug verification at 431/431 with real WSLg Wayland frame pixel capture under the locked Xmake 3.0.9 dependency environment. Step 675 action macro production behavior is next.
 - Completed: Phase G Step 673 completes Windows full-debug verification at 450/450 after updating the Phase C final ledger audit to guard stable historical SVG/image scope rather than mutable current asset status. Step 674 WSL full-debug verification is next.
 - Step 673 evidence: the original complete suite reports 448/449 and the focused
   historical audit reproduces at exit `50` in 0.047 seconds. After moving that
@@ -1590,6 +1596,14 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A direct WSL exit-code probe wrapped two binaries in Bash variables, but the PowerShell/WSL argument layers consumed `$?`, `$first`, and `$second`, producing empty diagnostics | Step 674 focused structure-failure diagnosis | Discard the invalid capture, use the already deterministic two-target Xmake loop plus direct source/cap evidence, and avoid Bash-variable capture through PowerShell |
+| The synchronized Step 674 expanded WSL suite passes 430/432; only `phase_g_windows_debug_packaging_structure_test` and `phase_g_windows_full_debug_verification_structure_test` fail while all runtime and real Wayland/Vulkan tests pass | Step 674 expanded full-debug verification | Use the two focused structure targets as the deterministic debugging loop, inspect their exact exit branches, correct only stale dynamic handoff assumptions, then rerun the focused pair and full 432-test suite |
+| The first Step 674 full WSL suite compiled all production libraries and linked targets through 81%, then `window_runtime_focus_test` failed with `No space left on device` | Step 674 authoritative WSL full-debug verification | Verify the active builddir is `.build-wsl/master`, delete only the unused 8.4 GB historical `.build-wsl/master/build-root` subtree plus completed old CI package caches, retain the active objects/dependencies/tools, and resume the same serial suite from the warmed graph |
+| The memory registry's old Phase F rollout-summary filename no longer exists at the recorded path | Step 674 historical command lookup | Treat the live repository and WSL state as authoritative; use current `findings.md`, `.xmake` config, CI dependency helper, and direct environment probes instead of the stale summary path |
+| Mapping Arch `libncursesw.so.6` to the official bundle's missing `libncurses.so.6` resolves the SONAME but fails on absent `NCURSES6_*` symbol versions | Step 674 isolated official-Xmake compatibility probe | Reject the ABI-incompatible alias, remove the throwaway link, and verify the Arch-packaged Xmake 3.0.9 provenance as the local WSL gate executable |
+| The downloaded official Xmake 3.0.9 Linux ELF is valid but fails before `--version` with `libncurses.so.6: cannot open shared object file` on Arch Linux | Step 674 official Linux Xmake startup | Use the literal `--version` invocation as the tight deterministic feedback loop, inspect `ldd` and Arch ncurses package contents, and prefer an isolated compatibility library path over system-package mutation |
+| A Step 674 Bash probe embedded `$p` after a PowerShell `$p` assignment, so PowerShell consumed the Bash variable and `ls` received an empty path | Step 674 official Linux Xmake version probe | Use direct `wsl.exe -- env` commands with the literal WSL absolute executable path and no Bash variables or command substitution |
+| A Step 674 read-only dependency-boundary query requested nonexistent `scripts/ci/linux-package-core.sh` after successfully reading `linux-dependencies.sh` | Step 674 WSL command recovery | Enumerate the actual `scripts/ci` file inventory first, then inspect the existing Linux package/helper scripts by their repository names; no build or repository state changed |
 | The first 450-test Step 673 closeout run passed 448/450; the two visible failures were the first members of nine live predecessor checks that still required Step 673 after direct JSON consumers advanced to Step 674 | Step 673 final Windows full-debug verification | Classify all nine remaining exact Step 673 references as live predecessor checks, preserve the split Step 672 historical completion literal, advance the nine checks to Step 674, rebuild each target, and pass the focused chain 9/9 before rerunning all 450 tests |
 | Official Xmake 3.0.9 rejected a single `xmake build` invocation with nine positional targets as `invalid argument` | Step 673 predecessor-chain rebuild | Build each target in an explicit serial loop with `-y -j 1`, then pass all nine filters to one `xmake test` invocation; no product test ran under the invalid command |
 | The corrected Step 673 guard built but returned exit `4` because it searched the predecessor's raw C++ source for a compile-time-concatenated completion phrase across adjacent literals | Step 673 guard RED setup | Assert the two stable raw-source fragments separately, then rerun until the guard reaches its intended missing-authority exit |

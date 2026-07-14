@@ -77,7 +77,7 @@ int main() {
       !contains(behavior, "alpha.txt") ||
       !contains(behavior, "std::nullopt") ||
       !contains(behavior, "platform_service_snapshot()")) return 5;
-  if (!contains(previous, "Step 674 WSL full-debug verification") ||
+  if (!contains(previous, "Step 675 action macro production behavior") ||
       !contains(xmake, "target(\"phase_g_test_app_platform_services_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_platform_services_structure_test\")")) {
@@ -102,6 +102,6 @@ int main() {
   if (!contains(vocabulary, "`TestPlatformServiceSnapshot`") ||
       !contains(core, "Deterministic `TestApp` platform service fakes") ||
       !contains(ledger_json, "\"phase_g_step_664_sources\"") ||
-      !contains(ledger_json, "\"phase_f_current_handoff\": \"Step 674 WSL full-debug verification\"")) return 9;
+      !contains(ledger_json, "\"phase_f_current_handoff\": \"Step 675 action macro production behavior\"")) return 9;
   return 0;
 }

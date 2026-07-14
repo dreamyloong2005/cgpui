@@ -26,11 +26,9 @@ std::size_t line_count(const std::string& text) {
 } // namespace
 
 int main() {
-  const std::string phase_c_audit =
-      read_source("tests/api_parity/phase_c_final_ledger_audit_test.cpp");
-  const std::string vocabulary =
-      read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string predecessor = read_source(
+      "tests/architecture/phase_g_windows_full_debug_verification_structure_test.cpp");
+  const std::string dependency_guard = read_source(
       "tests/architecture/phase_g_reproducible_dependency_setup_structure_test.cpp");
   const std::string xmake = read_source("xmake.lua");
   const std::string manifest =
@@ -44,56 +42,47 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &phase_c_audit, &vocabulary, &predecessor, &xmake, &manifest,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &predecessor, &dependency_guard, &xmake, &manifest, &roadmap,
+      &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
-  if (contains(phase_c_audit, "production loading/upload remains later") ||
-      contains(phase_c_audit, "production decoding/rendering remains later") ||
-      !contains(phase_c_audit, "This closes the public SVG/image") ||
-      !contains(phase_c_audit, "front-end authoring band") ||
-      !contains(phase_c_audit,
-                "while keeping SVG decoding, PNG/JPEG loading, renderer upload,") ||
-      !contains(vocabulary, "out of scope for this freeze")) {
+  if (!contains(xmake,
+                "target(\"phase_g_wsl_full_debug_verification_structure_test\")") ||
+      !contains(xmake,
+                "tests/architecture/phase_g_wsl_full_debug_verification_structure_test.cpp") ||
+      !contains(manifest,
+                "phase_g_wsl_full_debug_verification_structure_test|"
+                "tests/architecture/phase_g_wsl_full_debug_verification_structure_test.cpp")) {
     return 2;
   }
-
-  if (!contains(xmake,
-                "target(\"phase_g_windows_full_debug_verification_structure_test\")") ||
-      !contains(xmake,
-                "tests/architecture/phase_g_windows_full_debug_verification_structure_test.cpp") ||
-      !contains(manifest,
-                "phase_g_windows_full_debug_verification_structure_test|"
-                "tests/architecture/phase_g_windows_full_debug_verification_structure_test.cpp")) {
+  if (!contains(predecessor, "Step 674 WSL ") ||
+      !contains(predecessor, "full-debug verification is next.") ||
+      !contains(xmake, "set_policy(\"package.requires_lock\", true)") ||
+      !contains(dependency_guard, "3.0.9")) {
     return 3;
-  }
-  if (!contains(predecessor, "Step 673 Windows full-debug ") ||
-      !contains(predecessor, "verification is next.")) {
-    return 4;
   }
 
   constexpr const char* completion =
-      "Phase G Step 673 completes Windows full-debug verification at 450/450 "
-      "after updating the Phase C final ledger audit to guard stable historical "
-      "SVG/image scope rather than mutable current asset status. Step 674 WSL "
-      "full-debug verification is next.";
+      "Phase G Step 674 completes WSL full-debug verification at 431/431 with "
+      "real WSLg Wayland frame pixel capture under the locked Xmake 3.0.9 "
+      "dependency environment. Step 675 action macro production behavior is next.";
   const std::string* documents[]{
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 5;
+    if (!contains(*document, completion)) return 4;
   }
-  if (!contains(ledger_json, "\"phase_g_step_673_sources\"") ||
+  if (!contains(ledger_json, "\"phase_g_step_674_sources\"") ||
       !contains(ledger_json,
-                "\"phase_g_step_673_remaining_gap\": \"Step 674 WSL "
-                "full-debug verification\"") ||
+                "\"phase_g_step_674_remaining_gap\": \"Step 675 action macro "
+                "production behavior\"") ||
       !contains(ledger_json,
                 "\"phase_f_current_handoff\": \"Step 675 action macro "
                 "production behavior\"")) {
-    return 6;
+    return 5;
   }
-  if (line_count(xmake) > 4320 || line_count(manifest) > 160 ||
-      line_count(phase_c_audit) > 220) {
-    return 7;
+  if (line_count(xmake) > 4320 || line_count(manifest) > 165 ||
+      line_count(dependency_guard) > 180) {
+    return 6;
   }
   return 0;
 }

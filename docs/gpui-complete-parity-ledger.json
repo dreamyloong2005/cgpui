@@ -3651,7 +3651,16 @@
       "xmake.lua"
     ],
     "phase_g_step_673_remaining_gap": "Step 674 WSL full-debug verification",
-    "phase_f_current_handoff": "Step 674 WSL full-debug verification"
+    "phase_g_step_674_surface": "Phase G Step 674 completes WSL full-debug verification at 431/431 with real WSLg Wayland frame pixel capture under the locked Xmake 3.0.9 dependency environment. Step 675 action macro production behavior is next.",
+    "phase_g_step_674_sources": [
+      "xmake-requires.lock",
+      "scripts/ci/linux-dependencies.sh",
+      "scripts/ci/architecture-header-targets.txt",
+      "tests/architecture/phase_g_wsl_full_debug_verification_structure_test.cpp",
+      "xmake.lua"
+    ],
+    "phase_g_step_674_remaining_gap": "Step 675 action macro production behavior",
+    "phase_f_current_handoff": "Step 675 action macro production behavior"
   },
   "categories": [
     "application_and_app_context",
