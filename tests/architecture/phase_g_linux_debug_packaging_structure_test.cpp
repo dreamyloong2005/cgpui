@@ -89,7 +89,7 @@ int main() {
   }
   if (line_count(wrapper) > 20 || line_count(core) > 190 ||
       line_count(workflow) > 150 ||
-      line_count(xmake) > 4320) return 6;
+      line_count(xmake) > 4340) return 6;
 
   constexpr const char* completion =
       "Phase G Step 668 adds a Linux Debug CI packaging path with "
@@ -106,7 +106,7 @@ int main() {
       !contains(ledger_json, "scripts/ci/linux-package.sh") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 675 action macro production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 676 candidate-ledger closeout audit\"")) {
     return 8;
   }
   return 0;

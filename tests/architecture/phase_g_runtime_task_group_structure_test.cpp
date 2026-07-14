@@ -170,7 +170,7 @@ int main() {
       contains(core_parity, "priorities, structured task groups, pooled") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 675 action macro production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 676 candidate-ledger closeout audit\"")) {
     return 15;
   }
   return 0;

@@ -115,7 +115,7 @@ int main() {
     if (!contains(*document, completion)) return 6;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 675 action macro production behavior\"")) {
+                "\"phase_f_current_handoff\": \"Step 676 candidate-ledger closeout audit\"")) {
     return 7;
   }
   return 0;

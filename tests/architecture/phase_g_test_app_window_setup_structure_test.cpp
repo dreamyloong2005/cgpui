@@ -112,6 +112,6 @@ int main() {
       !contains(core, "Standalone `TestApp` and `TestAppWindow`") ||
       !contains(ledger_json, "\"phase_g_step_659_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 675 action macro production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 676 candidate-ledger closeout audit\"")) return 8;
   return 0;
 }

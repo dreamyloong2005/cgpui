@@ -125,7 +125,7 @@ int main() {
       contains(core_parity, "Async I/O integration and cross-thread") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 675 action macro production behavior\"")) {
+          "\"phase_f_current_handoff\": \"Step 676 candidate-ledger closeout audit\"")) {
     return 11;
   }
   return 0;

@@ -102,6 +102,11 @@ desktop integration surfaces remain separate future work.
 - A GPUI-style C++ test runner provides ordinary executable entry macros,
   typed multi-TestApp and deterministic-seed injection, explicit/environment
   seed plans, bounded retries, failure callbacks, and reproducible summaries.
+- Unit-action macro production behavior provides `CGPUI_ACTIONS(...)` and
+  `CGPUI_ACTIONS_IN(namespace_name, ...)` from a focused public leaf, generating
+  default-constructible, copyable, equality-comparable `Action` types with
+  stable unscoped or namespace-qualified names. Payload actions remain explicit
+  C++ types outside the unit-action macro contract.
 - Element tree behavior: `AnyElement`, keyed elements, keyed reconciliation,
   lifecycle hooks, per-element state storage, event routes, bubbling, disabled
   handling, focus traversal, focus handles, pointer capture, scroll routing,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/action.hpp"
+#include "cgpui/ui/action_macros.hpp"
 #include "cgpui/ui/animation_cancellation.hpp"
 #include "cgpui/ui/animation_frame_pacing.hpp"
 #include "cgpui/ui/animation_curve.hpp"

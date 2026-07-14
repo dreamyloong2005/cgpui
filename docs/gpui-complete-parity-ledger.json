@@ -33,8 +33,8 @@
     }
   },
   "status_counts": {
-    "required": 15,
-    "adapted": 17,
+    "required": 12,
+    "adapted": 20,
     "deferred": 2,
     "non_goal": 1
   },
@@ -3660,7 +3660,19 @@
       "xmake.lua"
     ],
     "phase_g_step_674_remaining_gap": "Step 675 action macro production behavior",
-    "phase_f_current_handoff": "Step 675 action macro production behavior"
+    "phase_g_step_675_surface": "Phase G Step 675 adds public scoped and unscoped unit-action macros with default construction, copyability, equality, and stable Action names, while payload actions remain explicit types outside the macro contract. Step 676 candidate-ledger closeout audit is next.",
+    "phase_g_step_675_sources": [
+      "include/cgpui/ui/action.hpp",
+      "include/cgpui/ui/action_macros.hpp",
+      "include/cgpui/ui/ui.hpp",
+      "tests/api_parity/action_macro_surface_test.cpp",
+      "tests/header_cleanliness/action_macros_header_cleanliness.cpp",
+      "tests/architecture/phase_g_action_macro_structure_test.cpp",
+      "scripts/ci/architecture-header-targets.txt",
+      "xmake.lua"
+    ],
+    "phase_g_step_675_remaining_gap": "Step 676 candidate-ledger closeout audit",
+    "phase_f_current_handoff": "Step 676 candidate-ledger closeout audit"
   },
   "categories": [
     "application_and_app_context",
@@ -3764,9 +3776,9 @@
     },
     {
       "upstream_gpui": "gpui::actions! / action macro",
-      "cgpui_target": "Action<T> typed action concept, action_name<T>() / action_name_v<T>, typed register/dispatch overloads over the existing string action registry, action registration metadata for general/app/window/view/focused-element scopes, typed action command-palette metadata binding, action enablement metadata that suppresses disabled action dispatch, action bubbling through focused routes, key binding grammar parsing for Context<T>::bind_key(\"ctrl-shift-s\", \"action\"), platform modifier semantics for secondary-* and platform-* bindings, keymap context filtering for app/window/view/focused-element bindings, partial key sequence matching for multi-chord bindings, disabled key scope filtering, and command palette key integration that parses CommandPaletteEntry::key_binding and installs derived or explicit KeyBindingContext bindings, covered by include/cgpui/ui/action.hpp, include/cgpui/ui/key_binding.hpp, include/cgpui/ui/runtime_action_templates.hpp, include/cgpui/ui/runtime_action_enablement_templates.hpp, include/cgpui/ui/runtime_command_palette_templates.hpp, include/cgpui/ui/runtime_actions.hpp, src/ui/runtime_action_dispatch.cpp, src/ui/runtime_action_registration.cpp, src/ui/runtime_action_metadata.cpp, src/ui/runtime_command_palette_keys.cpp, src/ui/runtime_key_binding_grammar.cpp, src/ui/runtime_key_binding_modifiers.cpp, src/ui/runtime_key_binding_contexts.cpp, src/ui/runtime_key_binding_sequences.cpp, tests/api_parity/typed_action_surface_test.cpp, tests/ui/typed_action_dispatch_test.cpp, tests/ui/action_scope_metadata_test.cpp, tests/ui/typed_action_command_metadata_test.cpp, tests/ui/action_enablement_metadata_test.cpp, tests/ui/action_bubbling_test.cpp, tests/ui/key_binding_grammar_test.cpp, tests/ui/key_binding_platform_modifier_test.cpp, tests/ui/keymap_context_test.cpp, tests/ui/key_binding_partial_match_test.cpp, tests/ui/key_binding_disabled_scope_test.cpp, and tests/ui/command_palette_key_integration_test.cpp; action macro payloads remain missing",
-      "status": "required",
-      "next_step": "Phase B action metadata/key dispatch depth"
+      "cgpui_target": "CGPUI_ACTIONS(...) and CGPUI_ACTIONS_IN(namespace_name, ...) unit-action generation plus the existing Action<T> concept, stable action names, typed registration/dispatch, scoped metadata, enablement, bubbling, key grammar, keymap contexts, partial sequences, and command-palette integration, covered by include/cgpui/ui/action.hpp, include/cgpui/ui/action_macros.hpp, tests/api_parity/action_macro_surface_test.cpp, tests/header_cleanliness/action_macros_header_cleanliness.cpp, tests/architecture/phase_g_action_macro_structure_test.cpp, and the existing typed action/key tests; payload actions remain explicit types outside the macro contract",
+      "status": "adapted",
+      "next_step": "Phase G Step 675 unit-action macro closeout"
     },
     {
       "upstream_gpui": "gpui::div",
@@ -3788,15 +3800,15 @@
     },
     {
       "upstream_gpui": "gpui platform services",
-      "cgpui_target": "menu/dialog/chrome skeletons plus try_install_native_menu(...) -> Result<NativeMenuInstallation> and try_show_native_file_dialog(...) -> Result<NativeFileDialogResult> on WindowRuntime, AppContext, and ViewContext/WindowRuntimeContext, covered by src/ui/runtime_platform_service_results.cpp, src/ui/runtime_platform_services.cpp, src/ui/app_context_services.cpp, src/ui/runtime_context_platform.cpp, and tests/api_parity/platform_service_result_conventions_test.cpp",
-      "status": "required",
-      "next_step": "Phase B result conventions, then Phase F production services"
+      "cgpui_target": "production Win32 file open/save, directory picker, message dialog, URL, menu/chrome, reopen lifecycle, Runtime/AppContext Result policy, bounded diagnostics, and explicit Wayland/default unsupported behavior; Phase F Step 594 platform-services closeout is guarded by tests/architecture/phase_f_platform_services_closeout_structure_test.cpp and the Steps 587-593 focused service guards",
+      "status": "adapted",
+      "next_step": "Phase F platform-services band closed"
     },
     {
       "upstream_gpui": "gpui_platform wayland feature",
-      "cgpui_target": "Wayland + Vulkan",
-      "status": "required",
-      "next_step": "Phase F"
+      "cgpui_target": "production Wayland + Vulkan lifecycle, input, clipboard, drag/drop, services, multi-window ownership, diagnostics, packaging, examples, and real display verification; Phase F Steps 614-618 Win32/Wayland closeout plus Phase G locked WSL Debug verification with real WSLg frame pixel capture",
+      "status": "adapted",
+      "next_step": "Windows/Linux requested target path complete pending Step 676 audit"
     },
     {
       "upstream_gpui": "gpui_platform x11 feature",

@@ -66,7 +66,7 @@ int main() {
       !contains(facade, "runtime.renderer_ = &parent_renderer") ||
       !contains(behavior, "schedule_repeating_timer(") ||
       !contains(behavior, "app.cancel_timer(view->repeating)")) return 4;
-  if (!contains(previous, "Step 675 action macro production behavior") ||
+  if (!contains(previous, "Step 676 candidate-ledger closeout audit") ||
       !contains(xmake, "target(\"phase_g_test_app_timer_control_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_timer_control_structure_test\")")) {
@@ -91,6 +91,6 @@ int main() {
       !contains(core, "Deterministic `TestApp` timer control") ||
       !contains(ledger_json, "\"phase_g_step_661_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 675 action macro production behavior\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 676 candidate-ledger closeout audit\"")) return 8;
   return 0;
 }

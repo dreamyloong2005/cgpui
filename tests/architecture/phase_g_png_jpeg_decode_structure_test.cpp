@@ -114,6 +114,6 @@ int main() {
       !contains(core, "Signature-detected PNG and JPEG decoding") ||
       !contains(ledger_json, "\"phase_g_step_652_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 675 action macro production behavior\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 676 candidate-ledger closeout audit\"")) return 9;
   return 0;
 }

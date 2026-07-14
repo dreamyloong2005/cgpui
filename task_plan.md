@@ -1563,9 +1563,13 @@ Windows/Linux core API is stable enough for parity work.
   defines no URLs or versions and only probes the locally installed Vulkan SDK
   through `find_vulkansdk()` and `find_library()`; the recipe identity itself is
   frozen by commit `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`.
-- Active: Phase G Step 675 adds focused public unit-action macros with scoped
-  and unscoped naming, behavior/header/structure coverage, and candidate-ledger
-  corrections before the Step 676 closeout audit.
+- Completed: Phase G Step 675 adds public scoped and unscoped unit-action macros with default construction, copyability, equality, and stable Action names, while payload actions remain explicit types outside the macro contract. Step 676 candidate-ledger closeout audit is next.
+- Step 675 evidence: the prelude-visible behavior tracer moved from missing-
+  macro RED to GREEN for unscoped and scoped actions; the leaf header passes
+  standalone cleanliness under default MSVC preprocessing, the focused
+  structure guard freezes its 150-line boundary, and the three stale candidate
+  rows now cite unit-action, Phase F platform-service, and Win32/Wayland closeout
+  evidence before the Step 676 audit.
 - Step 674 final evidence: after the output-confined ENOSPC recovery, the
   warmed native Xmake 3.0.9 Arch Linux Debug suite passes 431/431 in 62.087
   seconds with real WSLg Wayland frame pixel capture. The dedicated guard moves
@@ -1596,6 +1600,10 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first Step 675 live-handoff chain passes 117/119; only the Windows and Linux Debug packaging guards return exit `6` because two new modular targets raise `xmake.lua` from the prior 4320 cap to 4322 lines | Step 675 119-consumer Windows verification | Align only those two historical Xmake caps with the new action-macro structure guard's 4340 ceiling, rerun the focused pair, then rerun the complete 119-target chain |
+| The first combined Step 675 header/structure patch named a nonexistent adjacency in the sorted architecture/header manifest | Step 675 modular guard creation | `apply_patch` rejected the edit atomically; inspect the real manifest ordering, then replay the same files and registrations with exact context |
+| The first Step 675 macro implementation forwards `__VA_ARGS__` through a counted expander, and default MSVC preprocessing collapses two actions into one invalid `struct A, B` declaration | Step 675 first GREEN attempt | Differential `/EP` output proves `/Zc:preprocessor` expands correctly; preserve external-consumer compatibility by applying the selected expander to a parenthesized argument pack instead of requiring a compiler flag |
+| A Step 675 read-only query requested nonexistent `include/cgpui/ui/actions.hpp`, `include/cgpui/ui.hpp`, and `tests/ui/typed_action_surface_test.cpp` paths | Step 675 ownership discovery | Use the enumerated live paths: `include/cgpui/ui/action.hpp`, the actual UI aggregate under `include/cgpui/ui/`, and `tests/api_parity/typed_action_surface_test.cpp`; no repository state changed |
 | A direct WSL exit-code probe wrapped two binaries in Bash variables, but the PowerShell/WSL argument layers consumed `$?`, `$first`, and `$second`, producing empty diagnostics | Step 674 focused structure-failure diagnosis | Discard the invalid capture, use the already deterministic two-target Xmake loop plus direct source/cap evidence, and avoid Bash-variable capture through PowerShell |
 | The synchronized Step 674 expanded WSL suite passes 430/432; only `phase_g_windows_debug_packaging_structure_test` and `phase_g_windows_full_debug_verification_structure_test` fail while all runtime and real Wayland/Vulkan tests pass | Step 674 expanded full-debug verification | Use the two focused structure targets as the deterministic debugging loop, inspect their exact exit branches, correct only stale dynamic handoff assumptions, then rerun the focused pair and full 432-test suite |
 | The first Step 674 full WSL suite compiled all production libraries and linked targets through 81%, then `window_runtime_focus_test` failed with `No space left on device` | Step 674 authoritative WSL full-debug verification | Verify the active builddir is `.build-wsl/master`, delete only the unused 8.4 GB historical `.build-wsl/master/build-root` subtree plus completed old CI package caches, retain the active objects/dependencies/tools, and resume the same serial suite from the warmed graph |

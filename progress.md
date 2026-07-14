@@ -24937,3 +24937,56 @@
   real WSLg frame pixel capture and Wayland/Vulkan surface coverage. Step 674
   implementation, authority synchronization, handoff migration, regression
   repair, and full verification are complete; proceed to audit and commit.
+- Committed Step 674 as `9a77eec6 test: verify phase g in WSL`. Post-commit
+  status contains only the user's untracked `.vscode/`; Step 675 unit-action
+  macro behavior is active.
+
+## 2026-07-15 Phase G Step 675 Action Macro Production Behavior
+
+- Confirmed the public seam: scoped and unscoped unit-action generation belongs
+  in a new `include/cgpui/ui/action_macros.hpp` leaf over the existing
+  `cgpui::Action` concept. Payload actions stay outside the macro contract and
+  runtime dispatch requires no change.
+- The candidate ledger still marks action macros, platform services, and the
+  Wayland feature as required gaps. Step 675 must add the macro evidence and
+  refresh the two already-complete Phase F rows before Step 676 closeout.
+- Registered the public action-macro behavior target and ran it with the locked
+  Windows Xmake 3.0.9 executor. The compile fails deterministically at the
+  public call sites because `CGPUI_ACTIONS` and `CGPUI_ACTIONS_IN` do not yet
+  exist, establishing the Step 675 RED state before implementation.
+- The first implementation remains RED under Xmake's default MSVC preprocessor:
+  forwarded action lists collapse into one declaration such as
+  `struct SaveDocumentAction, CloseDocumentAction`. Direct preprocessing proves
+  the same source expands correctly under `/Zc:preprocessor`; replace the
+  forwarding boundary with a parenthesized argument-pack apply helper so the
+  public header works without requiring consumer compiler flags.
+- The parenthesized apply boundary fixes default MSVC preprocessing: direct
+  `/EP` output shows four independent structs, and the locked Xmake 3.0.9 run
+  passes both `action_macro_surface_test` and the predecessor typed-action
+  surface 2/2. The aggregate-header change also rebuilds the complete UI/App
+  library graph without a production compile failure.
+- Added standalone action-macro header cleanliness plus a focused modular
+  structure guard and registered both in the shared architecture/header
+  manifest. Header cleanliness passes; before authority synchronization the
+  structure executable returns the intended completion-record RED exit `7`.
+- Focused Windows and Arch WSL verification both pass the action macro,
+  standalone header, predecessor typed-action, and structure targets 4/4. The
+  first complete Windows live-handoff run passes 117/119; only the Windows and
+  Linux Debug packaging guards return their Xmake line-cap exit `6` because the
+  two new modular targets raise `xmake.lua` to 4322 lines. Align those two old
+  caps with the Step 675 guard's 4340 ceiling and rerun the full chain.
+- The two packaging failures are historical structure-cap drift rather than
+  product or packaging regressions: both guards capped `xmake.lua` at 4320
+  lines, while the three focused Step 675 target registrations bring it to
+  4322. Raising only those two caps to 4340 preserves the modular boundary and
+  makes the focused diagnostic loop pass.
+- The final complete Windows live-handoff run passes 119/119 in 9.437 seconds.
+  Independent static audit also confirms two intentional historical Step 675
+  references, 120 live Step 676 consumers (the prior 119 plus the new Step 675
+  guard), parseable ledger JSON, 147 unique registered architecture/header
+  manifest targets, clean diff whitespace, and all new files below their
+  frozen line caps. Step 675 is ready for scope audit and commit.
+- Resume-time verification with locked Windows Xmake 3.0.9 and native signed
+  Arch Xmake 3.0.9 passes the action macro, standalone header, predecessor
+  typed-action, and structure targets 4/4 on each platform. This confirms the
+  persisted Step 675 worktree remains green before staging.

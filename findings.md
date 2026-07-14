@@ -12538,3 +12538,18 @@
   seconds. Real WSLg frame pixel capture, Wayland/Vulkan surface execution,
   the new Step 674 guard, and the full live-handoff chain are all green; no
   debug instrumentation or throwaway compatibility files remain.
+- Step 674 is committed at `9a77eec6`. Step 675 ownership is a public
+  `action_macros.hpp` leaf included by the actual UI aggregate, with separate
+  public behavior, header-cleanliness, and structure tests. The implementation
+  can be entirely compile-time; no runtime source or dispatch changes are
+  needed.
+- The Step 675 public behavior tracer is RED solely on the missing macros. A
+  bounded preprocessor mapping layer can generate up to sixteen unit actions
+  per declaration, including nested namespace spelling in the static action
+  name, while leaving payload types on the existing explicit-struct path.
+- Default MSVC preprocessing treats a forwarded `__VA_ARGS__` list as one
+  argument, while `/Zc:preprocessor` expands the same first implementation
+  correctly. Applying the selected expander to a parenthesized argument pack
+  preserves both default-MSVC and standards-conforming behavior without an
+  external compiler-flag requirement.
+- Phase G Step 675 adds public scoped and unscoped unit-action macros with default construction, copyability, equality, and stable Action names, while payload actions remain explicit types outside the macro contract. Step 676 candidate-ledger closeout audit is next.

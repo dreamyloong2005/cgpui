@@ -52,12 +52,15 @@ runtime ids or stores.
 ## Action and key vocabulary
 
 - `Action<T>`
+- `CGPUI_ACTIONS(...)`
+- `CGPUI_ACTIONS_IN(namespace_name, ...)`
 - `CommandPaletteEntry`
 - `KeyBindingContext`
 
 Typed actions, command-palette metadata, and key-binding context selection are
-public authoring vocabulary. Macro-style action payload generation remains
-outside this freeze.
+public authoring vocabulary. Unit-action macros generate default-constructible,
+copyable, equality-comparable actions with stable `Type` or `namespace::Type`
+names. Payload actions remain explicit types outside the macro contract.
 
 ## Async, test, and Result vocabulary
 
@@ -468,7 +471,7 @@ this freeze is Phase D Step 379 text/font shaping.
 
 - `ClipboardItem` payload parity
 - upstream `gpui::test` macro equivalents
-- action macro payloads
+- payload-action macro generation
 - task priorities
 - structured task groups
 - private runtime headers
