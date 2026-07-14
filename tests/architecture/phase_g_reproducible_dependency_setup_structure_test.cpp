@@ -144,7 +144,7 @@ int main() {
   }
   if (!contains(ledger_json, "\"phase_g_step_672_sources\"") ||
       !contains(ledger_json,
-          "\"phase_f_current_handoff\": \"Step 676 candidate-ledger closeout audit\"")) {
+          "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification\"")) {
     return 11;
   }
   return 0;

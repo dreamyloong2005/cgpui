@@ -1564,6 +1564,11 @@ Windows/Linux core API is stable enough for parity work.
   through `find_vulkansdk()` and `find_library()`; the recipe identity itself is
   frozen by commit `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`.
 - Completed: Phase G Step 675 adds public scoped and unscoped unit-action macros with default construction, copyability, equality, and stable Action names, while payload actions remain explicit types outside the macro contract. Step 676 candidate-ledger closeout audit is next.
+- Completed: Phase G Step 676 closes the candidate ledger with zero required Windows/Linux candidate gaps, 29 adapted rows, deferred macOS and optional X11, and wasm as a non-goal, while active Windows/Linux platform targets remain required scope rather than unresolved rows. Step 677 final Windows/WSL verification is next.
+- Step 676 evidence: `phase_g_candidate_ledger_closeout_test` requires all 32
+  Markdown candidates to exist in the JSON export with matching status,
+  rejects any remaining required candidate row, checks exact 29/2/1 counts,
+  and separately freezes active platform-target scope.
 - Step 675 evidence: the prelude-visible behavior tracer moved from missing-
   macro RED to GREEN for unscoped and scoped actions; the leaf header passes
   standalone cleanliness under default MSVC preprocessing, the focused

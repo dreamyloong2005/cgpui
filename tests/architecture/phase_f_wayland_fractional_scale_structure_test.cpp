@@ -102,7 +102,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 676 candidate-ledger closeout audit")) {
+                "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification")) {
     return 9;
   }
   return 0;

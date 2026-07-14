@@ -12553,3 +12553,19 @@
   preserves both default-MSVC and standards-conforming behavior without an
   external compiler-flag requirement.
 - Phase G Step 675 adds public scoped and unscoped unit-action macros with default construction, copyability, equality, and stable Action names, while payload actions remain explicit types outside the macro contract. Step 676 candidate-ledger closeout audit is next.
+
+## 2026-07-15 Phase G Step 676 Candidate-Ledger Closeout
+
+- The platform-target table and candidate-row table use different meanings:
+  Windows and Wayland remain `Required` platform scope, while a `Required`
+  candidate row is an unresolved implementation gap. Step 676 must preserve
+  the former and eliminate the latter.
+- The Markdown candidate table has 32 rows: 20 adapted, 9 still marked
+  required despite closed Phase B/C/D/F/G evidence, 2 deferred, and 1
+  non-goal. The JSON export contains only 19 of those rows and omits 13,
+  including all nine stale required candidates plus macOS and wasm.
+- The durable closeout contract is full 32-row Markdown/JSON parity with 29
+  adapted, 2 deferred, 1 non-goal, and zero required candidate gaps. Active
+  Windows/Linux platform targets remain required scope; macOS remains Phase H,
+  X11 remains optional Phase I, and wasm remains a non-goal.
+- Phase G Step 676 closes the candidate ledger with zero required Windows/Linux candidate gaps, 29 adapted rows, deferred macOS and optional X11, and wasm as a non-goal, while active Windows/Linux platform targets remain required scope rather than unresolved rows. Step 677 final Windows/WSL verification is next.

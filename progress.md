@@ -24990,3 +24990,42 @@
   Arch Xmake 3.0.9 passes the action macro, standalone header, predecessor
   typed-action, and structure targets 4/4 on each platform. This confirms the
   persisted Step 675 worktree remains green before staging.
+- Committed Step 675 as `ab6998b4 feat: add unit action macros`; post-commit
+  status contains only the user's untracked `.vscode/` directory.
+
+## 2026-07-15 Phase G Step 676 Candidate-Ledger Closeout
+
+- Added and registered `phase_g_candidate_ledger_closeout_test` at the public
+  Markdown/JSON ledger seam. It verifies 32 named candidate rows, exact status
+  counts, active platform target scope, deferred/non-goal boundaries, synced
+  completion records, and the Step 677 handoff.
+- The locked Windows Xmake 3.0.9 tracer compiles and fails with direct exit `4`
+  before ledger edits, proving the expected candidate-row mismatch RED state.
+- Reclassified the nine stale required candidate rows from already-closed
+  Phase B/C/D/F/G work, added the 13 missing JSON candidate objects, and made
+  Markdown plus JSON agree at 32 rows: 29 adapted, 2 deferred, 1 non-goal,
+  and zero required candidate gaps. The separate platform scope still marks
+  Windows and Wayland required, macOS/X11 deferred, and wasm non-goal.
+- The first guarded Markdown rewrite stopped before writing because the same
+  Windows backend name appears in both platform scope and candidate summary.
+  Restricting the transform to the summary section updated exactly nine rows.
+- The first JSON patch also stopped before writing because a long description
+  was used as an unstable anchor. Splitting it into small patches keyed by
+  adjacent candidate names added all 13 rows without unrelated churn.
+- The candidate guard initially remained at exit `4` because its whole-file
+  Markdown lookup selected the platform-scope Windows row. Restricting row
+  lookup to the candidate-summary section made the RED-to-GREEN transition.
+- WSL focused verification then exposed three existing contract drifts: the
+  old parity guard required detailed action/platform-service evidence that
+  Step 675 had compressed, and the Step 673/674 guards froze a mutable handoff
+  plus the old 4320-line Xmake limit. Restored the detailed evidence, added the
+  new macro evidence, advanced only the mutable handoff, and aligned the two
+  caps to 4360 while preserving all historical completion records.
+- Final locked Windows verification passes all 123 Step 677 handoff targets
+  plus `gpui_parity_ledger_test` (124 filters, exit 0). Native Arch Xmake 3.0.9
+  passes the candidate, parity, Step 675, Step 673/674, and Phase F closeout
+  chain 6/6 in 0.858 seconds.
+- Resume-time static audit finds no `DEBUG-step676` residue, confirms exactly
+  two historical Step 676 test references and 123 live Step 677 consumers,
+  parses the JSON ledger, and passes `git diff --check` with only line-ending
+  notices. The locked Windows Xmake 3.0.9 candidate and parity guards pass 2/2.

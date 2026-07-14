@@ -320,6 +320,8 @@ int main() {
     return 42;
   }
   if (!contains(ledger, "| gpui::actions! / action macro |") ||
+      !contains(ledger, "`CGPUI_ACTIONS(...)`") ||
+      !contains(ledger, "`CGPUI_ACTIONS_IN(namespace_name, ...)`") ||
       !contains(ledger, "`Action<T>` typed action concept") ||
       !contains(ledger, "`action_name<T>()`") ||
       !contains(ledger, "typed register/dispatch overloads") ||
@@ -333,6 +335,7 @@ int main() {
       !contains(ledger, "disabled key scope filtering") ||
       !contains(ledger, "command palette key integration") ||
       !contains(ledger, "include/cgpui/ui/action.hpp") ||
+      !contains(ledger, "include/cgpui/ui/action_macros.hpp") ||
       !contains(ledger, "include/cgpui/ui/key_binding.hpp") ||
       !contains(ledger, "include/cgpui/ui/runtime_action_templates.hpp") ||
       !contains(ledger,
@@ -347,6 +350,8 @@ int main() {
       !contains(ledger, "src/ui/runtime_key_binding_sequences.cpp") ||
       !contains(ledger,
                 "tests/api_parity/typed_action_surface_test.cpp") ||
+      !contains(ledger,
+                "tests/api_parity/action_macro_surface_test.cpp") ||
       !contains(ledger, "tests/ui/typed_action_dispatch_test.cpp") ||
       !contains(ledger, "tests/ui/action_scope_metadata_test.cpp") ||
       !contains(ledger, "tests/ui/action_enablement_metadata_test.cpp") ||
@@ -360,7 +365,7 @@ int main() {
                 "tests/ui/command_palette_key_integration_test.cpp") ||
       !contains(ledger,
                 "tests/ui/test_context_keystroke_simulation_test.cpp") ||
-      !contains(ledger, "Phase B action metadata/key dispatch depth")) {
+      !contains(ledger, "Phase G Step 675 unit-action macro closeout")) {
     return 62;
   }
 
@@ -384,6 +389,9 @@ int main() {
               "\"window_shadow\"",
               "\"gpui::prelude\"",
               "\"gpui::actions! / action macro\"",
+              "CGPUI_ACTIONS(...) and CGPUI_ACTIONS_IN(namespace_name, ...)",
+              "action_macros.hpp",
+              "action_macro_surface_test",
               "Action<T> typed action concept",
               "action_name<T>",
               "action enablement metadata",

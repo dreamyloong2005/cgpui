@@ -74,7 +74,7 @@ int main() {
   if (!contains(cleanliness, "#include \"cgpui/ui/test_runner.hpp\"") ||
       !contains(aggregate, "#include \"cgpui/ui/test_runner.hpp\"") ||
       !contains(previous,
-                "Step 676 candidate-ledger closeout audit")) {
+                "Step 677 final Windows/WSL verification")) {
     return 5;
   }
   if (!contains(xmake, "target(\"phase_g_test_runner_test\")") ||
@@ -103,6 +103,6 @@ int main() {
       !contains(core, "GPUI-style C++ test runner") ||
       !contains(ledger_json, "\"phase_g_step_665_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 676 candidate-ledger closeout audit\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification\"")) return 9;
   return 0;
 }
