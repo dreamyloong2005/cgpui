@@ -126,6 +126,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationTransition`") ||
       !contains(core_parity, "typed scalar animation transitions") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 673 Windows full-debug verification\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 674 WSL full-debug verification\"")) return 9;
   return 0;
 }

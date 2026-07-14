@@ -4097,6 +4097,11 @@ target("phase_g_reproducible_dependencies_structure_test")
     add_files("tests/architecture/phase_g_reproducible_dependency_setup_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_windows_full_debug_verification_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_windows_full_debug_verification_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 target("window_runtime_frame_scheduling_test")
     set_kind("binary")
     set_rundir(os.projectdir())

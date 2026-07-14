@@ -24826,3 +24826,38 @@
   version resolution and only detects the local Vulkan SDK as a system package,
   so the lock's `version = "latest"` selector does not weaken reproducibility.
   Step 672 is ready to commit.
+
+## 2026-07-14 Phase G Step 673 Windows Full-Debug Verification
+
+- Committed Step 672 as `7604b877 ci: add reproducible dependency setup` with
+  138 intended files; `build/` and `.vscode/` remain outside the commit.
+- Launched a fresh official-Xmake 3.0.9 Windows Debug configuration using the
+  locked dependency roots, a dedicated Step 673 config directory, the warmed
+  repository build root, and serial `-j 1` test execution with a persistent log.
+- The complete report is 448/449 in 56.203 seconds. The only failure is
+  `phase_c_final_ledger_audit_test/default`; its focused rerun deterministically
+  returns exit `50` in 0.047 seconds.
+- Diagnosis proves the Phase C historical audit froze a mutable image-assets
+  ledger phrase that Phase G Step 658 correctly advanced. Updated the test to
+  guard the stable Phase C SVG/image authoring scope recorded in the public
+  vocabulary while leaving current ledger status free to advance in later phases.
+- The focused historical regression rebuilds and passes 1/1 in 0.062 seconds.
+  A complete official-Xmake rerun then passes all 449/449 tests serially in
+  37.204 seconds.
+- Added and registered the dedicated Step 673 Windows full-debug structure
+  guard plus architecture manifest entry. After correcting two guard-source
+  string-literal mistakes, it reaches the intended authority-only RED exit `5`.
+- Synchronized the Step 673 completion record and advanced the live handoff to
+  Step 674 WSL full-debug verification. The final Windows suite will include the
+  new guard and must report 450/450 before Step 673 is committed.
+- The first 450-target run passes 448/450 in 44.500 seconds. Both visible
+  failures are chain guards whose predecessor checks still named Step 673; an
+  audit finds nine such live checks and no remaining exact historical Step 673
+  literals outside the intentionally split Step 672 completion source.
+- Advanced all nine predecessor checks, built each target serially because
+  official Xmake 3.0.9 accepts only one positional build target, and passed the
+  focused predecessor chain 9/9 in 0.719 seconds.
+- The final official-Xmake 3.0.9 Windows Debug suite passes 450/450 serially in
+  35.062 seconds with zero failures. This includes the repaired Phase C audit,
+  the new Step 673 guard, all 119 existing handoff consumer files, and the nine
+  predecessor-chain checks. Step 673 is ready to commit before the WSL gate.

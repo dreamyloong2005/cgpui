@@ -1563,6 +1563,18 @@ Windows/Linux core API is stable enough for parity work.
   defines no URLs or versions and only probes the locally installed Vulkan SDK
   through `find_vulkansdk()` and `find_library()`; the recipe identity itself is
   frozen by commit `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`.
+- Active: Phase G Step 673 runs the official Xmake 3.0.9 Windows full-debug
+  suite serially and requires an authoritative final pass count before the WSL
+  gate. The first complete run reports 448/449 with one historical Phase C
+  ledger audit failure; diagnosis and a focused regression rerun are in progress.
+- Completed: Phase G Step 673 completes Windows full-debug verification at 450/450 after updating the Phase C final ledger audit to guard stable historical SVG/image scope rather than mutable current asset status. Step 674 WSL full-debug verification is next.
+- Step 673 evidence: the original complete suite reports 448/449 and the focused
+  historical audit reproduces at exit `50` in 0.047 seconds. After moving that
+  audit to stable Phase C vocabulary evidence, the focused regression passes
+  1/1 and the pre-guard complete suite passes 449/449 in 37.204 seconds. The
+  dedicated Step 673 structure guard then moves from authority-only RED exit
+  `5` to green; the nine live predecessor checks pass 9/9 after advancing to
+  Step 674, and the final official-Xmake suite passes 450/450 in 35.062 seconds.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1578,6 +1590,12 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The first 450-test Step 673 closeout run passed 448/450; the two visible failures were the first members of nine live predecessor checks that still required Step 673 after direct JSON consumers advanced to Step 674 | Step 673 final Windows full-debug verification | Classify all nine remaining exact Step 673 references as live predecessor checks, preserve the split Step 672 historical completion literal, advance the nine checks to Step 674, rebuild each target, and pass the focused chain 9/9 before rerunning all 450 tests |
+| Official Xmake 3.0.9 rejected a single `xmake build` invocation with nine positional targets as `invalid argument` | Step 673 predecessor-chain rebuild | Build each target in an explicit serial loop with `-y -j 1`, then pass all nine filters to one `xmake test` invocation; no product test ran under the invalid command |
+| The corrected Step 673 guard built but returned exit `4` because it searched the predecessor's raw C++ source for a compile-time-concatenated completion phrase across adjacent literals | Step 673 guard RED setup | Assert the two stable raw-source fragments separately, then rerun until the guard reaches its intended missing-authority exit |
+| The first Step 673 structure-guard build failed with MSVC C2001 because a split predecessor string retained an unintended backslash before the closing quote | Step 673 guard RED setup | Remove the stray escape, rebuild the same target, and require the intended authority-only RED before synchronizing completion records |
+| The first authoritative Step 673 Windows full-debug run passed 448/449; `phase_c_final_ledger_audit_test/default` returned exit `50` because it froze Phase C's then-current image/SVG `Required` wording after Phase G closed the asset production band | Step 673 Windows full-debug verification | Keep the fast failing test as the feedback loop, move its assertion to Phase C's stable historical scope evidence in the public vocabulary, and rerun the focused test plus complete 449-test suite |
+| A read-only `rg` command passed Windows wildcard paths as literal arguments and returned OS error 123 before searching test sources | Step 673 asset-closeout evidence lookup | Search the containing directories with `--glob` or use explicit files; the roadmap and ledger queries in the same read-only command still returned the needed evidence and no state changed |
 | A read-only `rg` lookup for the prior lock-audit command used an unbalanced escaped group and failed before searching | Step 672 evidence lookup | Use direct known commands for the final gate instead of reconstructing a nested regex; no repository or build state changed |
 | The Step 672 final PowerShell syntax wrapper repeated the known `"$f:$message"` scoped-variable parse trap and failed before parsing any product script | Step 672 final static gate | Delimit the filename as `${f}` before the colon, rerun the four-file parser, and retain the existing repository note so later wrappers do not repeat this form |
 | The first interrupted-package temp audit embedded Bash `$(...)` inside a PowerShell double-quoted command; PowerShell evaluated `wc` locally, and the compound WSL command then printed misleading partial output | Step 672 package recovery audit | Do not nest Bash command substitution through PowerShell; use direct `wsl.exe --` commands or a source-owned temporary script with explicit exit checks |

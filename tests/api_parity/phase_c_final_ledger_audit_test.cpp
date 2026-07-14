@@ -177,10 +177,11 @@ int main() {
       line_containing(ledger_md, "| gpui image assets |");
   const std::string svg_row = line_containing(ledger_md, "| gpui SVG |");
   if (image_assets_row.empty() || svg_row.empty() ||
-      !contains(image_assets_row, "| Required |") ||
-      !contains(image_assets_row, "production loading/upload remains later") ||
-      !contains(svg_row, "| Required |") ||
-      !contains(svg_row, "production decoding/rendering remains later")) {
+      !contains(vocabulary, "This closes the public SVG/image") ||
+      !contains(vocabulary, "front-end authoring band") ||
+      !contains(vocabulary,
+                "while keeping SVG decoding, PNG/JPEG loading, renderer upload,") ||
+      !contains(vocabulary, "out of scope for this freeze")) {
     return 50;
   }
 

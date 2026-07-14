@@ -12432,3 +12432,30 @@
   `find_vulkansdk()` plus `find_library()`. Therefore lock value
   `version = "latest"` is a virtual/system selector whose recipe behavior is
   fixed by the locked repository commit, not a floating SDK download.
+
+## 2026-07-14 Phase G Step 673 Windows Full-Debug Verification
+
+- The official Xmake 3.0.9 serial Windows suite is authoritative and reports
+  448/449, with only `phase_c_final_ledger_audit_test/default` failing at exit
+  `50`; every runtime, Win32, UIA, Vulkan, asset, async, animation, test-support,
+  packaging, and architecture target in the same run is green.
+- The focused test is a deterministic 0.05-second feedback loop. It reproduces
+  because the Phase C historical audit requires the mutable current ledger row
+  to retain `production loading/upload remains later`, while Phase G Step 658
+  correctly replaced that statement after closing the production asset band.
+- Phase C's durable contract already lives in the public vocabulary: Step 364
+  closed front-end SVG/image authoring while explicitly leaving decoding,
+  PNG/JPEG loading, renderer upload, GPU lifetime, and runtime internals outside
+  the Phase C freeze. The historical audit should guard that record and row
+  existence, not prevent later phases from advancing current ledger status.
+- The dedicated Step 673 structure guard is red-capable independently of the
+  full suite: after registration it compiles and returns authority-only exit
+  `5` until roadmap, ledger, task-plan, and findings records agree and the live
+  handoff advances to Step 674.
+- Advancing only the 119 direct current-handoff assertions is insufficient.
+  Nine chain guards also inspect their immediate predecessor for the live
+  handoff, so they must advance in the same change. The split Step 672 completion
+  literal remains historical evidence and is intentionally preserved.
+- After the complete suite exposes the first two chain failures, rebuilding all
+  nine affected guards and running their filters passes 9/9 in 0.719 seconds.
+- Phase G Step 673 completes Windows full-debug verification at 450/450 after updating the Phase C final ledger audit to guard stable historical SVG/image scope rather than mutable current asset status. Step 674 WSL full-debug verification is next.

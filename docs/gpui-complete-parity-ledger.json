@@ -3643,7 +3643,15 @@
       "tests/architecture/phase_g_reproducible_dependency_setup_structure_test.cpp"
     ],
     "phase_g_step_672_remaining_gap": "Step 673 Windows full-debug verification",
-    "phase_f_current_handoff": "Step 673 Windows full-debug verification"
+    "phase_g_step_673_surface": "Phase G Step 673 completes Windows full-debug verification at 450/450 after updating the Phase C final ledger audit to guard stable historical SVG/image scope rather than mutable current asset status. Step 674 WSL full-debug verification is next.",
+    "phase_g_step_673_sources": [
+      "tests/api_parity/phase_c_final_ledger_audit_test.cpp",
+      "tests/architecture/phase_g_windows_full_debug_verification_structure_test.cpp",
+      "scripts/ci/architecture-header-targets.txt",
+      "xmake.lua"
+    ],
+    "phase_g_step_673_remaining_gap": "Step 674 WSL full-debug verification",
+    "phase_f_current_handoff": "Step 674 WSL full-debug verification"
   },
   "categories": [
     "application_and_app_context",
