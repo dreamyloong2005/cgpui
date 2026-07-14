@@ -12324,3 +12324,111 @@
   orchestration-only workflow jobs, dedicated guard, and thin Xmake registration
   consistent with the modularity rules. Spec review finds no missing coverage,
   scope creep, or incorrect behavior.
+
+## 2026-07-14 Phase G Step 672 Reproducible Dependency Setup
+
+- The reproducibility seam is repository-level rather than package-script-local:
+  `set_policy("package.requires_lock", true)` owns resolution, one committed
+  `xmake-requires.lock` owns both `windows|x64` and `linux|x86_64`, and focused
+  platform helpers own the three workspace-confined dependency roots.
+- The lock resolves both partitions against xmake-repo commit
+  `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`. Windows freezes LunaSVG 3.5.0,
+  plutovg 1.3.3, CMake 4.3.4, Ninja 1.13.2, and the Vulkan SDK recipe; Linux
+  additionally freezes libxkbcommon 1.13.1 and its transitive tool graph.
+- A local composite action pins Xmake 3.0.9 once, restores `global`, `pkg-cache`,
+  and `pkg-install` under the platform dependency root, and exports the same
+  environment consumed locally by package, example/smoke, and architecture/
+  header runners. The workflow no longer contains any `latest` Xmake selector.
+- Both package cores remove `xrepo update-repo`; the committed lock selects and
+  checks out the exact repository commit instead of depending on a mutable
+  repository refresh. Existing Debug and Release wrappers remain thin.
+- The Step 672 tracer compiles and moves from missing-module RED exit `1` to
+  authority-only RED exit `10`, proving the implementation before authority and
+  live-handoff synchronization.
+- Phase G Step 672 pins Xmake 3.0.9, commits a dual-platform package lock, centralizes workspace-confined dependency roots, caches reproducible package state in CI, and removes floating repository refreshes from package setup. Step 673 Windows full-debug verification is next.
+- The official Windows Xmake 3.0.9 Release package proves the committed lock and
+  shared dependency helper are consumable from a clean Windows output root.
+- Xmake serializes the selected repository URL into every lock entry. A valid
+  commit is therefore insufficient for reproducibility when the chosen mirror
+  is unreachable; the lock must also freeze the canonical GitHub URL, and the
+  Step 672 guard must reject Gitee or mixed repository URLs.
+- The focused URL guard is a deterministic regression seam: the Gitee lock
+  fails immediately at exit `2`, while the canonical GitHub lock passes 1/1.
+  Changing only the URL leaves all 30 repository commits and package versions
+  unchanged.
+- Long WSL commands should pass environment variables through `wsl.exe -- env`
+  and invoke the target script directly. Wrapping a PATH assignment inside
+  `bash -lc` adds a second parse layer and can turn WSL's inherited Windows PATH
+  parentheses into Bash syntax errors before the actual command runs.
+- The canonical lock URL change does not disturb Windows example consumption:
+  the complete 21-target public inventory, four registration smokes, and four
+  native Win32 display flows remain green under official Xmake 3.0.9.
+- The expanded architecture/header manifest is 143 targets after Step 672. Its
+  143/143 Windows run plus the five API closeouts outside the manifest covers
+  all 119 files that consume `phase_f_current_handoff`; no live Step 672 handoff
+  remains.
+- Xmake 3.0.9 has no `test -l` list option. Full-suite counts must come from the
+  executed test report or from a purpose-built source manifest, not a newer CLI
+  assumption.
+- The pinned upstream GPUI `actions!` macro in revision
+  `5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0` generates default-constructible,
+  cloneable, partially comparable unit action types named `namespace::Type`;
+  its namespace is optional. Complex payload actions use the separate
+  `derive(Action)` path. CGPUI currently requires both forms to handwrite the
+  static action name, so the ledger's action-macro required gap is real even
+  though typed runtime registration and dispatch are already complete.
+- The modular C++ ownership boundary for that gap is a focused public
+  `action_macros.hpp` leaf included by the UI aggregate, with macro/API behavior,
+  header-cleanliness, and structure tests. It does not require runtime dispatch
+  changes.
+- A recovered PTY session ending with exit `-1` and a truncated test stream is
+  not sufficient evidence for Step 673 even when every visible test is green.
+  The full-debug gate requires an authoritative final count from a fresh serial
+  run; the warmed build output can be reused, but the result itself must be
+  reproduced.
+- Pinned upstream `action.rs` at revision
+  `5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0` defines `actions!` only for unit
+  structs. The generated types derive clone, partial equality, default, debug,
+  and Action; the optional namespace changes names from `Type` to
+  `namespace::Type`. Complex payload actions explicitly use the separate
+  `derive(Action)` path, so the CGPUI Step 675 gap must not claim payload
+  generation as part of the unit-action macro.
+- The C++ adaptation can preserve the two upstream invocation modes without a
+  runtime change: `CGPUI_ACTIONS(...)` for unscoped unit actions and
+  `CGPUI_ACTIONS_IN(namespace, ...)` for `namespace::Type` names. Empty structs
+  are already default/copy constructible; a defaulted equality operator and the
+  existing static `name` contract make them comparable and satisfy
+  `cgpui::Action`.
+- `xmake-requires.lock` is Xmake's Lua-table serialization (`{ __meta__ = ...,
+  ["windows|x64"] = ... }`), not JSON or standard TOML. Its correct
+  fail-closed syntax seam is Xmake `io.load(...)`, followed by assertions on
+  metadata and both platform partitions. Foreign JSON/TOML parsers are invalid
+  evidence even though the lock's scalar syntax resembles TOML.
+- The `gpui platform services` required row is stale rather than a production
+  gap. Phase F Step 594 already freezes native Win32 file/directory/message/URL
+  behavior, shared reopen lifecycle, result policy, bounded diagnostics, and
+  explicit Wayland/default unsupported results through
+  `phase_f_platform_services_closeout_structure_test`.
+- The `gpui_platform wayland feature` required row is also stale. Phase F Steps
+  614-618 audit the full Win32/Wayland production path and prove it with final
+  Windows and Arch Linux WSL suites, including active WSLg Wayland frame pixel
+  capture. Its candidate-ledger status should cite those existing closeout and
+  host-verification guards instead of requesting new backend behavior.
+- The interrupted Linux package is safely resumable without repeating the cold
+  dependency/core build. Six framework archives are complete, the official
+  Xmake 3.0.9 symlink resolves to a valid x86-64 ELF, and the Vulkan target
+  retains more than 70 object files beyond the last PTY-visible source. Only
+  the final Vulkan archive, demo, and package assembly are absent.
+- Step 672's cross-platform reproducibility claim is now backed by equivalent
+  consumer breadth on both hosts: clean official-Xmake Release packaging,
+  21 public examples, four registration smokes, four native display flows, and
+  143 architecture/header targets. The Linux recovery did not weaken the claim:
+  it resumed the same clean configuration/build root, then independently
+  assembled and audited the exact package contract after the final link.
+- The remaining Windows lock concern is closed without changing the lock. At
+  xmake-repo commit `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`, the `vulkansdk`
+  recipe has no `add_urls`, version table, archive, or network fetch. Its
+  `on_fetch` branch runs only for a system package and probes the local SDK with
+  `find_vulkansdk()` plus `find_library()`. Therefore lock value
+  `version = "latest"` is a virtual/system selector whose recipe behavior is
+  fixed by the locked repository commit, not a floating SDK download.

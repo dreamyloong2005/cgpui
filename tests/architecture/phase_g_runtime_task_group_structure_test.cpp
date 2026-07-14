@@ -170,7 +170,7 @@ int main() {
       contains(core_parity, "priorities, structured task groups, pooled") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup\"")) {
+          "\"phase_f_current_handoff\": \"Step 673 Windows full-debug verification\"")) {
     return 15;
   }
   return 0;

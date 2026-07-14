@@ -41,10 +41,9 @@ if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
   throw "prepared Windows package manifest is missing: $manifestPath"
 }
 $buildRoot = Join-Path $outputRoot "build-root"
-$env:XMAKE_GLOBALDIR = Join-Path $outputRoot "global"
+. (Join-Path $PSScriptRoot "windows-dependencies.ps1")
+Set-CgpuiWindowsDependencyEnvironment
 $env:XMAKE_CONFIGDIR = Join-Path $outputRoot "config"
-$env:XMAKE_PKG_CACHEDIR = Join-Path $outputRoot "pkg-cache"
-$env:XMAKE_PKG_INSTALLDIR = Join-Path $outputRoot "pkg-install"
 if (-not (Test-Path -LiteralPath $buildRoot -PathType Container)) {
   throw "prepared Windows build root is missing: $buildRoot"
 }

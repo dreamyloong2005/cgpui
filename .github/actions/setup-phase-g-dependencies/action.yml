@@ -1,0 +1,32 @@
+name: Setup Phase G dependencies
+description: Pin Xmake and restore workspace-confined package state.
+
+inputs:
+  platform:
+    description: Dependency root platform directory.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: xmake-io/github-action-setup-xmake@v1
+      with:
+        xmake-version: 3.0.9
+    - name: Restore Xmake package state
+      uses: actions/cache@v4
+      with:
+        path: |
+          build/phase-g-ci/dependencies/${{ inputs.platform }}/global
+          build/phase-g-ci/dependencies/${{ inputs.platform }}/pkg-cache
+          build/phase-g-ci/dependencies/${{ inputs.platform }}/pkg-install
+        key: phase-g-${{ runner.os }}-${{ runner.arch }}-xmake-3.0.9-${{ hashFiles('xmake.lua', 'xmake-requires.lock') }}
+    - name: Configure Windows dependency roots
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        . ./scripts/ci/windows-dependencies.ps1
+        Set-CgpuiWindowsDependencyEnvironment -ExportGitHubEnvironment
+    - name: Configure Linux dependency roots
+      if: runner.os == 'Linux'
+      shell: bash
+      run: bash ./scripts/ci/linux-dependencies.sh --github-env

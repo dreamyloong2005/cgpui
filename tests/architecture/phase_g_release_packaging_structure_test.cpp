@@ -55,8 +55,8 @@ int main() {
       !contains(windows_release, "windows-package.ps1") ||
       !contains(windows_release, "Release") ||
       !contains(windows_core, "ValidateSet(\"Debug\", \"Release\")") ||
-      !contains(windows_core, "XMAKE_GLOBALDIR") ||
-      !contains(windows_core, "xrepo update-repo") ||
+      !contains(windows_core, "windows-dependencies.ps1") ||
+      contains(windows_core, "xrepo update-repo") ||
       !contains(windows_core, "xmake build") ||
       !contains(windows_core, "-j 1")) return 2;
 
@@ -67,7 +67,8 @@ int main() {
       !contains(linux_core, "debug|release") ||
       !contains(linux_core, "meson==1.11.1") ||
       !contains(linux_core, "ninja==1.13.0") ||
-      !contains(linux_core, "xrepo update-repo") ||
+      !contains(linux_core, "linux-dependencies.sh") ||
+      contains(linux_core, "xrepo update-repo") ||
       !contains(linux_core, "xmake build") ||
       !contains(linux_core, "-j 1")) return 3;
 
@@ -117,7 +118,7 @@ int main() {
   if (!contains(ledger_json, "\"phase_g_step_669_sources\"") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup\"")) {
+          "\"phase_f_current_handoff\": \"Step 673 Windows full-debug verification\"")) {
     return 9;
   }
   return 0;

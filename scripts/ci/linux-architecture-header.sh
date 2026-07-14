@@ -34,10 +34,9 @@ if [[ ! -f "$output_root/package/manifest.json" ]]; then
   exit 3
 fi
 
-export XMAKE_GLOBALDIR="$output_root/global"
+source "$repo_root/scripts/ci/linux-dependencies.sh"
+cgpui_configure_linux_dependency_environment
 export XMAKE_CONFIGDIR="$output_root/config"
-export XMAKE_PKG_CACHEDIR="$output_root/pkg-cache"
-export XMAKE_PKG_INSTALLDIR="$output_root/pkg-install"
 if [[ -d "$output_root/python-tools/bin" ]]; then
   export PATH="$output_root/python-tools/bin:$PATH"
 fi

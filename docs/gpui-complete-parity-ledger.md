@@ -798,6 +798,7 @@ consume C: drive space again.
 - Phase G Step 669 adds Windows and Linux Release CI packaging paths with workspace-confined output cleanup, serial Xmake configuration and build, public headers, framework libraries, demo executables, README, manifest validation, and uploaded artifact coverage. Step 670 examples and smoke test matrix coverage is next.
 - Phase G Step 670 adds Windows and Linux CI example/smoke matrices that serially build every public API example, run their noninteractive entry points, execute animation, opacity, image, and GIF registration smoke coverage, and pass first-frame, resize, close, and interaction smoke flows on platform display backends. Step 671 architecture and header test matrix coverage is next.
 - Phase G Step 671 adds Windows and Linux CI architecture/header matrices that serially build every registered architecture and header-cleanliness target, execute all 142 tests from a shared source-owned manifest, and fail closed on missing, duplicate, unmapped, or unregistered coverage. Step 672 reproducible dependency setup is next.
+- Phase G Step 672 pins Xmake 3.0.9, commits a dual-platform package lock, centralizes workspace-confined dependency roots, caches reproducible package state in CI, and removes floating repository refreshes from package setup. Step 673 Windows full-debug verification is next.
 
 ## Categories
 

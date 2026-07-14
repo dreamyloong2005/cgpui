@@ -1540,6 +1540,29 @@ Windows/Linux core API is stable enough for parity work.
   118/118 with only the two historical Step 671 completion references retained.
   Final synchronized matrix reruns pass 142/142 on Windows and 142/142 on Arch
   Linux WSL; Standards and Spec review report no blocking findings.
+- Active: Phase G Step 672 establishes one reproducible dependency boundary for
+  package, example/smoke, and architecture/header CI consumers, with a committed
+  dual-platform Xmake lock, fixed tool version, workspace-confined cache roots,
+  and a dedicated structure guard before Step 673 Windows full-debug verification.
+- Completed: Phase G Step 672 pins Xmake 3.0.9, commits a dual-platform package lock, centralizes workspace-confined dependency roots, caches reproducible package state in CI, and removes floating repository refreshes from package setup. Step 673 Windows full-debug verification is next.
+- Step 672 evidence: the dedicated tracer moves from missing-module RED exit `1`
+  to authority-only RED exit `10`; Windows and Linux lock generation write the
+  same `xmake-requires.lock` with `windows|x64` and `linux|x86_64` partitions at
+  one repository commit. Final clean dependency and consumer verification is
+  required before commit.
+- Step 672 final evidence: official Xmake 3.0.9 clean Release package paths pass
+  on Windows and Arch Linux WSL against canonical GitHub lock entries at exact
+  repository commit `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`. Windows and
+  Linux each pass all 21 public examples, four registration smokes, four native
+  display flows, and the complete 143-target architecture/header matrix. The
+  Linux package independently audits 186 headers, seven archives, one x86-64
+  ELF demo, README, exact manifest/top-level contents, and zero transient-temp
+  leftovers. Step 672 is ready to commit before Step 673 full-debug verification.
+- The Windows lock's `vulkansdk` `version = "latest"` value is a system-package
+  selector, not a mutable download. At the locked xmake-repo commit, the recipe
+  defines no URLs or versions and only probes the locally installed Vulkan SDK
+  through `find_vulkansdk()` and `find_library()`; the recipe identity itself is
+  frozen by commit `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`.
 - Planned bands: Steps 619-626 Win32 UIA; 627-634 Linux AT-SPI; 635-642 async
   runtime; 643-650 animation; 651-658 assets; 659-666 GPUI-style test support;
   667-672 packaging/CI; and 673-678 final verification and closeout.
@@ -1555,6 +1578,18 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A read-only `rg` lookup for the prior lock-audit command used an unbalanced escaped group and failed before searching | Step 672 evidence lookup | Use direct known commands for the final gate instead of reconstructing a nested regex; no repository or build state changed |
+| The Step 672 final PowerShell syntax wrapper repeated the known `"$f:$message"` scoped-variable parse trap and failed before parsing any product script | Step 672 final static gate | Delimit the filename as `${f}` before the colon, rerun the four-file parser, and retain the existing repository note so later wrappers do not repeat this form |
+| The first interrupted-package temp audit embedded Bash `$(...)` inside a PowerShell double-quoted command; PowerShell evaluated `wc` locally, and the compound WSL command then printed misleading partial output | Step 672 package recovery audit | Do not nest Bash command substitution through PowerShell; use direct `wsl.exe --` commands or a source-owned temporary script with explicit exit checks |
+| After the Codex turn interruption, polling Linux package session `94857` failed with `Unknown process id` even though the final package directory existed and no package process remained | Step 672 interrupted-session recovery | Treat PTY identity as non-authoritative; inspect system processes and independently audit the final package, then resume from the retained build root only if package evidence is incomplete |
+| The first lock syntax audit treated `xmake-requires.lock` as JSON, then the second treated it as TOML; both parsers correctly rejected Xmake's Lua-table lock serialization, and the first compound command also masked the parser exit status | Step 672 final static audit | Validate through Xmake's own `io.load(...)` using the official 3.0.9 binary, assert metadata plus both platform partitions, and do not use a foreign parser or trailing command that can mask failure |
+| A read-only `rg` query for header-cleanliness registrations used nested PowerShell double quotes and failed at parse time before `rg` ran | Step 675 action-macro boundary discovery | Re-run the query with a single-quoted pattern; no repository or build state changed |
+| Official Xmake 3.0.9 rejects `xmake test -l`; the exploratory command printed help and did not enumerate tests | Step 673 baseline discovery during Step 672 verification | Do not repeat the unsupported option; obtain the authoritative test count from the formal serial full-suite report itself |
+| The first post-fix Linux package restart used `bash -lc` with a PATH assignment; nested parsing expanded WSL's Windows-interoperability PATH containing spaces and parentheses and failed before the script ran | Step 672 official Linux package rerun | Use direct `wsl.exe -- env` arguments with a minimal Linux PATH and invoke `/bin/bash scripts/ci/linux-package.sh`; the official Xmake probe then reports `v3.0.9` without cross-shell expansion |
+| The first official Xmake 3.0.9 Linux Release package could not clone the lockfile repository because every entry named `https://gitee.com/tboox/xmake-repo.git` and the connection timed out | Step 672 clean Linux package verification | Add a red-capable structure assertion requiring the canonical GitHub xmake-repo URL for every lock entry, preserve the exact locked commit, update the isolated shared repository origin, and rerun the same official Linux package path |
+| The Step 672 target ran correctly through `cmd.exe` but Xmake returned Windows error `740` even after the tracer became green | Step 672 Windows test launch diagnosis | The target filename contained `setup`, triggering Windows installer-detection elevation through Xmake's launch path; rename only the Xmake target to `phase_g_reproducible_dependencies_structure_test`, preserving the Step/source vocabulary and making normal Xmake test execution available |
+| The first Linux lock configuration could not find Meson 1.11.1 or Ninja because the isolated WSL command did not inherit the prepared root PATH | Step 672 dual-platform lock generation | Add only `build/phase-g-ci/linux-release/python-tools/bin` to the one-shot configuration PATH; Linux configuration then appends its partition to the shared lock without changing system state |
+| The host Python lacks PyYAML for local action/workflow parsing | Step 672 YAML validation | Use pinned Prettier 3.6.2 through `npx`; both YAML files parse and match canonical formatting without adding a project dependency |
 | The first Step 671 dynamic mapping found only 113 targets for 118 handoff consumers | Step 671 complete handoff verification | Compare consumer sources with the architecture/header manifest; the five missing sources are intentional `tests/api_parity` closeout consumers, so add their explicit Xmake targets to the 113 manifest-derived targets and require the corrected 118/118 mapping before execution |
 | The first Step 671 complete chain passed 115/118, then later runs exposed WSL/full cross-platform and TestApp timer/async/rendering/platform-service predecessor checks | Step 671 cascading handoff verification | Advance only the live predecessor assertions to Step 672 in return-code order, preserve the Step 670 and Step 671 completion constants, then prove the final 118-test chain and zero dynamic Step 671 references |
 | The first two-file Step 671 predecessor patch used a wider WSL context that did not match the live source and failed without editing | Step 671 focused predecessor repair | Read the exact minimal lines and patch only the stale string literal in each file; both focused targets then build and pass before the full-chain rerun |

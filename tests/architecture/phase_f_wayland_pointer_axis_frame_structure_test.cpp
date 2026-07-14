@@ -111,7 +111,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup")) {
+                "\"phase_f_current_handoff\": \"Step 673 Windows full-debug verification")) {
     return 9;
   }
   return 0;

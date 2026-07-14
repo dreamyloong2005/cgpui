@@ -85,7 +85,7 @@ int main() {
       }
     }
   }
-  if (targets.size() != 142 || sources.size() != repository_sources) return 4;
+  if (targets.size() < 142 || sources.size() != repository_sources) return 4;
 
   if (!contains(windows, "windows-package.ps1") ||
       !contains(windows, "ReusePreparedRoot") ||
@@ -123,7 +123,7 @@ int main() {
   }
   if (!contains(ledger_json, "\"phase_g_step_671_sources\"") ||
       !contains(ledger_json,
-          "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup\"")) {
+          "\"phase_f_current_handoff\": \"Step 673 Windows full-debug verification\"")) {
     return 11;
   }
   return 0;

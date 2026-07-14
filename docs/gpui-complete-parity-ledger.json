@@ -3625,7 +3625,25 @@
       "xmake.lua"
     ],
     "phase_g_step_671_remaining_gap": "Step 672 reproducible dependency setup",
-    "phase_f_current_handoff": "Step 672 reproducible dependency setup"
+    "phase_g_step_672_surface": "Phase G Step 672 pins Xmake 3.0.9, commits a dual-platform package lock, centralizes workspace-confined dependency roots, caches reproducible package state in CI, and removes floating repository refreshes from package setup. Step 673 Windows full-debug verification is next.",
+    "phase_g_step_672_sources": [
+      "xmake-requires.lock",
+      "xmake.lua",
+      "scripts/ci/windows-dependencies.ps1",
+      "scripts/ci/linux-dependencies.sh",
+      ".github/actions/setup-phase-g-dependencies/action.yml",
+      "scripts/ci/windows-package.ps1",
+      "scripts/ci/linux-package.sh",
+      "scripts/ci/windows-example-smoke.ps1",
+      "scripts/ci/linux-example-smoke.sh",
+      "scripts/ci/windows-architecture-header.ps1",
+      "scripts/ci/linux-architecture-header.sh",
+      ".github/workflows/phase-g-windows-linux.yml",
+      "scripts/ci/architecture-header-targets.txt",
+      "tests/architecture/phase_g_reproducible_dependency_setup_structure_test.cpp"
+    ],
+    "phase_g_step_672_remaining_gap": "Step 673 Windows full-debug verification",
+    "phase_f_current_handoff": "Step 673 Windows full-debug verification"
   },
   "categories": [
     "application_and_app_context",

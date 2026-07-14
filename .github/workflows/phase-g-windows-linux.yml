@@ -13,9 +13,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: xmake-io/github-action-setup-xmake@v1
+      - uses: ./.github/actions/setup-phase-g-dependencies
         with:
-          xmake-version: latest
+          platform: windows
       - name: Build and package Windows Debug
         shell: pwsh
         run: ./scripts/ci/windows-debug.ps1
@@ -30,9 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: xmake-io/github-action-setup-xmake@v1
+      - uses: ./.github/actions/setup-phase-g-dependencies
         with:
-          xmake-version: latest
+          platform: linux
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
@@ -50,9 +50,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: xmake-io/github-action-setup-xmake@v1
+      - uses: ./.github/actions/setup-phase-g-dependencies
         with:
-          xmake-version: latest
+          platform: windows
       - name: Build and package Windows Release
         shell: pwsh
         run: ./scripts/ci/windows-release.ps1
@@ -67,9 +67,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: xmake-io/github-action-setup-xmake@v1
+      - uses: ./.github/actions/setup-phase-g-dependencies
         with:
-          xmake-version: latest
+          platform: linux
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
@@ -87,9 +87,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: xmake-io/github-action-setup-xmake@v1
+      - uses: ./.github/actions/setup-phase-g-dependencies
         with:
-          xmake-version: latest
+          platform: windows
       - name: Build and run Windows examples and smoke tests
         shell: pwsh
         run: ./scripts/ci/windows-example-smoke.ps1
@@ -98,9 +98,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: xmake-io/github-action-setup-xmake@v1
+      - uses: ./.github/actions/setup-phase-g-dependencies
         with:
-          xmake-version: latest
+          platform: linux
       - name: Install Linux display and build dependencies
         run: |
           sudo apt-get update
@@ -112,9 +112,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: xmake-io/github-action-setup-xmake@v1
+      - uses: ./.github/actions/setup-phase-g-dependencies
         with:
-          xmake-version: latest
+          platform: windows
       - name: Build and run Windows architecture and header tests
         shell: pwsh
         run: ./scripts/ci/windows-architecture-header.ps1
@@ -123,9 +123,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: xmake-io/github-action-setup-xmake@v1
+      - uses: ./.github/actions/setup-phase-g-dependencies
         with:
-          xmake-version: latest
+          platform: linux
       - name: Install Linux build dependencies
         run: |
           sudo apt-get update

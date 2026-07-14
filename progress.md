@@ -24672,3 +24672,157 @@
 - Final synchronized prepared-root reruns pass 142/142 on Windows and 142/142 on
   Arch Linux WSL. Sequential Standards and Spec reviews report no blocking
   findings.
+
+## 2026-07-14 Phase G Step 672 Reproducible Dependency Setup
+
+- Added and registered `phase_g_reproducible_dependencies_structure_test`;
+  its direct executable returns the intended missing-module RED exit `1`.
+- Added Windows and Linux dependency-environment helpers plus a local composite
+  action. All eight workflow jobs now pin Xmake 3.0.9 through that action and
+  cache the shared platform dependency roots.
+- Enabled Xmake package locking, removed floating `xrepo update-repo` calls,
+  and routed package, example/smoke, and architecture/header runners through the
+  focused helpers.
+- Generated one lockfile from Windows and Arch Linux WSL configurations. It
+  contains both platform/architecture partitions and freezes one xmake-repo
+  commit across the full dependency graph.
+- Updated the historical packaging guards for the new helper ownership. The
+  Step 672 tracer now reaches authority-only RED exit `10`.
+- Phase G Step 672 pins Xmake 3.0.9, commits a dual-platform package lock, centralizes workspace-confined dependency roots, caches reproducible package state in CI, and removes floating repository refreshes from package setup. Step 673 Windows full-debug verification is next.
+- The official Xmake 3.0.9 clean Windows Release package completed successfully
+  and emitted `build/phase-g-ci/windows-release/package` after the full serial
+  Win32/Vulkan build.
+- The corresponding Linux run failed while cloning the repository URL embedded
+  in the lock: `https://gitee.com/tboox/xmake-repo.git` timed out. The lock's
+  commit remains valid on the canonical GitHub mirror; Step 672 now uses a
+  focused structure assertion as the red/green loop before changing only the
+  repository URL.
+- The canonical-repository guard reproduced the defect in 0.093 seconds with
+  exit `2`, then passed 1/1 after all 30 lock entries moved to
+  `https://github.com/xmake-io/xmake-repo.git`. Both Windows and Linux shared
+  repositories retain exact HEAD `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`
+  with their origins aligned to GitHub.
+- A first Linux restart failed before script execution because nested
+  `bash -lc` parsing expanded the Windows-interoperability PATH. A direct
+  `wsl.exe -- env` invocation with a minimal Linux PATH proves official Xmake
+  `v3.0.9` and starts the corrected Release package without shell re-expansion.
+- Final Windows prepared-root example/smoke verification under official Xmake
+  3.0.9 passes all 21 public example builds and runs, all four registration
+  smokes, and all four Win32 first-frame, resize, close, and interaction flows.
+- Final Windows prepared-root architecture/header verification passes 143/143,
+  including the canonical repository guard. The five API closeout consumers
+  outside that manifest also build and pass 5/5, completing executable coverage
+  for all 119 live Step 673 handoff consumers.
+- An exploratory `xmake test -l` probe is unsupported by official Xmake 3.0.9
+  and only prints command help. Step 673 will take its exact test count from the
+  formal serial full-suite report rather than a list-only preflight.
+- Pre-auditing the Phase G candidate gate finds three ledger rows still marked
+  `required`. Wayland and platform services appear to have stale pre-Phase-F
+  evidence, while the action-macro row explicitly still reports missing macro
+  action generation. This must be resolved before the Steps 673-678 candidate
+  declaration can be truthful.
+- Official Xmake 3.0.9 Linux Release verification is active in session `94857`.
+  It has passed locked GitHub repository resolution, dependency configuration,
+  and entered the serial production build; no Gitee or network failure has
+  recurred. The output remains under `build/phase-g-ci/linux-release`, with
+  transient temp under `/dev/shm/cgpui`.
+- Step 673 Windows full-debug baseline is active in session `97652` using
+  official Xmake 3.0.9, the shared locked dependency root, a dedicated config
+  directory, the warmed repository `build` output, and serial test execution.
+- Session recovery found the official Linux Release package still healthy in
+  session `94857`, advancing from 36% to 40% through the serial `cgpui_ui`
+  build with the canonical GitHub repository lock and no repeated network
+  failure.
+- The recovered Step 673 Windows session returned exit `-1` after emitting only
+  a truncated partial test stream. It does not provide a final pass count and
+  therefore is not accepted as completion evidence; rerun the formal serial
+  full-debug suite after Step 672 is committed.
+- A read-only registration search failed in PowerShell parsing because its
+  regular expression used nested double quotes. No command or edit ran; the
+  replacement query uses a single-quoted pattern.
+- Read the pinned upstream `actions!` implementation directly. It confirms the
+  macro generates default-constructible, cloneable, partially comparable unit
+  actions with optional `namespace::Type` naming, while complex payload actions
+  use a separate derive path. The planned C++ adaptation is a focused public
+  `action_macros.hpp` leaf with scoped and unscoped unit-action macros plus
+  behavior, header-cleanliness, and structure coverage.
+- The first lock syntax audit incorrectly sent the TOML lockfile through
+  `ConvertFrom-Json`; a second probe established it is not standard TOML either.
+  Raw bytes begin directly with `{`, and Xmake `io.load(...)` successfully
+  reads metadata plus the Windows and Linux partitions. The final audit will
+  repeat that exact check with the official Xmake 3.0.9 binary rather than the
+  PATH development build.
+- Official Windows Xmake `3.0.9+HEAD.2b184e178` now passes the fail-closed
+  `io.load('xmake-requires.lock')` audit and confirms metadata version `1.0`
+  plus both `windows|x64` and `linux|x86_64` partitions. The foreign-parser
+  diagnosis is closed without changing the valid lockfile.
+- The Step 672 Release-built structure executable passes directly with exit
+  `0`. New module sizes remain within the frozen caps: Windows helper 60 lines,
+  Linux helper 58, composite action 32, structure guard 151, and workflow 134.
+- Git history confirms `b579bdfd` is the committed Step 671 boundary. The broad
+  current test diff is the established 119-consumer live-handoff advance to
+  Step 673; `.vscode/` and `build/` remain outside the intended commit scope.
+- Audited the remaining non-macro required rows. Phase F Step 594 directly
+  closes platform services, and Steps 614-618 close and verify the production
+  Win32/Wayland path with final Windows/WSL suites and real WSLg frame capture.
+  These are evidence-refresh changes for the candidate ledger, not missing
+  implementation work.
+- After the turn interruption, session `94857` was no longer addressable and no
+  matching Linux package process remained. The final package directory and
+  retained Release build outputs exist, so completion will be decided from an
+  independent exact-content audit rather than the lost PTY exit record.
+- The independent audit is deterministically RED: `package/manifest.json`, the
+  packaged demo, and the Vulkan archive are absent. The interruption stopped
+  the demo/Vulkan build near 79%; the completed two-hour core/UI/Wayland output
+  remains available for an incremental Xmake resume.
+- A simultaneous temp-directory probe was invalid because PowerShell evaluated
+  a nested Bash `$(...)` expression locally. It is discarded as evidence; all
+  recovery commands will use direct `wsl.exe -- env ...` invocation or an
+  explicit temporary script with checked exit status.
+- Recovery inspection confirms the original configuration and build root remain
+  intact: six framework archives are complete, the official Linux Xmake 3.0.9
+  symlink targets a valid x86-64 ELF, and the Vulkan object directory retains
+  more than 70 compiled objects. Resume `hello_window` directly with the exact
+  dependency/config/temp environment and `-y -j 1`; do not rerun the package
+  wrapper because it would delete the retained output root.
+- The direct official-Xmake resume starts at Vulkan 85%, compiles only the
+  remaining renderer objects, archives `libcgpui_renderer_vulkan.a`, links
+  `hello_window`, and passes at 100% in 618.251 seconds. The retained cold build
+  is healthy; only package assembly remains.
+- A one-shot build-output-only assembly reproduces the source package contract,
+  then independent audits pass: exact top-level `bin/include/lib/manifest.json/
+  README.md`, 186/186 public headers, seven exact archives, Linux/x86_64/release
+  manifest identity, one stripped x86-64 ELF demo, README, and zero
+  `/dev/shm/cgpui` leftovers. DrvFS reports the requested 0755 demo as 0777,
+  matching the already documented mount behavior.
+- Both Linux matrix runners accept the verified Release output through
+  `CGPUI_CI_REUSE_PREPARED_ROOT=1`, restore the shared locked dependency helper,
+  and reuse its config/build/package roots. Run example/smoke first, then the
+  143-target architecture/header matrix, serially to avoid output contention.
+- The official-Xmake prepared-root Linux example/smoke matrix passes end to end:
+  all 21 public examples build and run, all four animation/opacity/image/GIF
+  registration tests pass, and all four Wayland/Vulkan first-frame, resize,
+  close, and demo-interaction flows pass. WSLg emits only the known DZN
+  conformance warning.
+- The official-Xmake prepared-root Linux architecture/header runner builds every
+  manifest target serially and passes the complete 143/143 test report in
+  21.464 seconds with zero failures, including the Step 672 reproducibility
+  guard and all predecessor handoff consumers.
+- Step 672 now has complete clean Windows and Linux package evidence, exact
+  package audits, both platform example/smoke matrices, both 143-target
+  architecture/header matrices, and all 119 live handoff consumers covered.
+  Proceed to final static/staged-scope audit and commit before Step 673.
+- Final Bash syntax, YAML Prettier, ledger JSON, official-Xmake lock loading,
+  and diff hygiene gates pass. The first PowerShell syntax wrapper failed before
+  inspecting product files because `"$f:$message"` repeated the known scoped-
+  variable colon trap; rerun it with `${f}` delimiting the filename.
+- Re-ran the four-file PowerShell AST parser with `${f}` filename delimiting;
+  all Step 672 PowerShell scripts parse successfully. Final staged diff and
+  staged-scope checks also pass with 138 intended files, executable mode
+  `100755` retained for `linux-dependencies.sh`, and no `build/` or `.vscode/`
+  paths staged.
+- Inspected the exact cached `vulkansdk` recipe at locked xmake-repo commit
+  `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`. It has no download URL or remote
+  version resolution and only detects the local Vulkan SDK as a system package,
+  so the lock's `version = "latest"` selector does not weaken reproducibility.
+  Step 672 is ready to commit.

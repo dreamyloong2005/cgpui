@@ -162,7 +162,7 @@ int main() {
   if (contains(core_parity, "timer integration and cross-thread entity access") ||
       contains(core_parity, "complete async timer integration") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup\"")) {
+                "\"phase_f_current_handoff\": \"Step 673 Windows full-debug verification\"")) {
     return 11;
   }
   return 0;

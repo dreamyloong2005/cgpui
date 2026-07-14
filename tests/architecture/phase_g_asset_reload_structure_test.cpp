@@ -110,6 +110,6 @@ int main() {
       !contains(core, "Thread-safe asset reload invalidation") ||
       !contains(ledger_json, "\"phase_g_step_656_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 673 Windows full-debug verification\"")) return 9;
   return 0;
 }

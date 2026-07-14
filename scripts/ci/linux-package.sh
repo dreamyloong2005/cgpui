@@ -37,10 +37,7 @@ esac
 
 rm -rf -- "$output_root"
 build_root="$output_root/build-root"
-global_root="$output_root/global"
 config_root="$output_root/config"
-package_cache="$output_root/pkg-cache"
-package_install="$output_root/pkg-install"
 cleanup_tmp_root=""
 if [[ -n "${CGPUI_CI_TMPDIR:-}" ]]; then
   tmp_parent="$(realpath -m "$CGPUI_CI_TMPDIR")"
@@ -60,8 +57,8 @@ package_root="$output_root/package"
 lib_root="$package_root/lib"
 bin_root="$package_root/bin"
 include_root="$package_root/include"
-mkdir -p "$build_root" "$global_root" "$config_root" "$package_cache" \
-  "$package_install" "$tmp_root" "$lib_root" "$bin_root" "$include_root"
+mkdir -p "$build_root" "$config_root" "$tmp_root" "$lib_root" \
+  "$bin_root" "$include_root"
 
 if ! command -v meson >/dev/null || ! command -v ninja >/dev/null; then
   tool_root="$output_root/python-tools"
@@ -72,13 +69,11 @@ if ! command -v meson >/dev/null || ! command -v ninja >/dev/null; then
   export PATH="$tool_root/bin:$PATH"
 fi
 
-export XMAKE_GLOBALDIR="$global_root"
+source "$repo_root/scripts/ci/linux-dependencies.sh"
+cgpui_configure_linux_dependency_environment
 export XMAKE_CONFIGDIR="$config_root"
-export XMAKE_PKG_CACHEDIR="$package_cache"
-export XMAKE_PKG_INSTALLDIR="$package_install"
 export TMPDIR="$tmp_root"
 
-xrepo update-repo
 xmake f -P "$repo_root" -y -c -m "$mode" --ccache=n -o "$build_root"
 xmake build -P "$repo_root" -j 1 cgpui_app
 xmake build -P "$repo_root" -j 1 hello_window

@@ -50,7 +50,7 @@ int main() {
       !contains(wrapper, "-Mode Debug") ||
       !contains(core, "[System.IO.Path]::GetFullPath") ||
       !contains(core, "Remove-Item -LiteralPath $outputRoot") ||
-      !contains(core, "XMAKE_GLOBALDIR") ||
+      !contains(core, "windows-dependencies.ps1") ||
       !contains(core, "xmake f") ||
       !contains(core, "--ccache=n") ||
       !contains(core, "xmake build") ||
@@ -101,7 +101,7 @@ int main() {
       !contains(ledger_json, "scripts/ci/windows-package.ps1") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup\"")) {
+          "\"phase_f_current_handoff\": \"Step 673 Windows full-debug verification\"")) {
     return 8;
   }
   return 0;

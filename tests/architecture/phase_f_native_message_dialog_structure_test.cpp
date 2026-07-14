@@ -68,6 +68,6 @@ int main() {
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 672 reproducible dependency setup")) return 9;
+                "\"phase_f_current_handoff\": \"Step 673 Windows full-debug verification")) return 9;
   return 0;
 }

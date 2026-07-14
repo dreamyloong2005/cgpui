@@ -1,6 +1,7 @@
 set_project("cgpui")
 set_version("0.1.0")
 set_languages("c++23")
+set_policy("package.requires_lock", true)
 
 add_rules("mode.debug", "mode.release")
 
@@ -4089,6 +4090,11 @@ target("phase_g_example_smoke_matrix_structure_test")
 target("phase_g_architecture_header_matrix_structure_test")
     set_kind("binary")
     add_files("tests/architecture/phase_g_architecture_header_matrix_structure_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("phase_g_reproducible_dependencies_structure_test")
+    set_kind("binary")
+    add_files("tests/architecture/phase_g_reproducible_dependency_setup_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
 target("window_runtime_frame_scheduling_test")

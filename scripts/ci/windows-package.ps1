@@ -37,30 +37,21 @@ if (Test-Path -LiteralPath $outputRoot) {
   Remove-Item -LiteralPath $outputRoot -Recurse -Force
 }
 $buildRoot = Join-Path $outputRoot "build-root"
-$globalRoot = Join-Path $outputRoot "global"
 $configRoot = Join-Path $outputRoot "config"
-$packageCache = Join-Path $outputRoot "pkg-cache"
-$packageInstall = Join-Path $outputRoot "pkg-install"
 $packageRoot = Join-Path $outputRoot "package"
 $libRoot = Join-Path $packageRoot "lib"
 $binRoot = Join-Path $packageRoot "bin"
 $includeRoot = Join-Path $packageRoot "include"
 New-Item -ItemType Directory -Force -Path @(
-  $buildRoot, $globalRoot, $configRoot, $packageCache, $packageInstall,
-  $packageRoot, $libRoot, $binRoot, $includeRoot
+  $buildRoot, $configRoot, $packageRoot, $libRoot, $binRoot, $includeRoot
 ) | Out-Null
 
-$env:XMAKE_GLOBALDIR = $globalRoot
+. (Join-Path $PSScriptRoot "windows-dependencies.ps1")
+Set-CgpuiWindowsDependencyEnvironment
 $env:XMAKE_CONFIGDIR = $configRoot
-$env:XMAKE_PKG_CACHEDIR = $packageCache
-$env:XMAKE_PKG_INSTALLDIR = $packageInstall
 
 Push-Location $repoRoot
 try {
-  & xrepo update-repo
-  if ($LASTEXITCODE -ne 0) {
-    throw "xrepo update-repo failed with exit code $LASTEXITCODE"
-  }
   & xmake f -P $repoRoot -y -c -m $modeName --ccache=n -o $buildRoot
   if ($LASTEXITCODE -ne 0) {
     throw "xmake f failed with exit code $LASTEXITCODE"
