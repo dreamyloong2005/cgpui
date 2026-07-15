@@ -1,0 +1,20 @@
+name: Phase H macOS
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  macos-examples-smoke:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xmake-io/xmake-action@v1
+        with:
+          xmake-version: '3.0.9'
+      - name: Build and run macOS examples and smoke tests
+        run: bash ./scripts/ci/macos-example-smoke.sh

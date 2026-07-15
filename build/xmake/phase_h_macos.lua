@@ -89,4 +89,14 @@ if is_plat("macosx") then
             path.join(os.projectdir(), "include"),
             path.join(os.projectdir(), "src/platform/macos"))
         add_tests("default")
+
+    target("macos_example_smoke_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/platform/macos/macos_example_smoke_test.mm"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_macos", "cgpui_renderer", "cgpui_renderer_metal")
+        add_frameworks("AppKit", "QuartzCore", "Metal")
+        add_includedirs(
+            path.join(os.projectdir(), "include"),
+            path.join(os.projectdir(), "src/platform/macos"))
+        add_tests("default")
 end
