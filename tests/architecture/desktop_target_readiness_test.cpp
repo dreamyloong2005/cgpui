@@ -109,14 +109,22 @@ int main() {
   if (xmake_text.empty()) {
     return 13;
   }
-  if (!contains(xmake_text, "target(\"cgpui_platform_macos\")") ||
-      !contains(xmake_text, "src/platform/macos/*.mm") ||
-      !contains(xmake_text, "add_frameworks(\"AppKit\", \"QuartzCore\")")) {
+  const std::string macos_xmake_text =
+      read_source("build/xmake/phase_h_macos.lua");
+  if (!contains(xmake_text, "includes(\"build/xmake/phase_h_macos.lua\")") ||
+      !contains(macos_xmake_text, "target(\"cgpui_platform_macos\")") ||
+      !contains(macos_xmake_text, "src/platform/macos/*.mm") ||
+      !contains(macos_xmake_text,
+                "add_frameworks(\"AppKit\", \"QuartzCore\")")) {
     return 14;
   }
-  if (!contains(xmake_text, "target(\"cgpui_renderer_metal\")") ||
-      !contains(xmake_text, "src/renderer/metal/*.mm") ||
-      !contains(xmake_text, "add_frameworks(\"Metal\", \"QuartzCore\")")) {
+  const std::string metal_xmake_text =
+      read_source("build/xmake/phase_h_metal.lua");
+  if (!contains(xmake_text, "includes(\"build/xmake/phase_h_metal.lua\")") ||
+      !contains(metal_xmake_text, "target(\"cgpui_renderer_metal\")") ||
+      !contains(metal_xmake_text, "src/renderer/metal/*.mm") ||
+      !contains(metal_xmake_text,
+                "add_frameworks(\"Metal\", \"QuartzCore\")")) {
     return 15;
   }
   if (!contains(xmake_text, "target(\"desktop_target_readiness_test\")") ||
