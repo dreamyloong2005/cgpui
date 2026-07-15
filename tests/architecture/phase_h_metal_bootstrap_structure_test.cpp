@@ -68,6 +68,8 @@ int main() {
       module.empty() ||
       !contains(module, "target(\"metal_bootstrap_test\")") ||
       !contains(module, "add_files(path.join(os.projectdir(), \"src/renderer/metal/*.mm\"))") ||
+      !contains(module, "add_files(path.join(os.projectdir(), \"tests/renderer/metal/metal_bootstrap_test.mm\"))") ||
+      !contains(module, "add_includedirs(path.join(os.projectdir(), \"include\")") ||
       targets.empty() || !contains(targets, "target(\"phase_h_metal_bootstrap_structure_test\")")) return 6;
   return 0;
 }
