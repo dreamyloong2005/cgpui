@@ -31,9 +31,11 @@ MacOSWindow::MacOSWindow(
       delegate_(delegate),
       callback_(std::move(callback)),
       state_(state),
-      unregister_(std::move(unregister)) {}
+      unregister_(std::move(unregister)),
+      accessibility_state_(this, content_view) {}
 
 MacOSWindow::~MacOSWindow() {
+  accessibility_state_.detach();
   if (unregister_) unregister_(this);
   drag_exited(drag_position_);
   release_pointer_capture(false);
