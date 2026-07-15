@@ -51,6 +51,8 @@ class MacOSWindow final : public PlatformWindow {
   void set_pointer_capture(bool captured) override;
   void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) override;
+  PlatformWindowChromeState apply_window_chrome(
+      WindowChromeOptions options) override;
 
   void text_insert(NSString* string, NSRange replacement_range);
   void text_set_marked(
@@ -98,6 +100,9 @@ class MacOSWindow final : public PlatformWindow {
       DragDropPayload payload,
       DragDropAction action);
   void drag_exited(Point position);
+  void native_menu_command(
+      std::string action_name,
+      NativeMenuCommandSource source);
   [[nodiscard]] Point event_position(NSEvent* event) const;
   void release_pointer_capture(bool notify);
   [[nodiscard]] CursorShape cursor_shape() const { return cursor_shape_; }

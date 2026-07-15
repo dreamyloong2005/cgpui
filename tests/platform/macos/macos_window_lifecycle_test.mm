@@ -73,7 +73,7 @@ int main() {
     if (!std::holds_alternative<cgpui::MetalSurfaceHandle>((*window)->native_surface())) {
       return 5;
     }
-    if ((*window)->apply_window_chrome(cgpui::WindowChromeOptions{}).supported) {
+    if (!(*window)->apply_window_chrome(cgpui::WindowChromeOptions{}).supported) {
       return 19;
     }
 

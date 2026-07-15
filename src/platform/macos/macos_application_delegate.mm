@@ -1,4 +1,5 @@
 #include "macos_application_internal.hpp"
+#include "macos_platform_services_internal.hpp"
 #include "macos_window_internal.hpp"
 
 @interface CGPUIMacOSApplicationDelegate : NSObject <NSApplicationDelegate>
@@ -17,6 +18,11 @@
     static_cast<cgpui::MacOSApplication*>(self.application)->reopened();
   }
   return YES;
+}
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:
+    (NSApplication*)application {
+  (void)application;
+  return NO;
 }
 @end
 
@@ -63,6 +69,10 @@ MacOSApplication::~MacOSApplication() {
   if ([NSApp delegate] == delegate_) [NSApp setDelegate:nil];
   delegate_.application = nullptr;
   wakeup_target_.application = nullptr;
+  if ([menu_target_ isKindOfClass:[CGPUIMacOSMenuTarget class]]) {
+    ((CGPUIMacOSMenuTarget*)menu_target_).application = nullptr;
+  }
+  if ([NSApp mainMenu] == main_menu_) [NSApp setMainMenu:nil];
   for (MacOSWindow* window : windows_) {
     if (window != nullptr) window->detach_registry();
   }
@@ -114,8 +124,7 @@ void MacOSApplication::unregister_window(MacOSWindow* window) {
 void MacOSApplication::reopened() { (void)dispatch_reopen("macos"); }
 
 PlatformReopenResult MacOSApplication::request_reopen() {
-  reopened();
-  return PlatformReopenResult{.supported = true, .requested = true, .backend = "macos"};
+  return dispatch_reopen("macos");
 }
 
 }  // namespace cgpui
