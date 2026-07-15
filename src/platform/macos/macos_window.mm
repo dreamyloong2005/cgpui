@@ -55,7 +55,10 @@ void MacOSWindow::refresh_state() {
       state_.framebuffer_size.width, state_.framebuffer_size.height)];
 }
 
-void MacOSWindow::request_redraw() { callback_(WindowRedrawRequested{}); }
+void MacOSWindow::request_redraw() {
+  [[window_ contentView] setNeedsDisplay:YES];
+  callback_(WindowRedrawRequested{});
+}
 
 void MacOSWindow::request_close() { close_requested(WindowCloseRequestSource::application); }
 
@@ -71,6 +74,9 @@ void MacOSWindow::set_ime_text_input_placement(
   state_.ime_text_input_placement = std::move(placement);
 }
 
-void MacOSWindow::wakeup_requested() { callback_(WindowWakeupRequested{}); }
+void MacOSWindow::wakeup_requested() {
+  auto callback = callback_;
+  callback(WindowWakeupRequested{});
+}
 
 }  // namespace cgpui

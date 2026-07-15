@@ -43,12 +43,8 @@ class MacOSWindow final : public PlatformWindow {
   void request_close() override;
   void set_title(std::string_view title) override;
   void set_cursor(CursorShape cursor_shape) override;
-  [[nodiscard]] PlatformPointerCaptureState pointer_capture_state() const override;
-  void set_pointer_capture(bool captured) override;
   void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) override;
-  PlatformWindowChromeState apply_window_chrome(WindowChromeOptions options) override;
-  void update_accessibility_tree(PlatformAccessibilityTreeUpdate update) override;
 
   [[nodiscard]] NSWindow* native_window() const { return window_; }
   void detach_registry() { unregister_ = {}; }
@@ -69,7 +65,6 @@ class MacOSWindow final : public PlatformWindow {
   WindowState state_;
   PlatformWindowCloseController close_controller_;
   std::function<void(MacOSWindow*)> unregister_;
-  WindowChromeOptions chrome_;
   bool active_ = false;
   bool focused_ = false;
   bool minimized_ = false;

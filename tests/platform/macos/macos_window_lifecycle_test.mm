@@ -4,6 +4,7 @@
 #import <QuartzCore/CAMetalLayer.h>
 
 #include <chrono>
+#include <memory>
 #include <optional>
 #include <thread>
 #include <variant>
@@ -25,6 +26,9 @@ int main() {
 
     bool close_requested = false;
     int wakeup_count = 0;
+    int secondary_wakeup_count = 0;
+    bool destroy_secondary_on_wakeup = false;
+    std::unique_ptr<cgpui::PlatformWindow> secondary;
     std::optional<cgpui::WindowResized> resized;
     std::optional<cgpui::WindowActivated> activated;
     std::optional<cgpui::WindowFocused> focused;
@@ -38,6 +42,7 @@ int main() {
               std::holds_alternative<cgpui::WindowCloseRequested>(event);
           if (std::holds_alternative<cgpui::WindowWakeupRequested>(event)) {
             ++wakeup_count;
+            if (destroy_secondary_on_wakeup) secondary.reset();
           }
           if (const auto* value = std::get_if<cgpui::WindowResized>(&event)) {
             resized = *value;
@@ -58,6 +63,9 @@ int main() {
         !(*window)->position_state().position.has_value()) return 4;
     if (!std::holds_alternative<cgpui::MetalSurfaceHandle>((*window)->native_surface())) {
       return 5;
+    }
+    if ((*window)->apply_window_chrome(cgpui::WindowChromeOptions{}).supported) {
+      return 19;
     }
 
     const auto surface = std::get<cgpui::MetalSurfaceHandle>((*window)->native_surface());
@@ -108,10 +116,27 @@ int main() {
     pump_run_loop(std::chrono::milliseconds(20));
     if (wakeup_count != 3) return 14;
 
+    auto secondary_result = (*application)->create_window(
+        cgpui::WindowDescriptor{
+            .title = "CGPUI Cocoa Secondary Window",
+            .size = cgpui::Size{160.0F, 120.0F}},
+        [&](const cgpui::PlatformEvent& event) {
+          if (std::holds_alternative<cgpui::WindowWakeupRequested>(event)) {
+            ++secondary_wakeup_count;
+          }
+        });
+    if (!secondary_result) return 15;
+    secondary = std::move(*secondary_result);
+    destroy_secondary_on_wakeup = true;
+    (*application)->request_wakeup();
+    pump_run_loop(std::chrono::milliseconds(20));
+    if (secondary != nullptr || secondary_wakeup_count != 0 ||
+        wakeup_count != 4) return 16;
+
     (*window)->request_close();
     if (!(*window)->resolve_close_request(
-            cgpui::PlatformWindowCloseResolution::accept)) return 15;
-    if ((*window)->lifecycle_state().native_window_created) return 16;
+            cgpui::PlatformWindowCloseResolution::accept)) return 17;
+    if ((*window)->lifecycle_state().native_window_created) return 18;
   }
   return 0;
 }
