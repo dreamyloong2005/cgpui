@@ -2,6 +2,7 @@
 
 #include "cgpui/platform/platform.hpp"
 #include "../platform_window_close_internal.hpp"
+#include "macos_accessibility_internal.hpp"
 #include "macos_text_services_internal.hpp"
 
 #import <AppKit/AppKit.h>
@@ -53,6 +54,8 @@ class MacOSWindow final : public PlatformWindow {
       std::optional<ImeTextInputPlacement> placement) override;
   PlatformWindowChromeState apply_window_chrome(
       WindowChromeOptions options) override;
+  void update_accessibility_tree(
+      PlatformAccessibilityTreeUpdate update) override;
 
   void text_insert(NSString* string, NSRange replacement_range);
   void text_set_marked(
@@ -76,6 +79,10 @@ class MacOSWindow final : public PlatformWindow {
   }
 
   [[nodiscard]] NSWindow* native_window() const { return window_; }
+  [[nodiscard]] MacOSAccessibilityState& accessibility_state() {
+    return accessibility_state_;
+  }
+  void accessibility_action(AccessibilityActionRequested action);
   void detach_registry() { unregister_ = {}; }
   void refresh_state();
   void close_requested(WindowCloseRequestSource source);
@@ -126,6 +133,7 @@ class MacOSWindow final : public PlatformWindow {
   Point drag_position_;
   bool drag_active_ = false;
   MacOSTextInputState text_input_state_;
+  MacOSAccessibilityState accessibility_state_;
 };
 
 WindowState make_macos_window_state(NSWindow* window);
