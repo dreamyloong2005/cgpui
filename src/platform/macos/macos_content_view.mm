@@ -1,4 +1,5 @@
 #include "macos_input_internal.hpp"
+#include "macos_drag_internal.hpp"
 #include "macos_window_internal.hpp"
 
 namespace {
@@ -14,7 +15,15 @@ cgpui::MacOSWindow* adapter(void* value) {
 @implementation CGPUIMacOSContentView
 - (instancetype)initWithFrame:(NSRect)frame windowAdapter:(void*)windowAdapter {
   self = [super initWithFrame:frame];
-  if (self != nil) window_adapter_ = windowAdapter;
+  if (self != nil) {
+    window_adapter_ = windowAdapter;
+    [self registerForDraggedTypes:@[
+      NSPasteboardTypeString,
+      NSPasteboardTypeFileURL,
+      NSPasteboardTypePNG,
+      NSPasteboardTypeTIFF,
+    ]];
+  }
   return self;
 }
 - (void)attachWindowAdapter:(void*)windowAdapter {

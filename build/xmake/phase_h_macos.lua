@@ -1,7 +1,12 @@
 if is_plat("macosx") then
+    target("cgpui_platform")
+        add_files(path.join(os.projectdir(), "src/platform/macos/macos_clipboard.mm"))
+        add_frameworks("AppKit")
+
     target("cgpui_platform_macos")
         set_kind("static")
         add_files(path.join(os.projectdir(), "src/platform/macos/*.mm"))
+        remove_files(path.join(os.projectdir(), "src/platform/macos/macos_clipboard.mm"))
         add_deps("cgpui_core", "cgpui_platform")
         add_frameworks("AppKit", "CoreText", "QuartzCore")
         add_includedirs(path.join(os.projectdir(), "include"), {public = true})
@@ -39,6 +44,26 @@ if is_plat("macosx") then
         add_files(path.join(os.projectdir(), "tests/platform/macos/macos_text_input_test.mm"))
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_macos")
         add_frameworks("AppKit", "CoreText", "QuartzCore")
+        add_includedirs(
+            path.join(os.projectdir(), "include"),
+            path.join(os.projectdir(), "src/platform/macos"))
+        add_tests("default")
+
+    target("macos_clipboard_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/platform/macos/macos_clipboard_test.mm"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_macos")
+        add_frameworks("AppKit", "QuartzCore")
+        add_includedirs(
+            path.join(os.projectdir(), "include"),
+            path.join(os.projectdir(), "src/platform/macos"))
+        add_tests("default")
+
+    target("macos_drag_drop_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/platform/macos/macos_drag_drop_test.mm"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_macos")
+        add_frameworks("AppKit", "QuartzCore")
         add_includedirs(
             path.join(os.projectdir(), "include"),
             path.join(os.projectdir(), "src/platform/macos"))

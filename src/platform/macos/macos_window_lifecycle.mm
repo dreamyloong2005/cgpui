@@ -12,6 +12,7 @@ bool MacOSWindow::resolve_close_request(PlatformWindowCloseResolution resolution
   if (resolution == PlatformWindowCloseResolution::cancel) {
     state_.close_requested = false;
   } else if (resolution == PlatformWindowCloseResolution::accept) {
+    drag_exited(drag_position_);
     release_pointer_capture(true);
     [content_view_ detachWindowAdapter];
     if (delegate_ != nil) [delegate_ detachWindow];

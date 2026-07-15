@@ -88,6 +88,16 @@ class MacOSWindow final : public PlatformWindow {
   void pointer_button(NSEvent* event, bool pressed);
   void pointer_scrolled(NSEvent* event);
   void keyboard_key(NSEvent* event, bool pressed);
+  void drag_entered(
+      Point position,
+      DragDropPayload payload,
+      DragDropAction action);
+  void drag_updated(Point position, DragDropAction action);
+  void drag_dropped(
+      Point position,
+      DragDropPayload payload,
+      DragDropAction action);
+  void drag_exited(Point position);
   [[nodiscard]] Point event_position(NSEvent* event) const;
   void release_pointer_capture(bool notify);
   [[nodiscard]] CursorShape cursor_shape() const { return cursor_shape_; }
@@ -107,6 +117,9 @@ class MacOSWindow final : public PlatformWindow {
   bool minimized_ = false;
   bool pointer_captured_ = false;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
+  DragDropPayload drag_payload_;
+  Point drag_position_;
+  bool drag_active_ = false;
   MacOSTextInputState text_input_state_;
 };
 

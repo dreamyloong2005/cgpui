@@ -17,6 +17,8 @@ std::unique_ptr<Clipboard> create_platform_clipboard() {
   return create_win32_clipboard();
 #elif defined(__linux__)
   return create_wayland_clipboard();
+#elif defined(__APPLE__)
+  return create_macos_clipboard();
 #else
   return std::make_unique<MemoryClipboard>();
 #endif
