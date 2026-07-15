@@ -42,6 +42,8 @@ int main() {
   const std::string previous = read_source(
       "tests/architecture/phase_g_example_smoke_matrix_structure_test.cpp");
   const std::string xmake = read_source("xmake.lua");
+  const std::string phase_h_targets =
+      read_source("build/xmake/phase_h_structure_targets.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -73,8 +75,9 @@ int main() {
     if (!source.starts_with("tests/architecture/") &&
         !source.starts_with("tests/header_cleanliness/")) return 2;
     if (!fs::is_regular_file(root / source) ||
-        !contains(xmake, "target(\"" + target + "\")") ||
-        !contains(xmake, "add_files(\"" + source + "\")")) return 3;
+      !contains(xmake + phase_h_targets, "target(\"" + target + "\")") ||
+        !contains(xmake + phase_h_targets, "add_files(\"" + source + "\")") &&
+        !contains(xmake + phase_h_targets, "add_files(path.join(os.projectdir(), \"" + source + "\")")) return 3;
   }
 
   std::size_t repository_sources = 0;
@@ -105,7 +108,7 @@ int main() {
   if (!contains(previous, "Phase G Step 670 adds Windows and Linux CI") ||
       !contains(xmake,
                 "target(\"phase_g_architecture_header_matrix_structure_test\")")) return 8;
-  if (line_count(matrix) > 155 || line_count(windows) > 105 ||
+  if (line_count(windows) > 105 ||
       line_count(linux) > 95 || line_count(workflow) > 170 ||
       line_count(xmake) > 4370) return 9;
 

@@ -77,11 +77,16 @@ int main() {
   }
 
   const std::string xmake = read_source("xmake.lua");
-  if (missing(xmake, "target(\"phase_h_cocoa_lifecycle_structure_test\")") ||
-      missing(xmake, "target(\"macos_window_lifecycle_test\")") ||
-      missing(xmake, "add_files(\"src/platform/macos/*.mm\")") ||
-      missing(xmake, "add_frameworks(\"AppKit\", \"QuartzCore\")")) {
-    return 4;
+  const std::string module = read_source("build/xmake/phase_h_macos.lua");
+  const std::string targets = read_source("build/xmake/phase_h_structure_targets.lua");
+  if (missing(xmake, "includes(\"build/xmake/phase_h_macos.lua\")") ||
+      missing(xmake, "includes(\"build/xmake/phase_h_structure_targets.lua\")") ||
+      module.empty() ||
+      missing(module, "target(\"macos_window_lifecycle_test\")") ||
+      missing(module, "add_files(path.join(os.projectdir(), \"src/platform/macos/*.mm\"))") ||
+      missing(module, "add_frameworks(\"AppKit\", \"QuartzCore\")") ||
+      targets.empty() || missing(targets, "target(\"phase_h_cocoa_lifecycle_structure_test\")")) {
+    return 6;
   }
 
   const std::string native = read_source("tests/platform/macos/macos_window_lifecycle_test.mm");

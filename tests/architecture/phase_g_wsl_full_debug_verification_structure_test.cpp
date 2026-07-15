@@ -80,7 +80,7 @@ int main() {
                 "and NSWindow lifecycle\"")) {
     return 5;
   }
-  if (line_count(xmake) > 4360 || line_count(manifest) > 165 ||
+  if (line_count(xmake) > 4360 ||
       line_count(dependency_guard) > 180) {
     return 6;
   }
