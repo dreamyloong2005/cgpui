@@ -1492,6 +1492,14 @@ if is_plat("macosx") then
         add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer")
         add_frameworks("Metal", "QuartzCore")
         add_includedirs(public_includedirs, {public = true})
+
+    target("metal_bootstrap_test")
+        set_kind("binary")
+        add_files("tests/renderer/metal/metal_bootstrap_test.mm")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_macos", "cgpui_renderer", "cgpui_renderer_metal")
+        add_frameworks("AppKit", "Metal", "QuartzCore")
+        add_includedirs(public_includedirs, "src/renderer/metal")
+        add_tests("default")
 end
 
 target("core_header_cleanliness")
@@ -4156,6 +4164,13 @@ target("phase_h_cocoa_lifecycle_structure_test")
     set_rundir(os.projectdir())
     add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
     add_files("tests/architecture/phase_h_cocoa_lifecycle_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("phase_h_metal_bootstrap_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_h_metal_bootstrap_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
 target("phase_g_final_closeout_test")
