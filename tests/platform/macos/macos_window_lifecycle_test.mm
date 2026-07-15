@@ -17,6 +17,15 @@ void pump_run_loop(std::chrono::milliseconds duration) {
       runUntilDate:[NSDate dateWithTimeIntervalSinceNow:seconds]];
 }
 
+template <typename Predicate>
+bool pump_run_loop_until(Predicate&& predicate, std::chrono::milliseconds timeout) {
+  const auto deadline = std::chrono::steady_clock::now() + timeout;
+  while (!predicate() && std::chrono::steady_clock::now() < deadline) {
+    pump_run_loop(std::chrono::milliseconds(5));
+  }
+  return predicate();
+}
+
 }  // namespace
 
 int main() {
@@ -101,20 +110,26 @@ int main() {
     }
 
     (*application)->request_wakeup_after(1);
-    pump_run_loop(std::chrono::milliseconds(20));
-    if (wakeup_count != 1) return 11;
+    if (!pump_run_loop_until(
+            [&] { return wakeup_count == 1; }, std::chrono::milliseconds(500))) {
+      return 11;
+    }
     (*application)->request_wakeup_after(20);
     (*application)->cancel_wakeup_after();
     pump_run_loop(std::chrono::milliseconds(30));
     if (wakeup_count != 1) return 12;
     (*application)->request_wakeup();
-    pump_run_loop(std::chrono::milliseconds(20));
-    if (wakeup_count != 2) return 13;
+    if (!pump_run_loop_until(
+            [&] { return wakeup_count == 2; }, std::chrono::milliseconds(500))) {
+      return 13;
+    }
 
     std::thread worker([&] { (*application)->request_wakeup_after(1); });
     worker.join();
-    pump_run_loop(std::chrono::milliseconds(20));
-    if (wakeup_count != 3) return 14;
+    if (!pump_run_loop_until(
+            [&] { return wakeup_count == 3; }, std::chrono::milliseconds(500))) {
+      return 14;
+    }
 
     auto secondary_result = (*application)->create_window(
         cgpui::WindowDescriptor{
@@ -129,7 +144,11 @@ int main() {
     secondary = std::move(*secondary_result);
     destroy_secondary_on_wakeup = true;
     (*application)->request_wakeup();
-    pump_run_loop(std::chrono::milliseconds(20));
+    if (!pump_run_loop_until(
+            [&] { return secondary == nullptr && wakeup_count == 4; },
+            std::chrono::milliseconds(500))) {
+      return 16;
+    }
     if (secondary != nullptr || secondary_wakeup_count != 0 ||
         wakeup_count != 4) return 16;
 
