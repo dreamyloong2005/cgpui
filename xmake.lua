@@ -1433,6 +1433,14 @@ if is_plat("macosx") then
         add_deps("cgpui_core", "cgpui_platform")
         add_frameworks("AppKit", "QuartzCore")
         add_includedirs(public_includedirs, {public = true})
+
+    target("macos_window_lifecycle_test")
+        set_kind("binary")
+        add_files("tests/platform/macos/macos_window_lifecycle_test.mm")
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_macos")
+        add_frameworks("AppKit", "QuartzCore")
+        add_includedirs(public_includedirs)
+        add_tests("default")
 end
 
 target("cgpui_renderer")
@@ -4141,6 +4149,13 @@ target("phase_h_macos_configuration_structure_test")
     set_rundir(os.projectdir())
     add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
     add_files("tests/architecture/phase_h_macos_configuration_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("phase_h_cocoa_lifecycle_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_h_cocoa_lifecycle_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
 target("phase_g_final_closeout_test")
