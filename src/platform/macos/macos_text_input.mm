@@ -12,8 +12,12 @@ std::string utf8(NSString* value) {
   return bytes == nullptr ? std::string{} : std::string(bytes);
 }
 
-std::size_t utf8_cursor(std::string_view value, std::size_t utf16_index) {
-  return macos_nsrange_to_utf8_bytes(value, 0, utf16_index).second;
+std::size_t utf16_cursor(std::string_view value, std::size_t byte_index) {
+  const std::size_t count = std::min(byte_index, value.size());
+  NSString* prefix = [[NSString alloc] initWithBytes:value.data()
+                                               length:count
+                                             encoding:NSUTF8StringEncoding];
+  return prefix == nil ? 0 : [prefix length];
 }
 
 }  // namespace
@@ -56,18 +60,21 @@ void MacOSWindow::text_insert(NSString* string, NSRange replacement_range) {
           .after_length = static_cast<std::uint32_t>(after)});
     }
   }
-  const bool committing = !text_input_state_.marked_text.empty();
-  if (committing) {
+  const std::string value = utf8(string);
+  if (!text_input_state_.marked_text.empty()) {
     callback_(ImeComposition{
         .phase = ImeCompositionPhase::commit,
-        .text = text_input_state_.marked_text});
+        .text = value});
     text_input_state_.marked_text.clear();
+    text_input_state_.marked_cursor = 0;
+    text_input_state_.marked_selection_location_utf16 = 0;
+    text_input_state_.marked_selection_length_utf16 = 0;
     ++text_input_state_.diagnostics.committed_text_count;
+    return;
   }
-  const std::string value = utf8(string);
   if (!value.empty()) {
-    callback_(TextInput{.text = value, .composed = committing});
-    if (!committing) ++text_input_state_.diagnostics.committed_text_count;
+    callback_(TextInput{.text = value});
+    ++text_input_state_.diagnostics.committed_text_count;
   }
 }
 
@@ -79,14 +86,26 @@ void MacOSWindow::text_set_marked(
     text_insert(@"", replacement_range);
   }
   text_input_state_.marked_text = utf8(string);
-  text_input_state_.marked_cursor = utf8_cursor(
-      text_input_state_.marked_text, selected_range.location);
+  const auto selected_bytes = macos_nsrange_to_utf8_bytes(
+      text_input_state_.marked_text,
+      selected_range.location,
+      selected_range.length);
+  text_input_state_.marked_cursor = selected_bytes.first;
+  text_input_state_.marked_selection_location_utf16 = selected_range.location;
+  text_input_state_.marked_selection_length_utf16 = selected_range.length;
+  text_input_state_.marked_document_location_utf16 =
+      state_.ime_text_input_placement.has_value()
+      ? utf16_cursor(
+            state_.ime_text_input_placement->surrounding_text,
+            state_.ime_text_input_placement->byte_offset)
+      : 0;
   ++text_input_state_.diagnostics.marked_text_update_count;
   ImeComposition composition{
       .phase = ImeCompositionPhase::update,
       .text = text_input_state_.marked_text,
       .preedit_cursor_begin = static_cast<std::int32_t>(text_input_state_.marked_cursor),
-      .preedit_cursor_end = static_cast<std::int32_t>(text_input_state_.marked_cursor)};
+      .preedit_cursor_end = static_cast<std::int32_t>(
+          selected_bytes.first + selected_bytes.second)};
   (void)append_ime_default_preedit_style(composition);
   callback_(composition);
 }
@@ -94,6 +113,9 @@ void MacOSWindow::text_set_marked(
 void MacOSWindow::text_unmark() {
   if (text_input_state_.marked_text.empty()) return;
   text_input_state_.marked_text.clear();
+  text_input_state_.marked_cursor = 0;
+  text_input_state_.marked_selection_location_utf16 = 0;
+  text_input_state_.marked_selection_length_utf16 = 0;
   ++text_input_state_.diagnostics.unmark_count;
   callback_(ImeComposition{.phase = ImeCompositionPhase::cancel});
 }
@@ -118,10 +140,23 @@ NSRange MacOSWindow::text_marked_range() const {
   NSString* value = [[NSString alloc] initWithBytes:text_input_state_.marked_text.data()
                                               length:text_input_state_.marked_text.size()
                                             encoding:NSUTF8StringEncoding];
-  return NSMakeRange(0, [value length]);
+  return NSMakeRange(text_input_state_.marked_document_location_utf16, [value length]);
 }
 NSRange MacOSWindow::text_selected_range() const {
-  return NSMakeRange(text_input_state_.marked_cursor, 0);
+  if (text_has_marked()) {
+    return NSMakeRange(
+        text_input_state_.marked_document_location_utf16 +
+            text_input_state_.marked_selection_location_utf16,
+        text_input_state_.marked_selection_length_utf16);
+  }
+  if (!state_.ime_text_input_placement.has_value()) return NSMakeRange(0, 0);
+  const auto& placement = *state_.ime_text_input_placement;
+  const std::size_t cursor = utf16_cursor(
+      placement.surrounding_text, placement.byte_offset);
+  const std::size_t anchor = utf16_cursor(
+      placement.surrounding_text, placement.selection_anchor);
+  return NSMakeRange(std::min(cursor, anchor),
+                     cursor > anchor ? cursor - anchor : anchor - cursor);
 }
 NSAttributedString* MacOSWindow::text_substring(NSRange proposed, NSRange* actual) const {
   NSString* value = [[NSString alloc] initWithBytes:
@@ -145,6 +180,8 @@ NSRect MacOSWindow::text_first_rect(NSRange, NSRange* actual) const {
       Point{static_cast<float>([window_ frame].origin.x), static_cast<float>([window_ frame].origin.y)});
   return NSMakeRect(screen.origin.x, screen.origin.y, screen.size.width, screen.size.height);
 }
-NSUInteger MacOSWindow::text_character_index(NSPoint) const { return 0; }
+NSUInteger MacOSWindow::text_character_index(NSPoint) const {
+  return text_selected_range().location;
+}
 
 }  // namespace cgpui

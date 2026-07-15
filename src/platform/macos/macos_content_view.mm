@@ -126,7 +126,10 @@ cgpui::MacOSWindow* adapter(void* value) {
   if (window_adapter_ != nullptr) adapter(window_adapter_)->pointer_scrolled(event);
 }
 - (void)keyDown:(NSEvent*)event {
-  if (window_adapter_ != nullptr) adapter(window_adapter_)->keyboard_key(event, true);
+  if (window_adapter_ != nullptr) {
+    adapter(window_adapter_)->keyboard_key(event, true);
+    [self interpretKeyEvents:@[event]];
+  }
 }
 - (void)keyUp:(NSEvent*)event {
   if (window_adapter_ != nullptr) adapter(window_adapter_)->keyboard_key(event, false);

@@ -52,6 +52,7 @@ int main() {
   if (!contains(content, "NSTextInputClient") ||
       !contains(content, "setMarkedText:") ||
       !contains(content, "insertText:") ||
+      !contains(content, "interpretKeyEvents:") ||
       !contains(content, "firstRectForCharacterRange:")) {
     return 3;
   }

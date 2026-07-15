@@ -94,11 +94,20 @@ int main() {
         compositions[0].preedit_style_count != 1) {
       return 7;
     }
-    [content insertText:@"\u6F22\u5B57"
+    const NSRange marked_range = [content markedRange];
+    const NSRange selected_range = [content selectedRange];
+    if (marked_range.location != 2 || marked_range.length != 2 ||
+        selected_range.location != 3 || selected_range.length != 0 ||
+        [content characterIndexForPoint:NSMakePoint(0.0, 0.0)] != 3) {
+      return 8;
+    }
+    [content insertText:@"\u78BA\u5B9A"
        replacementRange:NSMakeRange(NSNotFound, 0)];
     if ([content hasMarkedText] || compositions.size() != 2 ||
-        compositions[1].phase != cgpui::ImeCompositionPhase::commit) {
-      return 8;
+        compositions[1].phase != cgpui::ImeCompositionPhase::commit ||
+        compositions[1].text != "\xE7\xA2\xBA\xE5\xAE\x9A" ||
+        text_events.size() != 1) {
+      return 9;
     }
     [content setMarkedText:@"q"
              selectedRange:NSMakeRange(1, 0)
@@ -106,13 +115,13 @@ int main() {
     [content unmarkText];
     if (compositions.size() != 4 ||
         compositions.back().phase != cgpui::ImeCompositionPhase::cancel) {
-      return 9;
+      return 10;
     }
 
     [content doCommandBySelector:@selector(deleteBackward:)];
     if (deletions.size() != 2 || deletions.back().before_length != 2 ||
         deletions.back().after_length != 0) {
-      return 10;
+      return 11;
     }
     NSRange actual = NSMakeRange(NSNotFound, 0);
     NSAttributedString* substring =
@@ -120,19 +129,19 @@ int main() {
                                          actualRange:&actual];
     if (![[substring string] isEqualToString:@"\u00E9"] ||
         actual.location != 1 || actual.length != 1) {
-      return 11;
+      return 12;
     }
     const NSRect candidate =
         [content firstRectForCharacterRange:NSMakeRange(0, 0)
                                  actualRange:&actual];
-    if (NSIsEmptyRect(candidate)) return 12;
+    if (NSIsEmptyRect(candidate)) return 13;
 
     const auto diagnostics = cgpui::macos_text_services_diagnostics(**window);
     if (diagnostics.committed_text_count != 2 ||
         diagnostics.marked_text_update_count != 2 ||
         diagnostics.unmark_count != 1 ||
         diagnostics.delete_surrounding_count != 2) {
-      return 13;
+      return 14;
     }
   }
   return 0;
