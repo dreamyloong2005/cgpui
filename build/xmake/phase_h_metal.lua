@@ -4,7 +4,7 @@ if is_plat("macosx") then
         add_files(path.join(os.projectdir(), "src/renderer/metal/*.mm"))
         add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer")
         add_frameworks("Metal", "QuartzCore")
-        add_includedirs("include", {public = true})
+        add_includedirs(path.join(os.projectdir(), "include"), {public = true})
         on_load(function (target)
             target:add("includedirs", target:autogendir())
         end)
@@ -30,10 +30,12 @@ if is_plat("macosx") then
 
     target("metal_bootstrap_test")
         set_kind("binary")
-        add_files("tests/renderer/metal/metal_bootstrap_test.mm")
+        add_files(path.join(os.projectdir(), "tests/renderer/metal/metal_bootstrap_test.mm"))
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_macos", "cgpui_renderer", "cgpui_renderer_metal")
         add_frameworks("AppKit", "Metal", "QuartzCore")
-        add_includedirs("include", "src/renderer/metal")
+        add_includedirs(
+            path.join(os.projectdir(), "include"),
+            path.join(os.projectdir(), "src/renderer/metal"))
         add_tests("default")
 
     for _, metal_pixel_test in ipairs({
@@ -46,7 +48,9 @@ if is_plat("macosx") then
             add_files(path.join(os.projectdir(), "tests/renderer/metal/" .. metal_pixel_test .. ".mm"))
             add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_macos", "cgpui_renderer", "cgpui_renderer_metal")
             add_frameworks("AppKit", "Metal", "QuartzCore")
-            add_includedirs("include", "tests/renderer/metal")
+            add_includedirs(
+                path.join(os.projectdir(), "include"),
+                path.join(os.projectdir(), "tests/renderer/metal"))
             add_tests("default")
     end
 end
