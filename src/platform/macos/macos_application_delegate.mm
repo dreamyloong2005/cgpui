@@ -28,7 +28,21 @@
 }
 - (void)dispatchDelayedWakeup:(NSTimer*)timer {
   (void)timer;
+  self.timer = nil;
   [self dispatchWakeup];
+}
+- (void)scheduleDelayedWakeup:(NSNumber*)delayMilliseconds {
+  [self cancelDelayedWakeup];
+  const NSTimeInterval delay = [delayMilliseconds unsignedLongLongValue] / 1000.0;
+  self.timer = [NSTimer scheduledTimerWithTimeInterval:delay
+                                                target:self
+                                              selector:@selector(dispatchDelayedWakeup:)
+                                              userInfo:nil
+                                               repeats:NO];
+}
+- (void)cancelDelayedWakeup {
+  [self.timer invalidate];
+  self.timer = nil;
 }
 @end
 
@@ -45,7 +59,7 @@ MacOSApplication::MacOSApplication() {
 }
 
 MacOSApplication::~MacOSApplication() {
-  macos_cancel_wakeup(wakeup_target_, &wakeup_timer_);
+  macos_cancel_wakeup(wakeup_target_);
   if ([NSApp delegate] == delegate_) [NSApp setDelegate:nil];
   delegate_.application = nullptr;
   wakeup_target_.application = nullptr;

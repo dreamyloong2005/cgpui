@@ -1,10 +1,22 @@
 #include "cgpui/platform/platform.hpp"
 
 #import <AppKit/AppKit.h>
+#import <QuartzCore/CAMetalLayer.h>
 
 #include <chrono>
+#include <optional>
 #include <thread>
 #include <variant>
+
+namespace {
+
+void pump_run_loop(std::chrono::milliseconds duration) {
+  const auto seconds = static_cast<NSTimeInterval>(duration.count()) / 1000.0;
+  [[NSRunLoop mainRunLoop]
+      runUntilDate:[NSDate dateWithTimeIntervalSinceNow:seconds]];
+}
+
+}  // namespace
 
 int main() {
   @autoreleasepool {
@@ -12,7 +24,10 @@ int main() {
     if (!application) return 1;
 
     bool close_requested = false;
-    bool wakeup_requested = false;
+    int wakeup_count = 0;
+    std::optional<cgpui::WindowResized> resized;
+    std::optional<cgpui::WindowActivated> activated;
+    std::optional<cgpui::WindowFocused> focused;
     auto window = (*application)->create_window(
         cgpui::WindowDescriptor{
             .title = "CGPUI Cocoa Lifecycle Test",
@@ -21,8 +36,18 @@ int main() {
         [&](const cgpui::PlatformEvent& event) {
           close_requested = close_requested ||
               std::holds_alternative<cgpui::WindowCloseRequested>(event);
-          wakeup_requested = wakeup_requested ||
-              std::holds_alternative<cgpui::WindowWakeupRequested>(event);
+          if (std::holds_alternative<cgpui::WindowWakeupRequested>(event)) {
+            ++wakeup_count;
+          }
+          if (const auto* value = std::get_if<cgpui::WindowResized>(&event)) {
+            resized = *value;
+          }
+          if (const auto* value = std::get_if<cgpui::WindowActivated>(&event)) {
+            activated = *value;
+          }
+          if (const auto* value = std::get_if<cgpui::WindowFocused>(&event)) {
+            focused = *value;
+          }
         });
     if (!window) return 2;
 
@@ -35,22 +60,58 @@ int main() {
       return 5;
     }
 
+    const auto surface = std::get<cgpui::MetalSurfaceHandle>((*window)->native_surface());
+    auto* layer = (__bridge CAMetalLayer*)surface.layer;
+    NSWindow* native_window = nil;
+    for (NSWindow* candidate in [NSApp windows]) {
+      if ([[candidate title] isEqualToString:@"CGPUI Cocoa Lifecycle Test"]) {
+        native_window = candidate;
+        break;
+      }
+    }
+    if (native_window == nil || layer == nil) return 6;
+    id<NSWindowDelegate> delegate = [native_window delegate];
+    [delegate windowDidResize:[NSNotification notificationWithName:NSWindowDidResizeNotification
+                                                              object:native_window]];
+    [delegate windowDidBecomeMain:[NSNotification notificationWithName:NSWindowDidBecomeMainNotification
+                                                                  object:native_window]];
+    [delegate windowDidBecomeKey:[NSNotification notificationWithName:NSWindowDidBecomeKeyNotification
+                                                                 object:native_window]];
+    if (!resized.has_value() || resized->size.width <= 0.0F ||
+        resized->size.height <= 0.0F || resized->scale.value <= 0.0F) return 7;
+    if (!activated.has_value() || !activated->active ||
+        !focused.has_value() || !focused->focused) return 8;
+
     (*window)->set_title("Cocoa Lifecycle Updated");
     (*window)->set_cursor(cgpui::CursorShape::pointing_hand);
     (*window)->request_close();
     if (!close_requested || !(*window)->close_request_state().pending ||
-        !(*window)->state().close_requested) return 6;
+        !(*window)->state().close_requested) return 9;
     if (!(*window)->resolve_close_request(cgpui::PlatformWindowCloseResolution::cancel) ||
         (*window)->state().close_requested || (*window)->close_request_state().pending) {
-      return 7;
+      return 10;
     }
 
-    (*application)->request_wakeup_after(10);
+    (*application)->request_wakeup_after(1);
+    pump_run_loop(std::chrono::milliseconds(20));
+    if (wakeup_count != 1) return 11;
+    (*application)->request_wakeup_after(20);
     (*application)->cancel_wakeup_after();
+    pump_run_loop(std::chrono::milliseconds(30));
+    if (wakeup_count != 1) return 12;
     (*application)->request_wakeup();
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
-    (void)wakeup_requested;
-    (*application)->quit();
+    pump_run_loop(std::chrono::milliseconds(20));
+    if (wakeup_count != 2) return 13;
+
+    std::thread worker([&] { (*application)->request_wakeup_after(1); });
+    worker.join();
+    pump_run_loop(std::chrono::milliseconds(20));
+    if (wakeup_count != 3) return 14;
+
+    (*window)->request_close();
+    if (!(*window)->resolve_close_request(
+            cgpui::PlatformWindowCloseResolution::accept)) return 15;
+    if ((*window)->lifecycle_state().native_window_created) return 16;
   }
   return 0;
 }

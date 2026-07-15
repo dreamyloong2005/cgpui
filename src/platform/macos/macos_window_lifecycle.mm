@@ -10,6 +10,15 @@ bool MacOSWindow::resolve_close_request(PlatformWindowCloseResolution resolution
   if (!close_controller_.resolve(resolution)) return false;
   if (resolution == PlatformWindowCloseResolution::cancel) {
     state_.close_requested = false;
+  } else if (resolution == PlatformWindowCloseResolution::accept) {
+    if (delegate_ != nil) [delegate_ detachWindow];
+    [window_ setDelegate:nil];
+    [window_ orderOut:nil];
+    [window_ close];
+    window_ = nil;
+    active_ = false;
+    focused_ = false;
+    minimized_ = false;
   }
   return true;
 }
