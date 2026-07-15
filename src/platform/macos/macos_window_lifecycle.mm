@@ -29,39 +29,23 @@ void MacOSWindow::close_requested(WindowCloseRequestSource source) {
   callback_(close_controller_.event());
 }
 
-PlatformPointerCaptureState MacOSWindow::pointer_capture_state() const {
-  return {};
-}
-
-void MacOSWindow::set_pointer_capture(bool captured) {
-  (void)captured;
-}
-
-PlatformWindowChromeState MacOSWindow::apply_window_chrome(WindowChromeOptions options) {
-  chrome_ = options;
-  return PlatformWindowChromeState{
-      .supported = true,
-      .decoration_control_supported = true,
-      .transparency_supported = true,
-      .backend = "cocoa",
-      .requested = options,
-      .applied = options};
-}
-
-void MacOSWindow::update_accessibility_tree(PlatformAccessibilityTreeUpdate update) {
-  (void)update;
-}
-
 PlatformWindowLifecycleState MacOSWindow::lifecycle_state() const {
+  PlatformWindowDisplayState display_state = PlatformWindowDisplayState::normal;
+  if (window_ != nil && [window_ isMiniaturized]) {
+    display_state = PlatformWindowDisplayState::minimized;
+  } else if (window_ != nil &&
+             ([window_ styleMask] & NSWindowStyleMaskFullScreen) != 0) {
+    display_state = PlatformWindowDisplayState::fullscreen;
+  } else if (window_ != nil && [window_ isZoomed]) {
+    display_state = PlatformWindowDisplayState::maximized;
+  }
   return PlatformWindowLifecycleState{
-      .native_window_created = window_ != nil && [window_ isVisible],
+      .native_window_created = window_ != nil,
       .initial_configure_complete = window_ != nil,
       .active = active_,
       .focused = focused_,
       .close_requested = state_.close_requested,
-      .display_state = minimized_
-          ? PlatformWindowDisplayState::minimized
-          : PlatformWindowDisplayState::normal};
+      .display_state = display_state};
 }
 
 bool MacOSWindow::request_display_state(PlatformWindowDisplayState display_state) {

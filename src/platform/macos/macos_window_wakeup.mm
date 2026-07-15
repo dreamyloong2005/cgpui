@@ -1,11 +1,17 @@
 #include "macos_application_internal.hpp"
 #include "macos_window_internal.hpp"
 
+#include <algorithm>
+
 namespace cgpui {
 
 void MacOSApplication::dispatch_wakeup() {
-  for (MacOSWindow* window : windows_) {
-    if (window != nullptr) window->wakeup_requested();
+  const auto windows = windows_;
+  for (MacOSWindow* window : windows) {
+    if (window != nullptr &&
+        std::find(windows_.begin(), windows_.end(), window) != windows_.end()) {
+      window->wakeup_requested();
+    }
   }
 }
 

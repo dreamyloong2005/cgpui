@@ -71,7 +71,6 @@ int main() {
   if (missing(window, "class MacOSWindow") ||
       missing(window, "PlatformWindowLifecycleState lifecycle_state() const override") ||
       missing(window, "PlatformWindowCloseState close_request_state() const override") ||
-      missing(window, "PlatformWindowChromeState apply_window_chrome") ||
       missing(window, "std::function<void(MacOSWindow*)> unregister") ||
       missing(window, "__strong NSWindow* window_")) {
     return 3;
