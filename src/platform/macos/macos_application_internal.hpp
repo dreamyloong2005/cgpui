@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
+#include "macos_text_services_internal.hpp"
 
 #import <AppKit/AppKit.h>
 
@@ -41,6 +42,8 @@ class MacOSApplication final : public PlatformApplication {
   PlatformReopenResult request_reopen() override;
   int run() override;
   void quit() override;
+  [[nodiscard]] PlatformFontDiscoveryResult discover_font_discovery()
+      const override;
 
   void dispatch_wakeup();
   void reopened();

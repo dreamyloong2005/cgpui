@@ -3,6 +3,8 @@
 
 namespace {
 
+// NSTextInputClient selectors stay at the Cocoa view boundary.
+
 cgpui::MacOSWindow* adapter(void* value) {
   return static_cast<cgpui::MacOSWindow*>(value);
 }
@@ -26,6 +28,55 @@ cgpui::MacOSWindow* adapter(void* value) {
 }
 - (BOOL)acceptsFirstResponder {
   return YES;
+}
+- (void)insertText:(id)string replacementRange:(NSRange)replacementRange {
+  if (window_adapter_ == nullptr) return;
+  NSString* value = [string isKindOfClass:[NSAttributedString class]]
+      ? [string string] : string;
+  adapter(window_adapter_)->text_insert(value, replacementRange);
+}
+- (void)setMarkedText:(id)string
+        selectedRange:(NSRange)selectedRange
+      replacementRange:(NSRange)replacementRange {
+  if (window_adapter_ == nullptr) return;
+  NSString* value = [string isKindOfClass:[NSAttributedString class]]
+      ? [string string] : string;
+  adapter(window_adapter_)->text_set_marked(value, selectedRange, replacementRange);
+}
+- (void)unmarkText {
+  if (window_adapter_ != nullptr) adapter(window_adapter_)->text_unmark();
+}
+- (BOOL)hasMarkedText {
+  return window_adapter_ != nullptr && adapter(window_adapter_)->text_has_marked();
+}
+- (NSRange)markedRange {
+  return window_adapter_ == nullptr ? NSMakeRange(NSNotFound, 0)
+                                    : adapter(window_adapter_)->text_marked_range();
+}
+- (NSRange)selectedRange {
+  return window_adapter_ == nullptr ? NSMakeRange(0, 0)
+                                    : adapter(window_adapter_)->text_selected_range();
+}
+- (NSArray<NSAttributedStringKey>*)validAttributesForMarkedText {
+  return @[];
+}
+- (NSAttributedString*)attributedSubstringForProposedRange:(NSRange)range
+                                               actualRange:(NSRange*)actualRange {
+  return window_adapter_ == nullptr
+      ? [[NSAttributedString alloc] initWithString:@""]
+      : adapter(window_adapter_)->text_substring(range, actualRange);
+}
+- (NSRect)firstRectForCharacterRange:(NSRange)range actualRange:(NSRange*)actualRange {
+  return window_adapter_ == nullptr ? NSZeroRect
+                                    : adapter(window_adapter_)->text_first_rect(range, actualRange);
+}
+- (NSUInteger)characterIndexForPoint:(NSPoint)point {
+  return window_adapter_ == nullptr ? 0 : adapter(window_adapter_)->text_character_index(point);
+}
+- (void)doCommandBySelector:(SEL)selector {
+  if (window_adapter_ != nullptr && selector == @selector(deleteBackward:)) {
+    adapter(window_adapter_)->text_delete_backward();
+  }
 }
 - (void)updateTrackingAreas {
   if (tracking_area_ != nil) [self removeTrackingArea:tracking_area_];

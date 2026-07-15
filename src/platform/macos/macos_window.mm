@@ -77,6 +77,7 @@ void MacOSWindow::set_title(std::string_view title) {
 void MacOSWindow::set_ime_text_input_placement(
     std::optional<ImeTextInputPlacement> placement) {
   state_.ime_text_input_placement = std::move(placement);
+  if (content_view_ != nil) [content_view_ setNeedsDisplay:YES];
 }
 
 void MacOSWindow::wakeup_requested() {

@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <string>
 
-@interface CGPUIMacOSContentView : NSView {
+@interface CGPUIMacOSContentView : NSView <NSTextInputClient> {
  @private
   void* window_adapter_;
   __strong NSTrackingArea* tracking_area_;
