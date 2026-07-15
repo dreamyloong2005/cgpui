@@ -1492,6 +1492,28 @@ if is_plat("macosx") then
         add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer")
         add_frameworks("Metal", "QuartzCore")
         add_includedirs(public_includedirs, {public = true})
+        on_load(function (target)
+            target:add("includedirs", target:autogendir())
+        end)
+        before_build(function (target)
+            local sourcefile = path.join(os.projectdir(), "src/renderer/metal/shaders.metal")
+            local source = io.readfile(sourcefile)
+            local generated = target:autogendir()
+            local header = path.join(generated, "metal_shaders_source.hpp")
+            local air = path.join(generated, "shaders.air")
+            local library = path.join(generated, "shaders.metallib")
+            os.mkdir(generated)
+            local header_contents =
+                "#pragma once\n\ninline constexpr char kCgpuiMetalShaderSource[] = R\"CGPUI_METAL(\n" ..
+                source .. "\n)CGPUI_METAL\";\n"
+            if not os.isfile(header) or io.readfile(header) ~= header_contents then
+                io.writefile(header, header_contents)
+            end
+            if not os.isfile(library) or os.mtime(library) < os.mtime(sourcefile) then
+                os.vrunv("xcrun", {"-sdk", "macosx", "metal", "-c", sourcefile, "-o", air})
+                os.vrunv("xcrun", {"-sdk", "macosx", "metallib", air, "-o", library})
+            end
+        end)
 
     target("metal_bootstrap_test")
         set_kind("binary")
@@ -1500,6 +1522,20 @@ if is_plat("macosx") then
         add_frameworks("AppKit", "Metal", "QuartzCore")
         add_includedirs(public_includedirs, "src/renderer/metal")
         add_tests("default")
+
+    for _, metal_pixel_test in ipairs({
+        "metal_primitive_pixel_test",
+        "metal_text_image_pixel_test",
+        "metal_clip_transform_pixel_test"
+    }) do
+        target(metal_pixel_test)
+            set_kind("binary")
+            add_files("tests/renderer/metal/" .. metal_pixel_test .. ".mm")
+            add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_macos", "cgpui_renderer", "cgpui_renderer_metal")
+            add_frameworks("AppKit", "Metal", "QuartzCore")
+            add_includedirs(public_includedirs, "tests/renderer/metal")
+            add_tests("default")
+    end
 end
 
 target("core_header_cleanliness")
@@ -4171,6 +4207,13 @@ target("phase_h_metal_bootstrap_structure_test")
     set_rundir(os.projectdir())
     add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
     add_files("tests/architecture/phase_h_metal_bootstrap_structure_test.cpp")
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("phase_h_metal_primitives_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files("tests/architecture/phase_h_metal_primitives_structure_test.cpp")
     add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
 target("phase_g_final_closeout_test")

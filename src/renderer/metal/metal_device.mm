@@ -21,6 +21,10 @@ class MetalRenderer final : public Renderer {
     return state_->snapshot();
   }
 
+  const RendererFramePixels* last_frame_pixels() const override {
+    return state_->pixels();
+  }
+
  private:
   std::shared_ptr<MetalRendererState> state_;
 };
@@ -63,6 +67,9 @@ Result<std::shared_ptr<MetalRendererState>> create_metal_renderer_state(
           descriptor.transparent_background);
       !configured) {
     return std::unexpected(configured.error());
+  }
+  if (auto pipelines = initialize_metal_pipeline_library(*state); !pipelines) {
+    return std::unexpected(pipelines.error());
   }
   return state;
 }
