@@ -17,6 +17,7 @@ std::size_t macos_accessibility_publish_live_updates(
     if (update.kind == PlatformAccessibilityLiveUpdateKind::focus_changed) {
       notification = NSAccessibilityFocusedUIElementChangedNotification;
     }
+    registry->notification_names.emplace_back(notification.UTF8String);
     NSAccessibilityPostNotification(provider, notification);
     published += 1;
   }

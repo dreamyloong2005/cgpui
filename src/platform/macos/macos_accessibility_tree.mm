@@ -78,12 +78,14 @@ void MacOSAccessibilityState::update(
   return [self accessibilityChildren];
 }
 - (id)accessibilityWindow {
+  if (!cgpui::macos_accessibility_snapshot(self).has_value()) return nil;
   const auto registry = [self cgpuiRegistry];
   return registry && registry->content_view != nil
       ? [registry->content_view window]
       : nil;
 }
 - (id)accessibilityTopLevelUIElement {
+  if (!cgpui::macos_accessibility_snapshot(self).has_value()) return nil;
   return [self accessibilityWindow];
 }
 @end

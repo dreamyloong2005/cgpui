@@ -41,6 +41,7 @@ void MacOSAccessibilityState::detach() {
   registry_->nodes.clear();
   registry_->node_indices.clear();
   registry_->children.clear();
+  registry_->notification_names.clear();
   registry_->root_element_id = 0;
 }
 
@@ -67,7 +68,8 @@ MacOSAccessibilityDiagnostics MacOSAccessibilityState::diagnostics() const {
       : MacOSAccessibilityDiagnostics{
             .generation = registry_->generation,
             .node_count = registry_->nodes.size(),
-            .notification_count = registry_->notification_count};
+            .notification_count = registry_->notification_count,
+            .notification_names = registry_->notification_names};
 }
 
 std::optional<PlatformAccessibilityNodeUpdate> macos_accessibility_snapshot(

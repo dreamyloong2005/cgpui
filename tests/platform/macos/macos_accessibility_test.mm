@@ -17,14 +17,14 @@ cgpui::PlatformAccessibilityTreeUpdate make_update(
     std::vector<cgpui::PlatformAccessibilityLiveUpdate> live_updates = {}) {
   return cgpui::PlatformAccessibilityTreeUpdate{
       .root_element_id = 1,
-      .node_count = 5,
+      .node_count = 6,
       .focused_node_count = 1,
       .nodes = {
           {.element_id = 1,
            .role = cgpui::PlatformAccessibilityRole::generic,
            .name = "Root",
            .bounds = cgpui::Rect{.size = {240.0F, 140.0F}},
-           .child_count = 4},
+           .child_count = 5},
           {.element_id = 2,
            .parent_element_id = 1,
            .role = cgpui::PlatformAccessibilityRole::button,
@@ -59,6 +59,11 @@ cgpui::PlatformAccessibilityTreeUpdate make_update(
                             .maximum = 10.0,
                             .small_change = 1.0,
                             .large_change = 2.0}}},
+          {.element_id = 6,
+           .parent_element_id = 1,
+           .role = cgpui::PlatformAccessibilityRole::switch_control,
+           .name = "Mode",
+           .patterns = {.toggled = true}},
       },
       .live_updates = std::move(live_updates)};
 }
@@ -96,19 +101,27 @@ int main() {
         cgpui::macos_accessibility_provider(**window, 4);
     CGPUIMacOSAccessibilityElement* slider =
         cgpui::macos_accessibility_provider(**window, 5);
+    CGPUIMacOSAccessibilityElement* switch_control =
+        cgpui::macos_accessibility_provider(**window, 6);
     if (root == nil || button == nil || button != button_again || editor == nil ||
-        checkbox == nil || slider == nil ||
+        checkbox == nil || slider == nil || switch_control == nil ||
         [content accessibilityChildren].count != 1 ||
         [content accessibilityFocusedUIElement] != editor) {
       return 3;
     }
     if (![[root accessibilityRole] isEqualToString:NSAccessibilityGroupRole] ||
-        [root accessibilityChildren].count != 4 ||
+        [root accessibilityChildren].count != 5 ||
         [button accessibilityParent] != root ||
         ![[button accessibilityRole] isEqualToString:NSAccessibilityButtonRole] ||
         ![[button accessibilityLabel] isEqualToString:@"Launch"] ||
         NSIsEmptyRect([button accessibilityFrame])) {
       return 4;
+    }
+    if (![[switch_control accessibilityRole]
+            isEqualToString:NSAccessibilityCheckBoxRole] ||
+        ![[switch_control accessibilitySubrole]
+            isEqualToString:NSAccessibilitySwitchSubrole]) {
+      return 11;
     }
     if (![[editor accessibilityRole] isEqualToString:NSAccessibilityTextFieldRole] ||
         ![[editor accessibilityValue] isEqual:@"hello"] ||
@@ -149,9 +162,18 @@ int main() {
     const auto diagnostics = cgpui::macos_accessibility_diagnostics(**window);
     if (updated_button == nil || updated_button == button ||
         [button accessibilityRole] != nil ||
+        [button accessibilityWindow] != nil ||
+        [button accessibilityTopLevelUIElement] != nil ||
         ![[updated_button accessibilityLabel] isEqualToString:@"Launch Updated"] ||
-        diagnostics.generation != 2 || diagnostics.node_count != 5 ||
-        diagnostics.notification_count != 3) {
+        diagnostics.generation != 2 || diagnostics.node_count != 6 ||
+        diagnostics.notification_count != 3 ||
+        diagnostics.notification_names.size() != 3 ||
+        diagnostics.notification_names[0] !=
+            NSAccessibilityValueChangedNotification.UTF8String ||
+        diagnostics.notification_names[1] !=
+            NSAccessibilityValueChangedNotification.UTF8String ||
+        diagnostics.notification_names[2] !=
+            NSAccessibilityFocusedUIElementChangedNotification.UTF8String) {
       return 7;
     }
 
