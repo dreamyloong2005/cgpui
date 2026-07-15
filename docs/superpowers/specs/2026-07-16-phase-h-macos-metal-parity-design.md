@@ -26,8 +26,9 @@ pass and the parity ledger records the evidence.
   composition roots, not implementation containers.
 - Keep renderer command semantics and ordering identical across Vulkan and
   Metal. Backend-specific encoding may differ, observable output may not.
-- Keep manual-reference-counting ownership explicit because the existing
-  Objective-C++ targets do not enable ARC.
+- Use the ARC mode selected by Xmake/Xcode for Objective-C++ targets. Native
+  implementation headers may use `__strong` and `__weak` ownership qualifiers
+  but remain private to `.mm` translation units.
 - Add structure tests with each new module band. Native behavior tests run only
   on macOS; portable policy and structure tests remain runnable everywhere.
 
@@ -193,8 +194,10 @@ than keeping old trees alive.
   pasteboard, drag, and accessibility operations execute on the main thread.
 - Cross-thread wakeup requests signal `CFRunLoopSource`; they never call AppKit
   directly from worker threads.
-- Cocoa delegates hold non-owning opaque pointers and are detached before C++
-  adapter destruction. C++ adapters retain native objects they expose or use.
+- Cocoa delegates hold weak/non-owning references and are detached before C++
+  adapter destruction. C++ adapters use ARC-strong native members for objects
+  they expose or use; explicit `retain`, `release`, and `autorelease` calls are
+  forbidden.
 - Metal device and queue are renderer-owned. A frame owns its drawable and
   command buffer until completion. Cached buffers and textures use explicit
   frame-generation retirement so no in-flight resource is destroyed early.
@@ -256,4 +259,3 @@ Phase H is complete only when all of the following are true:
 - The Markdown and JSON parity ledgers agree, report no required macOS gaps,
   retain optional X11 as Phase I, and contain exact verification counts and
   environment evidence.
-
