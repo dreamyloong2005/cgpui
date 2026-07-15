@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -53,6 +54,7 @@ struct MacOSAccessibilityDiagnostics {
   std::uint64_t generation = 0;
   std::size_t node_count = 0;
   std::size_t notification_count = 0;
+  std::vector<std::string> notification_names;
 };
 
 class MacOSAccessibilityRegistry {
@@ -61,6 +63,7 @@ class MacOSAccessibilityRegistry {
   std::uint64_t generation = 0;
   std::uint64_t root_element_id = 0;
   std::size_t notification_count = 0;
+  std::vector<std::string> notification_names;
   void* window = nullptr;
   __weak CGPUIMacOSContentView* content_view = nil;
   std::vector<PlatformAccessibilityNodeUpdate> nodes;
