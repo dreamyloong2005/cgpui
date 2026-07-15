@@ -1,5 +1,6 @@
 #include "macos_window_internal.hpp"
 #include "macos_application_internal.hpp"
+#include "macos_input_internal.hpp"
 
 #include <algorithm>
 
@@ -18,12 +19,14 @@ WindowState make_macos_window_state(NSWindow* window) {
 
 MacOSWindow::MacOSWindow(
     NSWindow* window,
+    CGPUIMacOSContentView* content_view,
     CAMetalLayer* layer,
     CGPUIMacOSWindowDelegate* delegate,
     PlatformEventCallback callback,
     WindowState state,
     std::function<void(MacOSWindow*)> unregister)
     : window_(window),
+      content_view_(content_view),
       layer_(layer),
       delegate_(delegate),
       callback_(std::move(callback)),
@@ -32,6 +35,8 @@ MacOSWindow::MacOSWindow(
 
 MacOSWindow::~MacOSWindow() {
   if (unregister_) unregister_(this);
+  release_pointer_capture(false);
+  [content_view_ detachWindowAdapter];
   if (delegate_ != nil) [delegate_ detachWindow];
   [window_ setDelegate:nil];
   [window_ orderOut:nil];

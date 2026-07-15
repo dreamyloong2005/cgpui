@@ -13,4 +13,14 @@ if is_plat("macosx") then
         add_frameworks("AppKit", "QuartzCore")
         add_includedirs(path.join(os.projectdir(), "include"))
         add_tests("default")
+
+    target("macos_input_event_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/platform/macos/macos_input_event_test.mm"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_macos")
+        add_frameworks("AppKit", "QuartzCore")
+        add_includedirs(
+            path.join(os.projectdir(), "include"),
+            path.join(os.projectdir(), "src/platform/macos"))
+        add_tests("default")
 end

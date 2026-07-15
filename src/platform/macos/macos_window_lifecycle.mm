@@ -1,4 +1,5 @@
 #include "macos_window_internal.hpp"
+#include "macos_input_internal.hpp"
 
 namespace cgpui {
 
@@ -11,6 +12,8 @@ bool MacOSWindow::resolve_close_request(PlatformWindowCloseResolution resolution
   if (resolution == PlatformWindowCloseResolution::cancel) {
     state_.close_requested = false;
   } else if (resolution == PlatformWindowCloseResolution::accept) {
+    release_pointer_capture(true);
+    [content_view_ detachWindowAdapter];
     if (delegate_ != nil) [delegate_ detachWindow];
     [window_ setDelegate:nil];
     [window_ orderOut:nil];
