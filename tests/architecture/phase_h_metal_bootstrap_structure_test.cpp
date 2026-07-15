@@ -61,8 +61,13 @@ int main() {
   }
 
   const std::string xmake = read_source("xmake.lua");
-  if (!contains(xmake, "target(\"phase_h_metal_bootstrap_structure_test\")") ||
-      !contains(xmake, "target(\"metal_bootstrap_test\")") ||
-      !contains(xmake, "add_files(\"src/renderer/metal/*.mm\")")) return 5;
+  const std::string module = read_source("build/xmake/phase_h_metal.lua");
+  const std::string targets = read_source("build/xmake/phase_h_structure_targets.lua");
+  if (!contains(xmake, "includes(\"build/xmake/phase_h_metal.lua\")") ||
+      !contains(xmake, "includes(\"build/xmake/phase_h_structure_targets.lua\")") ||
+      module.empty() ||
+      !contains(module, "target(\"metal_bootstrap_test\")") ||
+      !contains(module, "add_files(path.join(os.projectdir(), \"src/renderer/metal/*.mm\"))") ||
+      targets.empty() || !contains(targets, "target(\"phase_h_metal_bootstrap_structure_test\")")) return 6;
   return 0;
 }

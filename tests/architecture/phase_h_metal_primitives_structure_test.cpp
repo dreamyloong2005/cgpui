@@ -50,13 +50,18 @@ int main() {
   const std::string aggregate = read_source("include/cgpui/renderer/renderer.hpp");
   if (contains(aggregate, "metal_")) return 4;
   const std::string xmake = read_source("xmake.lua");
-  return contains(xmake, "target(\"phase_h_metal_primitives_structure_test\")") &&
-                 contains(xmake, "xcrun") &&
-                 contains(xmake, "metallib") &&
-                 contains(xmake, "for _, metal_pixel_test in ipairs") &&
-                 contains(xmake, "\"metal_primitive_pixel_test\"") &&
-                 contains(xmake, "\"metal_text_image_pixel_test\"") &&
-                 contains(xmake, "\"metal_clip_transform_pixel_test\"")
+  const std::string module = read_source("build/xmake/phase_h_metal.lua");
+  const std::string targets = read_source("build/xmake/phase_h_structure_targets.lua");
+  return contains(xmake, "includes(\"build/xmake/phase_h_metal.lua\")") &&
+                 contains(xmake, "includes(\"build/xmake/phase_h_structure_targets.lua\")") &&
+                 !module.empty() && !targets.empty() && contains(targets, "target(\"phase_h_metal_primitives_structure_test\")") &&
+                 contains(module, "xcrun") && contains(module, "metallib") &&
+                 contains(module, "for _, metal_pixel_test in ipairs") &&
+                 contains(module, "\"metal_primitive_pixel_test\"") &&
+                 contains(module, "\"metal_text_image_pixel_test\"") &&
+                 contains(module, "\"metal_clip_transform_pixel_test\"") &&
+                 contains(xmake, "includes(\"build/xmake/phase_h_metal.lua\")") &&
+                 contains(module, "for _, metal_pixel_test in ipairs")
              ? 0
              : 5;
 }

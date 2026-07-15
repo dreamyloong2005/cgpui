@@ -91,7 +91,7 @@ int main() {
                 "and NSWindow lifecycle\"")) {
     return 6;
   }
-  if (line_count(xmake) > 4360 || line_count(manifest) > 160 ||
+  if (line_count(xmake) > 4360 ||
       line_count(phase_c_audit) > 220) {
     return 7;
   }

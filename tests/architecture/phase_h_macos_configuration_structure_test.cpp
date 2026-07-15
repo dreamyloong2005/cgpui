@@ -60,10 +60,13 @@ int main() {
 
   constexpr const char* structure_target =
       "target(\"phase_h_macos_configuration_structure_test\")";
-  if (count(xmake, structure_target) != 1 ||
-      !contains(xmake,
-                "add_files(\"tests/architecture/phase_h_macos_configuration_structure_test.cpp\")")) {
-    return 5;
+  const std::string module = read_source("build/xmake/phase_h_structure_targets.lua");
+  if (!contains(xmake, "includes(\"build/xmake/phase_h_structure_targets.lua\")") ||
+      module.empty() || !contains(module, structure_target) ||
+      count(module, structure_target) != 1 ||
+      !contains(module,
+                "add_files(path.join(os.projectdir(), \"tests/architecture/phase_h_macos_configuration_structure_test.cpp\"))")) {
+    return 6;
   }
   return 0;
 }
