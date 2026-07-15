@@ -35,6 +35,7 @@ MacOSWindow::MacOSWindow(
 
 MacOSWindow::~MacOSWindow() {
   if (unregister_) unregister_(this);
+  drag_exited(drag_position_);
   release_pointer_capture(false);
   [content_view_ detachWindowAdapter];
   if (delegate_ != nil) [delegate_ detachWindow];
