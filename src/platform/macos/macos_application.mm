@@ -4,6 +4,10 @@
 
 namespace cgpui {
 
+PlatformFontDiscoveryResult MacOSApplication::discover_font_discovery() const {
+  return macos_discover_fonts();
+}
+
 std::uint64_t MacOSApplication::monotonic_time_ms() const {
   const auto now = std::chrono::steady_clock::now().time_since_epoch();
   return static_cast<std::uint64_t>(

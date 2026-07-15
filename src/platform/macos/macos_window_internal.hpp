@@ -2,6 +2,7 @@
 
 #include "cgpui/platform/platform.hpp"
 #include "../platform_window_close_internal.hpp"
+#include "macos_text_services_internal.hpp"
 
 #import <AppKit/AppKit.h>
 #import <QuartzCore/CAMetalLayer.h>
@@ -51,6 +52,27 @@ class MacOSWindow final : public PlatformWindow {
   void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) override;
 
+  void text_insert(NSString* string, NSRange replacement_range);
+  void text_set_marked(
+      NSString* string,
+      NSRange selected_range,
+      NSRange replacement_range);
+  void text_unmark();
+  void text_delete_backward();
+  [[nodiscard]] BOOL text_has_marked() const;
+  [[nodiscard]] NSRange text_marked_range() const;
+  [[nodiscard]] NSRange text_selected_range() const;
+  [[nodiscard]] NSAttributedString* text_substring(
+      NSRange proposed_range,
+      NSRange* actual_range) const;
+  [[nodiscard]] NSRect text_first_rect(
+      NSRange character_range,
+      NSRange* actual_range) const;
+  [[nodiscard]] NSUInteger text_character_index(NSPoint point) const;
+  [[nodiscard]] MacOSTextServicesDiagnostics text_services_diagnostics() const {
+    return text_input_state_.diagnostics;
+  }
+
   [[nodiscard]] NSWindow* native_window() const { return window_; }
   void detach_registry() { unregister_ = {}; }
   void refresh_state();
@@ -85,6 +107,7 @@ class MacOSWindow final : public PlatformWindow {
   bool minimized_ = false;
   bool pointer_captured_ = false;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
+  MacOSTextInputState text_input_state_;
 };
 
 WindowState make_macos_window_state(NSWindow* window);
