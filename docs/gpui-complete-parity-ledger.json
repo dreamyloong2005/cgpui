@@ -3695,7 +3695,18 @@
       "xmake.lua"
     ],
     "phase_g_step_677_remaining_gap": "Step 678 Phase G final closeout verification",
-    "phase_f_current_handoff": "Step 678 Phase G final closeout verification"
+    "phase_g_step_678_surface": "Phase G Step 678 completes final closeout for Steps 619-678 with `tests/api_parity/phase_g_final_closeout_test.cpp`: Windows full debug passes 457/457 and WSL Arch Linux full debug passes 438/438 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage; the 32-row candidate ledger remains at 0 required, 29 adapted, 2 deferred, and 1 non-goal. Phase H Step 679 Cocoa application and NSWindow lifecycle is next.",
+    "phase_g_step_678_sources": [
+      "tests/api_parity/phase_g_final_closeout_test.cpp",
+      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md",
+      "docs/gpui-complete-parity-ledger.md",
+      "docs/gpui-complete-parity-ledger.json",
+      "task_plan.md",
+      "findings.md",
+      "xmake.lua"
+    ],
+    "phase_g_step_678_remaining_gap": "Phase H Step 679 Cocoa application and NSWindow lifecycle",
+    "phase_f_current_handoff": "Phase H Step 679 Cocoa application and NSWindow lifecycle"
   },
   "categories": [
     "application_and_app_context",

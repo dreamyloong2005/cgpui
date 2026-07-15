@@ -12596,3 +12596,36 @@
   zero required candidate gaps, active Windows/Wayland targets, deferred
   macOS/X11, and wasm as a non-goal before handing off to Phase H Step 679.
 - Phase G Step 677 completes final dual-host verification: Windows full debug passes 456/456 and WSL Arch Linux full debug passes 437/437 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage. Step 678 Phase G final closeout verification is next.
+
+## 2026-07-15 Phase G Step 678 Final Closeout Design
+
+- The established Phase F pattern confirms the final slice belongs in
+  `tests/api_parity` and aggregates existing registered guards without touching
+  product code or the architecture/header manifest.
+- The 17 existing aggregate targets are the Win32 UIA, Wayland AT-SPI, async,
+  animation-example, image/GIF-example, and test-support band guards; the six
+  Windows/Linux packaging and CI guards; the Windows and WSL full-debug guards;
+  the action-macro guard; the candidate-ledger guard; and the Step 677 final
+  dual-host guard.
+- The authority contract is eight checked roadmap bands, completion records
+  for Steps 673-678 in all five authority documents, a 32-row candidate ledger
+  at 0 required / 29 adapted / 2 deferred / 1 non-goal, required Windows and
+  Wayland targets, deferred macOS and X11, wasm as a non-goal, Phase G status
+  `complete`, and live handoff to `Phase H Step 679 Cocoa application and
+  NSWindow lifecycle`.
+- Existing dynamic current-handoff assertions must advance to Phase H while
+  historical Step 677 completion text remains unchanged. A broad replacement
+  of the Step 678 phrase would corrupt that historical record, so migration
+  must target only the JSON `phase_f_current_handoff` assertion forms.
+- The first final-guard RED returned `30` because the guard searched the raw
+  Step 677 C++ source for a sentence that only exists after adjacent string
+  literals are compiled together. A three-boolean differential probe confirms
+  both candidate-ledger source needles already match and only the split
+  predecessor sentence fails. Freeze its stable source fragments instead.
+- The first Windows 457-test run exposes two predecessor-chain roots still
+  expecting Step 678 even though their referenced guards now carry Phase H.
+  A complete test-tree scan finds nine such old phrases, all in dynamic
+  predecessor assertions. Seven initially pass only because an upstream guard
+  still contains the same stale phrase; migrating all nine closes the chain
+  without changing Step 677 history.
+- Phase G Step 678 completes final closeout for Steps 619-678 with `tests/api_parity/phase_g_final_closeout_test.cpp`: Windows full debug passes 457/457 and WSL Arch Linux full debug passes 438/438 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage; the 32-row candidate ledger remains at 0 required, 29 adapted, 2 deferred, and 1 non-goal. Phase H Step 679 Cocoa application and NSWindow lifecycle is next.

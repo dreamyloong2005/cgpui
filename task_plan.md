@@ -1188,7 +1188,7 @@ Windows/Linux core API is stable enough for parity work.
 
 ## Active Phase G Execution Goal (2026-07-12)
 
-- Status: in_progress
+- Status: complete
 - Authoritative scope: Phase G Steps 619-678 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
 - Goal: finish the cross-cutting systems required by complex GPUI-style apps:
@@ -1574,6 +1574,11 @@ Windows/Linux core API is stable enough for parity work.
   436/436 on native Arch WSL before the dedicated guard is registered; the
   guard advances those totals to 456 and 437 while freezing locked Xmake,
   WSLg frame capture, Wayland/Vulkan surface, and the Step 678 handoff.
+- Completed: Phase G Step 678 completes final closeout for Steps 619-678 with `tests/api_parity/phase_g_final_closeout_test.cpp`: Windows full debug passes 457/457 and WSL Arch Linux full debug passes 438/438 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage; the 32-row candidate ledger remains at 0 required, 29 adapted, 2 deferred, and 1 non-goal. Phase H Step 679 Cocoa application and NSWindow lifecycle is next.
+- Step 678 evidence: the audit-only final guard aggregates 17 existing Phase G
+  band, packaging/CI, host, action-macro, candidate-ledger, and final dual-host
+  targets; freezes all eight checked roadmap bands, the Steps 673-678 records,
+  exact ledger/platform scope, and the Phase H handoff without product changes.
 - Step 675 evidence: the prelude-visible behavior tracer moved from missing-
   macro RED to GREEN for unscoped and scoped actions; the leaf header passes
   standalone cleanliness under default MSVC preprocessing, the focused
@@ -1610,6 +1615,19 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| The final Step 678 debug-marker audit used case-insensitive `DEBUG` matching and misclassified eight legitimate Windows/WSL Debug evidence strings as instrumentation | Step 678 final closeout audit | Inspect all eight hits, narrow the red-capable rule to exact `TODO`, `FIXME`, `[DEBUG-*]`, `std::cerr`, and `printf(` markers, confirm zero real instrumentation, and rerun the aggregate audit |
+| The final Step 678 aggregate audit repeated PowerShell's `"$n: $f"` scoped-variable parse trap and stopped before reading audit data | Step 678 final closeout audit | Minimize the deterministic parser failure, prove `${n}: ${f}` green in a standalone `pwsh` loop, delimit both variables in the aggregate command, and rerun the complete audit |
+| A Step 678 audit command constructed an empty PowerShell pipeline and failed at parse time before reading repository data | Step 678 final structural audit | Replace the optional pipeline with an explicit conditional collection, rerun the audit, and use only the corrected output as evidence |
+| A Step 678 JavaScript tool wrapper misspelled an argument and failed with a syntax error before dispatching its nested command | Step 678 final structural audit | Correct the wrapper argument, confirm no nested command ran, and rerun the intended read-only audit |
+| A Step 678 `rg` query treated the leading hyphen in `- Status: complete` as an option and rejected the read-only search | Step 678 plan-status audit | Put `--` before the literal pattern; the corrected query finds the Phase G status at the expected active-goal section |
+| The restarted Step 678 WSL suite reached 53% compilation, then D: fell to 884,736 free bytes and the foreground host session disappeared without a compiler, failure diagnostic, or test summary | Step 678 WSL full-debug restart | Delete only the rebuildable 12 GB `build/windows` tree, preserve `.build-wsl/master` plus `build/phase-g-ci`, and relaunch the same native-Xmake `-j 1` suite with an explicit exit-code sentinel |
+| A multi-file absolute-path `apply_patch` failed while D: was full and left `progress.md` at zero bytes; `git restore` also failed because the 1.53 MB HEAD file could not fit | Step 678 interruption logging | After freeing build capacity, restore `progress.md` from HEAD and reapply the exact captured Step 678 progress section with a repository-relative patch; verify line count and diff before continuing |
+| The corrected WSL launch still let the Windows call layer expand `$TMPDIR` in the preflight `mkdir` to empty; Xmake started because the existing `/dev/shm/cgpui` directory and explicit export remained valid | Step 678 WSL full-debug launch | Accept the already-running suite after independently confirming the existing temp directory; future launch commands should use literal `mkdir -p /dev/shm/cgpui` |
+| A concurrent WSL environment probe used `pgrep -n xmake` while Xmake was between driver phases and then attempted `/proc//environ` | Step 678 WSL environment confirmation | Discard the probe as evidence, keep the direct temp-directory confirmation, and do not disturb the active suite |
+| The first Step 678 WSL launch exported the inherited mixed Windows/Linux `PATH` without quotes; spaces and `(x86)` caused Bash syntax failure before Xmake started | Step 678 WSL full-debug launch | Quote the complete `PATH` assignment while preserving the same verified Python-tools prefix and all other locked environment values |
+| A post-handoff repair probe passed six target names to one `xmake build` command; Xmake listed targets and rejected the second name as `invalid argument` | Step 678 split-literal repair verification | Build each target in a serial loop with a separate locked-Xmake `build -j 1` invocation, then execute each emitted guard directly |
+| The five split-literal handoff replacements interpreted `$1"` ambiguously, dropping the first literal's closing quote and leaving trailing whitespace | Step 678 Phase H handoff migration | Rewrite the five split forms explicitly as `"Cocoa application "` followed by `"and NSWindow lifecycle"`; rerun compilation and `git diff --check` |
+| A Step 678 source survey guessed `phase_g_animation_closeout_test.cpp` and `phase_g_asset_closeout_test.cpp`, but neither filename exists | Step 678 closeout aggregation survey | Enumerate the registered `phase_g_*closeout*`, verification, action-macro, and candidate targets from `xmake.lua` and use their concrete source paths instead of inferring filenames |
 | A resumed Step 678 target-registration probe interpolated escaped C++ quotes inside a PowerShell `Select-String -SimpleMatch` argument and emitted positional-parameter errors plus false zero counts | Step 678 closeout design audit | Build each fixed-string needle by concatenating `target("` + target name + `")`; the corrected probe confirms all 17 aggregate targets exactly once |
 | A resumed closeout-source read passed a Windows wildcard directly to `rg` and failed with OS error 123 | Step 678 closeout design audit | Enumerate or name the concrete `tests/api_parity/phase_g_*closeout_test.cpp` files instead of passing an unexpanded Windows wildcard to `rg` |
 | The first Step 675 live-handoff chain passes 117/119; only the Windows and Linux Debug packaging guards return exit `6` because two new modular targets raise `xmake.lua` from the prior 4320 cap to 4322 lines | Step 675 119-consumer Windows verification | Align only those two historical Xmake caps with the new action-macro structure guard's 4340 ceiling, rerun the focused pair, then rerun the complete 119-target chain |

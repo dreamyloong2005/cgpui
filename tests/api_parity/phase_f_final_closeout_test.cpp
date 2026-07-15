@@ -75,7 +75,7 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 40;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"") ||
+                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"") ||
       !contains(task_plan,
                 "- Status: complete\n- Authoritative scope: Phase F")) return 50;
   return 0;

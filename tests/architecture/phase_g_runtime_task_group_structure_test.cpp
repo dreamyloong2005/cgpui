@@ -170,7 +170,7 @@ int main() {
       contains(core_parity, "priorities, structured task groups, pooled") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) {
+          "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) {
     return 15;
   }
   return 0;

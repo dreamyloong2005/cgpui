@@ -74,7 +74,7 @@ int main() {
   if (!contains(cleanliness, "#include \"cgpui/ui/test_runner.hpp\"") ||
       !contains(aggregate, "#include \"cgpui/ui/test_runner.hpp\"") ||
       !contains(previous,
-                "Step 678 Phase G final closeout verification")) {
+                "Phase H Step 679 Cocoa application and NSWindow lifecycle")) {
     return 5;
   }
   if (!contains(xmake, "target(\"phase_g_test_runner_test\")") ||
@@ -103,6 +103,6 @@ int main() {
       !contains(core, "GPUI-style C++ test runner") ||
       !contains(ledger_json, "\"phase_g_step_665_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) return 9;
+                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) return 9;
   return 0;
 }

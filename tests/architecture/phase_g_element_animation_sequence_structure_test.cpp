@@ -125,6 +125,6 @@ int main() {
   if (!contains(vocabulary, "`ElementAnimationStage`") ||
       !contains(core_parity, "indexed one-shot animation chains") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) return 9;
+                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) return 9;
   return 0;
 }

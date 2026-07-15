@@ -4136,6 +4136,11 @@ target("phase_g_final_dual_host_verification_structure_test")
     add_files("tests/architecture/phase_g_final_dual_host_verification_structure_test.cpp")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
+target("phase_g_final_closeout_test")
+    set_kind("binary")
+    add_files("tests/api_parity/phase_g_final_closeout_test.cpp")
+    add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
 target("window_runtime_frame_scheduling_test")
     set_kind("binary")
     set_rundir(os.projectdir())

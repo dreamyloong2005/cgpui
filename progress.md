@@ -25136,3 +25136,136 @@
   manifest has 148/148 unique target/source pairs, no Step 676/677 debug marker
   remains, changed paths stay inside the Step 677 audit surface, and
   `git diff --check` passes with line-ending notices only.
+
+## 2026-07-15 Phase G Step 678 Final Closeout
+
+- Committed Step 677 as `7b717e3e test: verify phase g across hosts`; the
+  tracked worktree returned clean and only the user's untracked `.vscode/`
+  directory remains.
+- Step 678 is an audit-only `tests/api_parity` closeout slice over the existing
+  Phase G band, host-verification, action-macro, candidate-ledger, and final
+  dual-host guards. It must close all roadmap bands and Steps 673-678, mark the
+  active plan complete, preserve all historical completion records, and hand
+  off to Phase H Step 679 without modifying product code.
+- The first closeout-source survey guessed two nonexistent generic animation
+  and asset closeout filenames. The corrected survey derives concrete sources
+  from registered Xmake targets and the repository file inventory.
+- Added and registered the audit-only Step 678 guard. Locked Windows Xmake
+  3.0.9 builds it serially with `-j 1`; its first direct RED returns `30`.
+- A tight direct-executable loop and three-boolean source probe show the RED is
+  not a missing candidate invariant: both candidate needles match, while the
+  Step 677 completion sentence is split across adjacent C++ literals in raw
+  source. The correction freezes the same semantic fragments without assuming
+  source-level concatenation.
+- After the source-fragment correction, the same locked-Xmake build passes and
+  the direct guard returns the intended RED exit `47`, identifying only the
+  unchecked eighth roadmap band, Steps 673-678. This is the accepted Step 678
+  RED before authority closeout and Phase H handoff migration.
+- Synchronized the Step 678 completion sentence across the roadmap,
+  Markdown/JSON ledger, task plan, and findings; checked Steps 673-678, marked
+  the active Phase G plan complete, recorded the final source inventory, and
+  advanced the JSON handoff to Phase H Step 679.
+- A prefix-limited migration dry run found exactly 124 old dynamic handoffs:
+  119 contiguous strings and five adjacent-literal variants. The matching bulk
+  rewrite updates those 124 test files to Phase H without replacing ordinary
+  Step 678 history; the new final guard is already the 125th Phase H consumer.
+- The first post-migration `git diff --check` identifies all five split forms:
+  replacement-group syntax consumed the intended closing quote and left a
+  trailing space. The explicit repair keeps the semantic space inside the
+  first C++ literal and restores a valid adjacent-literal pair.
+- `git diff --check` passes after the repair. A simultaneous compile probe then
+  passed six targets to one `xmake build`; Xmake accepts only one positional
+  build target and rejected the second as `invalid argument`. Verification
+  switches to one locked `-j 1` build per target plus direct guard execution.
+- Locked Windows Xmake 3.0.9 serially rebuilds the final, candidate, action,
+  final-dual-host, Windows-host, and WSL-host guards one target at a time. All
+  six emitted executables return `0` against the current source root.
+- The first complete Step 678 Windows run executes all 457 tests and passes
+  455/457 in 60.641 seconds. Only the Phase F Windows host guard and the Step
+  660 simulated-input structure guard fail; direct exits `4` and `5` map to
+  predecessor-source assertions that still expect the old Step 678 handoff.
+- A complete scan finds nine old Step 678 phrases, all dynamic predecessor
+  checks. Seven form a self-satisfying stale chain; the two roots reveal it.
+  Advancing all nine to Phase H preserves the separate Step 677 history and
+  gives a focused regression set before the full rerun.
+- All nine predecessor-chain targets rebuild serially under locked Xmake 3.0.9
+  and their executables return `0`, including the two original failures. No
+  temporary debug instrumentation was added; rerun the original 457-test loop.
+- The original locked-Xmake Windows feedback loop now passes all 457/457 tests
+  serially in 41.141 seconds with exit `0`. This includes the final closeout
+  guard, all 125 Phase H handoff consumers, product behavior, architecture,
+  header-cleanliness, UIA, Vulkan, packaging, and ledger coverage.
+- The first Step 678 WSL launch stops before Xmake because the inherited mixed
+  Windows/Linux PATH contains spaces and `(x86)` while the export assignment
+  was unquoted. No configure, compile, or test action ran. Quote the assignment
+  and reuse the same native Xmake, build graph, dependency roots, and temp path.
+- The corrected launch starts native Xmake. Its preflight `mkdir` still sees an
+  empty argument because the Windows invocation layer expands `$TMPDIR`, but an
+  independent check confirms the existing `/dev/shm/cgpui` directory is ready
+  and the explicit export precedes Xmake. The non-fatal message does not stop
+  compilation; future commands should spell the literal directory path.
+- A concurrent `/proc` environment probe finds no `xmake` process during a
+  child-compiler phase and attempts an empty pid path. It is discarded as
+  evidence and not retried while the authoritative suite is active.
+- After session resumption, no native Xmake or compiler process remains and
+  `build/phase-g-ci/step678-wsl-full-debug-expanded.log` ends during
+  `src/ui/element_context.cpp` compilation at 19% without a test report or
+  authoritative exit code. Record this launch as interrupted rather than
+  failed; restart the serial suite from the warmed `.build-wsl/master` graph
+  with the literal `/dev/shm/cgpui` directory in the shell command.
+- The restarted foreground WSL suite advances the warmed graph through the
+  Phase G guards and Vulkan tests to 53%, then its host execution session is
+  lost during a conversation continuation. No Xmake/compiler process remains,
+  and the log contains neither a failure diagnostic nor a test summary. Disk
+  inspection then finds D: at 884,736 free bytes, below the size of this
+  progress ledger and insufficient for remaining object/link output. Treat the
+  run as interrupted by disk exhaustion rather than as a test result; remove
+  only the rebuildable 12 GB `build/windows` tree, preserve `.build-wsl/master`
+  and `build/phase-g-ci`, and relaunch with an explicit exit-code sentinel.
+- The detached serial relaunch is the only active Step 678 WSL suite and uses
+  native Xmake 3.0.9, the retained `.build-wsl/master` graph, the locked
+  workspace dependency roots, and literal `/dev/shm/cgpui` temp storage. Its
+  running sentinel remains authoritative until the exit sentinel is written.
+- The pre-final structural audit confirms 32 candidate rows at 0 required,
+  29 adapted, 2 deferred, and 1 non-goal; required Windows/Linux plus deferred
+  macOS/X11 and non-goal wasm platform statuses; all eight checked Phase G
+  roadmap bands; all 17 aggregate target registrations exactly once; and the
+  final closeout target exactly once.
+- The architecture/header manifest remains 148 rows with 148 unique targets,
+  148 unique sources, and no malformed entries. The final guard is 176 lines,
+  `xmake.lua` is 4337 lines, no `include/` or `src/` file changed, and
+  `git diff --check` reports no errors beyond existing line-ending notices.
+- A per-file diff audit confirms all 276 changed lines across the 124 existing
+  test files are exclusively the live handoff migration from Step 678 to Phase
+  H; the five adjacent-literal forms and the new final guard complete the 125
+  handoff consumers without stale Step 678 assertions.
+- The retained Windows final log independently confirms the new closeout guard
+  passes and the locked-Xmake serial suite passes 457/457 in 41.141 seconds.
+  The WSL result remains intentionally unrecorded until the exit sentinel and
+  complete test summary are present.
+- The detached native Arch Xmake 3.0.9 serial suite completes with exit `0`
+  and passes 438/438 tests in 68.861 seconds. The dedicated
+  `phase_g_final_closeout_test/default` passes in 0.169 seconds, real WSLg
+  `wayland_frame_pixel_capture_test/default` passes in 0.862 seconds, and
+  `wayland_vulkan_surface_test/default` passes in 0.731 seconds.
+- Step 678 now has both required host gates: locked-Xmake Windows Debug passes
+  457/457 in 41.141 seconds and native Arch WSL Debug passes 438/438 in
+  68.861 seconds. The exit sentinel is `0`, the running sentinel is absent,
+  and no compiler, linker, test, dependency, disk, or display failure remains.
+- The final current-tree closeout audit passes: all five authority documents
+  contain Steps 673-678 and exactly one Step 678 completion record; all eight
+  Phase G roadmap bands are checked; the Phase H handoff has 125 consumers and
+  zero stale Step 678 assertions; the candidate, platform, manifest, line-count,
+  product-scope, and debug-instrumentation invariants all match. The freshly
+  emitted WSL final guard also executes directly with exit `0`, and
+  `git diff --check` remains clean apart from suppressed line-ending notices.
+- The submission review uses fixed point `7b717e3e`. Standards review finds no
+  documented modular-development violation or actionable baseline smell: the
+  new audit belongs to one focused `tests/api_parity` source, Xmake receives
+  only its five-line registration, no product or aggregate module changes, and
+  the 124 existing test edits are exclusively audited handoff migration.
+- Spec review finds no missing, incorrect, or out-of-scope Step 678 behavior:
+  every Phase G band and Steps 673-678 are closed, both required host gates
+  pass, the candidate ledger has no required gap, Windows/Linux remain required,
+  deferred/non-goal platforms stay explicit, and Phase H Step 679 is the live
+  handoff. Both review axes report zero findings.

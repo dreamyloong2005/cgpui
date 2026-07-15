@@ -82,7 +82,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification")) {
+                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle")) {
     return 9;
   }
   return 0;

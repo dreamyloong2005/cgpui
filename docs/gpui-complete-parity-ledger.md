@@ -808,6 +808,7 @@ consume C: drive space again.
 - Phase G Step 675 adds public scoped and unscoped unit-action macros with default construction, copyability, equality, and stable Action names, while payload actions remain explicit types outside the macro contract. Step 676 candidate-ledger closeout audit is next.
 - Phase G Step 676 closes the candidate ledger with zero required Windows/Linux candidate gaps, 29 adapted rows, deferred macOS and optional X11, and wasm as a non-goal, while active Windows/Linux platform targets remain required scope rather than unresolved rows. Step 677 final Windows/WSL verification is next.
 - Phase G Step 677 completes final dual-host verification: Windows full debug passes 456/456 and WSL Arch Linux full debug passes 437/437 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage. Step 678 Phase G final closeout verification is next.
+- Phase G Step 678 completes final closeout for Steps 619-678 with `tests/api_parity/phase_g_final_closeout_test.cpp`: Windows full debug passes 457/457 and WSL Arch Linux full debug passes 438/438 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage; the 32-row candidate ledger remains at 0 required, 29 adapted, 2 deferred, and 1 non-goal. Phase H Step 679 Cocoa application and NSWindow lifecycle is next.
 
 ## Categories
 

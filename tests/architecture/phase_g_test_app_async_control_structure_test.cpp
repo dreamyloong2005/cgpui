@@ -61,7 +61,7 @@ int main() {
       !contains(behavior, "normal_second") ||
       !contains(behavior, "TaskId{999999}") ||
       !contains(behavior, "app.run_until_parked()")) return 4;
-  if (!contains(previous, "Step 678 Phase G final closeout verification") ||
+  if (!contains(previous, "Phase H Step 679 Cocoa application and NSWindow lifecycle") ||
       !contains(xmake, "target(\"phase_g_test_app_async_control_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_async_control_structure_test\")")) {
@@ -85,6 +85,6 @@ int main() {
       !contains(core, "Deterministic `TestApp` async control") ||
       !contains(ledger_json, "\"phase_g_step_662_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) return 8;
+                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) return 8;
   return 0;
 }
