@@ -17,33 +17,34 @@ void macos_request_wakeup(CGPUIMacOSWakeupTarget* target) {
 
 void macos_request_wakeup_after(
     CGPUIMacOSWakeupTarget* target,
-    NSTimer* __strong* timer,
     std::uint64_t delay_ms) {
-  if (*timer != nil) [*timer invalidate];
-  *timer = [NSTimer scheduledTimerWithTimeInterval:
-                                  static_cast<NSTimeInterval>(delay_ms) / 1000.0
-                                            target:target
-                                          selector:@selector(dispatchDelayedWakeup:)
-                                          userInfo:nil
-                                           repeats:NO];
+  if ([NSThread isMainThread]) {
+    [target scheduleDelayedWakeup:@(delay_ms)];
+  } else {
+    [target performSelectorOnMainThread:@selector(scheduleDelayedWakeup:)
+                             withObject:@(delay_ms)
+                          waitUntilDone:NO];
+  }
 }
 
-void macos_cancel_wakeup(CGPUIMacOSWakeupTarget* target, NSTimer* __strong* timer) {
-  (void)target;
-  if (*timer != nil) {
-    [*timer invalidate];
-    *timer = nil;
+void macos_cancel_wakeup(CGPUIMacOSWakeupTarget* target) {
+  if ([NSThread isMainThread]) {
+    [target cancelDelayedWakeup];
+  } else {
+    [target performSelectorOnMainThread:@selector(cancelDelayedWakeup)
+                             withObject:nil
+                          waitUntilDone:NO];
   }
 }
 
 void MacOSApplication::request_wakeup() { macos_request_wakeup(wakeup_target_); }
 
 void MacOSApplication::request_wakeup_after(std::uint64_t delay_ms) {
-  macos_request_wakeup_after(wakeup_target_, &wakeup_timer_, delay_ms);
+  macos_request_wakeup_after(wakeup_target_, delay_ms);
 }
 
 void MacOSApplication::cancel_wakeup_after() {
-  macos_cancel_wakeup(wakeup_target_, &wakeup_timer_);
+  macos_cancel_wakeup(wakeup_target_);
 }
 
 }  // namespace cgpui

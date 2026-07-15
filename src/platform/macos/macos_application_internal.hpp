@@ -11,8 +11,11 @@
 @class CGPUIMacOSApplicationDelegate;
 @interface CGPUIMacOSWakeupTarget : NSObject
 @property(nonatomic, assign) void* application;
+@property(nonatomic, strong) NSTimer* timer;
 - (void)dispatchWakeup;
 - (void)dispatchDelayedWakeup:(NSTimer*)timer;
+- (void)scheduleDelayedWakeup:(NSNumber*)delayMilliseconds;
+- (void)cancelDelayedWakeup;
 @end
 
 namespace cgpui {
@@ -48,7 +51,6 @@ class MacOSApplication final : public PlatformApplication {
   std::vector<MacOSWindow*> windows_;
   __strong CGPUIMacOSApplicationDelegate* delegate_ = nil;
   __strong CGPUIMacOSWakeupTarget* wakeup_target_ = nil;
-  __strong NSTimer* wakeup_timer_ = nil;
   bool running_ = true;
   bool launched_ = false;
 };
@@ -63,9 +65,8 @@ void macos_stop_event_loop();
 void macos_request_wakeup(CGPUIMacOSWakeupTarget* target);
 void macos_request_wakeup_after(
     CGPUIMacOSWakeupTarget* target,
-    NSTimer* __strong* timer,
     std::uint64_t delay_ms);
-void macos_cancel_wakeup(CGPUIMacOSWakeupTarget* target, NSTimer* __strong* timer);
+void macos_cancel_wakeup(CGPUIMacOSWakeupTarget* target);
 
 Result<std::unique_ptr<PlatformApplication>> create_platform_application();
 
