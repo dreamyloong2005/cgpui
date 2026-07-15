@@ -4319,6 +4319,10 @@ target("hello_window")
     elseif is_plat("macosx") then
         add_deps("cgpui_platform_macos", "cgpui_renderer_metal")
         add_frameworks("AppKit", "QuartzCore", "Metal")
+        add_tests("macos_first_frame", {runenvs = {CGPUI_EXIT_AFTER_FIRST_FRAME = "1"}})
+        add_tests("macos_resize_after_first_frame", {runenvs = {CGPUI_RESIZE_AFTER_FIRST_FRAME = "1"}})
+        add_tests("macos_close_after_first_frame", {runenvs = {CGPUI_CLOSE_AFTER_FIRST_FRAME = "1"}})
+        add_tests("macos_demo_smoke_flow", {runenvs = {CGPUI_DEMO_SMOKE_FLOW = "1", CGPUI_CLOSE_AFTER_FIRST_FRAME = "0"}})
     else
         add_deps("cgpui_platform_fallback", "cgpui_renderer_fallback")
     end
