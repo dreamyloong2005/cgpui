@@ -170,7 +170,7 @@ int main() {
       contains(core_parity, "priorities, structured task groups, pooled") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification\"")) {
+          "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) {
     return 15;
   }
   return 0;

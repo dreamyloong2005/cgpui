@@ -1569,6 +1569,11 @@ Windows/Linux core API is stable enough for parity work.
   Markdown candidates to exist in the JSON export with matching status,
   rejects any remaining required candidate row, checks exact 29/2/1 counts,
   and separately freezes active platform-target scope.
+- Completed: Phase G Step 677 completes final dual-host verification: Windows full debug passes 456/456 and WSL Arch Linux full debug passes 437/437 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage. Step 678 Phase G final closeout verification is next.
+- Step 677 evidence: the post-Step-676 baselines pass 455/455 on Windows and
+  436/436 on native Arch WSL before the dedicated guard is registered; the
+  guard advances those totals to 456 and 437 while freezing locked Xmake,
+  WSLg frame capture, Wayland/Vulkan surface, and the Step 678 handoff.
 - Step 675 evidence: the prelude-visible behavior tracer moved from missing-
   macro RED to GREEN for unscoped and scoped actions; the leaf header passes
   standalone cleanliness under default MSVC preprocessing, the focused
@@ -1605,6 +1610,8 @@ Windows/Linux core API is stable enough for parity work.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A resumed Step 678 target-registration probe interpolated escaped C++ quotes inside a PowerShell `Select-String -SimpleMatch` argument and emitted positional-parameter errors plus false zero counts | Step 678 closeout design audit | Build each fixed-string needle by concatenating `target("` + target name + `")`; the corrected probe confirms all 17 aggregate targets exactly once |
+| A resumed closeout-source read passed a Windows wildcard directly to `rg` and failed with OS error 123 | Step 678 closeout design audit | Enumerate or name the concrete `tests/api_parity/phase_g_*closeout_test.cpp` files instead of passing an unexpanded Windows wildcard to `rg` |
 | The first Step 675 live-handoff chain passes 117/119; only the Windows and Linux Debug packaging guards return exit `6` because two new modular targets raise `xmake.lua` from the prior 4320 cap to 4322 lines | Step 675 119-consumer Windows verification | Align only those two historical Xmake caps with the new action-macro structure guard's 4340 ceiling, rerun the focused pair, then rerun the complete 119-target chain |
 | The first combined Step 675 header/structure patch named a nonexistent adjacency in the sorted architecture/header manifest | Step 675 modular guard creation | `apply_patch` rejected the edit atomically; inspect the real manifest ordering, then replay the same files and registrations with exact context |
 | The first Step 675 macro implementation forwards `__VA_ARGS__` through a counted expander, and default MSVC preprocessing collapses two actions into one invalid `struct A, B` declaration | Step 675 first GREEN attempt | Differential `/EP` output proves `/Zc:preprocessor` expands correctly; preserve external-consumer compatibility by applying the selected expander to a parenthesized argument pack instead of requiring a compiler flag |

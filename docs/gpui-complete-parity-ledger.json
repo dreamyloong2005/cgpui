@@ -3683,7 +3683,19 @@
       "xmake.lua"
     ],
     "phase_g_step_676_remaining_gap": "Step 677 final Windows/WSL verification",
-    "phase_f_current_handoff": "Step 677 final Windows/WSL verification"
+    "phase_g_step_677_surface": "Phase G Step 677 completes final dual-host verification: Windows full debug passes 456/456 and WSL Arch Linux full debug passes 437/437 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage. Step 678 Phase G final closeout verification is next.",
+    "phase_g_step_677_sources": [
+      "tests/api_parity/phase_c_final_ledger_audit_test.cpp",
+      "tests/api_parity/phase_c_uniform_list_audit_test.cpp",
+      "tests/api_parity/phase_c_window_examples_closeout_test.cpp",
+      "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp",
+      "tests/api_parity/public_phase_b_completion_audit_test.cpp",
+      "tests/architecture/phase_g_final_dual_host_verification_structure_test.cpp",
+      "scripts/ci/architecture-header-targets.txt",
+      "xmake.lua"
+    ],
+    "phase_g_step_677_remaining_gap": "Step 678 Phase G final closeout verification",
+    "phase_f_current_handoff": "Step 678 Phase G final closeout verification"
   },
   "categories": [
     "application_and_app_context",

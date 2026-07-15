@@ -112,6 +112,6 @@ int main() {
       !contains(core, "Standalone `TestApp` and `TestAppWindow`") ||
       !contains(ledger_json, "\"phase_g_step_659_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) return 8;
   return 0;
 }

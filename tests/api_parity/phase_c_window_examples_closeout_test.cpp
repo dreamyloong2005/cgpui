@@ -141,7 +141,7 @@ int main() {
   constexpr std::array closeout_exclusions{
       "ClipboardItem",
       "gpui::test",
-      "action macro payloads",
+      "remain explicit types outside the macro contract",
       "task priorities",
       "structured task groups",
       "private runtime headers",

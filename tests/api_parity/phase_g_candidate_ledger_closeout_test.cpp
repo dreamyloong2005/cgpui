@@ -166,8 +166,8 @@ int main() {
                 "\"phase_g_step_676_remaining_gap\": \"Step 677 final "
                 "Windows/WSL verification\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 677 final "
-                "Windows/WSL verification\"")) {
+                "\"phase_f_current_handoff\": \"Step 678 Phase G final "
+                "closeout verification\"")) {
     return 7;
   }
   return 0;

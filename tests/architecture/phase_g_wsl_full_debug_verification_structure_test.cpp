@@ -76,7 +76,7 @@ int main() {
                 "\"phase_g_step_674_remaining_gap\": \"Step 675 action macro "
                 "production behavior\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL "
+                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout "
                 "verification\"")) {
     return 5;
   }

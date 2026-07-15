@@ -106,7 +106,7 @@ int main() {
       !contains(ledger_json, "scripts/ci/linux-package.sh") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification\"")) {
+          "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) {
     return 8;
   }
   return 0;

@@ -153,7 +153,7 @@ int main() {
   constexpr std::array out_of_scope{
       "`ClipboardItem` payload parity",
       "upstream `gpui::test` macro equivalents",
-      "action macro payloads",
+      "remain explicit types outside the macro contract",
       "task priorities",
       "structured task groups",
   };

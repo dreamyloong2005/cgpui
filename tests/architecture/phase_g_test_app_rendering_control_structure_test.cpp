@@ -76,7 +76,7 @@ int main() {
       !contains(behavior, "first.simulate_resize(") ||
       !contains(behavior, "first.render_snapshot()") ||
       !contains(behavior, "second.try_draw_frame()")) return 5;
-  if (!contains(previous, "Step 677 final Windows/WSL verification") ||
+  if (!contains(previous, "Step 678 Phase G final closeout verification") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_rendering_control_test\")") ||
       !contains(xmake,
@@ -103,6 +103,6 @@ int main() {
       !contains(core, "Per-window `TestAppWindow` rendering control") ||
       !contains(ledger_json, "\"phase_g_step_663_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) return 9;
   return 0;
 }

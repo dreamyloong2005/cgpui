@@ -25029,3 +25029,110 @@
   two historical Step 676 test references and 123 live Step 677 consumers,
   parses the JSON ledger, and passes `git diff --check` with only line-ending
   notices. The locked Windows Xmake 3.0.9 candidate and parity guards pass 2/2.
+- Committed Step 676 as `b24166d0 test: close phase g candidate ledger`; the
+  post-commit worktree contains only the user's untracked `.vscode/` directory.
+
+## 2026-07-15 Phase G Step 677 Final Dual-Host Verification
+
+- The first locked-Xmake Windows Debug run performs a complete rebuild and
+  executes 455 tests. It passes 450/455; all five failures are deterministic
+  historical vocabulary guards, while product, UIA, Vulkan, and Phase G
+  behavior coverage remains green.
+- A five-target loop reproduces 0/5 in 0.250 seconds, and direct execution maps
+  exit codes 62/82/92/72/182 to one shared stale phrase. The guards still
+  require `action macro payloads`, while Step 675 intentionally clarified the
+  public contract to payload actions remaining explicit types outside the
+  unit-action macro contract.
+- Updated only those five historical assertions to freeze the stable semantic
+  fragment shared by the roadmap and vocabulary. Rerun the five-target loop
+  before resuming the full Windows gate.
+- Resume audit confirms the five-target regression passes 5/5 and the complete
+  locked-Xmake Windows Debug suite passes 455/455. The existing native Arch
+  Xmake 3.0.9 full Debug run remains active against `.build-wsl/master`, with
+  production libraries rebuilding successfully and test targets compiling.
+- Re-read the persistent plan through the `planning-with-files` catchup flow.
+  The Step 677 seam is final dual-host evidence plus a dedicated architecture
+  guard; Step 678 is an audit-only authority/ledger/roadmap closeout guard.
+- The first read-only Xmake target-map probe used `Select-String -InputObject`
+  on the complete line array and falsely reported every target missing. The
+  corrected `Select-String -Path xmake.lua` probe resolves all 16 final-audit
+  targets, including the non-stem registration
+  `phase_g_reproducible_dependencies_structure_test`.
+- The native signed Arch Xmake 3.0.9 full Debug run completed successfully at
+  436/436 in 68.660 seconds. The report includes passing WSLg Wayland frame
+  pixel capture and Wayland/Vulkan surface coverage, so Step 677 now has
+  complete Windows 455/455 and WSL 436/436 baseline evidence before its
+  dedicated structure guard is added.
+- A read-only `rg -F` probe embedded escaped C++ quotes directly in a
+  PowerShell command and PowerShell split the pattern into path arguments.
+  Use `Select-String -Path` or a single-quoted literal for quoted Xmake target
+  lookups in this shell.
+- Added and registered the dedicated Step 677 architecture guard plus its
+  shared-manifest entry. The first focused run should stop at authority-only
+  exit `5` until the five completion records and Step 678 handoff are written.
+- Direct execution confirms the registered guard returns the planned
+  authority-only RED exit `5`. Synchronized the exact Step 677 completion
+  sentence across the roadmap, Markdown/JSON ledger, task plan, and findings;
+  added the Step 677 source inventory and advanced the JSON handoff to Step 678.
+- Mechanically advanced 131 live Step 677 prefix occurrences across exactly
+  122 test files. The Step 676 candidate guard and new Step 677 guard were
+  excluded from the rewrite so their historical Step 677 evidence remains
+  fixed; the candidate guard's current-handoff assertion was updated directly.
+- The expanded locked-Xmake Windows Debug suite rebuilds every migrated guard
+  and passes 456/456 in 56.782 seconds. This validates the full dynamic handoff
+  chain, the five stable vocabulary assertions, the new Step 677 guard, all
+  architecture/header limits, and all product behavior before the WSL rerun.
+- Resumed the Step 677 closeout from the persistent session catchup without
+  changing or restarting the active Arch WSL run. The worktree and prior
+  `b24166d0` Step 676 baseline match the handoff; `.vscode/` remains untouched.
+- Read-only Step 677 audit confirms the exact completion sentence occurs once
+  in each of the five authority documents, the JSON parses with 32 candidate
+  rows at 0 required / 29 adapted / 2 deferred / 1 non-goal, active Windows
+  and Linux targets remain required, and macOS/X11/wasm retain their intended
+  deferred/deferred/non-goal states.
+- The Step 678 handoff appears across 124 test files, including intentional
+  predecessor-chain duplicates and the new Step 677 guard; no literal old
+  `phase_f_current_handoff` remains. The architecture/header manifest has 148
+  unique target/source pairs, and `git diff --check` passes with line-ending
+  notices only.
+- The uninterrupted native Arch Xmake 3.0.9 serial run has compiled the new
+  Step 677 guard successfully and remains active in the Phase G target set;
+  no compiler, dependency, disk, or test failure has appeared.
+- The native Arch Xmake 3.0.9 serial full Debug suite completes with exit `0`
+  and passes 437/437 in 80.469 seconds. The report includes real WSLg display
+  execution for `wayland_frame_pixel_capture_test/default` (1.059 seconds) and
+  `wayland_vulkan_surface_test/default` (0.937 seconds).
+- A shell-startup Oh My Posh initialization message reported a transient
+  temporary-file lock after the verification command had already completed.
+  It did not change the command exit code, test report, repository files, or
+  verification result and is recorded as non-blocking environment noise.
+- A resumed focused probe passed the Step 677 target name positionally to
+  `xmake test`; Xmake returned exit `0` with `nothing to test`, so that command
+  is not accepted as verification evidence. The corrected path builds with
+  locked Xmake using `-j 1` and executes the emitted binary directly.
+- The first resumed JSON audit looked for a nonexistent nested candidate-row
+  property and reported one null array entry. The file's parsed top-level
+  properties identify `rows` as the authoritative 32-row array; the corrected
+  audit reads that exact property and verifies the four status totals.
+- The corrected parsed JSON audit passes with 32 rows at 0 required, 29
+  adapted, 2 deferred, and 1 non-goal. Windows/Win32/Vulkan and
+  Linux/Wayland/Vulkan remain required platform targets; macOS and X11 remain
+  deferred, and wasm remains a non-goal.
+- Locked Windows Xmake 3.0.9 rebuilds the dedicated Step 677 structure guard
+  serially with `-j 1` in 0.078 seconds. Its direct execution is used for the
+  focused result because the earlier positional `xmake test` probe selected no
+  tests.
+- The freshly built Windows Step 677 guard and the guard emitted by the final
+  Arch WSL run both execute directly with exit `0` against the current source
+  root.
+- A structured handoff probe assumed `phase_f_current_handoff` was a direct
+  child of `scope_guard`; that lookup returned null even though the parsed JSON
+  and source text are valid. The corrected audit enumerates the actual parent
+  object before asserting the exact handoff value.
+- The corrected structured lookup finds
+  `phase_d_text_evidence.phase_f_current_handoff` and verifies the exact
+  `Step 678 Phase G final closeout verification` value. All five authority
+  documents contain exactly one Step 677 completion sentence, the architecture
+  manifest has 148/148 unique target/source pairs, no Step 676/677 debug marker
+  remains, changed paths stay inside the Step 677 audit surface, and
+  `git diff --check` passes with line-ending notices only.

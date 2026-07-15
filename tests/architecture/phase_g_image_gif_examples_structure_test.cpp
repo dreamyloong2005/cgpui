@@ -119,6 +119,6 @@ int main() {
       !contains(ledger_md, "Phase G assets band closed") ||
       !contains(ledger_json, "\"phase_g_step_658_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification\"")) return 8;
+                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) return 8;
   return 0;
 }

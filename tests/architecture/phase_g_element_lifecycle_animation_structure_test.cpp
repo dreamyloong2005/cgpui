@@ -138,6 +138,6 @@ int main() {
   if (!contains(vocabulary, "`ElementAnimationStateStore`") ||
       !contains(core_parity, "runtime-owned keyed element lifecycle") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification\"")) return 11;
+                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) return 11;
   return 0;
 }

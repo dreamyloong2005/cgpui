@@ -12569,3 +12569,30 @@
   Windows/Linux platform targets remain required scope; macOS remains Phase H,
   X11 remains optional Phase I, and wasm remains a non-goal.
 - Phase G Step 676 closes the candidate ledger with zero required Windows/Linux candidate gaps, 29 adapted rows, deferred macOS and optional X11, and wasm as a non-goal, while active Windows/Linux platform targets remain required scope rather than unresolved rows. Step 677 final Windows/WSL verification is next.
+
+## 2026-07-15 Phase G Step 677 Final Dual-Host Verification
+
+- The first post-Step-676 Windows Debug suite passes 450/455. Every product,
+  UIA, Vulkan, and Phase G behavior target passes; the five failures are
+  historical Phase B/C vocabulary guards.
+- Direct execution returns 62, 82, 92, 72, and 182. All five codes map to the
+  same obsolete `action macro payloads` string assertion after Step 675
+  clarified the contract as payload actions remaining explicit types outside
+  the unit-action macro contract.
+- The stable cross-document semantic fragment is `remain explicit types
+  outside the macro contract`; historical guards should freeze that behavior
+  instead of the replaced wording.
+- The established Step 677 TDD seam is the complete locked-Xmake Windows and
+  native signed Arch Xmake Debug reports plus a dedicated architecture guard;
+  it must advance the live handoff to Step 678 without rewriting the fixed
+  Step 676 completion sentence.
+- The established Step 678 TDD seam is an audit-only final closeout target over
+  the Phase G band guards, the five authority documents, the zero-required-gap
+  candidate ledger, and the checked Steps 673-678 roadmap row. No product
+  implementation belongs in the final closeout slice.
+- The final audit must aggregate all seven roadmap bands: Win32 UIA, Linux
+  AT-SPI, async runtime, animation, assets, GPUI-style test support, and
+  packaging/CI. It must also preserve the candidate-ledger scope invariant:
+  zero required candidate gaps, active Windows/Wayland targets, deferred
+  macOS/X11, and wasm as a non-goal before handing off to Phase H Step 679.
+- Phase G Step 677 completes final dual-host verification: Windows full debug passes 456/456 and WSL Arch Linux full debug passes 437/437 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage. Step 678 Phase G final closeout verification is next.

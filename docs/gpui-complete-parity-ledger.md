@@ -807,6 +807,7 @@ consume C: drive space again.
 - Phase G Step 674 completes WSL full-debug verification at 431/431 with real WSLg Wayland frame pixel capture under the locked Xmake 3.0.9 dependency environment. Step 675 action macro production behavior is next.
 - Phase G Step 675 adds public scoped and unscoped unit-action macros with default construction, copyability, equality, and stable Action names, while payload actions remain explicit types outside the macro contract. Step 676 candidate-ledger closeout audit is next.
 - Phase G Step 676 closes the candidate ledger with zero required Windows/Linux candidate gaps, 29 adapted rows, deferred macOS and optional X11, and wasm as a non-goal, while active Windows/Linux platform targets remain required scope rather than unresolved rows. Step 677 final Windows/WSL verification is next.
+- Phase G Step 677 completes final dual-host verification: Windows full debug passes 456/456 and WSL Arch Linux full debug passes 437/437 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage. Step 678 Phase G final closeout verification is next.
 
 ## Categories
 

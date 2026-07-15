@@ -131,6 +131,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationCurve`") ||
       !contains(core_parity, "parameterized spring curves") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification\"")) return 9;
+                "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) return 9;
   return 0;
 }

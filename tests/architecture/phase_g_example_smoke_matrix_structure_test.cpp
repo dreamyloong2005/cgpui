@@ -120,7 +120,7 @@ int main() {
   }
   if (!contains(ledger_json, "\"phase_g_step_670_sources\"") ||
       !contains(ledger_json,
-          "\"phase_f_current_handoff\": \"Step 677 final Windows/WSL verification\"")) {
+          "\"phase_f_current_handoff\": \"Step 678 Phase G final closeout verification\"")) {
     return 9;
   }
   return 0;

@@ -188,7 +188,7 @@ int main() {
   constexpr std::array out_of_scope{
       "ClipboardItem",
       "gpui::test",
-      "action macro payloads",
+      "remain explicit types outside the macro contract",
       "task priorities",
       "structured task groups",
       "private runtime headers",
