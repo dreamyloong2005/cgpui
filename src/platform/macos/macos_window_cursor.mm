@@ -1,8 +1,9 @@
 #include "macos_window_internal.hpp"
+#include "macos_input_internal.hpp"
 
 namespace cgpui {
 
-void MacOSWindow::set_cursor(CursorShape cursor_shape) {
+NSCursor* macos_cursor_for_shape(CursorShape cursor_shape) {
   NSCursor* cursor = [NSCursor arrowCursor];
   switch (cursor_shape) {
     case CursorShape::default_arrow: cursor = [NSCursor arrowCursor]; break;
@@ -20,7 +21,16 @@ void MacOSWindow::set_cursor(CursorShape cursor_shape) {
     case CursorShape::up_arrow: cursor = [NSCursor arrowCursor]; break;
     case CursorShape::not_allowed: cursor = [NSCursor operationNotAllowedCursor]; break;
   }
+  return cursor;
+}
+
+void MacOSWindow::set_cursor(CursorShape cursor_shape) {
+  cursor_shape_ = cursor_shape;
+  NSCursor* cursor = macos_cursor_for_shape(cursor_shape);
   [cursor set];
+  if (window_ != nil && content_view_ != nil) {
+    [window_ invalidateCursorRectsForView:content_view_];
+  }
 }
 
 }  // namespace cgpui

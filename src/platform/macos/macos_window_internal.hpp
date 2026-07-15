@@ -18,12 +18,15 @@
 - (void)detachWindow;
 @end
 
+@class CGPUIMacOSContentView;
+
 namespace cgpui {
 
 class MacOSWindow final : public PlatformWindow {
  public:
   MacOSWindow(
       NSWindow* window,
+      CGPUIMacOSContentView* content_view,
       CAMetalLayer* layer,
       CGPUIMacOSWindowDelegate* delegate,
       PlatformEventCallback callback,
@@ -43,6 +46,8 @@ class MacOSWindow final : public PlatformWindow {
   void request_close() override;
   void set_title(std::string_view title) override;
   void set_cursor(CursorShape cursor_shape) override;
+  [[nodiscard]] PlatformPointerCaptureState pointer_capture_state() const override;
+  void set_pointer_capture(bool captured) override;
   void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) override;
 
@@ -56,11 +61,21 @@ class MacOSWindow final : public PlatformWindow {
   void focused(bool focused);
   void minimized(bool minimized);
   void wakeup_requested();
+  void pointer_moved(NSEvent* event);
+  void pointer_exited(NSEvent* event);
+  void pointer_button(NSEvent* event, bool pressed);
+  void pointer_scrolled(NSEvent* event);
+  void keyboard_key(NSEvent* event, bool pressed);
+  [[nodiscard]] Point event_position(NSEvent* event) const;
+  void release_pointer_capture(bool notify);
+  [[nodiscard]] CursorShape cursor_shape() const { return cursor_shape_; }
 
  private:
   __strong NSWindow* window_ = nil;
+  __strong CGPUIMacOSContentView* content_view_ = nil;
   __strong CAMetalLayer* layer_ = nil;
   __strong CGPUIMacOSWindowDelegate* delegate_ = nil;
+  __strong id pointer_monitor_ = nil;
   PlatformEventCallback callback_;
   WindowState state_;
   PlatformWindowCloseController close_controller_;
@@ -68,6 +83,8 @@ class MacOSWindow final : public PlatformWindow {
   bool active_ = false;
   bool focused_ = false;
   bool minimized_ = false;
+  bool pointer_captured_ = false;
+  CursorShape cursor_shape_ = CursorShape::default_arrow;
 };
 
 WindowState make_macos_window_state(NSWindow* window);
