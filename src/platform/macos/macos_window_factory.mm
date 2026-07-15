@@ -73,6 +73,7 @@ Result<std::unique_ptr<MacOSWindow>> create_macos_window(
   [content attachWindowAdapter:result.get()];
   [delegate attachWindow:result.get()];
   [window setDelegate:delegate];
+  (void)result->apply_window_chrome(descriptor.chrome);
   if (parent != nil) [parent addChildWindow:window ordered:NSWindowAbove];
   if (!descriptor.position.has_value()) [window center];
   [window makeKeyAndOrderFront:nil];

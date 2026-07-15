@@ -40,6 +40,13 @@ class MacOSApplication final : public PlatformApplication {
   void request_wakeup_after(std::uint64_t delay_ms) override;
   void cancel_wakeup_after() override;
   PlatformReopenResult request_reopen() override;
+  PlatformMenuInstallationResult install_native_menu(
+      NativeMenuModel menu) override;
+  NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) override;
+  NativeMessageDialogResult show_native_message_dialog(
+      NativeMessageDialogOptions options) override;
+  PlatformOpenUrlResult open_url(std::string url) override;
   int run() override;
   void quit() override;
   [[nodiscard]] PlatformFontDiscoveryResult discover_font_discovery()
@@ -47,6 +54,9 @@ class MacOSApplication final : public PlatformApplication {
 
   void dispatch_wakeup();
   void reopened();
+  void dispatch_native_menu(
+      std::string action_name,
+      NativeMenuCommandSource source);
   void register_window(MacOSWindow* window);
   void unregister_window(MacOSWindow* window);
 
@@ -54,6 +64,8 @@ class MacOSApplication final : public PlatformApplication {
   std::vector<MacOSWindow*> windows_;
   __strong CGPUIMacOSApplicationDelegate* delegate_ = nil;
   __strong CGPUIMacOSWakeupTarget* wakeup_target_ = nil;
+  __strong id menu_target_ = nil;
+  __strong NSMenu* main_menu_ = nil;
   bool running_ = true;
   bool launched_ = false;
 };
