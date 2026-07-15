@@ -23,6 +23,9 @@ struct MacOSTextServicesDiagnostics {
 struct MacOSTextInputState {
   std::string marked_text;
   std::size_t marked_cursor = 0;
+  std::size_t marked_document_location_utf16 = 0;
+  std::size_t marked_selection_location_utf16 = 0;
+  std::size_t marked_selection_length_utf16 = 0;
   MacOSTextServicesDiagnostics diagnostics;
 };
 
