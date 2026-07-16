@@ -25657,3 +25657,24 @@
   the final exit 3 omitted `-j 1` from the expected build command.
 - The corrected documentation, structure, total-ledger, and Phase I regression
   matrix passes 4/4. Steps 823-828 are complete.
+- Steps 829-834 began RED at 0/2 for missing deterministic release artifacts,
+  content policy, dependency bootstrap, and non-macOS Phase J workflow.
+- Added a focused release Xmake module, SHA-256 content manifest and deterministic
+  ZIP/tar.gz generator, Windows/Linux release wrappers, pinned Phase J dependency
+  action, Windows/Wayland/X11 CI jobs, and explicit X11/AT-SPI Linux package
+  libraries. The focused guards moved to GREEN 2/2.
+- The real Windows Release build completed serially from a fresh Phase J build
+  root. Its first reproducibility check correctly failed because the temporary
+  output filename leaked into the embedded manifest; a seconds-long differential
+  probe proved that was the only differing line.
+- Separating canonical archive identity from output path makes the fast probe
+  and original wrapper path green. The final ZIP SHA-256 is
+  `14d6fc8819b913f48763579431f57cf2ee7f7b0c79eabb7c5208940b2dcecee5`;
+  all 197 manifest hashes match the 198-entry archive. Steps 829-834 non-macOS
+  delivery is complete, with Linux Release execution retained for final WSL.
+- The first release/documentation regression matrix passed 3/4 because the
+  documentation guard still froze the now-completed Step 829 handoff. Its
+  current-state assertion now advances to Step 835 while preserving Step 828.
+- Explicit product-path staging excludes `.vscode/`. A first PowerShell
+  `Select-String` status probe emitted a false alert; direct staged-path array
+  filtering confirms zero `.vscode` paths in the index.

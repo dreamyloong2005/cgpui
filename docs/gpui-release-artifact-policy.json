@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "source_date_epoch": 1704067200,
+  "source_date_utc": "2024-01-01T00:00:00Z",
+  "reproducibility_contract": "Identical package trees produce byte-identical archives.",
+  "content_manifest": "release-manifest.json",
+  "archives": {
+    "windows": "cgpui-windows-release.zip",
+    "linux": "cgpui-linux-release.tar.gz"
+  },
+  "normalization": {
+    "path_order": "utf8_bytewise_ascending",
+    "file_mode": "0644",
+    "executable_mode": "0755",
+    "owner": 0,
+    "group": 0
+  },
+  "dependency_lock": "xmake-requires.lock",
+  "xmake_version": "3.0.9"
+}

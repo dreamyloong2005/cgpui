@@ -48,6 +48,6 @@ int main() {
   for (const auto* path : paths) if (!contains(readme, path)) return 5;
   if (!contains(roadmap, "- [x] Steps 823-828: Complete documentation") ||
       !contains(ledger, "\"phase_j_steps_823_828_status\": \"complete\"") ||
-      !contains(ledger, "Phase J Step 829 reproducible packages")) return 6;
+      !contains(ledger, "Phase J Step 835 final non-macOS matrix verification")) return 6;
   return 0;
 }
