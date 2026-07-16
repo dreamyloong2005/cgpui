@@ -829,6 +829,10 @@ consume C: drive space again.
   concurrent asset reload, and task cancellation. Checked-in scale floors and
   JSON-report wrappers cover Windows, Wayland, and X11. Phase J Step 823
   getting-started documentation is next.
+- Phase J Step 828 completes focused getting-started, architecture, platform
+  dependency, example, GPUI-to-C++23 migration, and non-goal guides. README is
+  now a current desktop-target navigation entry. Phase J Step 829 reproducible
+  packages is next.
 
 ## Categories
 

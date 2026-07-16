@@ -3778,7 +3778,20 @@
       "tests/api_parity/phase_j_stress_audit_test.cpp",
       "tests/architecture/phase_j_stress_structure_test.cpp"
     ],
-    "phase_j_current_handoff": "Phase J Step 823 getting-started documentation"
+    "phase_j_steps_823_828_status": "complete",
+    "phase_j_documentation_evidence": "Phase J Step 828 completes focused getting-started, architecture, platform dependency, example, GPUI-to-C++23 migration, and non-goal guides; README is now a current desktop-target navigation entry.",
+    "phase_j_documentation_sources": [
+      "README.md",
+      "docs/getting-started.md",
+      "docs/architecture.md",
+      "docs/platform-dependencies.md",
+      "docs/examples.md",
+      "docs/gpui-to-cpp23-migration.md",
+      "docs/non-goals.md",
+      "tests/api_parity/phase_j_documentation_audit_test.cpp",
+      "tests/architecture/phase_j_documentation_structure_test.cpp"
+    ],
+    "phase_j_current_handoff": "Phase J Step 829 reproducible packages"
   },
   "categories": [
     "application_and_app_context",

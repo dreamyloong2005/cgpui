@@ -4915,7 +4915,7 @@ implementation slice.
      image, async-wakeup, and frame-pacing performance baselines.
   4. [x] Steps 817-822: public stress runner for window/entity/list/IME/
      clipboard/DnD/asset/task-cancellation scenarios.
-  5. [ ] Steps 823-828: getting-started, architecture, dependencies, examples,
+  5. [x] Steps 823-828: getting-started, architecture, dependencies, examples,
      GPUI-to-C++23 migration, and non-goal documentation.
   6. [ ] Steps 829-834: reproducible Windows/Linux packages, CI definitions,
      dependency bootstrap, manifests, and release artifacts.
@@ -4946,3 +4946,5 @@ implementation slice.
 | The diagnostic stress report showed only `window_churn` failed because its test View left close requests unhandled | Steps 817-822 window churn | Accept `WindowCloseRequested` through the public context and require every opened TestApp window to leave the app-owned set |
 | Explicit View close acceptance did not change `window_churn`; source inspection showed additional windows bypass View dispatch and remain retired until the next root wakeup | Steps 817-822 window churn | Keep one control window, close all churn targets, complete one public task to trigger wakeup/reclamation, and require only the control window to remain |
 | Two combined stress-runner/planning patches omitted the `Update File` boundary before task-plan rows and were rejected atomically | Steps 817-822 planning synchronization | Reapply each code and task-plan hunk with explicit file boundaries; no partial changes occurred |
+| The first documentation GREEN run passed 2/4: the docs guard used heading-incompatible capitalization and the Phase I guard still required an obsolete Step 799 immediate-next sentence | Steps 823-828 documentation regression | Match formal architecture headings and remove only the stale dynamic roadmap-next assertion while retaining Phase I completion, gap, and historical handoff evidence |
+| The second docs run left only exit 3 because the guard omitted the required `-j 1` from the documented build command | Steps 823-828 docs command contract | Freeze the actual serial command `xmake build -j 1 hello_window` used by the guide and repository policy |

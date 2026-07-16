@@ -4127,6 +4127,7 @@ includes("build/xmake/phase_j_audit_targets.lua")
 includes("build/xmake/phase_j_example_targets.lua")
 includes("build/xmake/phase_j_performance_targets.lua")
 includes("build/xmake/phase_j_stress_targets.lua")
+includes("build/xmake/phase_j_documentation_targets.lua")
 
 target("phase_g_final_closeout_test")
     set_kind("binary")

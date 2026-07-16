@@ -2044,7 +2044,7 @@ usable as a C++23 GPUI replacement.
 - [x] Steps 817-822: Add stress tests: window churn, many entities, large
   uniform lists, IME composition, clipboard ownership changes, DnD cancel,
   asset reload, and task cancellation.
-- [ ] Steps 823-828: Complete documentation: getting started, architecture,
+- [x] Steps 823-828: Complete documentation: getting started, architecture,
   platform dependencies, examples, migration notes from GPUI concepts to
   C++23 concepts, and non-goal list.
 - [ ] Steps 829-834: Package Windows/Linux/macOS builds, CI jobs, dependency
@@ -2073,11 +2073,15 @@ usable as a C++23 GPUI replacement.
   concurrent asset reload, and task cancellation, with checked-in scale floors,
   JSON reports, and Windows/Wayland/X11 wrappers. Step 823 getting-started
   documentation is next.
+- Phase J Step 828 completes focused getting-started, architecture, platform
+  dependency, example, GPUI-to-C++23 migration, and non-goal guides; README is
+  now a current desktop-target navigation entry. Step 829 reproducible packages
+  and release artifacts is next.
 
 ## Immediate Next Slice
 
-Phase J Step 823 completes getting-started, architecture, dependency, example,
-migration, and non-goal documentation.
+Phase J Step 829 completes reproducible Windows/Linux packages, dependency
+bootstrap, CI jobs, manifests, and release artifacts.
 
 ### Historical Slice Log
 
