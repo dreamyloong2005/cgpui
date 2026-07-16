@@ -4862,7 +4862,7 @@ implementation slice.
      focus/close, and event-loop wakeups.
   3. [x] Steps 771-776: pointer, wheel, keyboard/text, cursor/capture, and modifier
      translation.
-  4. [ ] Steps 777-782: clipboard selections, MIME conversion, text/file payloads,
+  4. [x] Steps 777-782: clipboard selections, MIME conversion, text/file payloads,
      drag/drop, and failure diagnostics.
   5. [ ] Steps 783-788: menu/dialog policy, accessibility boundary, platform
      diagnostics, and public-example smoke coverage.

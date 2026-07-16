@@ -1,6 +1,7 @@
 #pragma once
 
 #include "x11_internal.hpp"
+#include "x11_drag_drop_internal.hpp"
 #include "../../platform_window_close_internal.hpp"
 
 #include <functional>
@@ -49,6 +50,10 @@ class X11Window final : public PlatformWindow {
   void wakeup_requested();
   void handle_pointer_event(const xcb_generic_event_t& event);
   void handle_keyboard_event(const xcb_generic_event_t& event);
+  [[nodiscard]] bool handle_drag_client_message(
+      const xcb_client_message_event_t& message);
+  void handle_drag_selection_notify(
+      const xcb_selection_notify_event_t& notify);
 
  private:
   X11Window(
@@ -66,6 +71,9 @@ class X11Window final : public PlatformWindow {
   void begin_close_request(WindowCloseRequestSource source);
   void destroy_native_window();
   void send_net_wm_state(std::uint32_t action, xcb_atom_t first, xcb_atom_t second);
+  void send_drag_status();
+  void finish_drag(bool accepted);
+  void reset_drag();
 
   xcb_connection_t* connection_ = nullptr;
   xcb_screen_t* screen_ = nullptr;
@@ -87,6 +95,7 @@ class X11Window final : public PlatformWindow {
   bool configured_ = false;
   bool active_ = false;
   bool focused_ = false;
+  X11DragDropState drag_;
 };
 
 }  // namespace cgpui

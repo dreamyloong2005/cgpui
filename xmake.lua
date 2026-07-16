@@ -38,6 +38,13 @@ target("cgpui_platform")
         add_syslinks("shell32", "user32", {public = true})
     elseif is_plat("linux") then
         add_packages("wayland")
+        add_files(
+            "src/platform/linux/linux_backend_selection.cpp",
+            "src/platform/linux/x11/x11_connection.cpp",
+            "src/platform/linux/x11/x11_clipboard.cpp",
+            "src/platform/linux/x11/x11_clipboard_events.cpp",
+            "src/platform/linux/x11/x11_data_transfer.cpp")
+        add_syslinks("xcb", {public = true})
     end
 
 target("cgpui_platform_fallback")

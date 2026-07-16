@@ -2014,7 +2014,7 @@ explicitly accepts X11 as part of the full replication target.
   resize/scale, focus, close, and event loop wakeups.
 - [x] Steps 771-776: Implement X11 input: pointer, wheel, keyboard, text,
   cursor, capture, and keymap modifiers.
-- [ ] Steps 777-782: Implement X11 clipboard and drag/drop using selection
+- [x] Steps 777-782: Implement X11 clipboard and drag/drop using selection
   ownership, MIME conversion, file/text payloads, and diagnostics.
 - [ ] Steps 783-788: Implement X11 menus/dialog service policy, accessibility
   boundary, platform diagnostics, and smoke tests.

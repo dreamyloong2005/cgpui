@@ -50,6 +50,20 @@ Result<X11Atoms> x11_load_atoms(xcb_connection_t* connection) {
       {"_NET_WM_STATE_MAXIMIZED_HORZ", &X11Atoms::net_wm_state_maximized_horz},
       {"_NET_WM_STATE_MAXIMIZED_VERT", &X11Atoms::net_wm_state_maximized_vert},
       {"_MOTIF_WM_HINTS", &X11Atoms::motif_wm_hints},
+      {"XdndAware", &X11Atoms::xdnd_aware},
+      {"XdndEnter", &X11Atoms::xdnd_enter},
+      {"XdndPosition", &X11Atoms::xdnd_position},
+      {"XdndStatus", &X11Atoms::xdnd_status},
+      {"XdndLeave", &X11Atoms::xdnd_leave},
+      {"XdndDrop", &X11Atoms::xdnd_drop},
+      {"XdndFinished", &X11Atoms::xdnd_finished},
+      {"XdndSelection", &X11Atoms::xdnd_selection},
+      {"XdndTypeList", &X11Atoms::xdnd_type_list},
+      {"XdndActionCopy", &X11Atoms::xdnd_action_copy},
+      {"XdndActionMove", &X11Atoms::xdnd_action_move},
+      {"CGPUI_XDND_TRANSFER", &X11Atoms::xdnd_transfer},
+      {"text/plain;charset=utf-8", &X11Atoms::text_plain_utf8},
+      {"text/uri-list", &X11Atoms::uri_list},
   };
   for (const Binding& binding : bindings) {
     auto atom = x11_intern_atom(connection, binding.name);
