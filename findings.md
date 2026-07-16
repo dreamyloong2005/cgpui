@@ -12715,3 +12715,19 @@
 - Xvfb's automatic display selection is not safe across parallel isolated
   mount namespaces because `/tmp/.X<N>-lock` remains shared. Fixed distinct
   display numbers are required when the X11 test binaries run concurrently.
+
+## 2026-07-16 Phase I X11 Services Findings
+
+- AT-SPI is a Linux desktop accessibility protocol rather than a Wayland
+  protocol. The existing implementation can serve X11 unchanged once its
+  sources are owned by a shared `cgpui_platform_linux_atspi` target; preserving
+  the old Wayland adapter names avoids a broad API/test rename while a small
+  Linux bridge expresses the new ownership boundary.
+- X11 has no repository dependency for a desktop portal or toolkit dialog/menu
+  implementation. Its honest service policy is an explicit unsupported result
+  with backend `x11`, preserved model/filter counts, and actionable error text.
+  The UI runtime already turns these typed results into bounded platform
+  diagnostics, so no parallel backend-specific diagnostics channel is needed.
+- The existing `hello_window` environment-driven smoke flow is backend-neutral.
+  Four X11 registrations reuse the exact first-frame, resize, close, and full
+  demo behavior while an external Xvfb wrapper supplies the native display.

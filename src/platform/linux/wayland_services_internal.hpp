@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
+#include "linux_atspi_api_internal.hpp"
 #include "wayland_protocol_internal.hpp"
 #include "wayland_window_api.hpp"
 
@@ -13,22 +14,8 @@ namespace cgpui {
 
 class WaylandTextInput;
 class WaylandDataDevice;
-class WaylandAtspiAccessibilityAdapter;
 class WaylandNativeMenuState;
 class WaylandNativeFileDialogState;
-
-struct WaylandAtspiAccessibilityAdapterDeleter {
-  void operator()(WaylandAtspiAccessibilityAdapter* adapter) const;
-};
-using WaylandAtspiAccessibilityAdapterPtr = std::unique_ptr<
-    WaylandAtspiAccessibilityAdapter,
-    WaylandAtspiAccessibilityAdapterDeleter>;
-WaylandAtspiAccessibilityAdapterPtr create_wayland_atspi_accessibility_adapter();
-bool wayland_atspi_ensure_dbus_connection(
-    WaylandAtspiAccessibilityAdapter& adapter);
-void wayland_atspi_update_accessibility_tree(
-    WaylandAtspiAccessibilityAdapter& adapter,
-    PlatformAccessibilityTreeUpdate update);
 
 struct WaylandTextInputDeleter {
   void operator()(WaylandTextInput* text_input) const;

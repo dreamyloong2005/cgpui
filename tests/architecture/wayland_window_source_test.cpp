@@ -484,6 +484,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/linux/wayland_protocol_text_input.cpp");
   const std::string wayland_services_internal =
       read_source("src/platform/linux/wayland_services_internal.hpp");
+  const std::string linux_atspi_api_internal =
+      read_source("src/platform/linux/linux_atspi_api_internal.hpp");
   const std::string wayland_window_api =
       read_source("src/platform/linux/wayland_window_api.hpp");
   const std::string wayland_window_internal =
@@ -521,7 +523,8 @@ int main(int argc, char** argv) {
       wayland_protocol_text_input_manager.empty() ||
       wayland_protocol_text_input_requests.empty() ||
       wayland_protocol_text_input.empty() ||
-      wayland_services_internal.empty() || wayland_window_api.empty() ||
+      wayland_services_internal.empty() || linux_atspi_api_internal.empty() ||
+      wayland_window_api.empty() ||
       wayland_window_internal.empty() || wayland_window_configure.empty() ||
       wayland_registered_window_internal.empty() ||
       wayland_window_configure_internal.empty() ||
@@ -665,7 +668,7 @@ int main(int argc, char** argv) {
   }
   if (!contains(wayland_services_internal, "class WaylandTextInput") ||
       !contains(wayland_services_internal, "class WaylandDataDevice") ||
-      !contains(wayland_services_internal,
+      !contains(linux_atspi_api_internal,
                 "create_wayland_atspi_accessibility_adapter(") ||
       !contains(wayland_services_internal,
                 "create_wayland_native_menu_state(") ||

@@ -25,6 +25,13 @@ class X11Application final : public PlatformApplication {
   void cancel_wakeup_after() override;
   void quit() override;
   PlatformReopenResult request_reopen() override;
+  PlatformMenuInstallationResult install_native_menu(
+      NativeMenuModel menu) override;
+  NativeFileDialogResult show_native_file_dialog(
+      NativeFileDialogOptions options) override;
+  NativeMessageDialogResult show_native_message_dialog(
+      NativeMessageDialogOptions options) override;
+  PlatformOpenUrlResult open_url(std::string url) override;
 
  private:
   X11Application() = default;
