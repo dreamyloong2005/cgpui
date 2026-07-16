@@ -2,6 +2,7 @@
 
 #include "x11_internal.hpp"
 #include "x11_drag_drop_internal.hpp"
+#include "../linux_atspi_api_internal.hpp"
 #include "../../platform_window_close_internal.hpp"
 
 #include <functional>
@@ -44,6 +45,8 @@ class X11Window final : public PlatformWindow {
       std::optional<ImeTextInputPlacement> placement) override;
   PlatformWindowChromeState apply_window_chrome(
       WindowChromeOptions options) override;
+  void update_accessibility_tree(
+      PlatformAccessibilityTreeUpdate update) override;
 
   [[nodiscard]] bool owns_event(const xcb_generic_event_t& event) const;
   void handle_event(const xcb_generic_event_t& event);
@@ -96,6 +99,8 @@ class X11Window final : public PlatformWindow {
   bool active_ = false;
   bool focused_ = false;
   X11DragDropState drag_;
+  LinuxAtspiAccessibilityAdapterPtr atspi_accessibility_ =
+      create_linux_atspi_accessibility_adapter();
 };
 
 }  // namespace cgpui

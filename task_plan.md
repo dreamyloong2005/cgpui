@@ -4864,7 +4864,7 @@ implementation slice.
      translation.
   4. [x] Steps 777-782: clipboard selections, MIME conversion, text/file payloads,
      drag/drop, and failure diagnostics.
-  5. [ ] Steps 783-788: menu/dialog policy, accessibility boundary, platform
+  5. [x] Steps 783-788: menu/dialog policy, accessibility boundary, platform
      diagnostics, and public-example smoke coverage.
   6. [ ] Steps 789-798: serial Wayland/X11 Linux matrix, Windows/macOS regression
      evidence, final structure/spec audits, and parity-ledger closeout.

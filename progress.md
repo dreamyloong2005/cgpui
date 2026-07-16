@@ -25401,3 +25401,36 @@
 - Parallel Xvfb `-a` runners initially contended on shared `/tmp/.X99-lock`
   despite isolated socket mounts. Fixed per-test display numbers remove the
   runner race; no product change was needed.
+
+## 2026-07-16 Phase I Steps 783-788 Services And Smoke
+
+- Established RED seams through public X11 application/window service behavior
+  and a structure guard. The structure guard failed on absent Linux AT-SPI/X11
+  leaves; the Xvfb service tracer failed because inherited fallback results use
+  backend `unsupported` rather than `x11`.
+- Promoted the existing desktop-neutral AT-SPI implementation into focused
+  `cgpui_platform_linux_atspi`, retained compatibility names for Wayland tests,
+  and added a small Linux API bridge used by both Wayland and X11. X11 windows
+  now publish the same AT-SPI tree/live-update contract.
+- Added explicit X11 menu, file-dialog, message-dialog, and open-URL policies.
+  Unsupported results preserve menu/filter counts, name backend `x11`, and
+  provide actionable error text; runtime diagnostics record typed X11 backend
+  failures through the existing bounded diagnostic channel.
+- The service/accessibility tracer and Windows structure gate pass. The first
+  UI-linked build recompiles the warmed WSL UI graph serially because this test
+  now observes real `WindowRuntime` diagnostics; no build error occurred.
+- Registered and ran four X11 `hello_window` smoke modes under fixed isolated
+  Xvfb displays. First-frame, resize, close, and full demo flow all exit `0`;
+  Vulkan emits only the established DZN non-conformance warning.
+- Rebuilt the AT-SPI DBus object target and Wayland lifecycle against the new
+  shared target. DBus object/tree/role/text/focus/bus/reconnect behavior and
+  Wayland lifecycle all exit `0`, proving target extraction preserved the
+  existing Wayland contract.
+- The first Windows structure regression passes six of seven targets. The sole
+  `wayland_window_source_test` direct exit `102` maps to an obsolete assertion
+  that requires the AT-SPI factory declaration inside the Wayland services
+  header. The guard now reads the shared Linux API owner for that declaration
+  while preserving all Wayland-specific service checks.
+- Steps 783-788 are GREEN: X11 has explicit service policies, shared Linux
+  AT-SPI publication, typed runtime diagnostics, and four real public-example
+  smoke modes.

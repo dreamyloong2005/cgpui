@@ -2016,7 +2016,7 @@ explicitly accepts X11 as part of the full replication target.
   cursor, capture, and keymap modifiers.
 - [x] Steps 777-782: Implement X11 clipboard and drag/drop using selection
   ownership, MIME conversion, file/text payloads, and diagnostics.
-- [ ] Steps 783-788: Implement X11 menus/dialog service policy, accessibility
+- [x] Steps 783-788: Implement X11 menus/dialog service policy, accessibility
   boundary, platform diagnostics, and smoke tests.
 - [ ] Steps 789-794: Run Linux matrix verification for Wayland and X11 without
   regressing Windows or macOS.
