@@ -3,6 +3,7 @@
 #include "cgpui/platform/platform.hpp"
 
 #include <xcb/xcb.h>
+#include <xcb/xcb_cursor.h>
 
 #include <algorithm>
 #include <atomic>

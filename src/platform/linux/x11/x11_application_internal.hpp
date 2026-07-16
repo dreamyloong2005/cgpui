@@ -5,6 +5,7 @@
 namespace cgpui {
 
 class X11Window;
+struct X11KeyboardState;
 
 class X11Application final : public PlatformApplication {
  public:
@@ -42,6 +43,8 @@ class X11Application final : public PlatformApplication {
   xcb_screen_t* screen_ = nullptr;
   X11Atoms atoms_;
   DpiScale scale_{1.0F};
+  std::shared_ptr<X11KeyboardState> keyboard_;
+  xcb_cursor_context_t* cursor_context_ = nullptr;
   std::vector<X11Window*> windows_;
   int wakeup_pipe_[2] = {-1, -1};
   std::atomic_bool running_{true};

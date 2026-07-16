@@ -7,6 +7,8 @@
 
 namespace cgpui {
 
+struct X11KeyboardState;
+
 class X11Window final : public PlatformWindow {
  public:
   static Result<std::unique_ptr<X11Window>> create(
@@ -14,6 +16,8 @@ class X11Window final : public PlatformWindow {
       xcb_screen_t* screen,
       const X11Atoms& atoms,
       DpiScale scale,
+      std::shared_ptr<X11KeyboardState> keyboard,
+      xcb_cursor_context_t* cursor_context,
       xcb_window_t parent,
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback,
@@ -32,6 +36,9 @@ class X11Window final : public PlatformWindow {
   void request_close() override;
   void set_title(std::string_view title) override;
   void set_cursor(CursorShape cursor_shape) override;
+  [[nodiscard]] PlatformPointerCaptureState
+  pointer_capture_state() const override;
+  void set_pointer_capture(bool captured) override;
   void set_ime_text_input_placement(
       std::optional<ImeTextInputPlacement> placement) override;
   PlatformWindowChromeState apply_window_chrome(
@@ -40,6 +47,8 @@ class X11Window final : public PlatformWindow {
   [[nodiscard]] bool owns_event(const xcb_generic_event_t& event) const;
   void handle_event(const xcb_generic_event_t& event);
   void wakeup_requested();
+  void handle_pointer_event(const xcb_generic_event_t& event);
+  void handle_keyboard_event(const xcb_generic_event_t& event);
 
  private:
   X11Window(
@@ -47,6 +56,8 @@ class X11Window final : public PlatformWindow {
       xcb_screen_t* screen,
       X11Atoms atoms,
       DpiScale scale,
+      std::shared_ptr<X11KeyboardState> keyboard,
+      xcb_cursor_context_t* cursor_context,
       PlatformEventCallback callback,
       std::function<void(X11Window*)> unregister);
   Result<void> initialize(
@@ -59,6 +70,9 @@ class X11Window final : public PlatformWindow {
   xcb_connection_t* connection_ = nullptr;
   xcb_screen_t* screen_ = nullptr;
   X11Atoms atoms_;
+  std::shared_ptr<X11KeyboardState> keyboard_;
+  xcb_cursor_context_t* cursor_context_ = nullptr;
+  xcb_cursor_t cursor_ = XCB_CURSOR_NONE;
   xcb_window_t window_ = XCB_WINDOW_NONE;
   PlatformEventCallback callback_;
   std::function<void(X11Window*)> unregister_;
@@ -69,6 +83,7 @@ class X11Window final : public PlatformWindow {
   std::optional<Point> position_;
   WindowChromeOptions chrome_;
   CursorShape cursor_shape_ = CursorShape::default_arrow;
+  bool pointer_captured_ = false;
   bool configured_ = false;
   bool active_ = false;
   bool focused_ = false;

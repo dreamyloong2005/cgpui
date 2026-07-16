@@ -4860,7 +4860,7 @@ implementation slice.
      backend selection, and architecture/behavior RED-GREEN gates.
   2. [x] Steps 765-770: native window lifecycle, Vulkan surface, resize/scale,
      focus/close, and event-loop wakeups.
-  3. [ ] Steps 771-776: pointer, wheel, keyboard/text, cursor/capture, and modifier
+  3. [x] Steps 771-776: pointer, wheel, keyboard/text, cursor/capture, and modifier
      translation.
   4. [ ] Steps 777-782: clipboard selections, MIME conversion, text/file payloads,
      drag/drop, and failure diagnostics.

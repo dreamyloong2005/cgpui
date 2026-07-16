@@ -15,7 +15,7 @@ if is_plat("linux") then
         add_files(path.join(os.projectdir(), "src/platform/linux/x11/*.cpp"))
         add_deps("cgpui_core", "cgpui_platform")
         add_packages("libxkbcommon")
-        add_syslinks("xcb", {public = true})
+        add_syslinks("xcb", "xcb-xkb", "xcb-cursor", "xkbcommon-x11", {public = true})
         add_includedirs(path.join(os.projectdir(), "include"), {public = true})
 
     target("cgpui_platform_linux_wayland")
@@ -47,6 +47,14 @@ if is_plat("linux") then
         add_includedirs(
             path.join(os.projectdir(), "include"),
             path.join(os.projectdir(), "src/platform/linux/x11"))
+        add_tests("default")
+
+    target("x11_input_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/platform/x11_input_test.cpp"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_syslinks("xcb")
+        add_includedirs(path.join(os.projectdir(), "include"))
         add_tests("default")
 
     target("x11_vulkan_surface_test")

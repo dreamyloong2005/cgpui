@@ -7,11 +7,15 @@ X11Window::X11Window(
     xcb_screen_t* screen,
     X11Atoms atoms,
     DpiScale scale,
+    std::shared_ptr<X11KeyboardState> keyboard,
+    xcb_cursor_context_t* cursor_context,
     PlatformEventCallback callback,
     std::function<void(X11Window*)> unregister)
     : connection_(connection),
       screen_(screen),
       atoms_(atoms),
+      keyboard_(std::move(keyboard)),
+      cursor_context_(cursor_context),
       callback_(std::move(callback)),
       unregister_(std::move(unregister)) {
   state_.scale = scale;
@@ -22,12 +26,15 @@ Result<std::unique_ptr<X11Window>> X11Window::create(
     xcb_screen_t* screen,
     const X11Atoms& atoms,
     DpiScale scale,
+    std::shared_ptr<X11KeyboardState> keyboard,
+    xcb_cursor_context_t* cursor_context,
     xcb_window_t parent,
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
     std::function<void(X11Window*)> unregister) {
   auto window = std::unique_ptr<X11Window>(new X11Window(
-      connection, screen, atoms, scale, std::move(callback), std::move(unregister)));
+      connection, screen, atoms, scale, std::move(keyboard), cursor_context,
+      std::move(callback), std::move(unregister)));
   auto initialized = window->initialize(parent, descriptor);
   if (!initialized) return std::unexpected(initialized.error());
   return window;
@@ -92,6 +99,8 @@ Result<void> X11Window::initialize(
 }
 
 X11Window::~X11Window() {
+  set_pointer_capture(false);
+  if (cursor_ != XCB_CURSOR_NONE) xcb_free_cursor(connection_, cursor_);
   if (unregister_) unregister_(this);
   destroy_native_window();
 }
@@ -123,10 +132,6 @@ void X11Window::set_title(std::string_view title) {
       connection_, XCB_PROP_MODE_REPLACE, window_, atoms_.net_wm_name,
       atoms_.utf8_string, 8, static_cast<std::uint32_t>(title.size()), title.data());
   xcb_flush(connection_);
-}
-
-void X11Window::set_cursor(CursorShape cursor_shape) {
-  cursor_shape_ = cursor_shape;
 }
 
 void X11Window::set_ime_text_input_placement(

@@ -12688,3 +12688,11 @@
   APIs. `RESOURCE_MANAGER`/`Xft.dpi` is authoritative when available; physical
   millimeter fallback is normalized to quarter steps so noisy EDID values do
   not create unstable fractional framebuffer dimensions.
+- X11 key codes include the protocol's offset of eight; public `KeyboardKey`
+  preserves the existing Wayland evdev convention by subtracting that offset,
+  while `scan_code` retains the original X11 keycode. Text and effective
+  modifiers come from the same XKB state update, avoiding layout-specific
+  tables.
+- X11 wheel input is encoded as button presses 4-7. These must become
+  non-precise `PointerScrolled` events and never leak as pointer buttons;
+  buttons 8/9 map to back/forward.
