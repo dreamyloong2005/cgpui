@@ -1180,7 +1180,7 @@ int main(int argc, char** argv) {
     return 110;
   }
   if (!contains(wayland_application_factory,
-                "create_platform_application(") ||
+                "create_wayland_application(") ||
       !contains(wayland_application_factory,
                 "std::make_unique<WaylandApplication>()")) {
     return 111;

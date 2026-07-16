@@ -1,0 +1,13 @@
+target("phase_i_x11_boundary_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files(path.join(os.projectdir(), "tests/architecture/phase_i_x11_boundary_structure_test.cpp"))
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("phase_i_x11_lifecycle_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files(path.join(os.projectdir(), "tests/architecture/phase_i_x11_lifecycle_structure_test.cpp"))
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
