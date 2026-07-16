@@ -45,6 +45,8 @@ int main() {
   const std::string behavior = read_source(
       "tests/platform/wayland_cursor_theme_test.cpp");
   const std::string xmake = read_source("xmake.lua");
+  const std::string linux_backends =
+      read_source("build/xmake/phase_i_linux_backends.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -56,7 +58,8 @@ int main() {
   const std::string* required[]{
       &cursor_header, &cursor, &application_cursor, &application, &core,
       &registry, &scale, &window_internal, &helper, &compositor, &behavior,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &xmake, &linux_backends, &roadmap, &ledger_md, &ledger_json, &task_plan,
+      &findings};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(cursor, "wl_cursor_theme_load(") ||
       !contains(cursor, "wl_cursor_theme_get_cursor(") ||
@@ -78,7 +81,7 @@ int main() {
       !contains(behavior, "write_cursor(") ||
       !contains(behavior, "request_fractional_scale(150)") ||
       !contains(behavior, "cursor.buffer_scale != 2")) return 5;
-  if (!contains(xmake, "add_syslinks(\"wayland-cursor\"") ||
+  if (!contains(linux_backends, "add_syslinks(\"wayland-cursor\"") ||
       !contains(xmake, "target(\"wayland_cursor_theme_test\")") ||
       !contains(xmake,
                 "target(\"phase_f_wayland_cursor_theme_structure_test\")")) {
@@ -104,7 +107,7 @@ int main() {
     return 9;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary")) {
+                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
     return 10;
   }
   return 0;

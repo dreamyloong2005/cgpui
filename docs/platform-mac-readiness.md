@@ -8,7 +8,7 @@ the public authoring model used by Windows and Linux.
 - Windows: Win32 + Vulkan, completed before Phase H.
 - Linux: Wayland + Vulkan, completed before Phase H.
 - macOS: Cocoa + Metal, completed in Phase H.
-- X11: optional Phase I scope, inactive until explicitly requested.
+- X11: XCB + Vulkan, completed in Phase I.
 
 ## Production Coverage
 
@@ -37,3 +37,10 @@ AppKit, CoreText, QuartzCore, or Metal implementation details.
 Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
 
 Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.
+
+Phase I preserves the native macOS evidence while completing strict Linux
+backend parity. Phase I Step 798 completes strict Linux backend parity with
+Windows full Debug at 478/478, WSLg full Debug at 470/470, an isolated Xvfb
+X11 matrix at 11/11, cross-platform/macOS source guards, and preserved Phase H
+native macOS evidence at 380/380. Phase I required X11 gaps: 0. Phase J Step 799 re-run upstream
+extractor against the pinned revision.

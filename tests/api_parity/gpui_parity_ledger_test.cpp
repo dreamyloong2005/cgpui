@@ -279,7 +279,7 @@ int main() {
                 "tests/api_parity/entity_deletion_test.cpp")) {
     return 16;
   }
-  if (!contains(ledger, "| gpui_platform x11 feature | Deferred |") ||
+  if (!contains(ledger, "| gpui_platform x11 feature | Required |") ||
       !contains(ledger, "| gpui_platform wayland feature | Required |") ||
       !contains(ledger, "| gpui Windows backend | Required |")) {
     return 6;

@@ -12731,3 +12731,98 @@
 - The existing `hello_window` environment-driven smoke flow is backend-neutral.
   Four X11 registrations reuse the exact first-frame, resize, close, and full
   demo behavior while an external Xvfb wrapper supplies the native display.
+## 2026-07-16 Phase I Final Closeout Findings
+
+- The Phase H closeout behavior guard currently combines immutable Phase H
+  macOS evidence with mutable X11 candidate status and the current handoff.
+  Phase I must preserve the macOS evidence while migrating those dynamic
+  assertions to the new Phase I closeout guard.
+- PowerShell did not expand `build/xmake/*.lua` for `rg`; use explicit paths or
+  `rg --glob` for later Xmake searches instead of repeating that command shape.
+- Phase I Step 798 completes strict Linux backend parity with Windows full
+  Debug at 478/478, WSLg full Debug at 470/470, an isolated Xvfb X11 matrix at
+  11/11, cross-platform/macOS source guards, and preserved Phase H native
+  macOS evidence at 380/380.
+- Phase I required X11 gaps: 0. Phase J Step 799 re-run upstream extractor
+  against the pinned revision.
+- The final ledger has 32 candidates at `required=0`, `adapted=31`,
+  `deferred=0`, and `non_goal=1`; X11 is `Adapted` as a candidate and
+  `Required` as an active platform target.
+- The first Windows full-Debug closeout run is compile-clean and passes
+  474/478 tests. Its four failures are all pre-Phase-I audit/structure guards,
+  so the correct next step is a four-target diagnostic loop rather than a
+  product rebuild or an X11 implementation change.
+- Xmake 3.0.9 accepts `-j 1` on build and test but not on the config task; the
+  verified serial closeout command shapes are `xmake -j 1` and
+  `xmake test -j 1 -v` after confirming the existing Debug configuration.
+- All four initial Windows failures had the same structural root: legacy
+  guards treated root `xmake.lua` and the Wayland services header as permanent
+  owners. Phase I's modular extraction moved Linux dependency declarations to
+  `phase_i_linux_backends.lua` and the shared AT-SPI API to
+  `linux_atspi_api_internal.hpp`. Auditing those focused owners restores 4/4
+  without weakening assertions or reversing the modular boundary.
+- `win32_clipboard_files_test` exit `5` comes from its test-only single-attempt
+  write of baseline `CF_UNICODETEXT`, not from the product file-list path. It
+  can fail while another desktop process briefly owns the global clipboard;
+  the target passed on the immediate rerun after the owner probe returned
+  null. Phase I should record this as transient host state and still require a
+  fully green Windows matrix.
+- Windows Phase I closeout is proven at 478/478 Debug tests after the focused
+  ownership-guard repair; the transient clipboard failure does not recur in
+  the authoritative full rerun.
+
+## 2026-07-17 Phase I WSL Closeout Guard Diagnosis
+
+- The WSLg full Debug gap is confined to five historical repository-inspection
+  guards; all Wayland and X11 behavior targets pass.
+- The focused `0/5` loop is deterministic in 0.654 seconds with exits 50, 50,
+  62, 3, and 1.
+- All five failures share one cause: Windows text-mode reads hide CRLF while
+  Linux `std::ifstream` preserves `\r`. Three closeout guards compare multiline
+  plan text, the macOS configuration guard searches for `\nend\n`, and the
+  macOS example guard compares an LF canonical list with a CRLF mirror list.
+- The target ownership and example inventory are correct: the Vulkan production
+  target remains in root `xmake.lua`, and both example lists contain the same
+  21 unique entries. The repair belongs at each failing guard's source-read
+  boundary by normalizing CRLF to LF.
+- After rebuilding only the five affected binaries, the exact focused loop
+  passes 5/5 in 0.642 seconds. This closes the original deterministic repro
+  without changing product behavior or source ownership.
+- The complete WSLg Debug matrix passes 470/470 in 75.138 seconds. Native
+  Wayland frame/Vulkan coverage and all X11 behavior plus example smoke modes
+  are green; Vulkan reports only the established DZN non-conformance warning.
+- A global X11 override is not a valid full-suite mode because it also changes
+  backend selection inside Wayland-specific tests; the attempted run stalled in
+  `wayland_compositor_resize_test` and was stopped after process-tree proof.
+  The isolated Xvfb acceptance matrix is the seven X11 behavior targets plus
+  four X11 public-example smoke modes, while WSLg 470/470 owns full-suite and
+  Wayland evidence.
+- The corrected isolated Xvfb acceptance matrix passes 11/11 in 5.414 seconds,
+  covering lifecycle, scale, input, clipboard, drag/drop, platform services,
+  Vulkan surface creation, and four public-example smoke modes.
+- With final evidence text in place, the complete Phase H macOS source/history
+  guard set plus all Phase I structure/closeout guards passes 20/20 on Windows
+  and 20/20 on WSL. This preserves the native Phase H 380/380 evidence without
+  claiming a local macOS rerun.
+- The first final Windows matrix reached 477/478; only
+  `win32_clipboard_unicode_test` failed at exit 5 during empty-text system
+  clipboard write/readback. No Win32 product/test file changed, the corrected
+  owner probe reported no open clipboard window, and the immediate target rerun
+  passed 1/1 in 0.031 seconds. This is transient host clipboard contention, so
+  a complete green rerun remains required.
+- Both real Win32 clipboard targets then pass 2/2 in 0.078 seconds, and the
+  authoritative final Windows Debug rerun passes 478/478 in 38.531 seconds.
+- Final Spec review found current-state prose in the API parity and macOS
+  readiness documents still describing X11/Phase I as optional after the
+  completion evidence had been appended. The roadmap also retained an old
+  Phase C paragraph as its immediate next slice. The durable fix updates only
+  those current-state sections, preserves historical Phase G/H records, and
+  makes the Phase I closeout guard require the Step 799 handoff.
+- The first expanded closeout run returned `51` only because mac readiness
+  wraps `upstream` and `extractor` across lines. An eight-document differential
+  probe was 7/8 for the longer handoff and 8/8 for the stable Step 799 prefix;
+  JSON continues to require the exact unwrapped handoff value.
+- The repaired final closeout pair passes 2/2 on Windows in 0.172 seconds and
+  2/2 on Arch WSL in 0.457 seconds. Final Standards review finds no modularity
+  regressions; final Spec review finds no remaining mismatch after the current
+  target and Step 799 documentation fix.

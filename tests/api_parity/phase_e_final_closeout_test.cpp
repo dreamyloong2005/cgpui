@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdlib>
@@ -23,9 +24,11 @@ std::string read_source(const char* path) {
   if (!source) {
     return {};
   }
-  return std::string{
+  std::string text{
       std::istreambuf_iterator<char>(source),
       std::istreambuf_iterator<char>()};
+  text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
+  return text;
 }
 
 bool contains(const std::string& text, const char* value) {

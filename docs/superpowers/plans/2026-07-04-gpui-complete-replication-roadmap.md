@@ -2002,11 +2002,11 @@ stabilize, without forking public authoring semantics.
 
 ## Phase I: Steps 759-798 - Optional X11 Backend For Strict Upstream Platform Matrix
 
-**Goal:** Only if the user wants literal upstream Linux backend parity, add X11
-after Wayland is production-grade. Do not let X11 slow the active Wayland path.
+**Goal:** The user explicitly requested literal upstream Linux backend parity,
+so add X11 after Wayland is production-grade without slowing the Wayland path.
 
-**Activation rule:** Leave this phase unchecked and inactive unless the user
-explicitly accepts X11 as part of the full replication target.
+**Activation rule:** Satisfied on 2026-07-16 when the user explicitly accepted
+X11 as part of the full replication target.
 
 - [x] Steps 759-764: Add X11/XCB platform boundary, source layout, build flags,
   architecture tests, and backend selection without changing public APIs.
@@ -2018,10 +2018,17 @@ explicitly accepts X11 as part of the full replication target.
   ownership, MIME conversion, file/text payloads, and diagnostics.
 - [x] Steps 783-788: Implement X11 menus/dialog service policy, accessibility
   boundary, platform diagnostics, and smoke tests.
-- [ ] Steps 789-794: Run Linux matrix verification for Wayland and X11 without
+- [x] Steps 789-794: Run Linux matrix verification for Wayland and X11 without
   regressing Windows or macOS.
-- [ ] Steps 795-798: Update the parity ledger to show strict Linux backend
+- [x] Steps 795-798: Update the parity ledger to show strict Linux backend
   parity complete.
+
+- Phase I Step 798 completes strict Linux backend parity with Windows full
+  Debug at 478/478, WSLg full Debug at 470/470, an isolated Xvfb X11 matrix at
+  11/11, cross-platform/macOS source guards, and preserved Phase H native
+  macOS evidence at 380/380.
+- Phase I required X11 gaps: 0. Phase J Step 799 re-run upstream extractor
+  against the pinned revision.
 
 ## Phase J: Steps 799-840+ - Final Upstream Audit Closure And Release Hardening
 
@@ -2050,6 +2057,11 @@ usable as a C++23 GPUI replacement.
   completed roadmap.
 
 ## Immediate Next Slice
+
+Phase J Step 799 re-runs the upstream extractor against the pinned revision and
+fails if any required API row lacks a C++ equivalent or accepted adaptation.
+
+### Historical Slice Log
 
 Step 361 starts SVG/image element front-end APIs after the Step 360
 window/examples closeout. Step 360 closes the window/examples widget band
@@ -2205,8 +2217,8 @@ action macro payloads, task priorities, structured task groups, private runtime 
 
 ## Self-Review
 
-- Spec coverage: covers Windows/Linux Vulkan, Wayland-first Linux, deferred
-  Cocoa + Metal macOS, optional X11, upstream API audit, examples, renderer,
+- Spec coverage: covers completed Windows/Linux Vulkan, Wayland and X11 Linux,
+  completed Cocoa + Metal macOS, upstream API audit, examples, renderer,
   platform, text, accessibility, async, assets, animation, tests, docs, and
   final release gates.
 - Placeholder scan: no unresolved placeholder tokens are used. Deferred work

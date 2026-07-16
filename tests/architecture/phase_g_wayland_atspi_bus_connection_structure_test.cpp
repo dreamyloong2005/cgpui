@@ -40,6 +40,8 @@ int main() {
       "src/platform/linux/wayland_accessibility_bus.cpp");
   const std::string services = read_source(
       "src/platform/linux/wayland_services_internal.hpp");
+  const std::string linux_atspi_api = read_source(
+      "src/platform/linux/linux_atspi_api_internal.hpp");
   const std::string window = read_source(
       "src/platform/linux/wayland_window.cpp");
   const std::string behavior = read_source(
@@ -53,6 +55,8 @@ int main() {
   const std::string previous = read_source(
       "tests/architecture/phase_g_wayland_atspi_focus_event_structure_test.cpp");
   const std::string xmake = read_source("xmake.lua");
+  const std::string linux_backends =
+      read_source("build/xmake/phase_i_linux_backends.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source(
@@ -63,8 +67,9 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &bus_header, &bus_source, &bus_health, &adapter_header, &adapter_source,
-      &adapter_bus, &services, &window, &behavior, &bus_test_support, &platform_inventory,
-      &wayland_inventory, &previous, &xmake, &roadmap, &ledger_md,
+      &adapter_bus, &services, &linux_atspi_api, &window, &behavior,
+      &bus_test_support, &platform_inventory,
+      &wayland_inventory, &previous, &xmake, &linux_backends, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -98,7 +103,7 @@ int main() {
       !contains(adapter_bus, "event_publisher_.attach(bus_connection_.connection()")) {
     return 5;
   }
-  if (!contains(services, "wayland_atspi_ensure_dbus_connection(") ||
+  if (!contains(linux_atspi_api, "wayland_atspi_ensure_dbus_connection(") ||
       !contains(window, "wayland_atspi_ensure_dbus_connection(*atspi_accessibility_)") ||
       window.find("wayland_atspi_ensure_dbus_connection(*atspi_accessibility_)") >
           window.find("wayland_atspi_update_accessibility_tree(")) {
@@ -153,7 +158,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) {
+          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
     return 12;
   }
   return 0;

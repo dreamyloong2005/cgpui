@@ -19,34 +19,6 @@ bool contains(const std::string& text, std::string_view value) {
   return text.find(value) != std::string::npos;
 }
 
-std::string section_between(const std::string& text, std::string_view begin,
-                            std::string_view end) {
-  const std::size_t start = text.find(begin);
-  const std::size_t finish = text.find(end, start);
-  if (start == std::string::npos || finish == std::string::npos) return {};
-  return text.substr(start, finish - start);
-}
-
-std::string line_containing(const std::string& text, std::string_view anchor) {
-  const std::size_t index = text.find(anchor);
-  if (index == std::string::npos) return {};
-  const std::size_t begin = text.rfind('\n', index);
-  const std::size_t end = text.find('\n', index);
-  return text.substr(begin == std::string::npos ? 0 : begin + 1,
-                     end == std::string::npos ? std::string::npos
-                                              : end - (begin + 1));
-}
-
-std::string json_row(const std::string& text, std::string_view name) {
-  const std::string anchor = "\"upstream_gpui\": \"" + std::string{name} + "\"";
-  const std::size_t index = text.find(anchor);
-  if (index == std::string::npos) return {};
-  const std::size_t begin = text.rfind("    {", index);
-  const std::size_t end = text.find("\n    }", index);
-  if (begin == std::string::npos || end == std::string::npos) return {};
-  return text.substr(begin, end - begin);
-}
-
 }  // namespace
 
 int main() {
@@ -111,52 +83,18 @@ int main() {
     }
   }
 
-  const std::string mac_md =
-      line_containing(ledger_md, "| gpui macOS backend | Cocoa + Metal |");
-  const std::string x11_md =
-      line_containing(ledger_md,
-                      "| gpui_platform x11 feature | Deferred | Deferred |");
-  const std::string mac_json = json_row(ledger_json, "gpui macOS backend");
-  const std::string x11_json =
-      json_row(ledger_json, "gpui_platform x11 feature");
-  const std::string platform_md =
-      section_between(ledger_md, "## Platform Targets", "## Scope Guard");
-  const std::string platform_json = section_between(
-      ledger_json, "\"platform_targets\": {", "\"status_counts\": {");
-  if (!contains(mac_md, "| Cocoa + Metal | Adapted |") ||
-      !contains(mac_json, "\"status\": \"adapted\"") ||
-      !contains(x11_md, "| Deferred |") ||
-      !contains(x11_md, "| Optional Phase I |") ||
-      !contains(x11_json, "\"status\": \"deferred\"") ||
-      !contains(ledger_json, "\"required\": 0") ||
-      !contains(ledger_json, "\"adapted\": 30") ||
-      !contains(ledger_json, "\"deferred\": 1") ||
-      !contains(ledger_json, "\"non_goal\": 1") ||
-      !contains(platform_md, "| gpui macOS backend | Required |") ||
-      !contains(platform_md, "| gpui_platform x11 feature | Deferred |") ||
-      !contains(platform_json,
-                "\"macos\": {\n      \"backend\": \"cocoa\",\n      "
-                "\"renderer\": \"metal\",\n      \"status\": \"required\"") ||
-      !contains(platform_json,
-                "\"x11\": {\n      \"backend\": \"x11\",\n      "
-                "\"renderer\": \"vulkan\",\n      \"status\": \"deferred\"")) {
-    return 40;
-  }
-
-  constexpr std::string_view handoff =
-      "Phase I Step 759 X11/XCB platform boundary";
+  constexpr std::string_view historical_handoff =
+      "Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform "
+      "boundary.";
   if (!contains(ledger_json, "\"phase_h_status\": \"complete\"") ||
-      !contains(ledger_json, "\"phase_h_required_macos_gaps\": 0") ||
-      !contains(ledger_json, "\"phase_h_current_handoff\": \"" +
-                                 std::string{handoff} + "\"") ||
-      !contains(roadmap, handoff)) {
+      !contains(ledger_json, "\"phase_h_required_macos_gaps\": 0")) {
     return 50;
   }
   for (const auto* document : std::array{
-           &roadmap, &ledger_md, &ledger_json, &api_parity,
-           &mac_readiness, &task_plan, &progress, &findings}) {
+           &roadmap, &ledger_md, &api_parity, &mac_readiness,
+           &task_plan, &progress, &findings}) {
     if (!contains(*document, "Phase H required macOS gaps: 0") ||
-        !contains(*document, handoff)) {
+        !contains(*document, historical_handoff)) {
       return 51;
     }
   }
@@ -171,8 +109,7 @@ int main() {
   if (!contains(phase_g, phase_g_completion) ||
       !contains(roadmap, phase_g_completion) ||
       !contains(ledger_md, phase_g_completion) ||
-      !contains(ledger_json, phase_g_completion) ||
-      contains(roadmap, "- [x] Steps 759-764:")) {
+      !contains(ledger_json, phase_g_completion)) {
     return 60;
   }
   return 0;

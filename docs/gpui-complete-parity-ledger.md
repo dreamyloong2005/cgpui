@@ -25,14 +25,13 @@ Required Surface Summary, it denotes an unresolved candidate gap; after Step
 - Windows: Win32 + Vulkan.
 - Linux: Wayland + Vulkan.
 - macOS: Cocoa + Metal production parity completed in Phase H.
-- X11 remains deferred unless the user explicitly chooses strict upstream Linux
-  backend parity.
+- X11: XCB + Vulkan strict Linux backend parity completed in Phase I.
 
 | platform_surface | status |
 |---|---|
 | gpui Windows backend | Required |
 | gpui_platform wayland feature | Required |
-| gpui_platform x11 feature | Deferred |
+| gpui_platform x11 feature | Required |
 | gpui macOS backend | Required |
 
 ## Scope Guard
@@ -40,12 +39,12 @@ Required Surface Summary, it denotes an unresolved candidate gap; after Step
 The active track follows the post-Phase-C user scope decision. Deferred by
 user decision: game-engine-specific integration, engine runtime embedding,
 shared engine renderer/resource/asset/command systems, game editor/runtime UI
-depth, Android, iOS, and X11. Required active-track work remains:
+depth, Android, and iOS. Required active-track work remains:
 C++23-native public APIs without Rust FFI, Vulkan-first production renderer
 depth, declarative widgets, reactive state/subscription depth, low-allocation
 runtime structures, static and dynamic widget support, editor/AI-IDE-class
-text and tool UI primitives, and Win32, Wayland, and macOS production platform
-behavior.
+text and tool UI primitives, and production platform behavior across Win32,
+Wayland, X11, and macOS.
 
 Zero-cost abstraction is a hard active-track constraint: Static fast paths come
 first, dynamic escape hatches must stay explicit, compact retained records or
@@ -102,7 +101,7 @@ consume C: drive space again.
 | gpui platform services | production Win32 file open/save, directory picker, message dialog, URL, menu/chrome, reopen lifecycle, Runtime/AppContext Result policy, bounded diagnostics, and explicit Wayland/default unsupported behavior, including `try_install_native_menu(...) -> Result<NativeMenuInstallation>` and `try_show_native_file_dialog(...) -> Result<NativeFileDialogResult>` | Adapted | Phase F Step 594 platform-services closeout: `tests/architecture/phase_f_platform_services_closeout_structure_test.cpp`, the Steps 587-593 focused service guards, `tests/api_parity/platform_service_result_conventions_test.cpp`, `src/ui/runtime_platform_service_results.cpp`, `src/ui/runtime_platform_services.cpp`, `src/ui/app_context_services.cpp`, and `src/ui/runtime_context_platform.cpp` | Phase F platform-services band closed |
 | gpui Windows backend | Win32 + Vulkan | Adapted | Phase F Steps 614-618 close and verify the production Win32/Vulkan target | Phase F platform production path closed |
 | gpui_platform wayland feature | production Wayland + Vulkan lifecycle, input, clipboard, drag/drop, services, multi-window ownership, diagnostics, packaging, examples, and real display verification | Adapted | Phase F Steps 614-618 Win32/Wayland closeout plus Phase G locked WSL Debug verification with real WSLg frame pixel capture | Windows/Linux candidate ledger closed |
-| gpui_platform x11 feature | Deferred | Deferred | not active by user decision | Optional Phase I |
+| gpui_platform x11 feature | X11 + Vulkan | Adapted | Phase I Steps 759-798 production XCB lifecycle, Vulkan surface, input, clipboard/drag, explicit services, shared AT-SPI accessibility, diagnostics, public-example smoke, and isolated Xvfb verification | Phase I closed |
 | gpui macOS backend | Cocoa + Metal | Adapted | Phase H Steps 679-758 production Cocoa lifecycle, Metal rendering, input, text, clipboard/drag, services, accessibility, examples, and full macOS verification | Phase H closed |
 | gpui wasm backend | Non-goal | Non-goal | not requested for CGPUI desktop target | no active phase |
 
@@ -811,6 +810,8 @@ consume C: drive space again.
 - Phase G Step 678 completes final closeout for Steps 619-678 with `tests/api_parity/phase_g_final_closeout_test.cpp`: Windows full debug passes 457/457 and WSL Arch Linux full debug passes 438/438 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage; the 32-row candidate ledger remains at 0 required, 29 adapted, 2 deferred, and 1 non-goal. Phase H Step 679 Cocoa application and NSWindow lifecycle is next.
 - Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
 - Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.
+- Phase I Step 798 completes strict Linux backend parity with Windows full Debug at 478/478, WSLg full Debug at 470/470, an isolated Xvfb X11 matrix at 11/11, cross-platform/macOS source guards, and preserved Phase H native macOS evidence at 380/380.
+- Phase I required X11 gaps: 0. Phase J Step 799 re-run upstream extractor against the pinned revision.
 
 ## Categories
 

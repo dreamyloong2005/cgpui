@@ -8,20 +8,20 @@ The detailed source-of-truth ledger is
 `docs/gpui-complete-parity-ledger.json`.
 
 The implemented desktop targets are Windows/Win32 + Vulkan, Linux/Wayland +
-Vulkan, and macOS/Cocoa + Metal. Phase H closes macOS production parity over
-the stable public APIs and renderer/platform boundaries. X11 remains deferred
-and inactive unless the user explicitly chooses strict upstream Linux backend
-parity.
+Vulkan, Linux/X11 + Vulkan, and macOS/Cocoa + Metal. Phase H closes macOS
+production parity over the stable public APIs and renderer/platform boundaries;
+Phase I closes strict Linux backend parity over the same public surface.
 
 ## Desktop Scope
 
 - Windows uses the Win32 platform backend and Vulkan renderer target.
-- Linux uses the Wayland platform backend and Vulkan renderer target.
+- Linux provides Wayland and X11 platform backends with Vulkan renderer targets.
 - macOS uses the Cocoa platform backend and Metal renderer target.
 - The public authoring surface is exposed through `cgpui/cgpui.hpp` and the
   core UI headers.
 - Phase G records Windows and WSL Arch Linux verification; Phase H records
-  native macOS verification on the current Xcode host.
+  native macOS verification on the current Xcode host; Phase I records the
+  final Windows, WSLg, and isolated Xvfb X11 matrices.
 
 ## Not Full Upstream GPUI Parity
 
@@ -222,8 +222,13 @@ Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F
 
 Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.
 
+Phase I Step 798 completes strict Linux backend parity with Windows full Debug
+at 478/478, WSLg full Debug at 470/470, an isolated Xvfb X11 matrix at 11/11,
+cross-platform/macOS source guards, and preserved Phase H native macOS evidence
+at 380/380. Phase I required X11 gaps: 0. Phase J Step 799 re-run upstream extractor against the pinned
+revision.
+
 ## Next Milestone
 
-Phase I remains optional. X11/XCB work begins only if the user activates the
-strict upstream Linux backend matrix; otherwise the completed Win32, Wayland,
-and Cocoa desktop targets remain the supported scope.
+Phase J Step 799 re-runs the upstream extractor against the pinned revision and
+fails if any required API row lacks a C++ equivalent or accepted adaptation.

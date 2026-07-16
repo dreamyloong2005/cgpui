@@ -48,6 +48,8 @@ std::string line_containing(const std::string& text, const char* anchor) {
 
 int main() {
   const std::string xmake = read_source("xmake.lua");
+  const std::string linux_backends =
+      read_source("build/xmake/phase_i_linux_backends.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger = read_source("docs/gpui-complete-parity-ledger.md");
@@ -68,7 +70,7 @@ int main() {
   const std::string text_model_test =
       read_source("tests/ui/text_model_test.cpp");
 
-  if (xmake.empty() || roadmap.empty() || ledger.empty() ||
+  if (xmake.empty() || linux_backends.empty() || roadmap.empty() || ledger.empty() ||
       task_plan.empty() || findings.empty() || text_font_header.empty() ||
       text_font_source.empty() || text_shape_header.empty() ||
       text_shape_source.empty() || fallback_source.empty() ||
@@ -142,9 +144,9 @@ int main() {
                 "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
       !contains(wayland_fontconfig, "FcFontList") ||
       !contains(xmake, "add_requires(\"fontconfig\"") ||
-      !contains(xmake, "has_package(\"fontconfig\")") ||
-      !contains(xmake, "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
-      !contains(xmake, "add_packages(\"fontconfig\")")) {
+      !contains(linux_backends, "has_package(\"fontconfig\")") ||
+      !contains(linux_backends, "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
+      !contains(linux_backends, "add_packages(\"fontconfig\")")) {
     return 6;
   }
 

@@ -63,17 +63,25 @@ int main() {
     return 3;
   }
 
-  constexpr std::array deferred_scope{
+  constexpr std::array historical_deferred_scope{
       "game-engine-specific integration",
       "engine runtime embedding",
       "engine renderer/resource/asset/command systems",
       "game editor/runtime",
       "Android, iOS, and X11",
   };
-  for (const char* item : deferred_scope) {
-    if (!contains(roadmap, item) || !contains(ledger_md, item)) {
-      return 10;
-    }
+  for (const char* item : historical_deferred_scope) {
+    if (!contains(roadmap, item)) return 10;
+  }
+  constexpr std::array current_deferred_scope{
+      "game-engine-specific integration",
+      "engine runtime embedding",
+      "engine renderer/resource/asset/command systems",
+      "game editor/runtime",
+      "Android, and iOS",
+  };
+  for (const char* item : current_deferred_scope) {
+    if (!contains(ledger_md, item)) return 11;
   }
 
   constexpr std::array required_scope{

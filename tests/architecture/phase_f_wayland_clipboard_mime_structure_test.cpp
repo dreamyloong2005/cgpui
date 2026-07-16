@@ -83,7 +83,7 @@ int main() {
     return 8;
   }
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary")) {
+                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
     return 9;
   }
   return 0;
