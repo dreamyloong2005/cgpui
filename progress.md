@@ -25363,3 +25363,41 @@
   a mode-1777 tmpfs overlay provides a deterministic test server without
   modifying the global WSLg mount. TCP-listener fallback was rejected by
   `xcb_connect` and is not used.
+
+## 2026-07-16 Phase I Steps 777-782 Data Transfer
+
+- Confirmed the public test seams before implementation: independent
+  `create_platform_clipboard()` clients for selection ownership/readback and
+  `PlatformWindow` callbacks for XDND drag events. Structure coverage owns the
+  focused X11 leaf-file boundary.
+- Added the Step 777 clipboard/drag structure tracer and real Xvfb clipboard
+  tracer first. The Windows structure test builds then fails, and the isolated
+  Xvfb test builds then fails because the current Linux factory still creates
+  independent Wayland fallback clipboards. These are the accepted RED results.
+- The first clipboard GREEN link exposed a static-archive ownership bug:
+  `cgpui_platform` referenced selector/X11 symbols stored only in downstream
+  archives. A symbol-table probe confirmed both definitions existed; moving
+  the Linux selector, selection leaves, and shared XCB atom helper into the
+  Linux portion of the base platform target fixed the dependency direction.
+  The original isolated Xvfb clipboard repro then exits `0`.
+- Added a real cross-connection XDND tracer. A temporary tagged probe showed
+  the first nonzero result occurred after source/application setup, establishing
+  the intended missing-target RED; all probe output was removed. URI-list drop,
+  UTF-8 enter/leave, `XdndStatus`, and `XdndFinished` now pass under Xvfb.
+- The first combined matrix found two harness-only issues: the structure guard
+  expected atom names in the state-machine leaf rather than the atom registry,
+  and `xvfb-run` inherited a removed `/dev/shm/cgpui` directory. The guard now
+  checks each owner and the rerun uses stable `/dev/shm` directly.
+- Steps 777-782 are GREEN. X11 clipboard uses dedicated XCB owner windows and
+  bounded selection workers for `CLIPBOARD`, `PRIMARY`, `TARGETS`, UTF-8 text,
+  and file URI payloads. XDND advertises version 5, negotiates text/files,
+  converts `XdndSelection`, emits public drag events, and acknowledges status,
+  completion, rejection, and cancellation.
+- Focused verification passes: Windows Phase I structure 4/4; isolated Xvfb
+  clipboard, XDND, input, lifecycle, and Vulkan direct tests all exit `0` on
+  fixed display numbers; Wayland selector/lifecycle/Vulkan, six clipboard,
+  two drag, and URI-list regressions all exit `0`. Vulkan emits only the
+  established DZN non-conformance warning.
+- Parallel Xvfb `-a` runners initially contended on shared `/tmp/.X99-lock`
+  despite isolated socket mounts. Fixed per-test display numbers remove the
+  runner race; no product change was needed.

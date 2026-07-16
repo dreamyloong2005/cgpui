@@ -74,6 +74,10 @@ Result<void> X11Window::initialize(
   xcb_change_property(
       connection_, XCB_PROP_MODE_REPLACE, window_, atoms_.wm_protocols,
       XCB_ATOM_ATOM, 32, 1, &atoms_.wm_delete_window);
+  constexpr std::uint32_t xdnd_version = 5;
+  xcb_change_property(
+      connection_, XCB_PROP_MODE_REPLACE, window_, atoms_.xdnd_aware,
+      XCB_ATOM_ATOM, 32, 1, &xdnd_version);
   state_ = WindowState{
       .framebuffer_size = Size{
           descriptor.size.width * state_.scale.value,

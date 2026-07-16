@@ -13,6 +13,11 @@ if is_plat("linux") then
     target("cgpui_platform_linux_x11")
         set_kind("static")
         add_files(path.join(os.projectdir(), "src/platform/linux/x11/*.cpp"))
+        remove_files(
+            path.join(os.projectdir(), "src/platform/linux/x11/x11_connection.cpp"),
+            path.join(os.projectdir(), "src/platform/linux/x11/x11_clipboard.cpp"),
+            path.join(os.projectdir(), "src/platform/linux/x11/x11_clipboard_events.cpp"),
+            path.join(os.projectdir(), "src/platform/linux/x11/x11_data_transfer.cpp"))
         add_deps("cgpui_core", "cgpui_platform")
         add_packages("libxkbcommon")
         add_syslinks("xcb", "xcb-xkb", "xcb-cursor", "xkbcommon-x11", {public = true})
@@ -21,6 +26,7 @@ if is_plat("linux") then
     target("cgpui_platform_linux_wayland")
         set_kind("static")
         add_files(path.join(os.projectdir(), "src/platform/linux/*.cpp"))
+        remove_files(path.join(os.projectdir(), "src/platform/linux/linux_backend_selection.cpp"))
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_x11")
         add_packages("wayland", "dbus", "libxkbcommon")
         add_syslinks("wayland-cursor", {public = true})
@@ -52,6 +58,22 @@ if is_plat("linux") then
     target("x11_input_test")
         set_kind("binary")
         add_files(path.join(os.projectdir(), "tests/platform/x11_input_test.cpp"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_syslinks("xcb")
+        add_includedirs(path.join(os.projectdir(), "include"))
+        add_tests("default")
+
+    target("x11_clipboard_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/platform/x11_clipboard_test.cpp"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
+        add_syslinks("xcb")
+        add_includedirs(path.join(os.projectdir(), "include"))
+        add_tests("default")
+
+    target("x11_drag_drop_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/platform/x11_drag_drop_test.cpp"))
         add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_linux_wayland")
         add_syslinks("xcb")
         add_includedirs(path.join(os.projectdir(), "include"))

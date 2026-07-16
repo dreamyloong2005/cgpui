@@ -12696,3 +12696,22 @@
 - X11 wheel input is encoded as button presses 4-7. These must become
   non-precise `PointerScrolled` events and never leak as pointer buttons;
   buttons 8/9 map to back/forward.
+
+## 2026-07-16 Phase I X11 Data Transfer Findings
+
+- The Linux clipboard factory lives in the base platform static library, so
+  its backend selector and X11 selection implementation must be link-visible
+  from that same archive. Keeping those symbols only in downstream Wayland/X11
+  aggregates creates an archive-order cycle even though both definitions exist.
+- X11 selection ownership requires an event-serving client after `write_*`
+  returns. A dedicated hidden XCB window and bounded worker per Clipboard
+  instance preserves the synchronous public API while serving external
+  `SelectionRequest` traffic and waiting for `SelectionNotify` without coupling
+  clipboard lifetime to `X11Application`.
+- XDND payload bytes arrive through `XdndSelection`, not the client messages.
+  The window keeps only source/target/action/position state, requests the
+  negotiated target, emits `DragEntered` once payload conversion completes,
+  and defers an early `XdndDrop` until the selection reply arrives.
+- Xvfb's automatic display selection is not safe across parallel isolated
+  mount namespaces because `/tmp/.X<N>-lock` remains shared. Fixed distinct
+  display numbers are required when the X11 test binaries run concurrently.

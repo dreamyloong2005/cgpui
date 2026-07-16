@@ -17,6 +17,8 @@ xcb_window_t event_window(const xcb_generic_event_t& event) {
       return reinterpret_cast<const xcb_unmap_notify_event_t&>(event).window;
     case XCB_CLIENT_MESSAGE:
       return reinterpret_cast<const xcb_client_message_event_t&>(event).window;
+    case XCB_SELECTION_NOTIFY:
+      return reinterpret_cast<const xcb_selection_notify_event_t&>(event).requestor;
     case XCB_ENTER_NOTIFY:
     case XCB_LEAVE_NOTIFY:
       return reinterpret_cast<const xcb_enter_notify_event_t&>(event).event;
@@ -89,12 +91,17 @@ void X11Window::handle_event(const xcb_generic_event_t& event) {
     case XCB_CLIENT_MESSAGE: {
       const auto& message =
           reinterpret_cast<const xcb_client_message_event_t&>(event);
+      if (handle_drag_client_message(message)) break;
       if (message.type == atoms_.wm_protocols && message.format == 32 &&
           message.data.data32[0] == atoms_.wm_delete_window) {
         begin_close_request(WindowCloseRequestSource::window_manager);
       }
       break;
     }
+    case XCB_SELECTION_NOTIFY:
+      handle_drag_selection_notify(
+          reinterpret_cast<const xcb_selection_notify_event_t&>(event));
+      break;
     default:
       break;
   }
