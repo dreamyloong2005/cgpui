@@ -4911,7 +4911,7 @@ implementation slice.
   1. [x] Steps 799-804: pinned-upstream extractor output and required-row audit.
   2. [x] Steps 805-810: official-example equivalents compiled and exercised on
      Windows plus Linux backends where applicable.
-  3. [ ] Steps 811-816: reproducible startup, first-frame, resize, text, list,
+  3. [x] Steps 811-816: reproducible startup, first-frame, resize, text, list,
      image, async-wakeup, and frame-pacing performance baselines.
   4. [ ] Steps 817-822: public stress runner for window/entity/list/IME/
      clipboard/DnD/asset/task-cancellation scenarios.
@@ -4939,3 +4939,5 @@ implementation slice.
 | Xmake invalidated the WSL static-library graph after the root Xmake include changed, so current-build mode still began recompiling product sources despite valid Phase I binaries | Steps 805-810 Wayland verification | Stop the second duplicate build, add an explicit binary-execution mode, run all 21 retained Linux examples directly, and reserve the required post-change full rebuild for Steps 835-840 |
 | The first retained-binary Wayland run executed all canonical examples but its registration-smoke `xmake test` loop began rebuilding the invalidated library graph | Steps 805-810 retained-binary verification | In explicit skip-build mode, execute the four registration binaries and four environment-driven `hello_window` smoke modes directly; preserve Xmake test behavior in normal CI mode |
 | The first ledger-completion planning patch used a stale wrapped progress anchor and was rejected atomically | Steps 805-810 planning closeout | Re-read the file tails, apply the task/findings/progress changes from short exact anchors, and confirm no partial edit occurred |
+| The first performance runner execution returned exit 5 because the requested `.build` report parent did not exist | Steps 811-816 runner CLI | Make the runner create an explicit output path's parent directories so direct CLI use and CI wrappers share the same self-contained contract |
+| Recursive cleanup of the two generated `.build` JSON reports was blocked by command policy before execution | Steps 811-816 artifact cleanup | Enumerate the directory, delete only the two confirmed generated JSON files, then remove the empty directories non-recursively |

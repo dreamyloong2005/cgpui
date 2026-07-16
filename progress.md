@@ -25620,3 +25620,17 @@
 - Regenerated `gpui-phase-j-example-audit.json`; the Phase J behavior and
   structure guards plus the predecessor example-matrix and total-ledger guards
   pass 4/4 on Windows. Steps 805-810 are complete.
+- Steps 811-816 started with a deliberate RED 0/2 for the missing performance
+  runner, policy, validator, and platform wrappers. Added an isolated Phase J
+  Xmake module and kept the runner under `tests/performance/`.
+- The public-API runner now records startup, first frame, resize, text layout,
+  list scrolling, image loading, async wakeup, and frame pacing to JSON. Its
+  first output attempt exposed a missing-parent CLI contract; the runner now
+  creates explicit report parent directories.
+- A Windows Debug report at 16 iterations passes the checked-in policy. Mean
+  costs are 360250, 296550, 4506, 31162, 108150, 9362, 6782, and 9440 ns per
+  operation in metric order. Steps 811-816 are ready for GREEN verification.
+- GREEN passes 3/3 for the runner, behavior guard, and structure guard. The
+  Windows wrapper also passes at 64 iterations, while the Linux wrapper passes
+  `bash -n`; real Wayland/X11 reports remain part of the final post-change WSL
+  build matrix.

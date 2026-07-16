@@ -2039,7 +2039,7 @@ usable as a C++23 GPUI replacement.
   fail if any required API row lacks a C++ equivalent or accepted adaptation.
 - [x] Steps 805-810: Compile every official example equivalent on every active
   platform and run smoke/pixel/input tests where possible.
-- [ ] Steps 811-816: Add performance baselines: startup, first frame, resize,
+- [x] Steps 811-816: Add performance baselines: startup, first frame, resize,
   text layout, list scrolling, image loading, async wakeups, and frame pacing.
 - [ ] Steps 817-822: Add stress tests: window churn, many entities, large
   uniform lists, IME composition, clipboard ownership changes, DnD cancel,
@@ -2064,11 +2064,15 @@ usable as a C++23 GPUI replacement.
   Windows/Wayland/X11 compile-and-smoke execution, focused pixel/input evidence,
   and explicit C++ adaptations; new macOS execution remains excluded by user
   scope. Step 811 reproducible performance baselines are next.
+- Phase J Step 816 adds a public-API performance runner for startup, first
+  frame, resize, text layout, large-list scrolling, image loading, async
+  wakeups, and frame pacing, with checked-in regression budgets, JSON reports,
+  and Windows/Wayland/X11 CI wrappers. Step 817 public stress runner is next.
 
 ## Immediate Next Slice
 
-Phase J Step 811 adds reproducible startup, frame, resize, text, list, image,
-async-wakeup, and frame-pacing performance baselines.
+Phase J Step 817 adds public stress coverage for window/entity/list/IME,
+clipboard/DnD, asset reload, and task cancellation scenarios.
 
 ### Historical Slice Log
 

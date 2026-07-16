@@ -819,6 +819,11 @@ consume C: drive space again.
   Windows/Wayland/X11 compile-and-smoke execution, focused pixel/input
   evidence, and explicit C++ adaptations. New macOS execution remains excluded
   by user scope. Phase J Step 811 reproducible performance baselines are next.
+- Phase J Step 816 adds a public-API performance runner for startup, first
+  frame, resize, text layout, large-list scrolling, image loading, async
+  wakeups, and frame pacing. Checked-in regression budgets and JSON-report
+  wrappers cover Windows, Wayland, and X11. Phase J Step 817 public stress
+  runner is next.
 
 ## Categories
 
