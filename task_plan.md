@@ -4917,7 +4917,7 @@ implementation slice.
      clipboard/DnD/asset/task-cancellation scenarios.
   5. [x] Steps 823-828: getting-started, architecture, dependencies, examples,
      GPUI-to-C++23 migration, and non-goal documentation.
-  6. [ ] Steps 829-834: reproducible Windows/Linux packages, CI definitions,
+  6. [x] Steps 829-834: reproducible Windows/Linux packages, CI definitions,
      dependency bootstrap, manifests, and release artifacts.
   7. [ ] Steps 835-840+: final Windows/WSL/X11 matrices, locked parity ledger,
      non-macOS closeout guard, and explicit upstream-drift policy.
@@ -4948,3 +4948,7 @@ implementation slice.
 | Two combined stress-runner/planning patches omitted the `Update File` boundary before task-plan rows and were rejected atomically | Steps 817-822 planning synchronization | Reapply each code and task-plan hunk with explicit file boundaries; no partial changes occurred |
 | The first documentation GREEN run passed 2/4: the docs guard used heading-incompatible capitalization and the Phase I guard still required an obsolete Step 799 immediate-next sentence | Steps 823-828 documentation regression | Match formal architecture headings and remove only the stale dynamic roadmap-next assertion while retaining Phase I completion, gap, and historical handoff evidence |
 | The second docs run left only exit 3 because the guard omitted the required `-j 1` from the documented build command | Steps 823-828 docs command contract | Freeze the actual serial command `xmake build -j 1 hello_window` used by the guide and repository policy |
+| The first real Windows release wrapper generated two different archive hashes after a successful Release build | Steps 829-834 reproducibility verification | The content manifest embedded each temporary output filename; separate the canonical `--archive-name` from the output path, lock the contract in the audit guard, and confirm both the fast differential probe and original wrapper path produce SHA-256 `14d6fc8819b913f48763579431f57cf2ee7f7b0c79eabb7c5208940b2dcecee5` |
+| The first inline Python archive-audit command was parsed by PowerShell before Python because of nested double quotes | Steps 829-834 artifact inspection | Use a single-quoted PowerShell argument with Python double-quoted literals; the corrected audit verifies all 197 content hashes and 198 archive entries |
+| The first release regression matrix passed 3/4 because the documentation guard still required the completed Step 829 handoff | Steps 829-834 ledger migration | Preserve the Step 828 documentation evidence but migrate its dynamic handoff assertion to Step 835; rerun the same four-test loop |
+| The first staged-path probe treated successful `Select-String -Quiet` execution as a match and falsely reported `.vscode` staged | Steps 829-834 commit scope | Inspect the actual status, then count filtered staged paths explicitly; `.vscode/` remains untracked and outside the index |

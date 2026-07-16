@@ -2047,8 +2047,9 @@ usable as a C++23 GPUI replacement.
 - [x] Steps 823-828: Complete documentation: getting started, architecture,
   platform dependencies, examples, migration notes from GPUI concepts to
   C++23 concepts, and non-goal list.
-- [ ] Steps 829-834: Package Windows/Linux/macOS builds, CI jobs, dependency
-  bootstrap scripts, and release artifacts.
+- [x] Steps 829-834: Package Windows/Linux builds, CI jobs, dependency
+  bootstrap scripts, and release artifacts. New macOS packaging/CI execution
+  remains excluded by the Phase J user scope.
 - [ ] Steps 835-840: Run final full matrix verification and lock the parity
   ledger. Any remaining unchecked required row blocks the "fully replicated"
   claim.
@@ -2077,11 +2078,19 @@ usable as a C++23 GPUI replacement.
   dependency, example, GPUI-to-C++23 migration, and non-goal guides; README is
   now a current desktop-target navigation entry. Step 829 reproducible packages
   and release artifacts is next.
+- Phase J Step 834 completes deterministic Windows/Linux release archives for
+  identical package trees, SHA-256 content manifests, locked dependency setup,
+  and non-macOS release/example/performance/stress/architecture CI. The local
+  Windows Release artifact contains 197 hashed files plus its manifest and is
+  byte-reproducible at SHA-256 `14d6fc8819b913f48763579431f57cf2ee7f7b0c79eabb7c5208940b2dcecee5`;
+  final Linux Release execution remains in Steps 835-840. New macOS packaging
+  and CI remain excluded by user scope. Step 835 final non-macOS verification
+  is next.
 
 ## Immediate Next Slice
 
-Phase J Step 829 completes reproducible Windows/Linux packages, dependency
-bootstrap, CI jobs, manifests, and release artifacts.
+Phase J Step 835 runs the final Windows, WSLg/Wayland, isolated Xvfb X11, and
+Linux Release matrices before locking the non-macOS parity ledger.
 
 ### Historical Slice Log
 

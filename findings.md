@@ -12910,3 +12910,23 @@
   the machine-readable inventories or executable scripts it describes.
 - Non-goals distinguish desktop parity from mobile/Web, game-engine consumer
   integration, unpinned upstream drift, and real-time performance guarantees.
+
+## 2026-07-17 Phase J Release Findings
+
+- The Phase G Linux package omitted the Phase I X11 and shared AT-SPI leaf
+  archives even though `cgpui_app` builds them transitively. The Phase J package
+  now publishes Wayland, X11, and AT-SPI libraries explicitly.
+- Archive reproducibility is defined over an identical package tree. Sorted
+  UTF-8 paths, fixed `SOURCE_DATE_EPOCH`, normalized modes/owners, and stored ZIP
+  or deterministic gzip/tar output remove filesystem metadata as an input.
+- The content manifest must use a canonical logical archive name rather than
+  the temporary verification output path. A differential probe caught this
+  coupling after the first real Windows Release build and now produces matching
+  SHA-256 values for differently named temporary files.
+- The verified Windows Release package contains seven libraries, one executable,
+  public headers, and documentation. Its manifest hashes 197 files; the archive
+  contains those files plus the manifest itself and has SHA-256
+  `14d6fc8819b913f48763579431f57cf2ee7f7b0c79eabb7c5208940b2dcecee5`.
+- The Phase J workflow uses a separately pinned dependency action and covers
+  Windows/Linux releases, Windows/Wayland/X11 performance and stress, official
+  examples, and architecture/header jobs. macOS delivery remains excluded.

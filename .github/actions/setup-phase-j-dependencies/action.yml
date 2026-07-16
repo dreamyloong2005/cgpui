@@ -1,0 +1,32 @@
+name: Setup Phase J dependencies
+description: Pin build tools and isolate dependency state for release verification.
+
+inputs:
+  platform:
+    description: Dependency root platform directory.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - uses: xmake-io/github-action-setup-xmake@v1
+      with:
+        xmake-version: 3.0.9
+    - name: Restore locked Xmake package state
+      uses: actions/cache@v4
+      with:
+        path: build/phase-j-ci/dependencies/${{ inputs.platform }}
+        key: phase-j-${{ runner.os }}-${{ runner.arch }}-xmake-3.0.9-${{ hashFiles('xmake.lua', 'xmake-requires.lock') }}
+    - name: Configure Windows dependency roots
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        . ./scripts/ci/windows-dependencies.ps1
+        Set-CgpuiWindowsDependencyEnvironment -DependencyRoot build/phase-j-ci/dependencies/windows -ExportGitHubEnvironment
+    - name: Configure Linux dependency roots
+      if: runner.os == 'Linux'
+      shell: bash
+      run: bash ./scripts/ci/linux-dependencies.sh build/phase-j-ci/dependencies/linux --github-env

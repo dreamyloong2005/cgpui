@@ -833,6 +833,13 @@ consume C: drive space again.
   dependency, example, GPUI-to-C++23 migration, and non-goal guides. README is
   now a current desktop-target navigation entry. Phase J Step 829 reproducible
   packages is next.
+- Phase J Step 834 completes deterministic Windows/Linux release archives for
+  identical package trees, per-file SHA-256 manifests, locked dependency
+  bootstrap, Windows/Wayland/X11 performance and stress CI, example jobs, and
+  architecture/header jobs. Windows Release built and verified locally; Linux
+  Release execution remains in the final WSL matrix. New macOS packaging and
+  CI remain excluded by user scope. Phase J Step 835 final non-macOS matrix
+  verification is next.
 
 ## Categories
 

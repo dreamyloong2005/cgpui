@@ -3791,7 +3791,19 @@
       "tests/api_parity/phase_j_documentation_audit_test.cpp",
       "tests/architecture/phase_j_documentation_structure_test.cpp"
     ],
-    "phase_j_current_handoff": "Phase J Step 829 reproducible packages"
+    "phase_j_steps_829_834_status": "complete_non_macos",
+    "phase_j_release_evidence": "Phase J Step 834 completes deterministic Windows/Linux release archives for identical package trees, per-file SHA-256 manifests, locked dependency bootstrap, Windows/Wayland/X11 performance and stress CI, example jobs, and architecture/header jobs. Windows Release built and verified locally; Linux Release execution remains in the final WSL matrix. New macOS packaging and CI remain excluded by user scope.",
+    "phase_j_release_sources": [
+      "docs/gpui-release-artifact-policy.json",
+      "scripts/ci/create-release-artifact.py",
+      "scripts/ci/windows-phase-j-release.ps1",
+      "scripts/ci/linux-phase-j-release.sh",
+      ".github/actions/setup-phase-j-dependencies/action.yml",
+      ".github/workflows/phase-j-windows-linux.yml",
+      "tests/api_parity/phase_j_release_audit_test.cpp",
+      "tests/architecture/phase_j_release_structure_test.cpp"
+    ],
+    "phase_j_current_handoff": "Phase J Step 835 final non-macOS matrix verification"
   },
   "categories": [
     "application_and_app_context",

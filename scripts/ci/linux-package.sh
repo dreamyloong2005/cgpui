@@ -83,6 +83,8 @@ libraries=(
   "libcgpui_core.a"
   "libcgpui_platform.a"
   "libcgpui_platform_linux_wayland.a"
+  "libcgpui_platform_linux_x11.a"
+  "libcgpui_platform_linux_atspi.a"
   "libcgpui_renderer.a"
   "libcgpui_renderer_vulkan.a"
   "libcgpui_ui.a"
