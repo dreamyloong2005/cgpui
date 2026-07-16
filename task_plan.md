@@ -4898,3 +4898,37 @@ implementation slice.
 | The expanded Phase I closeout guard returned `51` because `platform-mac-readiness.md` wraps between `upstream` and `extractor`; the first PowerShell differential probe also had an invalid pipeline after `foreach` | Phase I documentation regression guard | A corrected eight-document boolean probe isolated only the wrapped handoff; use the stable `Phase J Step 799 re-run upstream` Markdown prefix while retaining the exact full JSON assertion |
 | The first broad PowerShell JSON audit used case-insensitive object conversion and the first debug/stale-handoff searches included historical prose | Phase I static audit | Parse tracked JSON with `ConvertFrom-Json -AsHashtable`, inspect only added debug-marker lines, and distinguish immutable Phase H history from active `phase_*_current_handoff` fields |
 | WSL has no named non-system user and the first nested `awk` user-enumeration probe was misquoted | Phase I final WSL focused verification | Use the established root-only distro entry with `XMAKE_ROOT=y` and direct `wsl.exe --cd ... -- env ... xmake` invocations; no WSL recovery or installation is needed |
+
+## 2026-07-17 Active Phase J Non-macOS Execution Goal
+
+- Status: in_progress
+- Authoritative scope: Phase J Steps 799-840+ in
+  `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
+- User scope: complete every platform-neutral, Windows, Wayland, and X11 part
+  of Phase J. Exclude new macOS builds, tests, packaging, and CI execution;
+  preserve the completed Phase H macOS evidence without claiming a rerun.
+- Pre-agreed public seams:
+  1. [x] Steps 799-804: pinned-upstream extractor output and required-row audit.
+  2. [ ] Steps 805-810: official-example equivalents compiled and exercised on
+     Windows plus Linux backends where applicable.
+  3. [ ] Steps 811-816: reproducible startup, first-frame, resize, text, list,
+     image, async-wakeup, and frame-pacing performance baselines.
+  4. [ ] Steps 817-822: public stress runner for window/entity/list/IME/
+     clipboard/DnD/asset/task-cancellation scenarios.
+  5. [ ] Steps 823-828: getting-started, architecture, dependencies, examples,
+     GPUI-to-C++23 migration, and non-goal documentation.
+  6. [ ] Steps 829-834: reproducible Windows/Linux packages, CI definitions,
+     dependency bootstrap, manifests, and release artifacts.
+  7. [ ] Steps 835-840+: final Windows/WSL/X11 matrices, locked parity ledger,
+     non-macOS closeout guard, and explicit upstream-drift policy.
+- Verification policy: keep Xmake build/test commands serial with `-j 1`, use
+  RED-GREEN tracer guards at the public seams above, keep `.vscode/` untracked,
+  and commit completed slices locally without pushing unless requested.
+
+### Errors Encountered During Phase J
+
+| Error | Attempt | Resolution |
+|-------|---------|------------|
+| The first Phase J ledger probe indexed nonexistent `required_surface_summary` and exited after correctly reporting status counts | Steps 799-804 inventory | Use the live schema's `rows` array; keep the failed probe out of implementation decisions and rerun with the correct key |
+| The first planning synchronization patch used a long Phase I error-table row as an exact anchor and was rejected atomically | Steps 799-804 planning synchronization | Reapply with short section and checklist anchors, move the misplaced Phase J probe row into this table, and confirm no partial edit occurred |
+| `xmake test -j 1 -v` reported `nothing to test` when given target names without their registered test suffix | Steps 799-804 focused verification | Use the repository's exact `target/default` names; both registered tests pass 1/1, and direct `xmake run` also exits zero |

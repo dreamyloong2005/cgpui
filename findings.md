@@ -12826,3 +12826,32 @@
   2/2 on Arch WSL in 0.457 seconds. Final Standards review finds no modularity
   regressions; final Spec review finds no remaining mismatch after the current
   target and Step 799 documentation fix.
+
+## 2026-07-17 Phase J Non-macOS Initial Findings
+
+- The user excludes only macOS execution and delivery work. Platform-neutral
+  audit, examples, benchmarks, stress coverage, docs, and release policy remain
+  in scope together with Windows, Wayland, and X11 verification.
+- Phase J's roadmap already defines the public acceptance seams, so TDD can use
+  extractor reports, example runners, benchmark/stress executables, package
+  manifests, and final matrix/ledger guards without testing private helpers.
+- Phase H's native macOS 380/380 evidence is immutable historical input. Phase
+  J must not rewrite it into a current run or block non-macOS completion on an
+  unavailable macOS host.
+- The live pinned extractor currently returns the expected revision with 55
+  public re-export/module lines and 20 Cargo examples. The ledger still carries
+  the older 14-example inventory, so Steps 799-810 have real snapshot and
+  official-example reconciliation work rather than a documentation-only close.
+- The Phase A extractor catches every fetch exception and silently falls back
+  to a hard-coded example list. Phase J needs an explicit live/fallback mode,
+  content hashes, and a strict CLI option so a release audit cannot pass on
+  stale fallback data.
+- The ledger schema stores candidate mappings under `rows`, not
+  `required_surface_summary`; it currently has zero required rows, 31 adapted
+  rows, zero deferred rows, and one non-goal row.
+- Steps 799-804 now have a strict live-fetch contract: the snapshot records
+  `fetch_mode`, source SHA-256 values, and exact counts, while the audit rejects
+  revision/count drift, unresolved required rows, and stale ledger inventory.
+- The accepted live snapshot contains 55 public re-exports/modules and 20
+  official examples. The audit accepts all 32 ledger rows, with zero required
+  rows and zero audit issues.

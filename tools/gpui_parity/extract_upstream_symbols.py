@@ -9,6 +9,7 @@ future richer extractor can fetch before parsing.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -40,6 +41,10 @@ def read_url_or_empty(url: str) -> str:
         return read_url(url)
     except Exception:
         return ""
+
+
+def content_sha256(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def extract_public_reexports(gpui_rs: str) -> list[str]:
@@ -79,7 +84,11 @@ def default_source_urls() -> dict[str, str]:
     }
 
 
-def build_snapshot(gpui_rs: str, cargo_toml: str) -> dict[str, object]:
+def build_snapshot(
+    gpui_rs: str,
+    cargo_toml: str,
+    fetch_mode: str,
+) -> dict[str, object]:
     examples = extract_examples(cargo_toml)
     if not examples:
         examples = [
@@ -98,11 +107,25 @@ def build_snapshot(gpui_rs: str, cargo_toml: str) -> dict[str, object]:
             "window_positioning",
             "window_shadow",
         ]
+    public_reexports = extract_public_reexports(gpui_rs)
     return {
+        "example_count": len(examples),
+        "fetch_mode": fetch_mode,
         "upstream_revision": GPUI_UPSTREAM_REVISION,
         "repository": GPUI_REPOSITORY,
         "source_urls": default_source_urls(),
-        "public_reexports": extract_public_reexports(gpui_rs),
+        "sources": {
+            "cargo_toml": {
+                "sha256": content_sha256(cargo_toml),
+                "url": default_source_urls()["cargo_toml"],
+            },
+            "crate_root": {
+                "sha256": content_sha256(gpui_rs),
+                "url": default_source_urls()["crate_root"],
+            },
+        },
+        "public_reexport_count": len(public_reexports),
+        "public_reexports": public_reexports,
         "examples": examples,
     }
 
@@ -117,6 +140,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--gpui-rs", type=Path)
     parser.add_argument("--cargo-toml", type=Path)
     parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--require-live",
+        action="store_true",
+        help="fail unless both pinned upstream sources are fetched live",
+    )
     return parser.parse_args()
 
 
@@ -125,13 +153,26 @@ def main() -> int:
     urls = default_source_urls()
     gpui_rs = read_optional(args.gpui_rs)
     cargo_toml = read_optional(args.cargo_toml)
-    if not gpui_rs:
+    fetch_modes: list[str] = []
+    if gpui_rs:
+        fetch_modes.append("local")
+    else:
         gpui_rs = read_url_or_empty(urls["crate_root"])
-    if not cargo_toml:
+        fetch_modes.append("live" if gpui_rs else "fallback")
+    if cargo_toml:
+        fetch_modes.append("local")
+    else:
         cargo_toml = read_url_or_empty(urls["cargo_toml"])
+        fetch_modes.append("live" if cargo_toml else "fallback")
+    if args.require_live and fetch_modes != ["live", "live"]:
+        raise RuntimeError(
+            "strict upstream extraction requires live crate root and Cargo.toml"
+        )
+    fetch_mode = fetch_modes[0] if len(set(fetch_modes)) == 1 else "mixed"
     snapshot = build_snapshot(
         gpui_rs,
         cargo_toml,
+        fetch_mode,
     )
     if args.output is not None:
         write_json(args.output, snapshot)

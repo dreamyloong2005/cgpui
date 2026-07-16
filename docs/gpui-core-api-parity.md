@@ -230,5 +230,7 @@ revision.
 
 ## Next Milestone
 
-Phase J Step 799 re-runs the upstream extractor against the pinned revision and
-fails if any required API row lacks a C++ equivalent or accepted adaptation.
+Phase J Step 804 locks the live pinned-upstream audit at 55 public
+re-exports/modules, 20 official Cargo examples, 32 accepted ledger rows, and
+zero unresolved required rows. Step 805 official example equivalence matrix is
+next.
