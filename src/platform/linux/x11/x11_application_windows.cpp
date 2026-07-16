@@ -28,7 +28,8 @@ Result<std::unique_ptr<PlatformWindow>> X11Application::create_window_with_paren
     PlatformEventCallback callback,
     xcb_window_t parent) {
   auto window = X11Window::create(
-      connection_, screen_, atoms_, scale_, parent, descriptor, std::move(callback),
+      connection_, screen_, atoms_, scale_, keyboard_, cursor_context_, parent,
+      descriptor, std::move(callback),
       [this](X11Window* removed) { unregister_window(removed); });
   if (!window) return std::unexpected(window.error());
   windows_.push_back(window->get());

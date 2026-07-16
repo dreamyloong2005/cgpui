@@ -2012,7 +2012,7 @@ explicitly accepts X11 as part of the full replication target.
   architecture tests, and backend selection without changing public APIs.
 - [x] Steps 765-770: Implement X11 window lifecycle, Vulkan surface creation,
   resize/scale, focus, close, and event loop wakeups.
-- [ ] Steps 771-776: Implement X11 input: pointer, wheel, keyboard, text,
+- [x] Steps 771-776: Implement X11 input: pointer, wheel, keyboard, text,
   cursor, capture, and keymap modifiers.
 - [ ] Steps 777-782: Implement X11 clipboard and drag/drop using selection
   ownership, MIME conversion, file/text payloads, and diagnostics.

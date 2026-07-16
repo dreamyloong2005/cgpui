@@ -25351,3 +25351,15 @@
   and quarter-step normalizes the result, and converts logical window size to
   framebuffer size. Its parser test passes 1/1 and the Xvfb lifecycle/Vulkan
   regression remains 2/2.
+- Steps 759-770 are committed on `master` at `2cdb6104 feat: add x11 platform
+  lifecycle` with `.vscode/` excluded.
+- Steps 771-776 add focused XKB-X11 keyboard state/UTF-8 translation, XCB
+  motion/button/wheel translation, cursor-theme loading, pointer grab/release,
+  and capture diagnostics. The Xvfb synthesized-input matrix passes 3/3 with
+  lifecycle and Vulkan regression; Windows structure/header coverage passes
+  2/2.
+- WSLg mounts `/tmp/.X11-unix` read-only at mode 0777, so ordinary Xvfb cannot
+  bind its Unix listener. Running Xvfb inside an isolated mount namespace with
+  a mode-1777 tmpfs overlay provides a deterministic test server without
+  modifying the global WSLg mount. TCP-listener fallback was rejected by
+  `xcb_connect` and is not used.

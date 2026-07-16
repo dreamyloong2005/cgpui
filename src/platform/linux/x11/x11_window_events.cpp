@@ -39,7 +39,18 @@ bool X11Window::owns_event(const xcb_generic_event_t& event) const {
 }
 
 void X11Window::handle_event(const xcb_generic_event_t& event) {
-  switch (event.response_type & 0x7f) {
+  const std::uint8_t type = event.response_type & 0x7f;
+  if (type == XCB_MOTION_NOTIFY || type == XCB_ENTER_NOTIFY ||
+      type == XCB_LEAVE_NOTIFY || type == XCB_BUTTON_PRESS ||
+      type == XCB_BUTTON_RELEASE) {
+    handle_pointer_event(event);
+    return;
+  }
+  if (type == XCB_KEY_PRESS || type == XCB_KEY_RELEASE) {
+    handle_keyboard_event(event);
+    return;
+  }
+  switch (type) {
     case XCB_EXPOSE:
       callback_(WindowRedrawRequested{});
       break;
