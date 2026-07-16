@@ -3754,7 +3754,18 @@
       "tests/api_parity/phase_j_official_example_audit_test.cpp",
       "tests/architecture/phase_j_official_example_structure_test.cpp"
     ],
-    "phase_j_current_handoff": "Phase J Step 811 reproducible performance baselines"
+    "phase_j_steps_811_816_status": "complete",
+    "phase_j_performance_evidence": "Phase J Step 816 adds a public-API performance runner for startup, first frame, resize, text layout, large-list scrolling, image loading, async wakeups, and frame pacing, with checked-in regression budgets, JSON reports, and Windows/Wayland/X11 CI wrappers.",
+    "phase_j_performance_sources": [
+      "tests/performance/phase_j_performance_runner.cpp",
+      "docs/gpui-performance-baseline-policy.json",
+      "tools/gpui_parity/validate_performance_baseline.py",
+      "scripts/ci/windows-performance-baseline.ps1",
+      "scripts/ci/linux-performance-baseline.sh",
+      "tests/api_parity/phase_j_performance_baseline_audit_test.cpp",
+      "tests/architecture/phase_j_performance_baseline_structure_test.cpp"
+    ],
+    "phase_j_current_handoff": "Phase J Step 817 public stress runner"
   },
   "categories": [
     "application_and_app_context",

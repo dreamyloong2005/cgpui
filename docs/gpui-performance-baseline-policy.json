@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "metric_unit": "ns_per_operation",
+  "metrics": {
+    "startup": {"max_mean_ns": 500000000, "min_operation_count": 4},
+    "first_frame": {"max_mean_ns": 500000000, "min_operation_count": 4},
+    "resize": {"max_mean_ns": 100000000, "min_operation_count": 4},
+    "text_layout": {"max_mean_ns": 100000000, "min_operation_count": 4},
+    "list_scrolling": {"max_mean_ns": 100000000, "min_operation_count": 4},
+    "image_loading": {"max_mean_ns": 500000000, "min_operation_count": 4},
+    "async_wakeup": {"max_mean_ns": 100000000, "min_operation_count": 64},
+    "frame_pacing": {"max_mean_ns": 100000000, "min_operation_count": 10}
+  },
+  "notes": [
+    "Budgets are regression tripwires, not cross-machine ranking targets.",
+    "CI retains each platform report so baselines can be compared at a fixed revision.",
+    "macOS execution is excluded from the current Phase J scope."
+  ]
+}

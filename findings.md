@@ -12872,3 +12872,16 @@
   21 canonical public examples, four registration smokes, and four real window
   smoke modes on Windows, Wayland, and isolated Xvfb X11. The final Phase J
   matrix still owns one post-change serial WSL rebuild before closeout.
+
+## 2026-07-17 Phase J Performance Baseline Findings
+
+- Public `TestApp` is the correct deterministic seam for startup, first-frame,
+  resize, async-wakeup, and frame-pacing microbenchmarks. It exercises the real
+  public runtime surface without introducing native-display noise into the
+  microbenchmark itself.
+- Text layout, 10,000-item visible-range calculation, and image decoding can be
+  measured directly through public leaf APIs. Reports use nanoseconds per
+  operation and retain operation counts so CI output remains comparable.
+- The first Windows Debug report passes all checked-in tripwire budgets. The
+  budgets are regression guards rather than cross-machine rankings; each CI
+  backend retains its own JSON report for revision-to-revision comparison.
