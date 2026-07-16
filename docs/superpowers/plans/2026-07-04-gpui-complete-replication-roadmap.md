@@ -59,8 +59,8 @@ slices unless the user explicitly changes it:
   modern C++ result/optional/concepts/constexpr/ranges usage, Vulkan-first
   production renderer depth, declarative widgets, reactive state/subscription
   depth, low-allocation runtime structures, static and dynamic widget support,
-  editor/AI-IDE-class text and tool UI primitives, Win32 and Wayland production
-  platform behavior, and later macOS Cocoa + Metal parity.
+  editor/AI-IDE-class text and tool UI primitives, and Win32, Wayland, and
+  macOS production platform behavior.
 - DirectX/WebGPU/other renderer backends are not active implementation tracks
   yet, but the renderer architecture must keep backend extension boundaries
   clean enough that they can be added later without rewriting public UI APIs.
@@ -110,8 +110,7 @@ unbounded dynamic dispatch, or user-deferred platform/engine scope.
   Vulkan-first production renderer depth, declarative widgets, reactive
   state/subscription depth, low-allocation runtime structures, static and
   dynamic widget support, editor/AI-IDE-class text and tool UI primitives,
-  Win32 and Wayland production platform behavior, and later macOS Cocoa +
-  Metal parity remain required.
+  and Win32, Wayland, and macOS production platform behavior remain required.
 - Zero-cost gate: static fast paths, explicit dynamic escape hatches, compact
   retained records/command buffers, and tests for abstraction boundaries must
   stay present; hot paths must avoid hidden allocation, broad type erasure,
@@ -1957,11 +1956,11 @@ apps rather than only demo windows.
 stabilize, without forking public authoring semantics.
 
 **Mac start gate:**
-- [ ] Windows full debug and WSL full debug have passed after Phase G.
-- [ ] Public authoring APIs are stable enough that a Mac port will not chase
+- [x] Windows full debug and WSL full debug have passed in Phase G.
+- [x] Public authoring APIs are stable enough that a Mac port will not chase
   large context/element/runtime churn.
-- [ ] Renderer command boundaries are stable enough to map to Metal.
-- [ ] A Mac host with Xcode and command-line tools is available for verification.
+- [x] Renderer command boundaries are stable enough to map to Metal.
+- [x] A Mac host with Xcode and command-line tools is available for verification.
 
 **Primary modules:**
 - `src/platform/macos/*`
@@ -1972,31 +1971,34 @@ stabilize, without forking public authoring semantics.
 - `tests/renderer/metal/*`
 - `examples/*`
 
-- [ ] Steps 679-686: Add Cocoa application and NSWindow lifecycle:
+- [x] Steps 679-686: Add Cocoa application and NSWindow lifecycle:
   app delegate, run loop, window creation, close policy, activation, scaling,
   resize, cursor, and wakeups.
-- [ ] Steps 687-694: Add CAMetalLayer and Metal renderer bootstrap:
+- [x] Steps 687-694: Add CAMetalLayer and Metal renderer bootstrap:
   device, command queue, drawable lifecycle, resize, frame pacing, and
   diagnostics.
-- [ ] Steps 695-702: Port renderer primitives to Metal: solid rect,
+- [x] Steps 695-702: Port renderer primitives to Metal: solid rect,
   rounded rect, text glyph atlas, images/SVG, clip stack, opacity, transform,
   batching, and frame statistics.
-- [ ] Steps 703-710: Add macOS input: mouse, trackpad scrolling, keyboard,
+- [x] Steps 703-710: Add macOS input: mouse, trackpad scrolling, keyboard,
   modifiers, text input, focus, cursor, capture, drag gestures, and scale.
-- [ ] Steps 711-718: Add macOS text and fonts: CoreText font discovery,
+- [x] Steps 711-718: Add macOS text and fonts: CoreText font discovery,
   shaping/rasterization integration, IME candidate placement, marked text,
   delete-surrounding equivalent behavior, and text services diagnostics.
-- [ ] Steps 719-726: Add macOS clipboard and drag/drop:
+- [x] Steps 719-726: Add macOS clipboard and drag/drop:
   NSPasteboard text/files/images, drag source/target, operation negotiation,
   cancellation, and diagnostics.
-- [ ] Steps 727-734: Add macOS menus, accelerators, file dialogs, message
+- [x] Steps 727-734: Add macOS menus, accelerators, file dialogs, message
   dialogs, open URL, quit/reopen, window chrome, and platform services.
-- [ ] Steps 735-742: Add macOS accessibility: NSAccessibility tree, roles,
+- [x] Steps 735-742: Add macOS accessibility: NSAccessibility tree, roles,
   values, focus, text/value events, live updates, and provider lifetime.
-- [ ] Steps 743-750: Port all public examples and smoke tests to macOS using
+- [x] Steps 743-750: Port all public examples and smoke tests to macOS using
   the same public API as Windows/Linux.
-- [ ] Steps 751-758: Run macOS full debug plus Windows/WSL regression suites,
-  then mark Mac parity complete in the ledger.
+- [x] Steps 751-758: Run macOS full debug and close Phase H in the parity
+  ledger while preserving Phase G's completed Windows/WSL evidence.
+
+- Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
+- Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.
 
 ## Phase I: Steps 759-798 - Optional X11 Backend For Strict Upstream Platform Matrix
 

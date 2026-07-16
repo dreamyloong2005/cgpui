@@ -4832,3 +4832,15 @@ implementation slice.
   `phase_c_final_ledger_audit_test/default`,
   `static_render_runtime_test/default`, `ui_source_structure_test/default`,
   and `gpui_parity_ledger_test/default`.
+
+## 2026-07-16 Phase H Steps 751-758 macOS Closeout
+
+- Status: complete
+- Authoritative scope: Phase H Steps 679-758 in
+  `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
+- The user confirmed Phase G owns Windows/WSL verification; Phase H completion
+  is macOS-only and does not rerun other systems.
+- The workspace-confined locked-Xmake macOS runner, macOS CI, example smoke,
+  final API audit, final structure audit, and ledger migration close the phase.
+- Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
+- Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.

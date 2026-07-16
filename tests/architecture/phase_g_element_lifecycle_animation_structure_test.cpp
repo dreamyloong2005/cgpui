@@ -138,6 +138,6 @@ int main() {
   if (!contains(vocabulary, "`ElementAnimationStateStore`") ||
       !contains(core_parity, "runtime-owned keyed element lifecycle") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) return 11;
+                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) return 11;
   return 0;
 }

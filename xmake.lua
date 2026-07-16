@@ -4123,6 +4123,7 @@ target("phase_g_final_dual_host_verification_structure_test")
     add_tests("default", {runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
 
 includes("build/xmake/phase_h_structure_targets.lua")
+includes("build/xmake/phase_h_closeout_targets.lua")
 
 target("phase_g_final_closeout_test")
     set_kind("binary")

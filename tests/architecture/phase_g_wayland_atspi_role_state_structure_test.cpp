@@ -122,7 +122,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) {
+          "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) {
     return 11;
   }
   return 0;

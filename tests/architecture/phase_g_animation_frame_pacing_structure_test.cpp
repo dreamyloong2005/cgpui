@@ -146,6 +146,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationFramePacingSnapshot`") ||
       !contains(core, "deadline-driven frame timer") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) return 10;
+                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) return 10;
   return 0;
 }

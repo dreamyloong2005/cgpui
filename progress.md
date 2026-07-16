@@ -25269,3 +25269,18 @@
   pass, the candidate ledger has no required gap, Windows/Linux remain required,
   deferred/non-goal platforms stay explicit, and Phase H Step 679 is the live
   handoff. Both review axes report zero findings.
+
+## 2026-07-16 Phase H Steps 751-758 macOS Closeout
+
+- The user confirmed that Phase G's completed Windows/WSL verification is not
+  repeated in Phase H. The obsolete cross-system guard and Phase H Windows CI
+  additions were removed without changing Phase G history.
+- The macOS script confines Xmake configuration, repository, package, cache,
+  and temporary output under `build/phase-h-ci/macos-debug`, pins xmake-repo
+  commit `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`, rejects path traversal
+  before creation, and runs the complete suite with an absolute project path.
+- Final closeout targets live in focused
+  `build/xmake/phase_h_closeout_targets.lua`; the shared architecture matrix
+  audits that module and the source-owned manifest.
+- Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
+- Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.

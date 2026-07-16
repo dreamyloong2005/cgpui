@@ -9,6 +9,16 @@ permissions:
   contents: read
 
 jobs:
+  macos-full-debug:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xmake-io/xmake-action@v1
+        with:
+          xmake-version: '3.0.9'
+      - name: Run complete macOS Debug verification
+        run: bash ./scripts/ci/macos-debug.sh
+
   macos-examples-smoke:
     runs-on: macos-latest
     steps:

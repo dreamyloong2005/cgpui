@@ -75,6 +75,6 @@ int main() {
   if (!contains(ledger_json,
                 "\"phase_f_step_571_remaining_gap\": \"Step 572 Win32")) return 8;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle")) return 9;
+                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary")) return 9;
   return 0;
 }

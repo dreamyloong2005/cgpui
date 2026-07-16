@@ -12629,3 +12629,24 @@
   still contains the same stale phrase; migrating all nine closes the chain
   without changing Step 677 history.
 - Phase G Step 678 completes final closeout for Steps 619-678 with `tests/api_parity/phase_g_final_closeout_test.cpp`: Windows full debug passes 457/457 and WSL Arch Linux full debug passes 438/438 under Xmake 3.0.9, including real WSLg Wayland frame pixel capture and Wayland/Vulkan surface coverage; the 32-row candidate ledger remains at 0 required, 29 adapted, 2 deferred, and 1 non-goal. Phase H Step 679 Cocoa application and NSWindow lifecycle is next.
+
+## 2026-07-16 Phase H Steps 751-758 Final macOS Closeout
+
+- Final closeout has two independent owners: a structure guard for the focused
+  Xmake module/manifest boundary and an API audit for ten checked roadmap bands,
+  exact macOS evidence, Markdown/JSON agreement, zero macOS gaps, Phase G
+  preservation, inactive optional X11, and the Step 759 handoff.
+- The correct post-Phase-H candidate ledger is 30 adapted, 1 deferred, 1
+  non-goal, and 0 required; the platform-target table keeps Windows, Wayland,
+  and macOS required while X11 remains deferred. The Phase G completion text
+  must remain immutable even though two Phase G tests currently inspect the
+  mutable candidate counts.
+- The user clarified that Phase G already owns Windows/WSL verification.
+  Phase H therefore removes its cross-system blocker and preserves Phase G's
+  fixed completion sentence rather than duplicating those runs.
+- The two final guards are independently RED-capable at exits 5 and 10 before
+  any completion claim is written. The architecture-header matrix now reads
+  both Phase H target modules and remains green with literal auditable target
+  mappings.
+- Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
+- Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.

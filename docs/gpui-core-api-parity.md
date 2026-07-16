@@ -7,20 +7,21 @@ The detailed source-of-truth ledger is
 `docs/gpui-complete-parity-ledger.md`, with machine-readable status in
 `docs/gpui-complete-parity-ledger.json`.
 
-The active implementation target remains Windows/Win32 + Vulkan and
-Linux/Wayland + Vulkan. macOS Cocoa + Metal remains a later parity track after
-Windows/Linux public APIs and renderer/platform boundaries stabilize. X11 is
-tracked as deferred, not active, unless the user explicitly chooses strict
-upstream Linux backend parity.
+The implemented desktop targets are Windows/Win32 + Vulkan, Linux/Wayland +
+Vulkan, and macOS/Cocoa + Metal. Phase H closes macOS production parity over
+the stable public APIs and renderer/platform boundaries. X11 remains deferred
+and inactive unless the user explicitly chooses strict upstream Linux backend
+parity.
 
-## Windows/Linux Scope
+## Desktop Scope
 
 - Windows uses the Win32 platform backend and Vulkan renderer target.
 - Linux uses the Wayland platform backend and Vulkan renderer target.
+- macOS uses the Cocoa platform backend and Metal renderer target.
 - The public authoring surface is exposed through `cgpui/cgpui.hpp` and the
   core UI headers.
-- Verification for this track is Windows plus WSL Arch Linux; macOS is not run
-  from this machine.
+- Phase G records Windows and WSL Arch Linux verification; Phase H records
+  native macOS verification on the current Xcode host.
 
 ## Not Full Upstream GPUI Parity
 
@@ -208,41 +209,21 @@ desktop integration surfaces remain separate future work.
 - Full layout virtualization and large-list recycling beyond the current
   `scrollable_list` container.
 
-## Mac/Metal Deferred
+## Mac/Metal Complete
 
-macOS parity is intentionally deferred. Step 88 already reserves the target
-mapping: macOS/Cocoa uses Metal, while Windows and Linux use Vulkan. The
-current macOS slots provide source-level readiness for Cocoa windows, a Metal
-surface handle, and a Metal renderer placeholder, but they do not implement the
-Windows/Linux behavior listed above.
+Phase H implements production Cocoa application/window lifecycle, Metal
+surface and primitive rendering, input, CoreText/font and text-input services,
+clipboard/drag, native menus and dialogs, URL/reopen/chrome services,
+NSAccessibility providers, and source-identical public examples. Native types
+remain private to focused Objective-C++ modules behind the existing
+platform-neutral interfaces.
 
-The Mac handoff requires:
+Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
 
-- Cocoa app lifecycle, window lifecycle, cursor, keyboard, pointer, clipboard,
-  drag/drop, IME, accessibility, menu, and focus adapters.
-- Metal renderer parity for solid rectangles, rounded rectangles, text glyphs,
-  clipping, transforms, opacity, HiDPI scale, command diagnostics, and frame
-  statistics.
-- macOS build and runtime verification on a Mac host.
-- Alignment with the existing platform-neutral APIs instead of forking public
-  authoring semantics.
+Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.
 
 ## Next Milestone
 
-The next Windows/Linux milestone should be a depth pass, not another surface
-area expansion. Recommended order:
-
-1. Make Vulkan text rendering real: promote the existing fallback rasterized
-   glyphs, atlas allocation records, upload records, textured glyph quads, and
-   text render counters into real Vulkan atlas textures, GPU uploads, shader
-   sampling, and draw calls.
-2. Continue promoting Wayland clipboard, Wayland drag/drop, and Wayland
-   text-input from deterministic protocol slices to production desktop
-   handling, including clipboard write/ownership, drag action negotiation, and
-   richer text-input editing semantics.
-3. Deepen Windows UIA and Linux AT-SPI skeletons into production accessibility
-   bridges using the existing accessibility snapshot as the source of truth.
-4. Promote the native additional-window scaffold into fully owned child-window
-   renderer, event-loop, activation/focus, and lifecycle behavior.
-5. Start a separate macOS/Cocoa + Metal parity track only after the
-   Windows/Linux depth pass has stable renderer and native adapter behavior.
+Phase I remains optional. X11/XCB work begins only if the user activates the
+strict upstream Linux backend matrix; otherwise the completed Win32, Wayland,
+and Cocoa desktop targets remain the supported scope.

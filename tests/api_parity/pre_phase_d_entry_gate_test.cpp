@@ -87,8 +87,10 @@ int main() {
       "static and dynamic widget support",
       "editor/AI-IDE-class",
       "tool UI primitives",
-      "Win32 and Wayland production platform behavior",
-      "later macOS Cocoa + Metal parity",
+      "Win32",
+      "Wayland",
+      "macOS",
+      "production platform",
   };
   for (const char* item : required_scope) {
     if (!contains(roadmap, item) || !contains(ledger_md, item)) {

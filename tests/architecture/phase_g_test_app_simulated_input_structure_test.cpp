@@ -69,7 +69,7 @@ int main() {
       !contains(behavior, "Second Input Window") ||
       !contains(behavior, "second.input_state().pointer_position") ||
       contains(behavior, "[DEBUG-step660]")) return 4;
-  if (!contains(previous, "Phase H Step 679 Cocoa application and NSWindow lifecycle") ||
+  if (!contains(previous, "Phase I Step 759 X11/XCB platform boundary") ||
       !contains(xmake, "target(\"phase_g_test_app_simulated_input_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_test_app_simulated_input_structure_test\")")) {
@@ -94,6 +94,6 @@ int main() {
       !contains(core, "Window-scoped `TestAppWindow` input simulation") ||
       !contains(ledger_json, "\"phase_g_step_660_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) return 8;
+                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) return 8;
   return 0;
 }
