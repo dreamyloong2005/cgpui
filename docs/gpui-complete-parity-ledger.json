@@ -19,7 +19,7 @@
     "macos": {
       "backend": "cocoa",
       "renderer": "metal",
-      "status": "deferred"
+      "status": "required"
     },
     "x11": {
       "backend": "x11",
@@ -34,8 +34,8 @@
   },
   "status_counts": {
     "required": 0,
-    "adapted": 29,
-    "deferred": 2,
+    "adapted": 30,
+    "deferred": 1,
     "non_goal": 1
   },
   "scope_guard": {
@@ -54,8 +54,7 @@
       "low-allocation runtime structures",
       "static and dynamic widget support",
       "editor/AI-IDE-class text and tool UI primitives",
-      "Win32 and Wayland production platform behavior",
-      "later macOS Cocoa + Metal parity"
+      "Win32, Wayland, and macOS production platform behavior"
     ],
     "zero_cost_principle": [
       "Static fast paths come first",
@@ -3706,7 +3705,23 @@
       "xmake.lua"
     ],
     "phase_g_step_678_remaining_gap": "Phase H Step 679 Cocoa application and NSWindow lifecycle",
-    "phase_f_current_handoff": "Phase H Step 679 Cocoa application and NSWindow lifecycle"
+    "phase_h_status": "complete",
+    "phase_h_required_macos_gaps": 0,
+    "phase_h_gap_summary": "Phase H required macOS gaps: 0",
+    "phase_h_macos_evidence": "Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.",
+    "phase_h_sources": [
+      "src/platform/macos",
+      "src/renderer/metal",
+      "tests/platform/macos",
+      "tests/renderer/metal",
+      "tests/api_parity/phase_h_final_closeout_test.cpp",
+      "tests/architecture/phase_h_final_closeout_structure_test.cpp",
+      "scripts/ci/macos-debug.sh",
+      "scripts/ci/macos-example-smoke.sh",
+      ".github/workflows/phase-h-macos.yml"
+    ],
+    "phase_h_current_handoff": "Phase I Step 759 X11/XCB platform boundary",
+    "phase_f_current_handoff": "Phase I Step 759 X11/XCB platform boundary"
   },
   "categories": [
     "application_and_app_context",
@@ -3918,9 +3933,9 @@
     },
     {
       "upstream_gpui": "gpui macOS backend",
-      "cgpui_target": "Cocoa + Metal parity after Windows/Linux stabilization",
-      "status": "deferred",
-      "next_step": "Phase H"
+      "cgpui_target": "production Cocoa + Metal lifecycle, rendering, input, text, clipboard/drag, services, accessibility, examples, and macOS verification",
+      "status": "adapted",
+      "next_step": "Phase H closed"
     },
     {
       "upstream_gpui": "gpui wasm backend",

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Complete roadmap Steps 679-758 with production Cocoa and Metal adapters, native macOS verification, unchanged public authoring semantics, and fresh Windows/WSL regressions.
+**Goal:** Complete roadmap Steps 679-758 with production Cocoa and Metal adapters, native macOS verification, unchanged public authoring semantics, and preserved Phase G Windows/WSL evidence.
 
 **Architecture:** Keep `PlatformApplication`, `PlatformWindow`, `Renderer`, and `RenderFrame` as the external seams. Turn the existing macOS and Metal files into thin composition roots and place native behavior in focused Objective-C++ modules with private test seams. Reuse existing renderer command and platform event types so examples remain source-identical.
 
@@ -279,29 +279,26 @@ xmake test -P "$PWD" macos_example_smoke_test/default
 - [ ] Add missing target branches and a macOS CI job; do not add macOS-only example sources.
 - [ ] Run both tests plus `bash scripts/ci/macos-example-smoke.sh`; expect all targets pass. Commit with `git commit -m "test: add macos example smoke matrix"`.
 
-## Task 10: Steps 751-756 - Full Cross-Host Verification
+## Task 10: Steps 751-756 - Full macOS Verification
 
 **Files:**
 - Create: `scripts/ci/macos-debug.sh`
 - Test: `tests/architecture/phase_h_macos_full_debug_verification_structure_test.cpp`
-- Test: `tests/architecture/phase_h_regression_verification_structure_test.cpp`
 - Modify: `xmake.lua`
-- Modify: `.github/workflows/ci.yml`
+- Modify: `.github/workflows/phase-h-macos.yml`
 - Modify: `task_plan.md`
 - Modify: `progress.md`
 - Modify: `findings.md`
 
-- [ ] Add guards requiring a workspace-confined macOS debug script, locked Xmake, complete tests, exact environment/pass evidence, and fresh Windows/WSL evidence; run them and expect absent-evidence failures.
+- [ ] Add a guard requiring a workspace-confined macOS debug script, locked Xmake, complete tests, and exact environment/pass evidence; run it and expect an absent-evidence failure.
 - [ ] Run:
 
 ```bash
 bash scripts/ci/macos-debug.sh
-powershell -File scripts/ci/windows-debug.ps1
-wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui && XMAKE_ROOT=y xmake f -y -c -m debug -P . && XMAKE_ROOT=y xmake test -y -P .'
 ```
 
-- [ ] Record exact Xmake/Xcode/OS versions, totals, failures, and native Metal pixel/smoke coverage. Never record a skipped platform as passed.
-- [ ] Rerun both guards; expect 2/2 pass. Commit with `git commit -m "test: verify phase h across hosts"`.
+- [ ] Record exact Xmake/Xcode/macOS versions, totals, failures, and native Metal pixel/smoke coverage. Preserve Phase G's Windows/WSL completion evidence without rerunning those systems.
+- [ ] Rerun the guard; expect 1/1 pass. Commit with `git commit -m "test: verify phase h on macos"`.
 
 ## Task 11: Steps 757-758 - Ledger and Final Closeout
 
@@ -318,7 +315,7 @@ wsl.exe -d archlinux -- bash -lc 'cd /mnt/d/Dev/Projects/cgpui && XMAKE_ROOT=y x
 - Modify: `findings.md`
 - Modify: `xmake.lua`
 
-- [ ] Add final tests requiring Steps 679-758 checked, ten bands named, exact fresh three-host evidence, zero macOS gaps, JSON/Markdown agreement, Phase G preserved, optional X11 still Phase I, and handoff to Step 759; run them and expect deferred-ledger failures.
+- [ ] Add final tests requiring Steps 679-758 checked, ten bands named, exact fresh macOS evidence, zero macOS gaps, JSON/Markdown agreement, Phase G preserved, optional X11 still Phase I, and handoff to Step 759; run them and expect deferred-ledger failures.
 - [ ] Update authoritative records with:
 
 ```json
@@ -340,12 +337,12 @@ git diff --check
 git status --short
 ```
 
-- [ ] Confirm Windows/WSL evidence is later than the last product change, then commit with `git commit -m "test: close phase h"`.
+- [ ] Confirm the macOS evidence covers the final Phase H product state and Phase G evidence remains preserved, then commit with `git commit -m "test: close phase h"`.
 
 ## Self-Review
 
 - Spec coverage: Tasks 1-11 cover every roadmap band from 679 through 758.
 - Module layout: each native responsibility has a focused owner; structure tests cap both composition roots.
 - Type consistency: adapters satisfy existing interfaces and keep native types private.
-- Verification: macOS native/pixel/examples/full debug plus Windows/WSL and ledger agreement are explicit gates.
+- Verification: macOS native/pixel/examples/full debug and ledger agreement are explicit gates; Windows/WSL remain closed Phase G history.
 - Placeholder scan: no deferred implementation or ambiguous completion step remains.

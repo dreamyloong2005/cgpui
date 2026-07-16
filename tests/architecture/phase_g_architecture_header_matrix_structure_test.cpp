@@ -44,6 +44,8 @@ int main() {
   const std::string xmake = read_source("xmake.lua");
   const std::string phase_h_targets =
       read_source("build/xmake/phase_h_structure_targets.lua");
+  const std::string phase_h_closeout =
+      read_source("build/xmake/phase_h_closeout_targets.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -53,7 +55,8 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &matrix, &windows, &linux, &workflow, &previous, &xmake,
+      &matrix, &windows, &linux, &workflow, &previous, &xmake, &phase_h_targets,
+      &phase_h_closeout,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -75,9 +78,12 @@ int main() {
     if (!source.starts_with("tests/architecture/") &&
         !source.starts_with("tests/header_cleanliness/")) return 2;
     if (!fs::is_regular_file(root / source) ||
-      !contains(xmake + phase_h_targets, "target(\"" + target + "\")") ||
-        !contains(xmake + phase_h_targets, "add_files(\"" + source + "\")") &&
-        !contains(xmake + phase_h_targets, "add_files(path.join(os.projectdir(), \"" + source + "\")")) return 3;
+      !contains(xmake + phase_h_targets + phase_h_closeout,
+                "target(\"" + target + "\")") ||
+        !contains(xmake + phase_h_targets + phase_h_closeout,
+                  "add_files(\"" + source + "\")") &&
+        !contains(xmake + phase_h_targets + phase_h_closeout,
+                  "add_files(path.join(os.projectdir(), \"" + source + "\")")) return 3;
   }
 
   std::size_t repository_sources = 0;
@@ -126,7 +132,7 @@ int main() {
   }
   if (!contains(ledger_json, "\"phase_g_step_671_sources\"") ||
       !contains(ledger_json,
-          "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) {
+          "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) {
     return 11;
   }
   return 0;

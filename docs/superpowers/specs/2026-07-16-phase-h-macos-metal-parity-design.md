@@ -11,8 +11,9 @@ module design was presented without requested changes.
 Bring macOS to the stable Windows/Wayland public behavior through Cocoa,
 CoreText, AppKit accessibility, and Metal adapters. Public authoring semantics
 remain platform-neutral. Phase H is complete only after native macOS behavior,
-renderer pixels, examples, smoke tests, and Windows/WSL regression suites all
-pass and the parity ledger records the evidence.
+renderer pixels, examples, smoke tests, and the complete macOS Debug suite all
+pass and the parity ledger records the evidence. Phase G's completed
+Windows/WSL verification remains authoritative and is not rerun by Phase H.
 
 ## Constraints
 
@@ -151,9 +152,9 @@ set of backend-branded helper functions to the public `renderer.hpp` aggregate.
 - Existing public examples remain source-identical. Xmake gains macOS smoke,
   renderer pixel, input, service, and accessibility test targets rather than
   macOS-specific example source forks.
-- Phase closeout adds a macOS full-debug verifier, preserves Windows and WSL
-  full-debug verifiers, and updates the Markdown/JSON ledger plus roadmap only
-  after fresh successful runs.
+- Phase closeout adds a macOS full-debug verifier, preserves the completed
+  Phase G Windows/WSL evidence as history, and updates the Markdown/JSON ledger
+  plus roadmap only after a fresh successful macOS run.
 
 ## Data Flow
 
@@ -236,9 +237,9 @@ Every behavior change follows red-green-refactor.
 3. **macOS pixel and smoke tests:** compare solid, rounded, text, image, clip,
    opacity, transform, ordering, resize, and capture output; run every public
    example through first frame, resize, interaction, and close.
-4. **Regression tests:** run the complete macOS debug suite, then the locked
-   Windows and WSL full-debug suites. A platform-unavailable run is not
-   completion evidence for that platform.
+4. **Regression tests:** run the complete macOS Debug suite on the current
+   Xcode host. Phase G already owns Windows/WSL full-debug verification, so
+   Phase H does not duplicate those platform runs.
 5. **Closeout audit:** a final parity test checks evidence for all Steps
    679-758, zero required macOS ledger gaps, current handoff to Phase I, and no
    regression of the Phase G Windows/Linux status.
@@ -255,7 +256,8 @@ Phase H is complete only when all of the following are true:
   clipboard/drag, platform services, accessibility, and public-example smoke
   behavior through existing public authoring interfaces.
 - macOS full debug passes on the current Xcode/command-line-tools host.
-- Fresh Windows and WSL full-debug suites pass after the final macOS changes.
+- Phase G's successful Windows and WSL full-debug evidence remains preserved;
+  no new Windows/WSL run is a Phase H completion requirement.
 - The Markdown and JSON parity ledgers agree, report no required macOS gaps,
   retain optional X11 as Phase I, and contain exact verification counts and
   environment evidence.

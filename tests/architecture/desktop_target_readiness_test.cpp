@@ -141,8 +141,10 @@ int main() {
       !contains(audit_text, "macOS: Cocoa + Metal")) {
     return 18;
   }
-  if (!contains(audit_text, "Not in scope") ||
-      !contains(audit_text, "Step 88")) {
+  if (!contains(audit_text, "## Production Coverage") ||
+      !contains(audit_text, "## Verification") ||
+      !contains(audit_text, "Phase H required macOS gaps: 0") ||
+      !contains(audit_text, "X11: optional Phase I scope")) {
     return 19;
   }
 
@@ -151,14 +153,14 @@ int main() {
     return 30;
   }
   if (!contains(parity_text, "# GPUI-Core API Parity Audit") ||
-      !contains(parity_text, "Windows/Linux Scope") ||
+      !contains(parity_text, "Desktop Scope") ||
       !contains(parity_text, "Not Full Upstream GPUI Parity")) {
     return 31;
   }
   if (!contains(parity_text, "Implemented") ||
       !contains(parity_text, "Partial") ||
       !contains(parity_text, "Missing") ||
-      !contains(parity_text, "Mac/Metal Deferred")) {
+      !contains(parity_text, "Mac/Metal Complete")) {
     return 32;
   }
   if (!contains(parity_text, "Context<T>") ||

@@ -143,6 +143,6 @@ int main() {
   if (!contains(vocabulary, "`AnimationCancellationDiagnostic`") ||
       !contains(core_parity, "last-cancellation diagnostics") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) return 9;
+                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) return 9;
   return 0;
 }

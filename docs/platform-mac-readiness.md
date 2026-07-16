@@ -1,45 +1,39 @@
-# Platform Mac Readiness Audit
+# Platform Mac Readiness
 
-Step 88 keeps the Windows/Linux GPUI-core track moving while reserving a clear
-macOS path. This is an audit and boundary slice, not a full macOS parity port.
+Phase H completes the macOS Cocoa + Metal production target without changing
+the public authoring model used by Windows and Linux.
 
 ## Target Matrix
 
-- Windows: Win32 + Vulkan
-- Linux: Wayland + Vulkan
-- macOS: Cocoa + Metal
+- Windows: Win32 + Vulkan, completed before Phase H.
+- Linux: Wayland + Vulkan, completed before Phase H.
+- macOS: Cocoa + Metal, completed in Phase H.
+- X11: optional Phase I scope, inactive until explicitly requested.
 
-## Current Mac Slots
+## Production Coverage
 
-- `src/platform/macos/macos_application.mm` is the Cocoa/AppKit platform slot.
-  It creates an `NSWindow`, installs a `CAMetalLayer`, and returns a
-  `MetalSurfaceHandle` through the existing `PlatformWindow` interface.
-- `src/renderer/metal/metal_renderer.mm` is the Metal renderer slot. It accepts
-  `MetalSurfaceHandle`, validates the `CAMetalLayer`, and keeps the renderer
-  contract aligned with the existing `Renderer` interface.
-- `xmake.lua` already keeps macOS sources behind `is_plat("macosx")` and links
-  AppKit, QuartzCore, and Metal only for macOS targets.
+- Cocoa application and `NSWindow` lifecycle, close policy, activation,
+  scaling, resize, cursor, and run-loop wakeups.
+- `CAMetalLayer`, Metal device/queue/drawable lifecycle, frame pacing,
+  primitive pipelines, stable command ordering, diagnostics, and RGBA capture.
+- Pointer, scroll, keyboard, modifiers, capture, text input, CoreText font
+  discovery, IME ranges, and candidate placement.
+- NSPasteboard clipboard, drag source/target negotiation and cancellation,
+  native menus, accelerators, dialogs, URL opening, reopen/quit, and chrome.
+- Generation-keyed NSAccessibility providers, actions, notifications, stale
+  rejection, multi-window isolation, and teardown.
+- All public examples build from the same sources and run first-frame, resize,
+  close, and interaction smoke flows on macOS.
 
-## Public Boundary Added
+## Module Boundary
 
-- `DesktopPlatformTarget` names the supported desktop platform targets:
-  Windows/Win32, Linux/Wayland, and macOS/Cocoa.
-- `RendererBackendTarget` names the renderer families: Vulkan and Metal.
-- `default_renderer_backend_for(...)` records the intended mapping:
-  Windows/Linux use Vulkan and macOS uses Metal.
+`src/platform/macos/macos_application.mm` and
+`src/renderer/metal/metal_renderer.mm` are composition roots. Focused private
+Objective-C++ modules own native behavior, and public headers contain no
+AppKit, CoreText, QuartzCore, or Metal implementation details.
 
-## Not in scope
+## Verification
 
-- Full Cocoa event parity with Win32/Wayland input.
-- A real Metal command encoder, swapchain frame lifecycle, glyph pipeline, or
-  text renderer.
-- Running macOS tests from the current Windows/WSL machine.
+Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
 
-## Next Mac-Neutral Rules
-
-- New platform-independent UI APIs should live above `PlatformWindow`,
-  `PlatformApplication`, `NativeSurfaceHandle`, and `Renderer`.
-- New Windows/Linux code should stay behind platform-specific xmake branches
-  or platform source directories.
-- New renderer behavior should be expressed through renderer-neutral command
-  data first, then implemented by Vulkan and Metal backends separately.
+Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.

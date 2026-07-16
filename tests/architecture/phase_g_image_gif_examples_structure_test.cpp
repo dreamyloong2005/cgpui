@@ -119,6 +119,6 @@ int main() {
       !contains(ledger_md, "Phase G assets band closed") ||
       !contains(ledger_json, "\"phase_g_step_658_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application and NSWindow lifecycle\"")) return 8;
+                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) return 8;
   return 0;
 }

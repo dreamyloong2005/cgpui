@@ -91,8 +91,8 @@ int main() {
                 "\"phase_g_step_677_remaining_gap\": \"Step 678 Phase G "
                 "final closeout verification\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase H Step 679 Cocoa application "
-                "and NSWindow lifecycle\"")) {
+                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB "
+                "platform boundary\"")) {
     return 6;
   }
   if (line_count(self) > 130 || line_count(xmake) > 4380) {
