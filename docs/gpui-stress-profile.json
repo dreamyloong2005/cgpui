@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "scenarios": {
+    "window_churn": {"min_operation_count": 64},
+    "many_entities": {"min_operation_count": 2000},
+    "large_uniform_list": {"min_operation_count": 50000},
+    "ime_composition": {"min_operation_count": 1000},
+    "clipboard_ownership": {"min_operation_count": 1000},
+    "drag_drop_cancel": {"min_operation_count": 1000},
+    "asset_reload": {"min_operation_count": 2000},
+    "task_cancellation": {"min_operation_count": 2000}
+  },
+  "platforms": ["windows", "wayland", "x11"],
+  "macos_execution": "excluded_by_user"
+}

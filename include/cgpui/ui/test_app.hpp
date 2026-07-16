@@ -41,6 +41,7 @@ class TestAppWindow {
   [[nodiscard]] View* root_view();
   [[nodiscard]] const View* root_view() const;
   [[nodiscard]] ViewInputState input_state() const;
+  [[nodiscard]] bool dispatch_platform_event(PlatformEvent event) const;
   void dispatch_keystroke(KeyboardKey key) const;
   [[nodiscard]] bool simulate_keystrokes(std::string_view keystrokes) const;
   void dispatch_pointer_move(Point position) const;

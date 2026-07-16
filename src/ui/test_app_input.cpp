@@ -20,6 +20,10 @@ ViewInputState TestAppWindow::input_state() const {
   return window().input_state();
 }
 
+bool TestAppWindow::dispatch_platform_event(PlatformEvent event) const {
+  return state_->dispatch_event(runtime_id_, event);
+}
+
 void TestAppWindow::dispatch_keystroke(KeyboardKey key) const {
   (void)state_->dispatch_event(runtime_id_, PlatformEvent{key});
 }

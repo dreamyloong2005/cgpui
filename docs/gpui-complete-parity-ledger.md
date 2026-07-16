@@ -824,6 +824,11 @@ consume C: drive space again.
   wakeups, and frame pacing. Checked-in regression budgets and JSON-report
   wrappers cover Windows, Wayland, and X11. Phase J Step 817 public stress
   runner is next.
+- Phase J Step 822 adds a public stress runner for window churn, entity churn,
+  large uniform lists, IME composition, clipboard ownership, DnD cancellation,
+  concurrent asset reload, and task cancellation. Checked-in scale floors and
+  JSON-report wrappers cover Windows, Wayland, and X11. Phase J Step 823
+  getting-started documentation is next.
 
 ## Categories
 

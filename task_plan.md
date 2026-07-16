@@ -4913,7 +4913,7 @@ implementation slice.
      Windows plus Linux backends where applicable.
   3. [x] Steps 811-816: reproducible startup, first-frame, resize, text, list,
      image, async-wakeup, and frame-pacing performance baselines.
-  4. [ ] Steps 817-822: public stress runner for window/entity/list/IME/
+  4. [x] Steps 817-822: public stress runner for window/entity/list/IME/
      clipboard/DnD/asset/task-cancellation scenarios.
   5. [ ] Steps 823-828: getting-started, architecture, dependencies, examples,
      GPUI-to-C++23 migration, and non-goal documentation.
@@ -4941,3 +4941,8 @@ implementation slice.
 | The first ledger-completion planning patch used a stale wrapped progress anchor and was rejected atomically | Steps 805-810 planning closeout | Re-read the file tails, apply the task/findings/progress changes from short exact anchors, and confirm no partial edit occurred |
 | The first performance runner execution returned exit 5 because the requested `.build` report parent did not exist | Steps 811-816 runner CLI | Make the runner create an explicit output path's parent directories so direct CLI use and CI wrappers share the same self-contained contract |
 | Recursive cleanup of the two generated `.build` JSON reports was blocked by command policy before execution | Steps 811-816 artifact cleanup | Enumerate the directory, delete only the two confirmed generated JSON files, then remove the empty directories non-recursively |
+| The first stress-runner build failed because `StressView` omitted the still-required pure virtual `View::paint(...)` member | Steps 817-822 runner build | Add an empty paint override because the runner's actual content is owned by its declarative `render(...)` path |
+| The first stress-runner execution returned aggregate exit 4 before writing a report, hiding the failing scenario | Steps 817-822 runner diagnosis | Always emit the machine-readable report, print failed scenario names to stderr, then preserve exit 4 for incomplete runs |
+| The diagnostic stress report showed only `window_churn` failed because its test View left close requests unhandled | Steps 817-822 window churn | Accept `WindowCloseRequested` through the public context and require every opened TestApp window to leave the app-owned set |
+| Explicit View close acceptance did not change `window_churn`; source inspection showed additional windows bypass View dispatch and remain retired until the next root wakeup | Steps 817-822 window churn | Keep one control window, close all churn targets, complete one public task to trigger wakeup/reclamation, and require only the control window to remain |
+| Two combined stress-runner/planning patches omitted the `Update File` boundary before task-plan rows and were rejected atomically | Steps 817-822 planning synchronization | Reapply each code and task-plan hunk with explicit file boundaries; no partial changes occurred |

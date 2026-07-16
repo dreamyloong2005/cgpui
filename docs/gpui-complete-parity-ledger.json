@@ -3765,7 +3765,20 @@
       "tests/api_parity/phase_j_performance_baseline_audit_test.cpp",
       "tests/architecture/phase_j_performance_baseline_structure_test.cpp"
     ],
-    "phase_j_current_handoff": "Phase J Step 817 public stress runner"
+    "phase_j_steps_817_822_status": "complete",
+    "phase_j_stress_evidence": "Phase J Step 822 adds a public stress runner for window churn, entity churn, large uniform lists, IME composition, clipboard ownership, DnD cancellation, concurrent asset reload, and task cancellation, with checked-in scale floors, JSON reports, and Windows/Wayland/X11 wrappers.",
+    "phase_j_stress_sources": [
+      "include/cgpui/ui/test_app.hpp",
+      "src/ui/test_app_input.cpp",
+      "tests/stress/phase_j_stress_runner.cpp",
+      "docs/gpui-stress-profile.json",
+      "tools/gpui_parity/validate_stress_report.py",
+      "scripts/ci/windows-stress-matrix.ps1",
+      "scripts/ci/linux-stress-matrix.sh",
+      "tests/api_parity/phase_j_stress_audit_test.cpp",
+      "tests/architecture/phase_j_stress_structure_test.cpp"
+    ],
+    "phase_j_current_handoff": "Phase J Step 823 getting-started documentation"
   },
   "categories": [
     "application_and_app_context",
