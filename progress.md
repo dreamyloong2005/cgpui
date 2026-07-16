@@ -25634,3 +25634,16 @@
   Windows wrapper also passes at 64 iterations, while the Linux wrapper passes
   `bash -n`; real Wayland/X11 reports remain part of the final post-change WSL
   build matrix.
+- Steps 817-822 began RED at 0/2, then added a public TestApp platform-event
+  dispatch seam, an eight-scenario stress runner, scale-floor profile,
+  validator, and Windows/Linux wrappers in a focused Xmake module.
+- The first runner build required an empty `View::paint` override. Its first
+  report then isolated `window_churn` as the only failure; reading the runtime
+  close path showed retired additional windows require a root wakeup before
+  record reclamation.
+- The corrected control-window/task-wakeup churn flow completes. The Windows
+  scale-1 report passes all eight scenarios and the profile validator.
+- GREEN passes 5/5 for the stress runner, its behavior/structure guards, the
+  predecessor TestApp input test, and TestApp header cleanliness. The Windows
+  wrapper passes and the Linux wrapper passes `bash -n`; real Wayland/X11
+  reports remain in the final post-change WSL matrix.

@@ -12885,3 +12885,16 @@
 - The first Windows Debug report passes all checked-in tripwire budgets. The
   budgets are regression guards rather than cross-machine rankings; each CI
   backend retains its own JSON report for revision-to-revision comparison.
+
+## 2026-07-17 Phase J Stress Findings
+
+- `TestAppState` already owned a generic event dispatcher internally. Exposing
+  one narrow `TestAppWindow::dispatch_platform_event(...)` method makes public
+  IME and DnD stress possible without test-private runtime fixtures.
+- Additional-window close is two-stage by design: the close callback retires
+  native ownership, and the next root wakeup reclaims records. The churn test
+  retains one control window and completes one public task after the close
+  burst so it verifies both stages rather than misclassifying retired records.
+- The scale-1 profile completes all eight scenarios on Windows Debug. Profile
+  floors are checked independently from report generation, so CI can raise the
+  scale while keeping a stable minimum acceptance contract.

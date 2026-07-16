@@ -2041,7 +2041,7 @@ usable as a C++23 GPUI replacement.
   platform and run smoke/pixel/input tests where possible.
 - [x] Steps 811-816: Add performance baselines: startup, first frame, resize,
   text layout, list scrolling, image loading, async wakeups, and frame pacing.
-- [ ] Steps 817-822: Add stress tests: window churn, many entities, large
+- [x] Steps 817-822: Add stress tests: window churn, many entities, large
   uniform lists, IME composition, clipboard ownership changes, DnD cancel,
   asset reload, and task cancellation.
 - [ ] Steps 823-828: Complete documentation: getting started, architecture,
@@ -2068,11 +2068,16 @@ usable as a C++23 GPUI replacement.
   frame, resize, text layout, large-list scrolling, image loading, async
   wakeups, and frame pacing, with checked-in regression budgets, JSON reports,
   and Windows/Wayland/X11 CI wrappers. Step 817 public stress runner is next.
+- Phase J Step 822 adds a public stress runner for window churn, entity churn,
+  large uniform lists, IME composition, clipboard ownership, DnD cancellation,
+  concurrent asset reload, and task cancellation, with checked-in scale floors,
+  JSON reports, and Windows/Wayland/X11 wrappers. Step 823 getting-started
+  documentation is next.
 
 ## Immediate Next Slice
 
-Phase J Step 817 adds public stress coverage for window/entity/list/IME,
-clipboard/DnD, asset reload, and task cancellation scenarios.
+Phase J Step 823 completes getting-started, architecture, dependency, example,
+migration, and non-goal documentation.
 
 ### Historical Slice Log
 
