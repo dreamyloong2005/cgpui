@@ -25553,3 +25553,36 @@
   historical guard migrations, and line budgets; Spec preserves all Phase H
   evidence, records Phase I matrices and zero gaps, and hands current authority
   documents to Phase J Step 799.
+
+## 2026-07-17 Phase J Non-macOS Execution
+
+- Activated Phase J Steps 799-840+ for every platform-neutral, Windows,
+  Wayland, and X11 deliverable. New macOS build/test/package/CI execution is
+  excluded by user request; existing Phase H evidence remains historical.
+- Restored the persistent Phase I closeout context, confirmed local `master`
+  is five commits ahead of `origin/master`, and confirmed the only worktree
+  artifact is untracked `.vscode/compile_commands.json`.
+- Adopted the roadmap's extractor, example, benchmark, stress, docs, package,
+  and final-matrix interfaces as the pre-agreed TDD seams. Capability inventory
+  is in progress before the first RED guard is added.
+- Ran the existing extractor against the pinned revision: it returned 55 public
+  re-exports/modules and 20 official Cargo examples. The current ledger exposes
+  only 14 example names and the extractor cannot distinguish live fetches from
+  silent fallback, defining the first RED slice for Steps 799-804.
+- A first PowerShell schema probe incorrectly indexed
+  `required_surface_summary`; the authoritative key is `rows`. No files were
+  changed by the failed probe, and subsequent work uses the correct schema.
+- Added strict extractor provenance, a focused upstream auditor, machine-readable
+  snapshot/audit artifacts, behavior and structure guards, and a dedicated
+  Phase J Xmake target module for Steps 799-804.
+- TDD moved from RED `1/2` to GREEN `2/2` in 0.063 seconds. The authoritative
+  live result is 55 exports, 20 official examples, 32 accepted ledger rows,
+  zero required rows, and zero issues; JSON parsing and `git diff --check` pass.
+- The first planning synchronization patch was rejected atomically because a
+  long Phase I error row did not match byte-for-byte. The corrected short-anchor
+  patch moved the misplaced Phase J probe error into the Phase J table and
+  marked Steps 799-804 complete.
+- Fresh serial builds pass for both audit guards. The first focused test command
+  omitted the registered `/default` suffix and printed `nothing to test`; the
+  corrected names each pass 1/1, direct `xmake run` also exits zero, and the
+  strict Python audit regenerates the same complete report with no issues.

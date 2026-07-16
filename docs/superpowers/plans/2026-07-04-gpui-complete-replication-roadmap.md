@@ -2035,7 +2035,7 @@ X11 as part of the full replication target.
 **Goal:** Close every required row in the parity ledger and make the result
 usable as a C++23 GPUI replacement.
 
-- [ ] Steps 799-804: Re-run upstream extractor against the pinned revision and
+- [x] Steps 799-804: Re-run upstream extractor against the pinned revision and
   fail if any required API row lacks a C++ equivalent or accepted adaptation.
 - [ ] Steps 805-810: Compile every official example equivalent on every active
   platform and run smoke/pixel/input tests where possible.
@@ -2055,6 +2055,11 @@ usable as a C++23 GPUI replacement.
 - [ ] Steps 841+: Reserve for upstream drift. If upstream GPUI changes after
   the pinned revision, add a new parity delta plan instead of mutating the
   completed roadmap.
+
+- Phase J Step 804 locks the live pinned-upstream audit at 55 public
+  re-exports/modules, 20 official Cargo examples, 32 accepted ledger rows, and
+  zero unresolved required rows. Step 805 official example equivalence matrix
+  is next.
 
 ## Immediate Next Slice
 

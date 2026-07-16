@@ -50,9 +50,7 @@ Phase A treats these upstream files as the initial parity source set:
 - Windows parity target: Win32 + Vulkan in CGPUI.
 - Linux parity target: Wayland + Vulkan in CGPUI.
 - macOS parity target: Cocoa + Metal after Windows/Linux core stabilization.
-- X11 is recorded in the ledger as `Deferred`, not active work. It only
-  becomes required if the user explicitly chooses strict upstream Linux backend
-  matrix parity.
+- X11 + Vulkan strict Linux parity was activated and completed in Phase I.
 
 ## Refresh Procedure
 
@@ -61,6 +59,10 @@ To refresh this pin, update the commit hash first, then rerun:
 ```powershell
 python tools\gpui_parity\extract_upstream_symbols.py --output build\gpui_parity_snapshot.json
 ```
+
+Phase J release audits add `--require-live`, commit the strict snapshot as
+`docs/gpui-upstream-snapshot.json`, and run
+`tools/gpui_parity/audit_upstream_snapshot.py` against the status ledger.
 
 After refreshing, update `docs/gpui-complete-parity-ledger.md` and
 `docs/gpui-complete-parity-ledger.json` in the same change. Do not silently

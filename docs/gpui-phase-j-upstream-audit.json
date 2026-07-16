@@ -1,0 +1,12 @@
+{
+  "accepted_rows": 32,
+  "example_count": 20,
+  "issues": [],
+  "ledger_sha256": "f551226baa534919b397a92e1a0ec9d2d4b3d1f59dd279a0cfdd51af0a68f6bb",
+  "public_reexport_count": 55,
+  "required_rows": 0,
+  "snapshot_fetch_mode": "live",
+  "snapshot_sha256": "7df3df65929bcf0bece548439c390a0ab0e3f850aa6c434d44913b90419504af",
+  "status": "complete",
+  "upstream_revision": "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0"
+}

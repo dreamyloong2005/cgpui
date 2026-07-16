@@ -1,7 +1,7 @@
 # GPUI Parity Tooling
 
-`extract_upstream_symbols.py` records a small, deterministic snapshot from the
-pinned upstream GPUI revision and writes a machine-readable summary that can be
+`extract_upstream_symbols.py` records a deterministic snapshot from the pinned
+upstream GPUI revision and writes a machine-readable summary that can be
 compared with `docs/gpui-complete-parity-ledger.json`.
 
 The tool is intentionally lightweight for Phase A. It does not attempt a full
@@ -26,6 +26,13 @@ The authoritative status export remains:
 docs/gpui-complete-parity-ledger.json
 ```
 
-Future phases can replace the line-oriented extractor with a proper Rust AST
-or rustdoc JSON pass, but the output contract should remain stable: upstream
-revision, public re-exports, modules, example names, and source URLs.
+Phase J strict audit:
+
+```powershell
+python tools\gpui_parity\extract_upstream_symbols.py --require-live --output docs\gpui-upstream-snapshot.json
+python tools\gpui_parity\audit_upstream_snapshot.py --snapshot docs\gpui-upstream-snapshot.json --ledger docs\gpui-complete-parity-ledger.json --output docs\gpui-phase-j-upstream-audit.json
+```
+
+Strict mode fails unless both pinned upstream source files were fetched live.
+The snapshot records content hashes, counts, and fetch mode; the auditor checks
+the exact pinned inventory and rejects unresolved required ledger rows.
