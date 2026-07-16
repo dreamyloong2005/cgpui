@@ -1,54 +1,63 @@
 # CGPUI
 
-CGPUI is a C++23-native UI framework inspired by GPUI's architecture. This foundation milestone focuses on clean platform, renderer, UI, and public authoring API boundaries.
+CGPUI is a C++23-native desktop UI framework inspired by GPUI. It provides a
+declarative public authoring API, runtime-owned entities and views, deterministic
+test support, production desktop platform adapters, and GPU rendering backends
+without a Rust FFI layer.
 
-## Build
-
-```bash
-xmake f -c -m debug
-xmake build hello_window
-```
-
-## Run
-
-```bash
-xmake run hello_window
-```
-
-## Platform Targets
+## Supported Desktop Targets
 
 - Windows: Win32 + Vulkan
-- Linux: Wayland + Vulkan, with X11 reserved in the platform abstraction
+- Linux: Wayland + Vulkan
+- Linux: X11/XCB + Vulkan
 - macOS: Cocoa + Metal
 
-## Current Foundation
+The current Phase J task excludes new macOS execution. The completed Phase H
+macOS evidence remains recorded in the parity ledger.
 
-The current foundation defines architecture boundaries and compiles backend targets with Xmake. The hello window demo now uses the public `cgpui/cgpui.hpp` prelude, `run_app`, `AppContext`, `View::render`, free element factories, fluent builder shortcuts, and `ViewContext` model/text helpers. Windows presents Vulkan frames through the Win32 demo path, and Linux uses the Wayland xdg-shell window path with Vulkan Wayland surface creation wired to the shared renderer path. macOS still uses a renderer skeleton in this milestone.
-
-Linux Wayland runtime verification requires a Linux Wayland session or WSLg:
+## Quick Start
 
 ```bash
 xmake f -c -m debug
-xmake build hello_window
+xmake build -j 1 hello_window
 xmake run hello_window
 ```
 
-For a deterministic first-frame smoke check, ask the demo to exit after the
-first successful present:
+On Linux, select a backend explicitly when both display environments exist:
 
 ```bash
-CGPUI_EXIT_AFTER_FIRST_FRAME=1 xmake run hello_window
+CGPUI_LINUX_BACKEND=wayland xmake run hello_window
+CGPUI_LINUX_BACKEND=x11 xmake run hello_window
 ```
 
-To exercise swapchain resize and a second presented frame, run the lifecycle
-smoke check:
+See [Getting Started](docs/getting-started.md) for toolchain setup, smoke modes,
+and test commands.
+
+## Documentation
+
+- [Getting Started](docs/getting-started.md)
+- [Architecture](docs/architecture.md)
+- [Platform Dependencies](docs/platform-dependencies.md)
+- [Examples](docs/examples.md)
+- [GPUI to C++23 Migration](docs/gpui-to-cpp23-migration.md)
+- [Non-goals](docs/non-goals.md)
+- [Public Authoring Vocabulary](docs/gpui-public-authoring-vocabulary.md)
+- [Parity Ledger](docs/gpui-complete-parity-ledger.md)
+
+The machine-readable authority files are
+`docs/gpui-complete-parity-ledger.json`,
+`docs/gpui-upstream-snapshot.json`, and
+`docs/gpui-official-example-matrix.json`.
+
+## Verification
+
+Build and test commands are intentionally serial in this repository:
 
 ```bash
-CGPUI_RESIZE_AFTER_FIRST_FRAME=1 xmake run hello_window
+xmake build -j 1
+xmake test -j 1 -v
 ```
 
-To exercise the close-request callback after the first presented frame, run:
-
-```bash
-CGPUI_CLOSE_AFTER_FIRST_FRAME=1 xmake run hello_window
-```
+Platform packaging, example smoke, performance, and stress entrypoints live in
+`scripts/ci/`. Generated packages and reports stay under repository-local
+build or artifact directories.

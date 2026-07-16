@@ -25647,3 +25647,13 @@
   predecessor TestApp input test, and TestApp header cleanliness. The Windows
   wrapper passes and the Linux wrapper passes `bash -n`; real Wayland/X11
   reports remain in the final post-change WSL matrix.
+- Steps 823-828 began RED at 0/2 because no focused getting-started,
+  architecture, dependency, example, migration, or non-goal guides existed.
+- Added the six focused guides, replaced the stale foundation-era README with
+  a current desktop-target navigation entry, and kept historical detail in the
+  authority ledger rather than duplicating it in onboarding prose.
+- The first docs run passed 2/4; migrated one stale Phase I immediate-next
+  assertion and corrected heading matching. A differential probe then found
+  the final exit 3 omitted `-j 1` from the expected build command.
+- The corrected documentation, structure, total-ledger, and Phase I regression
+  matrix passes 4/4. Steps 823-828 are complete.

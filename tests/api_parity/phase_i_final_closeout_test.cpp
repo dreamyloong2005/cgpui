@@ -153,8 +153,6 @@ int main() {
       !contains(api_parity,
                 "Linux provides Wayland and X11 platform backends") ||
       !contains(mac_readiness, "X11: XCB + Vulkan, completed in Phase I") ||
-      !contains(roadmap,
-                "Phase J Step 799 re-runs the upstream extractor") ||
       contains(api_parity, "Phase I remains optional") ||
       contains(roadmap, "- [ ] Steps 789-794:") ||
       contains(roadmap, "- [ ] Steps 795-798:")) {

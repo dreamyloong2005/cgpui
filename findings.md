@@ -12898,3 +12898,15 @@
 - The scale-1 profile completes all eight scenarios on Windows Debug. Profile
   floors are checked independently from report generation, so CI can raise the
   scale while keeping a stable minimum acceptance contract.
+
+## 2026-07-17 Phase J Documentation Findings
+
+- README and the old API parity narrative contained current-state claims from
+  before Phase H/I, including X11 as reserved and macOS as a skeleton. The
+  durable documentation boundary is a short README plus focused guides, while
+  the large parity ledger remains the historical audit record.
+- The six guides separate setup, architecture, dependencies, examples,
+  migration, and non-goals. Each stays below 180 lines and links directly to
+  the machine-readable inventories or executable scripts it describes.
+- Non-goals distinguish desktop parity from mobile/Web, game-engine consumer
+  integration, unpinned upstream drift, and real-time performance guarantees.
