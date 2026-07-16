@@ -25586,3 +25586,37 @@
   omitted the registered `/default` suffix and printed `nothing to test`; the
   corrected names each pass 1/1, direct `xmake run` also exits zero, and the
   strict Python audit regenerates the same complete report with no issues.
+- Steps 805-810 RED was 0/2 because the official-example matrix, auditor, and
+  X11 runner did not exist. The first GREEN behavior audit passes, while the
+  structure guard returned `3` on an over-specific loop-expanded test-name
+  literal; the corrected guard validates the inventory and invocation parts.
+- The first combined code/plan/progress correction patch was rejected
+  atomically because its wrapped progress anchor was stale. The retry split the
+  short code/plan anchors from this end-of-file progress append.
+- The isolated Windows package/example matrix passes from a fresh Phase J root:
+  all 21 canonical examples build and run, four registration smokes pass, and
+  first-frame, resize, close, and full interaction smoke flows pass.
+- The analogous WSL cold package build reached only 2% after more than ten
+  minutes because individual `/mnt/d` source compilation took about 30 seconds.
+  It was stopped without orphaned processes. The Linux runner now has an
+  explicit current-build mode for the established `.build-wsl/master` cache;
+  this mode preserves all per-target build/run and display smoke work.
+- The first combined current-build-mode patch was rejected atomically on a
+  changed guard anchor. The focused retry applied the runner and guard changes;
+  no partial edit from the failed attempt remained.
+- Xmake treated the new root include as a reason to rebuild the entire cached
+  WSL static-library graph even in current-build mode. That second redundant
+  run was stopped cleanly. Both Linux runners now also support an explicit
+  retained-binary mode for the already-complete Phase I Linux graph; the final
+  Phase J matrix remains responsible for a post-change full serial rebuild.
+- The first retained-binary Wayland run reached the registration-smoke loop,
+  where `xmake test` again triggered the invalidated graph. It was stopped; the
+  explicit skip-build branch now runs the same registration binaries and four
+  `hello_window` environment modes directly, while normal CI still uses Xmake.
+- Migrated the authority JSON and Markdown ledgers from the stale 14-example
+  list to the pinned 20-example inventory, added Phase J Step 804/810 evidence
+  and the Step 811 handoff, and extended the behavior guard to freeze both
+  ledger representations without changing historical Phase H evidence.
+- Regenerated `gpui-phase-j-example-audit.json`; the Phase J behavior and
+  structure guards plus the predecessor example-matrix and total-ledger guards
+  pass 4/4 on Windows. Steps 805-810 are complete.

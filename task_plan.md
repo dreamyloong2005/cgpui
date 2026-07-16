@@ -4909,7 +4909,7 @@ implementation slice.
   preserve the completed Phase H macOS evidence without claiming a rerun.
 - Pre-agreed public seams:
   1. [x] Steps 799-804: pinned-upstream extractor output and required-row audit.
-  2. [ ] Steps 805-810: official-example equivalents compiled and exercised on
+  2. [x] Steps 805-810: official-example equivalents compiled and exercised on
      Windows plus Linux backends where applicable.
   3. [ ] Steps 811-816: reproducible startup, first-frame, resize, text, list,
      image, async-wakeup, and frame-pacing performance baselines.
@@ -4932,3 +4932,10 @@ implementation slice.
 | The first Phase J ledger probe indexed nonexistent `required_surface_summary` and exited after correctly reporting status counts | Steps 799-804 inventory | Use the live schema's `rows` array; keep the failed probe out of implementation decisions and rerun with the correct key |
 | The first planning synchronization patch used a long Phase I error-table row as an exact anchor and was rejected atomically | Steps 799-804 planning synchronization | Reapply with short section and checklist anchors, move the misplaced Phase J probe row into this table, and confirm no partial edit occurred |
 | `xmake test -j 1 -v` reported `nothing to test` when given target names without their registered test suffix | Steps 799-804 focused verification | Use the repository's exact `target/default` names; both registered tests pass 1/1, and direct `xmake run` also exits zero |
+| The first Steps 805-810 GREEN run passed behavior but the structure guard returned `3` because it expected a loop-expanded X11 test name as one literal | Steps 805-810 structure GREEN | Check the literal `x11_demo_smoke_flow` inventory entry and the `hello_window/$test_name` invocation separately; keep the compact loop in the script |
+| The first attempt to log the Steps 805-810 guard correction used a wrapped progress sentence that did not match and was rejected atomically | Steps 805-810 planning synchronization | Split the code/plan edit from a short end-of-file progress append; no partial edit occurred |
+| A fresh isolated WSL package/example matrix compiled one source about every 30 seconds through `/mnt/d` and would duplicate the already-green Phase I Linux graph for hours | Steps 805-810 Wayland verification | Stop the cold build at 2%, add an explicit current-build runner mode, and reuse the established `.build-wsl/master` configuration while still rebuilding/running every example serially |
+| The first current-build-mode patch combined an exact structure-guard anchor that had changed and was rejected atomically | Steps 805-810 runner repair | Read the focused guard lines, apply the runner/guard edit with exact short anchors, then append planning evidence separately |
+| Xmake invalidated the WSL static-library graph after the root Xmake include changed, so current-build mode still began recompiling product sources despite valid Phase I binaries | Steps 805-810 Wayland verification | Stop the second duplicate build, add an explicit binary-execution mode, run all 21 retained Linux examples directly, and reserve the required post-change full rebuild for Steps 835-840 |
+| The first retained-binary Wayland run executed all canonical examples but its registration-smoke `xmake test` loop began rebuilding the invalidated library graph | Steps 805-810 retained-binary verification | In explicit skip-build mode, execute the four registration binaries and four environment-driven `hello_window` smoke modes directly; preserve Xmake test behavior in normal CI mode |
+| The first ledger-completion planning patch used a stale wrapped progress anchor and was rejected atomically | Steps 805-810 planning closeout | Re-read the file tails, apply the task/findings/progress changes from short exact anchors, and confirm no partial edit occurred |
