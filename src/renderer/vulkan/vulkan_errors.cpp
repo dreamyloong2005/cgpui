@@ -59,4 +59,22 @@ Result<WaylandSurfaceHandle> require_wayland_surface(
   return *surface;
 }
 
+Result<X11SurfaceHandle> require_x11_surface(
+    const NativeSurfaceHandle& native_surface) {
+  const auto* surface = std::get_if<X11SurfaceHandle>(&native_surface);
+  if (surface == nullptr) {
+    return std::unexpected(Error{
+        .code = ErrorCode::renderer_initialization_failed,
+        .message = "Vulkan renderer requires an X11 native surface",
+    });
+  }
+  if (surface->display == nullptr || surface->window == 0) {
+    return std::unexpected(Error{
+        .code = ErrorCode::renderer_initialization_failed,
+        .message = "Vulkan renderer requires non-null X11 handles",
+    });
+  }
+  return *surface;
+}
+
 } // namespace cgpui

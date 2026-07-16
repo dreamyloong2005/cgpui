@@ -25284,3 +25284,70 @@
   audits that module and the source-owned manifest.
 - Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
 - Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.
+
+## 2026-07-16 Phase I Steps 759-764 Start
+
+- Restored the planning session and confirmed `master`/`origin/master` at
+  `660be1a7`; the only worktree noise is the user's untracked `.vscode/`.
+- Read the complete Phase I Steps 759-798 roadmap. The user request satisfies
+  its activation rule, so the full X11 backend and verification matrix are in
+  scope rather than a placeholder implementation.
+- Initial environment check finds Arch WSL2 and native Xmake available. System
+  `libxcb`, `libX11`, and `xcb-util-keysyms` are installed; Xvfb is not yet
+  available and must be installed before real X11 smoke verification.
+- Step 759 ownership is a new focused X11 directory plus focused Phase I Xmake
+  modules. Existing Wayland sources remain Wayland-owned, while a small Linux
+  factory boundary selects the backend without changing public window APIs.
+- Survey corrections: an initial `rg` expression for the Linux Xmake block was
+  malformed, and the first architecture-manifest probe guessed a nonexistent
+  path. The authoritative manifest is
+  `scripts/ci/architecture-header-targets.txt`; targeted literal searches now
+  replace both failed probes.
+- Added and registered the Step 759 structure tracer before product changes.
+  Locked Xmake 3.0.9 builds it serially and the direct test fails at exit `1`,
+  proving the Phase I Linux-backend build module is absent. This is the
+  accepted RED for the boundary slice.
+- The first GREEN patch matched the Wayland compatibility header with text
+  from the adjacent factory source. Patch validation rejected the entire
+  operation before any production file was written; the retry uses exact
+  per-file contexts.
+- Locked Windows and native WSL focused verification passes the Step 759
+  boundary and selection gates. WSL also rebuilt both Linux platform static
+  libraries successfully after moving target ownership into the focused Phase
+  I module.
+- A WSL focused build initially repeated the known unsupported multi-target
+  Xmake invocation and failed on the second positional target. Building each
+  target separately, then testing both together, passes 2/2.
+- Xvfb setup diagnosis used the required `diagnosing-bugs` loop. The first
+  install was red on stale package versions and mirror timeouts; `pacman -Syy`
+  advanced Xvfb from 21.1.23 to 21.1.24, a retry completed all 33 packages,
+  and `Xvfb`, `xdpyinfo`, XKB-X11, cursor, and WM helpers are now present.
+- The first mirror probe lost its Bash loop variable to PowerShell expansion;
+  literal URL probes replaced it and confirmed working HTTP responses. No
+  debug instrumentation or temporary project files remain.
+- Steps 765-770 have independent RED evidence: the structure guard returns
+  `1` for missing modular lifecycle sources, and the Xvfb behavior test returns
+  `1` because the X11 factory still reports uninitialized lifecycle support.
+- The first lifecycle GREEN run passes the real Xvfb behavior test but the
+  structure guard returns `2`: it incorrectly expected the wakeup event type
+  in the event-pump file. Targeted `[DEBUG-x11-structure-path]` instrumentation
+  ruled out missing/oversized files and was removed; the corrected guard checks
+  delegation in the pump and event construction in the window boundary.
+- Steps 759-770 are GREEN. The private selector honors an explicit backend,
+  prefers Wayland when both displays exist, and falls back to X11; the common
+  Linux factory delegates to focused Wayland/X11 constructors without public
+  application or window API changes.
+- X11 now owns a checked XCB connection, atom table, native/child windows,
+  configure/focus/map/close events, coalesced pipe/timer wakeups, position,
+  EWMH display-state requests, Motif decoration policy, and close resolution.
+  Vulkan selects the XCB instance extension and creates a real XCB surface for
+  `X11SurfaceHandle` while preserving Wayland surface creation.
+- Locked Windows Phase I boundary/lifecycle structure tests pass 2/2. Native
+  WSL focused selection/structure/Wayland regression passes 5/5. Xvfb X11
+  lifecycle and Vulkan surface tests pass 2/2; Vulkan emits only the existing
+  DZN non-conformance warning.
+- Submission Spec review caught fixed `1.0` scaling before commit. The X11
+  scale leaf now parses `Xft.dpi`, falls back to physical screen DPI, clamps
+  and quarter-step normalizes the result, and converts logical window size to
+  framebuffer size. Its parser test passes 1/1 and the Xvfb lifecycle/Vulkan
+  regression remains 2/2.

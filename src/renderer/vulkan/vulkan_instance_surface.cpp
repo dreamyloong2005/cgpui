@@ -10,9 +10,12 @@ Result<void> VulkanRendererState::create_instance() {
       VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
   };
 #else
+  const bool x11 = std::holds_alternative<X11SurfaceHandle>(
+      descriptor_.native_surface);
   const std::array<const char*, 2> extensions{
       VK_KHR_SURFACE_EXTENSION_NAME,
-      VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
+      x11 ? VK_KHR_XCB_SURFACE_EXTENSION_NAME
+          : VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
   };
 #endif
 
@@ -57,6 +60,18 @@ Result<void> VulkanRendererState::create_surface() {
       vkCreateWin32SurfaceKHR(instance_, &create_info, nullptr, &surface_),
       "vkCreateWin32SurfaceKHR failed");
 #elif defined(__linux__)
+  if (std::holds_alternative<X11SurfaceHandle>(descriptor_.native_surface)) {
+    auto surface = require_x11_surface(descriptor_.native_surface);
+    if (!surface) return std::unexpected(surface.error());
+    const VkXcbSurfaceCreateInfoKHR create_info{
+        .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
+        .connection = static_cast<xcb_connection_t*>(surface->display),
+        .window = static_cast<xcb_window_t>(surface->window),
+    };
+    return require_vk_success(
+        vkCreateXcbSurfaceKHR(instance_, &create_info, nullptr, &surface_),
+        "vkCreateXcbSurfaceKHR failed");
+  }
   auto surface = require_wayland_surface(descriptor_.native_surface);
   if (!surface) {
     return std::unexpected(surface.error());

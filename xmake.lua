@@ -1074,19 +1074,9 @@ if is_plat("windows") then
         add_tests("default")
 end
 
-if is_plat("linux") then
-    target("cgpui_platform_linux_wayland")
-        set_kind("static")
-        add_files("src/platform/linux/*.cpp")
-        add_deps("cgpui_core", "cgpui_platform")
-        add_packages("wayland", "dbus", "libxkbcommon")
-        add_syslinks("wayland-cursor", {public = true})
-        if has_package("fontconfig") then
-            add_packages("fontconfig")
-            add_defines("CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND")
-        end
-        add_includedirs(public_includedirs, {public = true})
+includes("build/xmake/phase_i_linux_backends.lua")
 
+if is_plat("linux") then
     target("phase_g_wayland_timer_wakeup_test")
         set_kind("binary")
         add_files("tests/platform/wayland_timer_wakeup_test.cpp")
@@ -1465,7 +1455,7 @@ if is_plat("windows", "linux") then
         if is_plat("windows") then
             add_packages("vulkansdk")
         elseif is_plat("linux") then
-            add_syslinks("vulkan")
+            add_syslinks("vulkan", "xcb")
         end
         add_includedirs(public_includedirs, {public = true})
 end
@@ -4124,6 +4114,7 @@ target("phase_g_final_dual_host_verification_structure_test")
 
 includes("build/xmake/phase_h_structure_targets.lua")
 includes("build/xmake/phase_h_closeout_targets.lua")
+includes("build/xmake/phase_i_structure_targets.lua")
 
 target("phase_g_final_closeout_test")
     set_kind("binary")

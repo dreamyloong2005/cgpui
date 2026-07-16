@@ -12650,3 +12650,41 @@
   mappings.
 - Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
 - Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.
+
+## 2026-07-16 Phase I Initial Boundary Findings
+
+- `NativeSurfaceHandle` already contains `X11SurfaceHandle`, but
+  `DesktopPlatformTarget`, renderer target selection, the Linux application
+  factory, Vulkan instance/surface creation, and Xmake dependencies still
+  recognize only Wayland. These are the independent Step 759 RED seams.
+- The current Linux platform target glob owns only `src/platform/linux/*.cpp`.
+  Put X11 implementation under `src/platform/linux/x11/` and register it from
+  a focused Phase I Xmake module so it cannot accidentally enter the Wayland
+  build or turn the existing broad glob into a dumping ground.
+- Backend selection must be deterministic and testable. Prefer an explicit
+  `CGPUI_LINUX_BACKEND=wayland|x11` override, then environment-based selection
+  (`WAYLAND_DISPLAY` before `DISPLAY`) with clear diagnostics when neither
+  backend is available.
+- X11 needs XCB for connection/window/events/selections plus XKB Common's X11
+  integration for keymap/modifier state. Vulkan must add the XCB platform
+  extension and create an XCB surface from the existing public native-surface
+  variant.
+- Real X11 tests can run headlessly under Xvfb once the missing package is
+  installed in Arch WSL. Wayland verification must keep using the existing
+  WSLg or test-compositor paths so activating X11 does not regress Wayland.
+- The durable backend link boundary keeps the established
+  `cgpui_platform_linux_wayland` aggregate for compatibility while moving its
+  definition to the Phase I Xmake module and depending on the focused
+  `cgpui_platform_linux_x11` leaf. Existing Linux consumers need no target-name
+  migration, but X11 sources cannot enter the Wayland glob.
+- XCB window creation is immediately configured from the client's perspective;
+  configure notifications refine size/position afterward. Close requests use
+  the shared `PlatformWindowCloseController`, so application and WM_DELETE
+  sources retain the same cancellation/coalescing semantics as Win32/Wayland.
+- Vulkan instance extensions must be selected from the native-surface variant;
+  enabling both Wayland and XCB unconditionally is unnecessary and can fail on
+  implementations that do not advertise an unused platform extension.
+- X11 scaling belongs at connection/screen discovery, not in public window
+  APIs. `RESOURCE_MANAGER`/`Xft.dpi` is authoritative when available; physical
+  millimeter fallback is normalized to quarter steps so noisy EDID values do
+  not create unstable fractional framebuffer dimensions.

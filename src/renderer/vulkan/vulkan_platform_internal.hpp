@@ -14,8 +14,10 @@
 #include <vulkan/vulkan_win32.h>
 #elif defined(__linux__)
 #include <wayland-client.h>
+#include <xcb/xcb.h>
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_wayland.h>
+#include <vulkan/vulkan_xcb.h>
 #else
 #include <vulkan/vulkan.h>
 #endif
@@ -41,6 +43,8 @@ Result<void> require_vk_success(VkResult result, std::string message);
 Result<Win32SurfaceHandle> require_win32_surface(
     const NativeSurfaceHandle& native_surface);
 Result<WaylandSurfaceHandle> require_wayland_surface(
+    const NativeSurfaceHandle& native_surface);
+Result<X11SurfaceHandle> require_x11_surface(
     const NativeSurfaceHandle& native_surface);
 
 [[nodiscard]] VkSurfaceFormatKHR choose_vulkan_surface_format(

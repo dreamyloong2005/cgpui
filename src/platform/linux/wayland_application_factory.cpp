@@ -2,7 +2,7 @@
 
 namespace cgpui {
 
-Result<std::unique_ptr<PlatformApplication>> create_platform_application() {
+Result<std::unique_ptr<PlatformApplication>> create_wayland_application() {
   return std::make_unique<WaylandApplication>();
 }
 

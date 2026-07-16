@@ -2008,9 +2008,9 @@ after Wayland is production-grade. Do not let X11 slow the active Wayland path.
 **Activation rule:** Leave this phase unchecked and inactive unless the user
 explicitly accepts X11 as part of the full replication target.
 
-- [ ] Steps 759-764: Add X11/XCB platform boundary, source layout, build flags,
+- [x] Steps 759-764: Add X11/XCB platform boundary, source layout, build flags,
   architecture tests, and backend selection without changing public APIs.
-- [ ] Steps 765-770: Implement X11 window lifecycle, Vulkan surface creation,
+- [x] Steps 765-770: Implement X11 window lifecycle, Vulkan surface creation,
   resize/scale, focus, close, and event loop wakeups.
 - [ ] Steps 771-776: Implement X11 input: pointer, wheel, keyboard, text,
   cursor, capture, and keymap modifiers.

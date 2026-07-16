@@ -46,6 +46,8 @@ int main() {
       read_source("build/xmake/phase_h_structure_targets.lua");
   const std::string phase_h_closeout =
       read_source("build/xmake/phase_h_closeout_targets.lua");
+  const std::string phase_i_targets =
+      read_source("build/xmake/phase_i_structure_targets.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -56,7 +58,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &matrix, &windows, &linux, &workflow, &previous, &xmake, &phase_h_targets,
-      &phase_h_closeout,
+      &phase_h_closeout, &phase_i_targets,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -78,11 +80,11 @@ int main() {
     if (!source.starts_with("tests/architecture/") &&
         !source.starts_with("tests/header_cleanliness/")) return 2;
     if (!fs::is_regular_file(root / source) ||
-      !contains(xmake + phase_h_targets + phase_h_closeout,
+      !contains(xmake + phase_h_targets + phase_h_closeout + phase_i_targets,
                 "target(\"" + target + "\")") ||
-        !contains(xmake + phase_h_targets + phase_h_closeout,
+        !contains(xmake + phase_h_targets + phase_h_closeout + phase_i_targets,
                   "add_files(\"" + source + "\")") &&
-        !contains(xmake + phase_h_targets + phase_h_closeout,
+        !contains(xmake + phase_h_targets + phase_h_closeout + phase_i_targets,
                   "add_files(path.join(os.projectdir(), \"" + source + "\")")) return 3;
   }
 

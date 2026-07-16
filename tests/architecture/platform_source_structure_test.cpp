@@ -749,6 +749,8 @@ int main(int argc, char** argv) {
       read_source("src/platform/linux/wayland_font_discovery.cpp");
   const std::string application_factory =
       read_source("src/platform/linux/wayland_application_factory.cpp");
+  const std::string linux_application_factory =
+      read_source("src/platform/linux/linux_application_factory.cpp");
   if (!contains(application_internal,
                 "#include \"wayland_application_core_internal.hpp\"") ||
       !contains(application_core_internal,
@@ -869,7 +871,9 @@ int main(int argc, char** argv) {
                 "WaylandApplication::discover_font_discovery(") ||
       !contains(wayland_font_discovery,
                 "PlatformFontDiscoveryBackend::fontconfig") ||
-      !contains(application_factory, "create_platform_application(")) {
+      !contains(application_factory, "create_wayland_application(") ||
+      !contains(linux_application_factory, "create_platform_application(") ||
+      !contains(linux_application_factory, "select_linux_platform_backend")) {
     return 30;
   }
 

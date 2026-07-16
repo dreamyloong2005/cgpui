@@ -4844,3 +4844,30 @@ implementation slice.
   final API audit, final structure audit, and ledger migration close the phase.
 - Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84), Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including native Cocoa, Metal primitive/clip/text-image pixel capture, accessibility, and public-example smoke coverage.
 - Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.
+
+## 2026-07-16 Active Phase I Execution Goal
+
+- Status: in progress
+- Authoritative scope: Phase I Steps 759-798 in
+  `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
+- Activation: the user explicitly requested completion of Phase I, so X11 is
+  now an active strict-Linux-parity target rather than deferred optional work.
+- Preserve the existing public application/window APIs. Add the X11 backend
+  behind focused Linux backend-selection, XCB platform, Vulkan-surface, input,
+  selection/drag-drop, services, accessibility, and diagnostics modules.
+- Execution order:
+  1. [x] Steps 759-764: X11/XCB module boundary, build option/dependencies,
+     backend selection, and architecture/behavior RED-GREEN gates.
+  2. [x] Steps 765-770: native window lifecycle, Vulkan surface, resize/scale,
+     focus/close, and event-loop wakeups.
+  3. [ ] Steps 771-776: pointer, wheel, keyboard/text, cursor/capture, and modifier
+     translation.
+  4. [ ] Steps 777-782: clipboard selections, MIME conversion, text/file payloads,
+     drag/drop, and failure diagnostics.
+  5. [ ] Steps 783-788: menu/dialog policy, accessibility boundary, platform
+     diagnostics, and public-example smoke coverage.
+  6. [ ] Steps 789-798: serial Wayland/X11 Linux matrix, Windows/macOS regression
+     evidence, final structure/spec audits, and parity-ledger closeout.
+- Verification policy: every Xmake configure/build/test command uses `-j 1`;
+  focused gates precede full suites; real X11 smoke runs under Xvfb or a live
+  X server; `.vscode/` remains untracked and untouched.
