@@ -76,8 +76,8 @@ int main() {
                 "\"phase_g_step_674_remaining_gap\": \"Step 675 action macro "
                 "production behavior\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB "
-                "platform boundary\"")) {
+                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run "
+                "upstream extractor against the pinned revision\"")) {
     return 5;
   }
   if (line_count(xmake) > 4360 ||

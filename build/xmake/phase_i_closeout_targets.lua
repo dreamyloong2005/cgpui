@@ -1,0 +1,13 @@
+target("phase_i_final_closeout_structure_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files(path.join(os.projectdir(), "tests/architecture/phase_i_final_closeout_structure_test.cpp"))
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})
+
+target("phase_i_final_closeout_test")
+    set_kind("binary")
+    set_rundir(os.projectdir())
+    add_runenvs("CGPUI_SOURCE_ROOT", os.projectdir())
+    add_files(path.join(os.projectdir(), "tests/api_parity/phase_i_final_closeout_test.cpp"))
+    add_tests("default", {rundir = os.projectdir(), runenvs = {CGPUI_SOURCE_ROOT = os.projectdir()}})

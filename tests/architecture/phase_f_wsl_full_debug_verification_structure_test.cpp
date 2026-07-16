@@ -60,7 +60,7 @@ int main() {
   if (!contains(xmake,
                 "target(\"phase_f_wsl_full_debug_verification_structure_test\")") ||
       !contains(windows_guard,
-                "Phase I Step 759 X11/XCB platform boundary")) {
+                "Phase J Step 799 re-run upstream extractor against the pinned revision")) {
     return 20;
   }
 
@@ -70,6 +70,6 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 21;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) return 22;
+                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 22;
   return 0;
 }

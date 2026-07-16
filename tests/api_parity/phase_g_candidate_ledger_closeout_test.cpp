@@ -108,9 +108,9 @@ int main() {
   if (!contains(platform_md, "| gpui Windows backend | Required |") ||
       !contains(platform_md, "| gpui_platform wayland feature | Required |") ||
       !contains(platform_md, "| gpui macOS backend | Required |") ||
-      !contains(platform_md, "| gpui_platform x11 feature | Deferred |") ||
-      count(platform_json, "\"status\": \"required\"") != 3 ||
-      count(platform_json, "\"status\": \"deferred\"") != 1 ||
+      !contains(platform_md, "| gpui_platform x11 feature | Required |") ||
+      count(platform_json, "\"status\": \"required\"") != 4 ||
+      count(platform_json, "\"status\": \"deferred\"") != 0 ||
       count(platform_json, "\"status\": \"non_goal\"") != 1) {
     return 3;
   }
@@ -126,8 +126,8 @@ int main() {
       "gpui text system", "gpui image assets", "gpui SVG", "gpui animation",
       "gpui::test", "gpui accessibility", "gpui platform services",
       "gpui Windows backend", "gpui_platform wayland feature",
-      "gpui macOS backend"};
-  constexpr std::array deferred{"gpui_platform x11 feature"};
+      "gpui macOS backend", "gpui_platform x11 feature"};
+  constexpr std::array<const char*, 0> deferred{};
   constexpr std::array non_goal{"gpui wasm backend"};
   const std::string candidates = section_between(
       ledger_md, "## Required Surface Summary", "## Phase D Text Evidence Addendum");
@@ -146,8 +146,8 @@ int main() {
       count(candidates, "| Non-goal |") != non_goal.size() ||
       count(ledger_json, "\"upstream_gpui\":") != 32 ||
       !contains(ledger_json, "\"required\": 0") ||
-      !contains(ledger_json, "\"adapted\": 30") ||
-      !contains(ledger_json, "\"deferred\": 1")) {
+      !contains(ledger_json, "\"adapted\": 31") ||
+      !contains(ledger_json, "\"deferred\": 0")) {
     return 5;
   }
 
@@ -167,8 +167,8 @@ int main() {
                 "\"phase_g_step_676_remaining_gap\": \"Step 677 final "
                 "Windows/WSL verification\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB "
-                "platform boundary\"")) {
+                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run "
+                "upstream extractor against the pinned revision\"")) {
     return 7;
   }
   return 0;

@@ -24,7 +24,7 @@
     "x11": {
       "backend": "x11",
       "renderer": "vulkan",
-      "status": "deferred"
+      "status": "required"
     },
     "wasm": {
       "backend": "web",
@@ -34,8 +34,8 @@
   },
   "status_counts": {
     "required": 0,
-    "adapted": 30,
-    "deferred": 1,
+    "adapted": 31,
+    "deferred": 0,
     "non_goal": 1
   },
   "scope_guard": {
@@ -44,7 +44,7 @@
       "engine runtime embedding",
       "shared engine renderer/resource/asset/command systems",
       "game editor/runtime UI depth",
-      "Android, iOS, and X11"
+      "Android and iOS"
     ],
     "active_track_required": [
       "C++23-native public APIs without Rust FFI",
@@ -54,7 +54,7 @@
       "low-allocation runtime structures",
       "static and dynamic widget support",
       "editor/AI-IDE-class text and tool UI primitives",
-      "Win32, Wayland, and macOS production platform behavior"
+      "Win32, Wayland, X11, and macOS production platform behavior"
     ],
     "zero_cost_principle": [
       "Static fast paths come first",
@@ -3720,8 +3720,24 @@
       "scripts/ci/macos-example-smoke.sh",
       ".github/workflows/phase-h-macos.yml"
     ],
-    "phase_h_current_handoff": "Phase I Step 759 X11/XCB platform boundary",
-    "phase_f_current_handoff": "Phase I Step 759 X11/XCB platform boundary"
+    "phase_h_current_handoff": "Phase J Step 799 re-run upstream extractor against the pinned revision",
+    "phase_i_status": "complete",
+    "phase_i_required_x11_gaps": 0,
+    "phase_i_gap_summary": "Phase I required X11 gaps: 0",
+    "phase_i_linux_matrix_evidence": "Phase I Step 798 completes strict Linux backend parity with Windows full Debug at 478/478, WSLg full Debug at 470/470, an isolated Xvfb X11 matrix at 11/11, cross-platform/macOS source guards, and preserved Phase H native macOS evidence at 380/380.",
+    "phase_i_sources": [
+      "src/platform/linux/x11",
+      "tests/platform/x11_window_lifecycle_test.cpp",
+      "tests/platform/x11_input_test.cpp",
+      "tests/platform/x11_clipboard_test.cpp",
+      "tests/platform/x11_drag_drop_test.cpp",
+      "tests/platform/x11_platform_services_test.cpp",
+      "tests/renderer/x11_vulkan_surface_test.cpp",
+      "tests/api_parity/phase_i_final_closeout_test.cpp",
+      "tests/architecture/phase_i_final_closeout_structure_test.cpp"
+    ],
+    "phase_i_current_handoff": "Phase J Step 799 re-run upstream extractor against the pinned revision",
+    "phase_f_current_handoff": "Phase J Step 799 re-run upstream extractor against the pinned revision"
   },
   "categories": [
     "application_and_app_context",
@@ -3927,9 +3943,9 @@
     },
     {
       "upstream_gpui": "gpui_platform x11 feature",
-      "cgpui_target": "optional X11 backend",
-      "status": "deferred",
-      "next_step": "Optional Phase I"
+      "cgpui_target": "production X11 + Vulkan lifecycle, input, clipboard, drag/drop, explicit services, shared AT-SPI accessibility, diagnostics, public-example smoke, and isolated Xvfb verification",
+      "status": "adapted",
+      "next_step": "Phase I closed"
     },
     {
       "upstream_gpui": "gpui macOS backend",

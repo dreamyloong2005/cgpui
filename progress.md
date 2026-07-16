@@ -25434,3 +25434,122 @@
 - Steps 783-788 are GREEN: X11 has explicit service policies, shared Linux
   AT-SPI publication, typed runtime diagnostics, and four real public-example
   smoke modes.
+## 2026-07-16 Phase I Final Closeout Resume
+
+- Resumed Phase I at Steps 789-798 after commits `2cdb6104`, `6cff1907`,
+  `719dd1b4`, and `df030a55`; the only unrelated worktree path remains the
+  user-owned untracked `.vscode/` directory.
+- Planning catch-up found no uncommitted implementation to recover. The next
+  slice is the final closeout guard, ledger transition, full Windows/Wayland/X11
+  matrix, source guards, and two-axis review before the final commit.
+- Added focused Phase I API and structure closeout guards plus a dedicated
+  Xmake target module. The API guard is RED at exit `15` on the unchecked
+  Steps 789-794 roadmap band; the structure guard is RED at exit `4` on the
+  absent Phase I ledger fields.
+- Phase I Step 798 completes strict Linux backend parity with Windows full
+  Debug at 478/478, WSLg full Debug at 470/470, an isolated Xvfb X11 matrix at
+  11/11, cross-platform/macOS source guards, and preserved Phase H native
+  macOS evidence at 380/380.
+- Phase I required X11 gaps: 0. Phase J Step 799 re-run upstream extractor
+  against the pinned revision.
+- Final closeout GREEN passes 13/13 focused tests after migrating dynamic
+  handoff assertions, preserving Phase H history, and registering all Phase I
+  structure targets in the architecture manifest.
+- Windows Phase I full-Debug build completed serially. The initial full test
+  matrix passed 474/478 in 67.422 seconds; the four failures are the existing
+  `phase_d_font_fallback_audit_test`,
+  `phase_f_wayland_cursor_theme_structure_test`,
+  `phase_g_wayland_atspi_bus_connection_structure_test`, and
+  `phase_g_wayland_atspi_dbus_object_structure_test` guards. These four named
+  tests are now the focused debugging loop before the Windows matrix rerun.
+- The attempted `xmake f -y -m debug -j 1` configuration form is invalid in
+  Xmake 3.0.9 because `xmake f` does not accept `-j`. The existing Debug
+  configuration was retained; build and test remain serial through `-j 1`.
+- The four-failure diagnostic loop reproduced deterministically at 0/4 with
+  exit `6` from each guard. Phase I had correctly moved Linux dependency
+  declarations into `build/xmake/phase_i_linux_backends.lua` and the shared
+  AT-SPI connection API into `linux_atspi_api_internal.hpp`; the old guards
+  still inspected only root `xmake.lua` or the Wayland services header.
+- Updated the four guards to inspect the focused module that now owns each
+  contract. Their focused Windows rerun passes 4/4 in 0.359 seconds. No X11,
+  Wayland, text, or accessibility product implementation changed.
+- The next Windows full matrix passed 477/478 in 40.203 seconds. The sole
+  failure was `win32_clipboard_files_test` exit `5`, which is the test-local
+  baseline `OpenClipboard`/`SetClipboardData` helper; it had passed in the
+  preceding full run and no Phase I code touches Win32 clipboard behavior.
+- The focused clipboard target reproduced exit `5` once. A direct owner probe
+  then reported no open clipboard window/process, and the immediate serial
+  rerun passed 1/1 in 0.031 seconds. This is transient external system
+  clipboard contention; a complete green Windows rerun remains required.
+- The required Windows Debug rerun is fully green: 478/478 tests pass serially
+  in 40.266 seconds. This is the authoritative Phase I Windows evidence.
+- WSL Debug configuration completed and the serial full build reached about
+  91%, successfully compiling/linking the Phase I closeout guards plus native
+  Wayland and X11 targets, before the Codex task interruption removed terminal
+  session `84611`. No orphaned build process remains and the last reported
+  public-example binary is present, so the same build resumes from cache.
+
+## 2026-07-17 Phase I WSL Closeout Guard Repair
+
+- Reproduced the interrupted WSL guard loop at 0/5 in 0.654 seconds with the
+  same deterministic exits: Phase E 50, Phase F 50, Phase G 62, Phase H macOS
+  configuration 3, and Phase H macOS example smoke 1.
+- Byte-level inspection confirmed CRLF in `task_plan.md`, CRLF/LF mixing in
+  `xmake.lua`, and LF-vs-CRLF example target mirrors. The historical guards
+  relied on Windows text-mode newline conversion and therefore failed only on
+  Linux; target ownership, ledger counts, handoffs, and the 21-entry example
+  inventory are otherwise correct.
+- Updated only the five failing guards to normalize carriage returns at their
+  source-read boundary. Focused rebuild and WSL rerun are next.
+- The first focused rebuild wrapper lost its Bash loop variable while crossing
+  the PowerShell/WSL quoting boundary, so Xmake rejected an empty target name.
+  No target was rebuilt; use a PowerShell target loop with one WSL invocation
+  per target instead.
+- The corrected PowerShell loop rebuilt all five targets serially. The original
+  WSL repro now passes 5/5 in 0.642 seconds, proving the CRLF normalization fix.
+  Full WSLg Debug verification is next.
+- Full WSLg Debug verification passes 470/470 in 75.138 seconds, including
+  Wayland frame capture and Vulkan surface, all seven X11 behavior targets,
+  and all four X11 `hello_window` smoke modes. Only the established DZN Vulkan
+  non-conformance warning is emitted. Isolated Xvfb full verification is next.
+- The first isolated Xvfb command incorrectly applied the X11 override to all
+  470 tests and stalled in `wayland_compositor_resize_test`; a read-only process
+  probe showed that binary blocked while Xmake and Xvfb remained alive. The run
+  was stopped. The corrected isolated matrix selects only the seven X11 behavior
+  tests and four X11 `hello_window` smoke modes; WSLg already owns the complete
+  Wayland/full-suite regression.
+- The corrected isolated Xvfb matrix passes 11/11 in 5.414 seconds. It covers
+  all seven X11 behavior targets and all four X11 `hello_window` smoke modes;
+  only the established DZN warning is emitted by Vulkan-backed cases.
+- Windows rebuilt the complete Debug graph serially in 10.219 seconds. The
+  Phase H macOS source/history guards and Phase I structure/closeout guards pass
+  20/20 on Windows in 1.704 seconds and 20/20 on WSL in 2.083 seconds after the
+  final evidence update. The preserved native Phase H result remains 380/380.
+- The first final Windows full matrix passed 477/478 in 57.875 seconds with
+  only `win32_clipboard_unicode_test` exit 5. Its empty-text system clipboard
+  write/read seam is unchanged by Phase I; after an owner probe reported no
+  open clipboard window, the focused target passed 1/1 in 0.031 seconds. Run
+  both clipboard targets focused, then require a complete 478/478 rerun.
+- The two real Win32 clipboard targets pass 2/2 in 0.078 seconds. The required
+  final Windows Debug rerun is fully green at 478/478 in 38.531 seconds; this is
+  the authoritative post-document, post-guard-repair Windows evidence.
+- Phase I final Standards/Spec review found one current-state documentation
+  inconsistency: API parity and macOS readiness still called X11 optional, and
+  the roadmap's immediate-next heading still led with a historical Phase C
+  slice. Updated those current sections to the completed Phase I/Step 799 state
+  and extended `phase_i_final_closeout_test` to guard them; historical Phase
+  G/H evidence remains unchanged.
+- The expanded closeout behavior guard initially failed at exit `51`. A
+  corrected per-document boolean probe showed only mac readiness wraps the
+  handoff between `upstream` and `extractor`; switched the Markdown contract to
+  the stable Step 799 prefix while leaving the exact JSON handoff assertion in
+  place. Rebuild and focused rerun are next.
+- The repaired Phase I closeout behavior/structure pair passes 2/2 on Windows
+  in 0.172 seconds and 2/2 on Arch WSL in 0.457 seconds. Final JSON parsing,
+  `git diff --check`, debug-prefix, dynamic-handoff, line-budget, and `.vscode/`
+  exclusion audits pass.
+- Final two-axis review is clean after the documentation correction: Standards
+  preserves the focused closeout Xmake module, structure guard, owner-aware
+  historical guard migrations, and line budgets; Spec preserves all Phase H
+  evidence, records Phase I matrices and zero gaps, and hands current authority
+  documents to Phase J Step 799.

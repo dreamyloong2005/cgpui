@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <fstream>
@@ -11,8 +12,11 @@ std::string read_source(const char* path) {
   const char* root = std::getenv("CGPUI_SOURCE_ROOT");
   std::ifstream source((root == nullptr ? std::string{"."} : root) + "/" + path);
   if (!source) source.open(path);
-  return source ? std::string{std::istreambuf_iterator<char>(source), {}}
-                : std::string{};
+  std::string text = source
+                         ? std::string{std::istreambuf_iterator<char>(source), {}}
+                         : std::string{};
+  text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
+  return text;
 }
 
 bool contains(const std::string& text, std::string_view value) {
@@ -125,12 +129,12 @@ int main() {
       ledger_json, "\"platform_targets\": {", "\"status_counts\": {");
   const std::string status_json = section_between(
       ledger_json, "\"status_counts\": {", "\"scope_guard\": {");
-  if (count(platform_json, "\"status\": \"required\"") != 3 ||
-      count(platform_json, "\"status\": \"deferred\"") != 1 ||
+  if (count(platform_json, "\"status\": \"required\"") != 4 ||
+      count(platform_json, "\"status\": \"deferred\"") != 0 ||
       count(platform_json, "\"status\": \"non_goal\"") != 1 ||
       !contains(status_json, "\"required\": 0") ||
-      !contains(status_json, "\"adapted\": 30") ||
-      !contains(status_json, "\"deferred\": 1") ||
+      !contains(status_json, "\"adapted\": 31") ||
+      !contains(status_json, "\"deferred\": 0") ||
       !contains(status_json, "\"non_goal\": 1") ||
       count(ledger_json, "\"upstream_gpui\":") != 32) {
     return 50;
@@ -164,8 +168,8 @@ int main() {
   }
   if (!contains(ledger_json, "\"phase_g_step_678_sources\"") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB "
-                "platform boundary\"") ||
+                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run "
+                "upstream extractor against the pinned revision\"") ||
       !contains(task_plan,
                 "- Status: complete\n- Authoritative scope: Phase G Steps "
                 "619-678")) {

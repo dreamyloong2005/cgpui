@@ -170,7 +170,7 @@ int main() {
       contains(core_parity, "priorities, structured task groups, pooled") ||
       !contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) {
+          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
     return 15;
   }
   return 0;

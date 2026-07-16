@@ -145,7 +145,7 @@ int main() {
       contains(core_parity, "cross-thread entity access remains incomplete") ||
       contains(core_parity, "Cross-thread entity access guarantees") ||
       !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) {
+                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
     return 11;
   }
   return 0;

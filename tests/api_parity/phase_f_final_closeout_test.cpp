@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <fstream>
@@ -9,8 +10,11 @@ std::string read_source(const char* path) {
   const char* root = std::getenv("CGPUI_SOURCE_ROOT");
   std::ifstream source((root == nullptr ? std::string{"."} : root) + "/" + path);
   if (!source) source.open(path);
-  return source ? std::string{std::istreambuf_iterator<char>(source), {}}
-                : std::string{};
+  std::string text = source
+                         ? std::string{std::istreambuf_iterator<char>(source), {}}
+                         : std::string{};
+  text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
+  return text;
 }
 bool contains(const std::string& text, const char* value) {
   return text.find(value) != std::string::npos;
@@ -75,7 +79,7 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* document : documents) if (!contains(*document, completion)) return 40;
   if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"") ||
+                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"") ||
       !contains(task_plan,
                 "- Status: complete\n- Authoritative scope: Phase F")) return 50;
   return 0;

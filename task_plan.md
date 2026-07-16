@@ -4847,7 +4847,7 @@ implementation slice.
 
 ## 2026-07-16 Active Phase I Execution Goal
 
-- Status: in progress
+- Status: complete
 - Authoritative scope: Phase I Steps 759-798 in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
 - Activation: the user explicitly requested completion of Phase I, so X11 is
@@ -4866,8 +4866,35 @@ implementation slice.
      drag/drop, and failure diagnostics.
   5. [x] Steps 783-788: menu/dialog policy, accessibility boundary, platform
      diagnostics, and public-example smoke coverage.
-  6. [ ] Steps 789-798: serial Wayland/X11 Linux matrix, Windows/macOS regression
+  6. [x] Steps 789-798: serial Wayland/X11 Linux matrix, Windows/macOS regression
      evidence, final structure/spec audits, and parity-ledger closeout.
-- Verification policy: every Xmake configure/build/test command uses `-j 1`;
+- Verification policy: every Xmake build/test command uses `-j 1` (the config
+  subcommand does not accept that option);
   focused gates precede full suites; real X11 smoke runs under Xvfb or a live
   X server; `.vscode/` remains untracked and untouched.
+- Phase I Step 798 completes strict Linux backend parity with Windows full
+  Debug at 478/478, WSLg full Debug at 470/470, an isolated Xvfb X11 matrix at
+  11/11, cross-platform/macOS source guards, and preserved Phase H native
+  macOS evidence at 380/380.
+- Phase I required X11 gaps: 0. Phase J Step 799 re-run upstream extractor
+  against the pinned revision.
+
+### Errors Encountered During Phase I
+
+| Error | Attempt | Resolution |
+|-------|---------|------------|
+| The Codex task interruption removed WSL build terminal session `84611` after the build had reached about 91% | Phase I WSL full-Debug build | Confirm no orphaned Xmake/compiler/linker processes remain and the last reported target exists, then rerun the identical serial build so Xmake resumes from cached objects |
+| The first three-file Windows evidence patch used a sentence that wrapped differently in `progress.md` and was rejected atomically | Phase I planning synchronization | Read the exact file tails and reapply with stable local anchors; no partial edit occurred |
+| `xmake f -y -m debug -j 1` rejected `-j` because this Xmake config subcommand does not support the job option | Phase I Windows full-Debug configuration | Confirm the existing configuration is Debug, then keep the required serial policy on `xmake -j 1` and `xmake test -j 1 -v`; do not repeat the invalid config form |
+| The first Windows full-Debug matrix passed 474/478 and failed four audit/structure guards: `phase_d_font_fallback_audit_test`, `phase_f_wayland_cursor_theme_structure_test`, `phase_g_wayland_atspi_bus_connection_structure_test`, and `phase_g_wayland_atspi_dbus_object_structure_test` | Phase I Step 798 Windows verification | The four-target `0/4` repro showed stale root-Xmake/Wayland-header ownership assumptions after Phase I modular extraction; point each guard at `phase_i_linux_backends.lua` or `linux_atspi_api_internal.hpp`, then confirm the focused matrix passes 4/4 before the full rerun |
+| Three focused Windows test binaries were accidentally built concurrently; one shell printed an oh-my-posh init-script file-in-use warning although all binaries built successfully | Phase I guard repair build | Resume one Xmake process at a time with `-j 1`; subsequent build and 4/4 focused test execution are clean |
+| The post-guard Windows full rerun passed 477/478 with only `win32_clipboard_files_test` at exit 5; the same target had passed in the previous full run | Phase I Step 798 Windows verification | Exit 5 is the test helper's single-attempt system-text clipboard write; a focused repro failed once, `GetOpenClipboardWindow` then reported no owner, and the immediate serial rerun passed 1/1. Treat as transient external clipboard contention and require another complete green matrix |
+| `xmake -j 1 phase_i_final_closeout_test phase_i_final_closeout_structure_test` rejected the second target as an invalid argument | Phase I final-closeout RED build | Xmake accepts one positional build target in this environment; build the two guards with separate serial commands |
+| First closeout GREEN run passed 4/9 because old guards coupled historical phases to current candidate counts, handoff values, or manifest size | Phase I ledger migration | Freeze Phase H evidence, migrate only dynamic handoff/count assertions, add all Phase I structure targets, and rerun the focused matrix |
+| Phase I behavior guard exit `51` after semantic content was present | Phase I closeout consistency check | Keep the JSON handoff exact and compare Markdown documents with the stable Step 799 prefix so wrapping cannot change meaning |
+| A full-suite Xvfb command globally forced `CGPUI_LINUX_BACKEND=x11` and stalled in `wayland_compositor_resize_test` | Phase I isolated X11 verification | Stop the invalid mixed-backend run; WSLg 470/470 owns the Wayland/full-suite evidence, while isolated Xvfb runs the seven X11 behavior targets and four X11 example smoke modes as an 11-test matrix |
+| The final Windows full rerun passed 477/478 with `win32_clipboard_unicode_test` exit 5, then the owner probe showed no open clipboard window and the immediate focused rerun passed | Phase I final Windows regression | This is the same test-local single-attempt global clipboard contention class seen earlier; require both real clipboard targets focused green and another complete 478/478 run |
+| Final Spec review found API parity/macOS readiness still calling X11 optional and the roadmap immediate-next section leading with an old Phase C slice | Phase I closeout review | Update only the current-state sections to completed Phase I and Step 799, preserve historical Phase G/H text, and extend the Phase I closeout guard to freeze the corrected handoff |
+| The expanded Phase I closeout guard returned `51` because `platform-mac-readiness.md` wraps between `upstream` and `extractor`; the first PowerShell differential probe also had an invalid pipeline after `foreach` | Phase I documentation regression guard | A corrected eight-document boolean probe isolated only the wrapped handoff; use the stable `Phase J Step 799 re-run upstream` Markdown prefix while retaining the exact full JSON assertion |
+| The first broad PowerShell JSON audit used case-insensitive object conversion and the first debug/stale-handoff searches included historical prose | Phase I static audit | Parse tracked JSON with `ConvertFrom-Json -AsHashtable`, inspect only added debug-marker lines, and distinguish immutable Phase H history from active `phase_*_current_handoff` fields |
+| WSL has no named non-system user and the first nested `awk` user-enumeration probe was misquoted | Phase I final WSL focused verification | Use the established root-only distro entry with `XMAKE_ROOT=y` and direct `wsl.exe --cd ... -- env ... xmake` invocations; no WSL recovery or installation is needed |

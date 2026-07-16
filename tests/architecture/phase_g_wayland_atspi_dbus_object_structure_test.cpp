@@ -50,6 +50,8 @@ int main() {
   const std::string test_support = read_source(
       "tests/platform/wayland_atspi_dbus_test_support.hpp");
   const std::string xmake = read_source("xmake.lua");
+  const std::string linux_backends =
+      read_source("build/xmake/phase_i_linux_backends.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source(
@@ -61,8 +63,8 @@ int main() {
   const std::string* required[]{
       &object_header, &object, &dbus_header, &dbus, &messages_header,
       &messages, &adapter_header, &adapter, &services, &window, &behavior,
-      &test_support,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &test_support, &xmake, &linux_backends, &roadmap, &ledger_md,
+      &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(object_header, "struct WaylandAtspiObjectNode") ||
@@ -101,7 +103,8 @@ int main() {
       !contains(xmake, "target(\"phase_g_wayland_atspi_dbus_object_test\")") ||
       !contains(xmake,
                 "target(\"phase_g_wayland_atspi_dbus_object_structure_test\")") ||
-      !contains(xmake, "add_packages(\"wayland\", \"dbus\", \"libxkbcommon\")")) {
+      !contains(linux_backends,
+                "add_packages(\"wayland\", \"dbus\", \"libxkbcommon\")")) {
     return 6;
   }
   if (contains(services, "#include <dbus/dbus.h>") ||
@@ -127,7 +130,7 @@ int main() {
   }
   if (!contains(
           ledger_json,
-          "\"phase_f_current_handoff\": \"Phase I Step 759 X11/XCB platform boundary\"")) {
+          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
     return 9;
   }
   return 0;

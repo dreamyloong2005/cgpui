@@ -85,10 +85,7 @@ int main() {
   }
 
   if (!contains(ledger_json, "\"phase_h_status\": \"complete\"") ||
-      !contains(ledger_json, "\"phase_h_required_macos_gaps\": 0") ||
-      !contains(ledger_json,
-                "\"phase_h_current_handoff\": \"Phase I Step 759 X11/XCB "
-                "platform boundary\"")) {
+      !contains(ledger_json, "\"phase_h_required_macos_gaps\": 0")) {
     return 5;
   }
   return 0;

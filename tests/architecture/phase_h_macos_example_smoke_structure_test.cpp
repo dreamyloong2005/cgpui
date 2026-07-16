@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <iterator>
@@ -12,8 +13,11 @@ std::string read_source(const char* path) {
   const char* root = std::getenv("CGPUI_SOURCE_ROOT");
   std::ifstream source((root == nullptr ? std::string{"."} : root) + "/" + path);
   if (!source) source.open(path);
-  return source ? std::string{std::istreambuf_iterator<char>(source), {}}
-                : std::string{};
+  std::string text = source
+                         ? std::string{std::istreambuf_iterator<char>(source), {}}
+                         : std::string{};
+  text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
+  return text;
 }
 
 std::vector<std::string> lines(const std::string& text) {
