@@ -4124,6 +4124,7 @@ includes("build/xmake/phase_h_closeout_targets.lua")
 includes("build/xmake/phase_i_structure_targets.lua")
 includes("build/xmake/phase_i_closeout_targets.lua")
 includes("build/xmake/phase_j_audit_targets.lua")
+includes("build/xmake/phase_j_example_targets.lua")
 
 target("phase_g_final_closeout_test")
     set_kind("binary")

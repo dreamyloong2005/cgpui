@@ -812,6 +812,13 @@ consume C: drive space again.
 - Phase H required macOS gaps: 0. Phase I Step 759 X11/XCB platform boundary.
 - Phase I Step 798 completes strict Linux backend parity with Windows full Debug at 478/478, WSLg full Debug at 470/470, an isolated Xvfb X11 matrix at 11/11, cross-platform/macOS source guards, and preserved Phase H native macOS evidence at 380/380.
 - Phase I required X11 gaps: 0. Phase J Step 799 re-run upstream extractor against the pinned revision.
+- Phase J Step 804 locks the live pinned-upstream audit at 55 public
+  re-exports/modules, 20 official Cargo examples, 32 accepted ledger rows, and
+  zero unresolved required rows.
+- Phase J Step 810 locks all 20 official examples to canonical CGPUI targets,
+  Windows/Wayland/X11 compile-and-smoke execution, focused pixel/input
+  evidence, and explicit C++ adaptations. New macOS execution remains excluded
+  by user scope. Phase J Step 811 reproducible performance baselines are next.
 
 ## Categories
 
@@ -897,19 +904,25 @@ aligned before Phase C. The tracked
 upstream example inventory includes:
 
 - `hello_world`
-- `animation`
-- `gif_viewer`
+- `move_entity_between_windows`
 - `image`
 - `input`
+- `on_window_close_quit`
 - `opacity`
+- `pattern`
 - `set_menus`
 - `shadow`
 - `svg`
+- `tab_stop`
+- `text`
 - `text_wrapper`
+- `tree`
 - `uniform_list`
-- `window`
-- `window_positioning`
 - `window_shadow`
+- `grid_layout`
+- `list_example`
+- `mouse_pressure`
+- `a11y`
 
 ## Phase C Widget Evidence
 

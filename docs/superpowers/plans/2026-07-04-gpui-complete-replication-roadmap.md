@@ -2037,7 +2037,7 @@ usable as a C++23 GPUI replacement.
 
 - [x] Steps 799-804: Re-run upstream extractor against the pinned revision and
   fail if any required API row lacks a C++ equivalent or accepted adaptation.
-- [ ] Steps 805-810: Compile every official example equivalent on every active
+- [x] Steps 805-810: Compile every official example equivalent on every active
   platform and run smoke/pixel/input tests where possible.
 - [ ] Steps 811-816: Add performance baselines: startup, first frame, resize,
   text layout, list scrolling, image loading, async wakeups, and frame pacing.
@@ -2060,11 +2060,15 @@ usable as a C++23 GPUI replacement.
   re-exports/modules, 20 official Cargo examples, 32 accepted ledger rows, and
   zero unresolved required rows. Step 805 official example equivalence matrix
   is next.
+- Phase J Step 810 locks all 20 official examples to canonical CGPUI targets,
+  Windows/Wayland/X11 compile-and-smoke execution, focused pixel/input evidence,
+  and explicit C++ adaptations; new macOS execution remains excluded by user
+  scope. Step 811 reproducible performance baselines are next.
 
 ## Immediate Next Slice
 
-Phase J Step 799 re-runs the upstream extractor against the pinned revision and
-fails if any required API row lacks a C++ equivalent or accepted adaptation.
+Phase J Step 811 adds reproducible startup, frame, resize, text, list, image,
+async-wakeup, and frame-pacing performance baselines.
 
 ### Historical Slice Log
 

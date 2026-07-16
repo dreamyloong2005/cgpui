@@ -12855,3 +12855,20 @@
 - The accepted live snapshot contains 55 public re-exports/modules and 20
   official examples. The audit accepts all 32 ledger rows, with zero required
   rows and zero audit issues.
+
+## 2026-07-17 Phase J Official Example Matrix Findings
+
+- The pinned official inventory is the 20-entry Cargo example list, not the
+  historical 14-entry ledger list. The authority ledger, human-readable ledger,
+  strict snapshot, example matrix, and generated audit now agree on all names.
+- Every official example maps to an existing canonical CGPUI target and has
+  Windows, Wayland, and X11 compile-and-smoke evidence plus focused pixel or
+  input evidence where the behavior is visual or interactive.
+- `mouse_pressure` is explicitly a non-macOS pointer/capture adaptation and
+  does not claim native pressure data. `pattern` uses the SVG pipeline,
+  `grid_layout` uses nested flex containers, and cross-window entity transfer
+  uses runtime-owned entities and shared-state handles.
+- A fresh Windows package matrix and retained Phase I Linux binaries prove all
+  21 canonical public examples, four registration smokes, and four real window
+  smoke modes on Windows, Wayland, and isolated Xvfb X11. The final Phase J
+  matrix still owns one post-change serial WSL rebuild before closeout.

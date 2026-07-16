@@ -3737,7 +3737,24 @@
       "tests/architecture/phase_i_final_closeout_structure_test.cpp"
     ],
     "phase_i_current_handoff": "Phase J Step 799 re-run upstream extractor against the pinned revision",
-    "phase_f_current_handoff": "Phase J Step 799 re-run upstream extractor against the pinned revision"
+    "phase_f_current_handoff": "Phase J Step 799 re-run upstream extractor against the pinned revision",
+    "phase_j_status": "in_progress",
+    "phase_j_steps_799_804_status": "complete",
+    "phase_j_steps_805_810_status": "complete",
+    "phase_j_upstream_audit": "Phase J Step 804 locks the live pinned-upstream audit at 55 public re-exports/modules, 20 official Cargo examples, 32 accepted ledger rows, and zero unresolved required rows.",
+    "phase_j_official_example_evidence": "Phase J Step 810 locks all 20 official examples to canonical CGPUI targets, Windows/Wayland/X11 compile-and-smoke execution, focused pixel/input evidence, and explicit C++ adaptations; new macOS execution remains excluded by user scope.",
+    "phase_j_official_example_sources": [
+      "docs/gpui-upstream-snapshot.json",
+      "docs/gpui-official-example-matrix.json",
+      "docs/gpui-phase-j-example-audit.json",
+      "tools/gpui_parity/audit_official_examples.py",
+      "scripts/ci/windows-example-smoke.ps1",
+      "scripts/ci/linux-example-smoke.sh",
+      "scripts/ci/linux-x11-example-smoke.sh",
+      "tests/api_parity/phase_j_official_example_audit_test.cpp",
+      "tests/architecture/phase_j_official_example_structure_test.cpp"
+    ],
+    "phase_j_current_handoff": "Phase J Step 811 reproducible performance baselines"
   },
   "categories": [
     "application_and_app_context",
@@ -3752,19 +3769,25 @@
   ],
   "examples": [
     "hello_world",
-    "animation",
-    "gif_viewer",
+    "move_entity_between_windows",
     "image",
     "input",
+    "on_window_close_quit",
     "opacity",
+    "pattern",
     "set_menus",
     "shadow",
     "svg",
+    "tab_stop",
+    "text",
     "text_wrapper",
+    "tree",
     "uniform_list",
-    "window",
-    "window_positioning",
-    "window_shadow"
+    "window_shadow",
+    "grid_layout",
+    "list_example",
+    "mouse_pressure",
+    "a11y"
   ],
   "rows": [
     {

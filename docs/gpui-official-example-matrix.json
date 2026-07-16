@@ -1,0 +1,167 @@
+{
+  "examples": [
+    {
+      "adaptation": "Direct public application and first-frame window example.",
+      "equivalent_targets": ["api_parity_hello_world"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "hello_world",
+      "verification": {"smoke_tests": ["hello_window/windows_first_frame", "hello_window/linux_first_frame", "hello_window/x11_first_frame"], "pixel_tests": ["vulkan_frame_pixel_capture_test/default", "wayland_frame_pixel_capture_test/default"], "input_tests": []}
+    },
+    {
+      "adaptation": "CGPUI keeps entities runtime-owned; shared state, weak handles, and try_open_window form the explicit C++ cross-window adaptation.",
+      "equivalent_targets": ["api_parity_public_authoring_workflow", "api_parity_public_api_compatibility"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "move_entity_between_windows",
+      "verification": {"smoke_tests": ["app_runner_test/default", "phase_f_multi_window_lifecycle_churn_test/default"], "pixel_tests": [], "input_tests": ["phase_f_multi_window_input_focus_test/default"]}
+    },
+    {
+      "adaptation": "Raster asset load, upload, invalidation, and draw example.",
+      "equivalent_targets": ["api_parity_public_image_example"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "image",
+      "verification": {"smoke_tests": ["api_parity_public_image_example/registration_smoke"], "pixel_tests": ["vulkan_image_pixel_test/default", "wayland_image_pixel_test/default"], "input_tests": []}
+    },
+    {
+      "adaptation": "Public text-input, IME, keyboard, pointer, and focus workflow.",
+      "equivalent_targets": ["api_parity_public_text_input_examples", "api_parity_public_text_input_workflow"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "input",
+      "verification": {"smoke_tests": ["hello_window/windows_demo_smoke_flow", "hello_window/linux_demo_smoke_flow", "hello_window/x11_demo_smoke_flow"], "pixel_tests": ["vulkan_text_pixel_test/default"], "input_tests": ["window_runtime_text_test/default", "x11_input_test/default"]}
+    },
+    {
+      "adaptation": "Window close callbacks, last-window quit, and native close request behavior are exercised by the public demo and lifecycle suites.",
+      "equivalent_targets": ["hello_window", "api_parity_public_window_examples_workflow"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "on_window_close_quit",
+      "verification": {"smoke_tests": ["hello_window/windows_close_after_first_frame", "hello_window/linux_close_after_first_frame", "hello_window/x11_close_after_first_frame"], "pixel_tests": [], "input_tests": ["platform_close_resolution_test/default"]}
+    },
+    {
+      "adaptation": "Animated element opacity and renderer blend behavior.",
+      "equivalent_targets": ["api_parity_public_opacity_example"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "opacity",
+      "verification": {"smoke_tests": ["api_parity_public_opacity_example/registration_smoke"], "pixel_tests": ["vulkan_opacity_pixel_test/default"], "input_tests": []}
+    },
+    {
+      "adaptation": "Slash and gradient fills use the public SVG source/raster pipeline instead of a dedicated background-pattern value.",
+      "equivalent_targets": ["api_parity_public_svg_image_sources", "api_parity_public_svg_raster_upload"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "pattern",
+      "verification": {"smoke_tests": ["phase_e_svg_public_example_test/default"], "pixel_tests": ["vulkan_image_pixel_test/default"], "input_tests": []}
+    },
+    {
+      "adaptation": "Public native-menu installation and command metadata example.",
+      "equivalent_targets": ["api_parity_public_window_examples", "api_parity_public_authoring_workflow"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "set_menus",
+      "verification": {"smoke_tests": ["platform_native_menu_service_test/default"], "pixel_tests": [], "input_tests": ["typed_action_command_metadata_test/default"]}
+    },
+    {
+      "adaptation": "Box-shadow style and paint-command example.",
+      "equivalent_targets": ["api_parity_public_window_examples_workflow"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "shadow",
+      "verification": {"smoke_tests": ["paint_shadow_test/default"], "pixel_tests": ["vulkan_rounded_rect_pixel_test/default"], "input_tests": []}
+    },
+    {
+      "adaptation": "Public SVG registration, rasterization, cache, upload, and draw example.",
+      "equivalent_targets": ["api_parity_public_svg_image_sources", "api_parity_public_svg_raster_upload"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "svg",
+      "verification": {"smoke_tests": ["phase_e_svg_public_example_test/default"], "pixel_tests": ["vulkan_image_pixel_test/default"], "input_tests": []}
+    },
+    {
+      "adaptation": "Tab index, focusability, focus ring, and ordered keyboard traversal.",
+      "equivalent_targets": ["api_parity_public_window_examples_interaction_states"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "tab_stop",
+      "verification": {"smoke_tests": ["element_test/default"], "pixel_tests": [], "input_tests": ["window_runtime_focus_test/default"]}
+    },
+    {
+      "adaptation": "Shaped, wrapped, styled, selected, and painted text example.",
+      "equivalent_targets": ["api_parity_public_rich_text_examples"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "text",
+      "verification": {"smoke_tests": ["phase_d_rich_text_public_examples_test/default"], "pixel_tests": ["vulkan_text_pixel_test/default", "wayland_text_pixel_test/default"], "input_tests": ["window_runtime_text_test/default"]}
+    },
+    {
+      "adaptation": "Text and label wrapper semantics with accessibility metadata.",
+      "equivalent_targets": ["api_parity_public_text_wrapper_examples"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "text_wrapper",
+      "verification": {"smoke_tests": ["phase_d_text_wrapper_public_examples_test/default"], "pixel_tests": ["vulkan_text_pixel_test/default"], "input_tests": []}
+    },
+    {
+      "adaptation": "Retained child tree, keyed element identity, nested containers, and lifecycle traversal.",
+      "equivalent_targets": ["api_parity_public_window_examples_widget_catalog"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "tree",
+      "verification": {"smoke_tests": ["element_test/default", "window_runtime_element_lifecycle_test/default"], "pixel_tests": [], "input_tests": []}
+    },
+    {
+      "adaptation": "Virtualized scrollable-list visible range, measurement cache, recycling, anchoring, and selection.",
+      "equivalent_targets": ["api_parity_public_window_examples_widget_catalog"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "uniform_list",
+      "verification": {"smoke_tests": ["phase_c_uniform_list_audit_test/default"], "pixel_tests": [], "input_tests": ["scroll_test/default"]}
+    },
+    {
+      "adaptation": "Native window shadow option plus element box-shadow preview.",
+      "equivalent_targets": ["api_parity_public_window_examples_service_matrix"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "window_shadow",
+      "verification": {"smoke_tests": ["platform_window_options_test/default"], "pixel_tests": ["vulkan_rounded_rect_pixel_test/default"], "input_tests": []}
+    },
+    {
+      "adaptation": "The holy-grail layout is expressed with nested horizontal and vertical flex containers; CSS-grid-specific placement is not exposed.",
+      "equivalent_targets": ["api_parity_public_window_examples_widget_catalog"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "grid_layout",
+      "verification": {"smoke_tests": ["element_test/default"], "pixel_tests": ["vulkan_clip_pixel_test/default"], "input_tests": []}
+    },
+    {
+      "adaptation": "Variable-height bottom-aligned list behavior maps to scrollable_list and uniform-list layout snapshots.",
+      "equivalent_targets": ["api_parity_public_window_examples_widget_catalog"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "list_example",
+      "verification": {"smoke_tests": ["scroll_test/default", "phase_c_uniform_list_audit_test/default"], "pixel_tests": [], "input_tests": ["window_runtime_input_test/default"]}
+    },
+    {
+      "adaptation": "Force-touch pressure stages are macOS-specific upstream; the non-macOS contract exercises pointer movement, buttons, capture, and drag without claiming native pressure data.",
+      "equivalent_targets": ["api_parity_public_window_examples_interaction_states"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "mouse_pressure",
+      "verification": {"smoke_tests": ["pointer_capture_owner_test/default"], "pixel_tests": [], "input_tests": ["window_runtime_input_test/default", "x11_input_test/default"]}
+    },
+    {
+      "adaptation": "Built-in roles, names, values, focus metadata, actions, range/toggle patterns, and platform accessibility publication.",
+      "equivalent_targets": ["api_parity_public_window_examples_widget_catalog", "api_parity_public_text_wrapper_examples"],
+      "platforms": {"windows": "compiled_and_smoked", "wayland": "compiled_and_smoked", "x11": "compiled_and_smoked", "macos": "excluded_by_user"},
+      "status": "complete",
+      "upstream_example": "a11y",
+      "verification": {"smoke_tests": ["accessibility_pattern_action_test/default", "builtin_widget_test/default"], "pixel_tests": [], "input_tests": ["wayland_atspi_role_state_test/default", "x11_services_test/default"]}
+    }
+  ],
+  "macos_execution": "excluded_by_user",
+  "schema_version": 1,
+  "upstream_revision": "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0"
+}

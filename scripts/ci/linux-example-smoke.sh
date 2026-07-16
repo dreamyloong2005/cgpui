@@ -26,24 +26,32 @@ case "$output_root/" in
     ;;
 esac
 
-if [[ -z "${CGPUI_CI_REUSE_PREPARED_ROOT:-}" ]]; then
-  bash "$repo_root/scripts/ci/linux-package.sh" debug "$output_root"
-fi
-manifest="$output_root/package/manifest.json"
-build_root="$output_root/build-root"
-if [[ ! -f "$manifest" || ! -d "$build_root" ]]; then
-  echo "prepared Linux package/build root is missing under $output_root" >&2
-  exit 3
-fi
+if [[ "${CGPUI_CI_USE_CURRENT_BUILD:-}" == "1" ]]; then
+  : "${XMAKE_GLOBALDIR:?current-build mode requires XMAKE_GLOBALDIR}"
+  : "${XMAKE_PKG_CACHEDIR:?current-build mode requires XMAKE_PKG_CACHEDIR}"
+  : "${XMAKE_PKG_INSTALLDIR:?current-build mode requires XMAKE_PKG_INSTALLDIR}"
+  export TMPDIR="${TMPDIR:-/dev/shm/cgpui}"
+  mkdir -p "$output_root" "$TMPDIR"
+else
+  if [[ -z "${CGPUI_CI_REUSE_PREPARED_ROOT:-}" ]]; then
+    bash "$repo_root/scripts/ci/linux-package.sh" debug "$output_root"
+  fi
+  manifest="$output_root/package/manifest.json"
+  build_root="$output_root/build-root"
+  if [[ ! -f "$manifest" || ! -d "$build_root" ]]; then
+    echo "prepared Linux package/build root is missing under $output_root" >&2
+    exit 3
+  fi
 
-source "$repo_root/scripts/ci/linux-dependencies.sh"
-cgpui_configure_linux_dependency_environment
-export XMAKE_CONFIGDIR="$output_root/config"
-if [[ -d "$output_root/python-tools/bin" ]]; then
-  export PATH="$output_root/python-tools/bin:$PATH"
+  source "$repo_root/scripts/ci/linux-dependencies.sh"
+  cgpui_configure_linux_dependency_environment
+  export XMAKE_CONFIGDIR="$output_root/config"
+  if [[ -d "$output_root/python-tools/bin" ]]; then
+    export PATH="$output_root/python-tools/bin:$PATH"
+  fi
+  export TMPDIR="$output_root/tmp"
+  mkdir -p "$TMPDIR"
 fi
-export TMPDIR="$output_root/tmp"
-mkdir -p "$TMPDIR"
 
 weston_pid=""
 runtime_owned=""
@@ -103,11 +111,22 @@ for target in "${targets[@]}"; do
     echo "invalid example target: $target" >&2
     exit 3
   fi
-  xmake build -P "$repo_root" -y -j 1 "$target"
-  if [[ "$target" == "api_parity_hello_world" ]]; then
-    CGPUI_EXIT_AFTER_FIRST_FRAME=1 xmake run -P "$repo_root" "$target"
+  if [[ "${CGPUI_CI_SKIP_BUILD:-}" == "1" ]]; then
+    binary_root="${CGPUI_CI_BINARY_ROOT:?skip-build mode requires CGPUI_CI_BINARY_ROOT}"
+    binary="$binary_root/$target"
+    [[ -x "$binary" ]] || { echo "missing example binary: $binary" >&2; exit 3; }
+    if [[ "$target" == "api_parity_hello_world" ]]; then
+      CGPUI_EXIT_AFTER_FIRST_FRAME=1 "$binary"
+    else
+      "$binary"
+    fi
   else
-    xmake run -P "$repo_root" "$target"
+    xmake build -P "$repo_root" -y -j 1 "$target"
+    if [[ "$target" == "api_parity_hello_world" ]]; then
+      CGPUI_EXIT_AFTER_FIRST_FRAME=1 xmake run -P "$repo_root" "$target"
+    else
+      xmake run -P "$repo_root" "$target"
+    fi
   fi
 done
 
@@ -118,17 +137,24 @@ registration_smokes=(
   api_parity_public_gif_viewer_example
 )
 for target in "${registration_smokes[@]}"; do
-  xmake test -P "$repo_root" -j 1 -v "$target/*"
+  if [[ "${CGPUI_CI_SKIP_BUILD:-}" == "1" ]]; then
+    "$CGPUI_CI_BINARY_ROOT/$target"
+  else
+    xmake test -P "$repo_root" -j 1 -v "$target/*"
+  fi
 done
 
-demo_smokes=(
-  linux_first_frame
-  linux_resize_after_first_frame
-  linux_close_after_first_frame
-  linux_demo_smoke_flow
-)
-for test_name in "${demo_smokes[@]}"; do
-  xmake test -P "$repo_root" -j 1 -v "hello_window/$test_name"
-done
+if [[ "${CGPUI_CI_SKIP_BUILD:-}" == "1" ]]; then
+  demo="$CGPUI_CI_BINARY_ROOT/hello_window"
+  CGPUI_EXIT_AFTER_FIRST_FRAME=1 "$demo"
+  CGPUI_RESIZE_AFTER_FIRST_FRAME=1 "$demo"
+  CGPUI_CLOSE_AFTER_FIRST_FRAME=1 "$demo"
+  CGPUI_DEMO_SMOKE_FLOW=1 CGPUI_CLOSE_AFTER_FIRST_FRAME=0 "$demo"
+else
+  for test_name in linux_first_frame linux_resize_after_first_frame \
+    linux_close_after_first_frame linux_demo_smoke_flow; do
+    xmake test -P "$repo_root" -j 1 -v "hello_window/$test_name"
+  done
+fi
 
 printf '%s\n' "Linux example and smoke matrix passed"
