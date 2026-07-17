@@ -50,6 +50,20 @@ int main() {
       read_source("build/xmake/phase_i_structure_targets.lua");
   const std::string phase_i_closeout =
       read_source("build/xmake/phase_i_closeout_targets.lua");
+  const std::string phase_j_audit =
+      read_source("build/xmake/phase_j_audit_targets.lua");
+  const std::string phase_j_examples =
+      read_source("build/xmake/phase_j_example_targets.lua");
+  const std::string phase_j_performance =
+      read_source("build/xmake/phase_j_performance_targets.lua");
+  const std::string phase_j_stress =
+      read_source("build/xmake/phase_j_stress_targets.lua");
+  const std::string phase_j_documentation =
+      read_source("build/xmake/phase_j_documentation_targets.lua");
+  const std::string phase_j_release =
+      read_source("build/xmake/phase_j_release_targets.lua");
+  const std::string phase_j_closeout =
+      read_source("build/xmake/phase_j_closeout_targets.lua");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -61,8 +75,16 @@ int main() {
   const std::string* required[]{
       &matrix, &windows, &linux, &workflow, &previous, &xmake, &phase_h_targets,
       &phase_h_closeout, &phase_i_targets, &phase_i_closeout,
+      &phase_j_audit, &phase_j_examples, &phase_j_performance, &phase_j_stress,
+      &phase_j_documentation, &phase_j_release, &phase_j_closeout,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
+
+  const std::string registered_targets =
+      xmake + phase_h_targets + phase_h_closeout + phase_i_targets +
+      phase_i_closeout + phase_j_audit + phase_j_examples +
+      phase_j_performance + phase_j_stress + phase_j_documentation +
+      phase_j_release + phase_j_closeout;
 
   std::unordered_set<std::string> targets;
   std::unordered_set<std::string> sources;
@@ -82,15 +104,12 @@ int main() {
     if (!source.starts_with("tests/architecture/") &&
         !source.starts_with("tests/header_cleanliness/")) return 2;
     if (!fs::is_regular_file(root / source) ||
-      !contains(xmake + phase_h_targets + phase_h_closeout + phase_i_targets +
-                    phase_i_closeout,
-                "target(\"" + target + "\")") ||
-        !contains(xmake + phase_h_targets + phase_h_closeout + phase_i_targets +
-                      phase_i_closeout,
-                  "add_files(\"" + source + "\")") &&
-        !contains(xmake + phase_h_targets + phase_h_closeout + phase_i_targets +
-                      phase_i_closeout,
-                  "add_files(path.join(os.projectdir(), \"" + source + "\")")) return 3;
+        !contains(registered_targets, "target(\"" + target + "\")") ||
+        !contains(registered_targets, "add_files(\"" + source + "\")") &&
+        !contains(registered_targets,
+                  "add_files(path.join(os.projectdir(), \"" + source + "\")")) {
+      return 3;
+    }
   }
 
   std::size_t repository_sources = 0;

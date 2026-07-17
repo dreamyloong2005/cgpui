@@ -25678,3 +25678,69 @@
 - Explicit product-path staging excludes `.vscode/`. A first PowerShell
   `Select-String` status probe emitted a false alert; direct staged-path array
   filtering confirms zero `.vscode` paths in the index.
+- Steps 835-840 begin with a deliberate final-closeout RED 0/2. The dedicated
+  behavior and structure guards require all seven Phase J bands, zero required
+  non-macOS gaps, machine-readable final matrix evidence, preserved Phase H
+  macOS history, and an immutable Steps 841+ upstream-drift handoff.
+- Added the pinned-revision drift policy. It requires strict re-extraction and
+  a new parity delta plan for future upstream changes; the final verification
+  JSON remains intentionally absent until the real matrices complete.
+- Resumed the retained Linux Release build after its transient 45% allocation
+  failure. WSL has about 14 GiB available memory and 4 GiB unused swap; the
+  serial build passed the failed source and continues through the UI graph
+  without a source error. The cleanup wrapper remains intentionally unused.
+- A read-only `xmake test -l` count probe is unsupported by the local Xmake
+  command surface. Final Windows and WSL totals will come from the executed
+  `xmake test -j 1 -v` summaries instead.
+- Linux Release is complete from the retained build root. `cgpui_app` reports
+  `build ok, spent 5355.021s`; the Vulkan-backed `hello_window` dependency
+  closure reports `build ok, spent 3351.506s` after one more transient host
+  allocation retry.
+- The Linux package has 9 static libraries, 187 public headers, and the demo.
+  Its two generated tar.gz files matched byte-for-byte. The retained archive
+  SHA-256 is
+  `a710e93f995a63fff1a6efb56d80bf1372c19a78c6bd0d6c58f677cfe3290e72`;
+  all 199 manifest hashes match and the archive contains 200 entries.
+- Added the final Phase J verification JSON, closed the roadmap and both
+  ledgers at zero required non-macOS gaps, preserved Phase H macOS 380/380
+  history without new execution, and moved the handoff to Steps 841+.
+- The first closeout GREEN run passes structure and fails only behavior at exit
+  `41`: the final guard expected nonexistent snapshot field
+  `official_example_count`. The authoritative upstream guard and live snapshot
+  use `example_count`; aligned the final guard with that stable schema.
+- The first post-closeout Windows full suite passes 492/494 in 62.313 seconds.
+  Only `phase_j_documentation_audit_test` exit `6` and
+  `phase_j_release_audit_test` exit `8` remain; both still require the obsolete
+  Step 835 handoff after current authority moved to Steps 841+. Updated those
+  two dynamic assertions without changing product implementation.
+- Both repaired audit targets build serially and their focused Windows loop
+  passes 2/2 in 0.093 seconds. The original exits `6` and `8` no longer
+  reproduce; the complete Windows Debug build/test matrix is next.
+- The final Windows Debug graph builds serially in 5.875 seconds and the full
+  matrix passes 494/494 in 59.703 seconds. Updated the machine-readable final
+  verification result from pending to this authoritative Windows evidence.
+- Final WSL preflight confirms the retained project configuration still uses
+  `.build-wsl/master` in Debug for Linux x86_64, and native Arch Xmake
+  3.0.9+20260519 is available with the established `XMAKE_ROOT=y` override.
+- Rebuilt the two final closeout targets and the two repaired audit targets
+  serially on Arch WSL. Their combined focused matrix passes 4/4 in 0.471
+  seconds, so the final WSLg full-suite rerun has no stale Phase J binary.
+- The final WSLg full Debug suite passes all 486/486 tests in 87.952 seconds,
+  including `x11_input_test`, Wayland frame capture, Vulkan surfaces, all Phase
+  J guards, and the known DZN non-conformance warning only. Updated the final
+  verification JSON to passed while retaining isolated Xvfb 11/11 as the
+  authoritative X11 acceptance matrix.
+- The updated final verification JSON parses successfully. The Phase J final
+  behavior/structure pair passes 2/2 on Windows in 0.093 seconds and 2/2 on
+  Arch WSL in 0.207 seconds after the final evidence update.
+- Static closeout confirms 173 unique architecture/header targets map to 173
+  unique existing sources, all 9 documentation JSON files parse, and the final
+  behavior/structure/module/drift-policy files stay within 80/49/13/32 lines.
+  Python `markdown_it` is unavailable, so local Markdown links use a read-only
+  PowerShell existence scan instead of installing a new dependency.
+- The first fallback link scan misclassified code-like `T&` in `findings.md`;
+  the corrected user-document scope checks README plus 84 `docs` Markdown
+  files and reports zero broken local links. Final Standards/Spec review is
+  clean: focused Xmake ownership and line budgets remain intact, all seven
+  Phase J bands have guarded evidence, and the new CI workflow contains only
+  Windows, Wayland, and X11/Linux jobs with no macOS execution.

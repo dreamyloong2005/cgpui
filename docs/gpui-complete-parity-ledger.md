@@ -840,6 +840,12 @@ consume C: drive space again.
   Release execution remains in the final WSL matrix. New macOS packaging and
   CI remain excluded by user scope. Phase J Step 835 final non-macOS matrix
   verification is next.
+- Phase J Step 840 completes non-macOS closure with zero required gaps. The
+  final matrix records Windows and WSLg Debug coverage, isolated Xvfb X11 at
+  11/11, passing Windows/Wayland/X11 performance and stress reports, and
+  byte-reproducible Windows/Linux Release archives. New macOS execution remains
+  excluded by user scope, while Phase H macOS evidence remains 380/380. Phase J
+  Steps 841+ upstream drift delta plan is the current handoff.
 
 ## Categories
 

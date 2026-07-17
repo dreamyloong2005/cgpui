@@ -3738,7 +3738,7 @@
     ],
     "phase_i_current_handoff": "Phase J Step 799 re-run upstream extractor against the pinned revision",
     "phase_f_current_handoff": "Phase J Step 799 re-run upstream extractor against the pinned revision",
-    "phase_j_status": "in_progress",
+    "phase_j_status": "complete_non_macos",
     "phase_j_steps_799_804_status": "complete",
     "phase_j_steps_805_810_status": "complete",
     "phase_j_upstream_audit": "Phase J Step 804 locks the live pinned-upstream audit at 55 public re-exports/modules, 20 official Cargo examples, 32 accepted ledger rows, and zero unresolved required rows.",
@@ -3803,7 +3803,11 @@
       "tests/api_parity/phase_j_release_audit_test.cpp",
       "tests/architecture/phase_j_release_structure_test.cpp"
     ],
-    "phase_j_current_handoff": "Phase J Step 835 final non-macOS matrix verification"
+    "phase_j_steps_835_840_status": "complete_non_macos",
+    "phase_j_required_non_macos_gaps": 0,
+    "phase_j_final_verification": "Phase J Step 840 completes non-macOS closure with Windows/WSLg/isolated-Xvfb verification, reproducible Windows/Linux Release artifacts, passing Windows/Wayland/X11 performance and stress reports, and preserved Phase H macOS evidence without new macOS execution.",
+    "phase_j_final_verification_source": "docs/gpui-phase-j-final-verification.json",
+    "phase_j_current_handoff": "Phase J Steps 841+ upstream drift delta plan"
   },
   "categories": [
     "application_and_app_context",

@@ -56,7 +56,8 @@ int main() {
       !contains(linux, "phase_j_performance_runner") ||
       !contains(linux, "CGPUI_LINUX_BACKEND")) return 4;
   if (!contains(roadmap, "- [x] Steps 811-816: Add performance baselines") ||
-      !contains(ledger, "\"phase_j_steps_811_816_status\": \"complete\"") ||
-      !contains(ledger, "Phase J Step 817 public stress runner")) return 5;
+      !contains(ledger, "\"phase_j_steps_811_816_status\": \"complete\"")) {
+    return 5;
+  }
   return 0;
 }

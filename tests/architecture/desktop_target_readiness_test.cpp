@@ -144,7 +144,7 @@ int main() {
   if (!contains(audit_text, "## Production Coverage") ||
       !contains(audit_text, "## Verification") ||
       !contains(audit_text, "Phase H required macOS gaps: 0") ||
-      !contains(audit_text, "X11: optional Phase I scope")) {
+      !contains(audit_text, "X11: XCB + Vulkan, completed in Phase I.")) {
     return 19;
   }
 
