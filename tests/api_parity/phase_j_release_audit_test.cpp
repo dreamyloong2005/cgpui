@@ -61,6 +61,6 @@ int main() {
       !contains(policy, "cgpui-linux-release.tar.gz")) return 7;
   if (!contains(roadmap, "- [x] Steps 829-834: Package Windows/Linux builds") ||
       !contains(ledger, "\"phase_j_steps_829_834_status\": \"complete_non_macos\"") ||
-      !contains(ledger, "Phase J Step 835 final non-macOS matrix verification")) return 8;
+      !contains(ledger, "Phase J Steps 841+ upstream drift delta plan")) return 8;
   return 0;
 }

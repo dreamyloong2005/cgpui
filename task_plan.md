@@ -4901,7 +4901,7 @@ implementation slice.
 
 ## 2026-07-17 Active Phase J Non-macOS Execution Goal
 
-- Status: in_progress
+- Status: complete_non_macos
 - Authoritative scope: Phase J Steps 799-840+ in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
 - User scope: complete every platform-neutral, Windows, Wayland, and X11 part
@@ -4919,7 +4919,7 @@ implementation slice.
      GPUI-to-C++23 migration, and non-goal documentation.
   6. [x] Steps 829-834: reproducible Windows/Linux packages, CI definitions,
      dependency bootstrap, manifests, and release artifacts.
-  7. [ ] Steps 835-840+: final Windows/WSL/X11 matrices, locked parity ledger,
+  7. [x] Steps 835-840+: final Windows/WSL/X11 matrices, locked parity ledger,
      non-macOS closeout guard, and explicit upstream-drift policy.
 - Verification policy: keep Xmake build/test commands serial with `-j 1`, use
   RED-GREEN tracer guards at the public seams above, keep `.vscode/` untracked,
@@ -4952,3 +4952,16 @@ implementation slice.
 | The first inline Python archive-audit command was parsed by PowerShell before Python because of nested double quotes | Steps 829-834 artifact inspection | Use a single-quoted PowerShell argument with Python double-quoted literals; the corrected audit verifies all 197 content hashes and 198 archive entries |
 | The first release regression matrix passed 3/4 because the documentation guard still required the completed Step 829 handoff | Steps 829-834 ledger migration | Preserve the Step 828 documentation evidence but migrate its dynamic handoff assertion to Step 835; rerun the same four-test loop |
 | The first staged-path probe treated successful `Select-String -Quiet` execution as a match and falsely reported `.vscode` staged | Steps 829-834 commit scope | Inspect the actual status, then count filtered staged paths explicitly; `.vscode/` remains untracked and outside the index |
+| A Phase J WSL environment probe invoked Xmake as root without `XMAKE_ROOT=y` and stopped before the remaining tool checks | Steps 835-840 WSL preflight | Re-run with the established root acknowledgement; Xmake 3.0.9, WSLg, Xvfb, Vulkan tools, `/dev/shm`, and D-drive capacity are healthy, so no recovery or installation is needed |
+| Phase J final closeout guards begin at 0/2 because the drift policy and final verification result do not yet exist | Steps 835-840 RED | Add the pinned-revision drift policy now, retain the verification JSON as missing until real Windows/WSL/X11/release evidence exists, then close both guards only after the matrix |
+| The first drift-policy planning patch omitted a leading `+` on one added line and was rejected atomically | Steps 835-840 drift policy | Correct the patch format and replay it; no partial file or planning edit existed |
+| The first Linux Release cold build stopped at 45% with `fatal error: Cannot allocate memory` while compiling `runtime_event_native_menu.cpp` | Steps 835-840 Linux Release | Keep the existing build root, confirm WSL has about 14 GiB available plus 4 GiB swap, and resume serially; the resumed build passed the failed object and continues normally, proving this was a transient host allocation failure rather than a source error |
+| `xmake test -l` is not a supported listing form in the local Xmake 3.0.8/3.0.9 command surface | Steps 835-840 final test-count probe | Do not infer a count from target listing; use the actual final `xmake test -j 1 -v` summaries as the authoritative Windows and WSL counts |
+| A second Linux Release compile stopped while opening a system header with `Cannot allocate memory`, despite 14 GiB available and unused swap | Steps 835-840 Linux Vulkan Release | Resume the same `hello_window` build; it immediately passed `vulkan_frame_command_reuse.cpp` and completed the Vulkan backend, confirming the same transient host/DrvFs allocation class |
+| The first manual Linux archive wrapper ended after both archives matched because a PowerShell here-string carriage return reached the final `sha256sum` argument | Steps 835-840 Linux archive audit | Keep the already-matching archives, read SHA-256 with native PowerShell, and independently validate every manifest hash and tar entry |
+| The first inline Python manifest audit was truncated by nested PowerShell quoting | Steps 835-840 Linux manifest audit | Use native PowerShell JSON parsing plus `Get-FileHash` for all 199 manifest entries; all hashes match and the tar contains 200 entries |
+| The first combined planning update used a stale findings tail anchor and was rejected atomically | Steps 835-840 planning synchronization | Re-read the three file tails and apply the update against exact short anchors; no partial edit existed |
+| The first closeout GREEN run passed structure but behavior returned exit `41` | Steps 835-840 closeout guard | The pinned snapshot schema uses `example_count`, as already frozen by the upstream audit guard, not `official_example_count`; align the final guard with the authoritative field and rerun the focused pair |
+| The first post-closeout Windows full suite passed 492/494; only the documentation and release audits returned exits `6` and `8` | Steps 835-840 final Windows regression | Both guards still froze the completed Step 835 handoff; migrate their dynamic ledger assertion to `Phase J Steps 841+ upstream drift delta plan`, rebuild each target serially, and require the focused pair plus the full suite to pass |
+| The local Python environment does not provide `markdown_it` | Steps 835-840 final Markdown audit | Use a read-only PowerShell Markdown link-target scan for repository-local links; no dependency installation or source change is required |
+| The first fallback Markdown scan treated code-like `T&` text in `findings.md` as a link target | Steps 835-840 final Markdown audit | Restrict the documentation-link audit to README and `docs/**/*.md`; all 85 user documentation files then report zero broken local links |

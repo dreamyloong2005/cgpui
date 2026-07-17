@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "phase": "J",
+  "scope": "non_macos",
+  "status": "passed",
+  "upstream_revision": "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0",
+  "windows_debug": {
+    "status": "passed",
+    "tests_passed": 494,
+    "tests_total": 494,
+    "duration_seconds": 59.703,
+    "command": "xmake build -j 1 && xmake test -j 1 -v"
+  },
+  "wsl_debug_build": {
+    "status": "passed",
+    "duration_seconds": 3349.547,
+    "command": "xmake build -P /mnt/d/Dev/Projects/cgpui -j 1"
+  },
+  "wslg_wayland_debug": {
+    "status": "passed",
+    "tests_passed": 486,
+    "tests_total": 486,
+    "duration_seconds": 87.952
+  },
+  "xvfb_x11_acceptance": {
+    "status": "passed",
+    "tests_passed": 11,
+    "tests_total": 11,
+    "coverage": "seven X11 behavior targets and four hello_window smoke modes"
+  },
+  "windows_release": {
+    "status": "passed",
+    "archive": "cgpui-windows-release.zip",
+    "sha256": "14d6fc8819b913f48763579431f57cf2ee7f7b0c79eabb7c5208940b2dcecee5",
+    "manifest_files": 197,
+    "archive_entries": 198
+  },
+  "linux_release": {
+    "status": "passed",
+    "archive": "cgpui-linux-release.tar.gz",
+    "sha256": "a710e93f995a63fff1a6efb56d80bf1372c19a78c6bd0d6c58f677cfe3290e72",
+    "libraries": 9,
+    "public_headers": 187,
+    "manifest_files": 199,
+    "archive_entries": 200,
+    "reproducible": true
+  },
+  "performance": {
+    "status": "passed",
+    "platforms": ["windows", "wayland", "x11"],
+    "iterations_per_platform": 64,
+    "reports": "artifacts/phase-j-performance"
+  },
+  "stress": {
+    "status": "passed",
+    "platforms": ["windows", "wayland", "x11"],
+    "scenarios_per_platform": 8,
+    "reports": "artifacts/phase-j-stress"
+  },
+  "macos_execution": "excluded_by_user",
+  "preserved_macos_evidence": "Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84)",
+  "notes": [
+    "The final WSLg full suite passes x11_input_test; isolated Xvfb remains the authoritative complete 11/11 X11 acceptance matrix.",
+    "No new macOS build, test, package, or CI execution was performed in Phase J."
+  ]
+}

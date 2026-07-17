@@ -12930,3 +12930,21 @@
 - The Phase J workflow uses a separately pinned dependency action and covers
   Windows/Linux releases, Windows/Wayland/X11 performance and stress, official
   examples, and architecture/header jobs. macOS delivery remains excluded.
+
+## 2026-07-17 Phase J Final Non-macOS Verification
+
+- The real Linux Release cold build's one `Cannot allocate memory` failure at
+  45% is not reproducible after resuming the retained build root with `-j 1`.
+  WSL reports about 14 GiB available memory and 4 GiB unused swap, and the
+  resumed build has passed the failed source while continuing through the UI
+  graph. Preserve this root and do not rerun the cleanup wrapper.
+- Final test totals must come from the real Xmake summaries. This Xmake build
+  does not support `xmake test -l`, so target-list output is not an acceptable
+  substitute for executed test counts.
+- Linux Release closes with `cgpui_app` built in 5355.021 seconds and the
+  Vulkan-backed `hello_window` dependency closure built in 3351.506 seconds.
+  The package contains 9 static libraries, 187 public headers, and the demo.
+- The two deterministic Linux archives matched byte-for-byte. The retained
+  tar.gz has SHA-256
+  `a710e93f995a63fff1a6efb56d80bf1372c19a78c6bd0d6c58f677cfe3290e72`;
+  all 199 content-manifest hashes match and the archive has 200 entries.

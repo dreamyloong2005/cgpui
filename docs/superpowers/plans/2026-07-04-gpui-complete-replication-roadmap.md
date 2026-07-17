@@ -2050,7 +2050,7 @@ usable as a C++23 GPUI replacement.
 - [x] Steps 829-834: Package Windows/Linux builds, CI jobs, dependency
   bootstrap scripts, and release artifacts. New macOS packaging/CI execution
   remains excluded by the Phase J user scope.
-- [ ] Steps 835-840: Run final full matrix verification and lock the parity
+- [x] Steps 835-840: Run final non-macOS matrix verification and lock the parity
   ledger. Any remaining unchecked required row blocks the "fully replicated"
   claim.
 - [ ] Steps 841+: Reserve for upstream drift. If upstream GPUI changes after
@@ -2086,11 +2086,16 @@ usable as a C++23 GPUI replacement.
   final Linux Release execution remains in Steps 835-840. New macOS packaging
   and CI remain excluded by user scope. Step 835 final non-macOS verification
   is next.
+- Phase J Step 840 completes non-macOS closure with zero required gaps,
+  Windows/WSLg/isolated-Xvfb verification, passing Windows/Wayland/X11
+  performance and stress reports, and reproducible Windows/Linux Release
+  archives. New macOS execution remains excluded by user scope; preserved
+  Phase H evidence stays at 380/380. Steps 841+ own future upstream drift.
 
 ## Immediate Next Slice
 
-Phase J Step 835 runs the final Windows, WSLg/Wayland, isolated Xvfb X11, and
-Linux Release matrices before locking the non-macOS parity ledger.
+Phase J Steps 841+ begin only when a new pinned upstream revision requires a
+separate parity delta plan; completed Phase J evidence remains immutable.
 
 ### Historical Slice Log
 

@@ -91,8 +91,6 @@ int main() {
       !contains(roadmap, "Phase J Step 810 locks all 20 official examples") ||
       !contains(ledger_json,
                 "\"phase_j_steps_805_810_status\": \"complete\"") ||
-      !contains(ledger_json,
-                "\"phase_j_current_handoff\": \"Phase J Step 811") ||
       !contains(ledger_md,
                 "Phase J Step 810 locks all 20 official examples")) {
     return 6;
