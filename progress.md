@@ -25800,3 +25800,9 @@
   wrapper probes each reject with exit 3; completion advances to raw exit 40.
   The real Release runner graph builds in 164.587 seconds and emits a parsed
   `macos-arm64` report with exactly eight metrics at one probe iteration.
+- Task 4 RED is exact at behavior exit 6 and structure exit 5. GREEN preserves
+  the existing eight-scenario inventory while adding both macOS report
+  identities, active-platform validation, and a focused native wrapper.
+- Focused stress guards pass 2/2; wrong-architecture and parent-traversal probes
+  each reject with exit 3; completion advances to raw exit 50. A real arm64
+  scale-1 run emits eight unique scenarios and all report `complete`.

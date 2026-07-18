@@ -16,6 +16,15 @@ std::string read_source(const char* path) {
 bool contains(const std::string& text, std::string_view value) {
   return text.find(value) != std::string::npos;
 }
+std::size_t count(const std::string& text, std::string_view value) {
+  std::size_t result = 0;
+  for (std::size_t offset = 0;
+       (offset = text.find(value, offset)) != std::string::npos;
+       offset += value.size()) {
+    ++result;
+  }
+  return result;
+}
 }  // namespace
 
 int main() {
@@ -27,6 +36,7 @@ int main() {
   const std::string input = read_source("src/ui/test_app_input.cpp");
   const std::string windows = read_source("scripts/ci/windows-stress-matrix.ps1");
   const std::string linux = read_source("scripts/ci/linux-stress-matrix.sh");
+  const std::string macos = read_source("scripts/ci/macos-stress-matrix.sh");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger = read_source("docs/gpui-complete-parity-ledger.json");
@@ -51,6 +61,15 @@ int main() {
   if (!contains(roadmap, "- [x] Steps 817-822: Add stress tests") ||
       !contains(ledger, "\"phase_j_steps_817_822_status\": \"complete\"")) {
     return 5;
+  }
+  if (!contains(profile, "\"macos-arm64\"") ||
+      !contains(profile, "\"macos-x86_64\"") ||
+      !contains(runner, "platform == \"macos-arm64\"") ||
+      !contains(runner, "platform == \"macos-x86_64\"") ||
+      count(runner, "results.push_back(") != 8 ||
+      !contains(validator, "report.get(\"platform\")") ||
+      !contains(macos, "phase_j_stress_runner")) {
+    return 6;
   }
   return 0;
 }

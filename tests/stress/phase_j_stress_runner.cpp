@@ -260,9 +260,11 @@ int main(int argc, char** argv) {
     else if (argument == "--scale" && index + 1 < argc) scale = std::stoul(argv[++index]);
     else return 2;
   }
-  if (scale == 0 || scale > 100 ||
-      (platform != "portable" && platform != "windows" &&
-       platform != "wayland" && platform != "x11")) return 3;
+  const bool valid_platform =
+      platform == "portable" || platform == "windows" ||
+      platform == "wayland" || platform == "x11" ||
+      platform == "macos-arm64" || platform == "macos-x86_64";
+  if (scale == 0 || scale > 100 || !valid_platform) return 3;
   const auto results = run_scenarios(scale);
   bool complete = true;
   for (const auto& result : results) {

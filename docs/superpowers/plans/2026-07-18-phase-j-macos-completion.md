@@ -548,11 +548,12 @@ git commit -m "perf: add phase j macos baselines"
 - Modify: `tests/api_parity/phase_j_stress_audit_test.cpp`
 - Modify: `tests/architecture/phase_j_stress_structure_test.cpp`
 
-- [ ] **Step 1: Add RED assertions for two macOS reports and exactly eight rows**
+- [x] **Step 1: Add RED assertions for two macOS reports and exactly eight rows**
 
 Require both macOS platform names, the new wrapper, validator platform checking,
-and `count(runner, "results.push_back(") == 8`. Expected RED is the wrapper and
-the runner's duplicated `run_window_churn` insertion.
+and `count(runner, "results.push_back(") == 8`. Expected RED is the missing
+wrapper, platform identities, and active-platform validation; the runner's
+existing eight-row inventory is frozen by the new assertion.
 
 ```cpp
 if (!contains(profile, "\"macos-arm64\"") ||
@@ -564,9 +565,9 @@ if (!contains(profile, "\"macos-arm64\"") ||
     !contains(macos, "phase_j_stress_runner")) return 6;
 ```
 
-- [ ] **Step 2: Correct the runner inventory and platform predicate**
+- [x] **Step 2: Preserve the runner inventory and extend the platform predicate**
 
-Keep one window-churn insertion and the seven other scenario insertions:
+Keep the existing one window-churn insertion and seven other scenario insertions:
 
 ```cpp
 results.push_back(run_window_churn(64 * scale));
@@ -597,7 +598,7 @@ Change the profile to:
 
 Remove `macos_execution: excluded_by_user`.
 
-- [ ] **Step 3: Create the native stress wrapper**
+- [x] **Step 3: Create the native stress wrapper**
 
 Begin with the Darwin, architecture, deployment-target, and Xmake checks shown
 below, then resolve the output path with the full workspace policy before the
@@ -635,7 +636,7 @@ python3 tools/gpui_parity/validate_stress_report.py \
   --report "$output_path/macos-$arch.json"
 ```
 
-- [ ] **Step 4: Run GREEN and advance the staged guard**
+- [x] **Step 4: Run GREEN and advance the staged guard**
 
 ```bash
 bash -n scripts/ci/macos-stress-matrix.sh
@@ -648,7 +649,7 @@ xmake run -P . phase_j_macos_completion_test; test $? -eq 50
 
 Expected: focused `2/2`; completion advances to package/Release exit `50`.
 
-- [ ] **Step 5: Commit the stress band**
+- [x] **Step 5: Commit the stress band**
 
 ```bash
 git add scripts/ci/macos-stress-matrix.sh tests/stress/phase_j_stress_runner.cpp \
