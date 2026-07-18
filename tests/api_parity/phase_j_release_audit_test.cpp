@@ -57,14 +57,16 @@ int main() {
   if (!contains(bootstrap, "xmake-version: 3.0.9") ||
       !contains(bootstrap, "hashFiles('xmake.lua', 'xmake-requires.lock')") ||
       !contains(bootstrap, "build/phase-j-ci/dependencies")) return 5;
-  if (!contains(workflow, "windows-release") ||
-      !contains(workflow, "linux-release") ||
-      !contains(workflow, "windows-performance") ||
-      !contains(workflow, "linux-wayland-performance") ||
-      !contains(workflow, "linux-x11-performance") ||
-      !contains(workflow, "linux-wayland-stress") ||
-      !contains(workflow, "linux-x11-stress") ||
-      !contains(workflow, "architecture-header")) return 6;
+  constexpr std::array retired_non_macos_jobs{
+      "  windows-release:\n", "  linux-release:\n",
+      "  windows-performance:\n", "  linux-wayland-performance:\n",
+      "  linux-x11-performance:\n", "  linux-wayland-stress:\n",
+      "  linux-x11-stress:\n", "  windows-examples:\n",
+      "  linux-wayland-examples:\n", "  linux-x11-examples:\n",
+      "  architecture-header:\n"};
+  if (!contains(workflow, "name: Phase J macOS Completion")) return 6;
+  for (const auto* job : retired_non_macos_jobs)
+    if (contains(workflow, job)) return 6;
   if (!contains(policy, "2024-01-01T00:00:00Z") ||
       !contains(policy, "cgpui-windows-release.zip") ||
       !contains(policy, "cgpui-linux-release.tar.gz")) return 7;

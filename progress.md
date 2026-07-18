@@ -25871,3 +25871,10 @@
 - The helper RED fails at missing implementation with exit 127, then GREEN
   passes behavior plus the updated Phase J structure guard. Workflow YAML also
   parses successfully.
+- Follow-up run `29629948951` publishes the compiler tail, proving the public
+  annotation path works, but GitHub truncates the message before the final
+  error. Added a RED/GREEN long-log regression and cap the escaped annotation
+  to its final 3500 characters.
+- Retired the 11 historical Windows/Linux jobs from the active Phase J desktop
+  workflow. Their scripts, release policy, ledger values, and completed evidence
+  remain unchanged; the next run contains exactly eight macOS jobs as approved.

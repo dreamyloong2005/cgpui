@@ -20,6 +20,9 @@ if [[ $status -ne 0 && "${GITHUB_ACTIONS:-}" == "true" ]]; then
   message=${message//'%'/'%25'}
   message=${message//$'\r'/'%0D'}
   message=${message//$'\n'/'%0A'}
+  if [[ ${#message} -gt 3500 ]]; then
+    message=${message: -3500}
+  fi
   printf '::error title=CI command failed (exit %s)::%s\n' \
     "$status" "$message" >&2
 fi
