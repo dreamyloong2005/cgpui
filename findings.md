@@ -13017,3 +13017,25 @@
 - Steps 841+ remain reserved for upstream drift. Reopening the macOS gates under
   Steps 805-840 keeps the pinned revision and historical Phase J evidence
   stable while making the actual next verification work explicit.
+
+## 2026-07-18 Phase J Local arm64 Verification
+
+- The complete local native arm64 matrix passes on macOS 26.5.2 (25F84), Xcode
+  26.6 (17F113), and Xmake v3.0.9+HEAD.2b184e178 with deployment target 13.0.
+- The first full Debug run passed 399/406. All seven failures were structure
+  guards freezing pre-Phase-J root line budgets, target inventory, duplicate
+  example inventory, or dependency-helper ownership; focused repair passed 7/7
+  before the complete Debug rerun.
+- Debug passes 406/406 in 11.458 seconds. The official-example matrix builds all
+  21 canonical targets, passes eight native smoke/pixel/input tests, and passes
+  all four `hello_window` modes.
+- All eight performance metrics pass policy, and all eight stress scenarios
+  complete at scale 1. These remain separate architecture-specific reports.
+- The deterministic arm64 archive reproduces at SHA-256
+  `154e683d1eb5339d0664a7fce562ee58b2e78b4608b9d962190af77d84fa57db`;
+  its manifest covers 199 files and the archive contains 200 entries.
+- The full architecture/header inventory passes 174/174 in 84.209 seconds.
+  This closes local arm64 implementation evidence, but `x86_64` and native CI
+  remain required, so Phase J authority stays `complete_non_macos`/`pending`.
+- The focused closeout/completion gate accepts this provisional state at 4/4;
+  no checked-in authority field claims completed all-desktop verification.

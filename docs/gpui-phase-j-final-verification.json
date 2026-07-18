@@ -59,12 +59,89 @@
   },
   "macos": {
     "deployment_target": "13.0",
-    "arm64": {"runner": "macos-15", "status": "pending"},
+    "arm64": {
+      "runner": "macos-15",
+      "status": "passed_local",
+      "evidence_scope": "local_native_arm64",
+      "host": {
+        "os": "macOS 26.5.2 (25F84)",
+        "architecture": "arm64",
+        "xcode": "26.6 (17F113)",
+        "xmake": "v3.0.9+HEAD.2b184e178"
+      },
+      "commands": [
+        "bash scripts/ci/macos-debug.sh build/phase-j-local/macos-arm64-debug",
+        "bash scripts/ci/macos-example-smoke.sh",
+        "CGPUI_PERFORMANCE_OUTPUT_DIR=build/phase-j-local/reports/performance bash scripts/ci/macos-performance-baseline.sh",
+        "CGPUI_STRESS_OUTPUT_DIR=build/phase-j-local/reports/stress bash scripts/ci/macos-stress-matrix.sh",
+        "bash scripts/ci/macos-phase-j-release.sh arm64 build/phase-j-local/macos-arm64-release",
+        "bash scripts/ci/macos-architecture-header.sh"
+      ],
+      "debug": {
+        "status": "passed",
+        "tests_passed": 406,
+        "tests_total": 406,
+        "duration_seconds": 11.458,
+        "log": "build/phase-j-local/macos-arm64-debug.log"
+      },
+      "examples": {
+        "status": "passed",
+        "canonical_targets": 21,
+        "native_tests": 8,
+        "hello_window_modes": 4,
+        "log": "build/phase-j-local/macos-arm64-examples.log"
+      },
+      "performance": {
+        "status": "passed",
+        "iterations": 64,
+        "report": "build/phase-j-local/reports/performance/macos-arm64.json",
+        "metrics": [
+          {"name": "startup", "mean_ns": 51921},
+          {"name": "first_frame", "mean_ns": 64136},
+          {"name": "resize", "mean_ns": 1813},
+          {"name": "text_layout", "mean_ns": 19520},
+          {"name": "list_scrolling", "mean_ns": 80348},
+          {"name": "image_loading", "mean_ns": 4675},
+          {"name": "async_wakeup", "mean_ns": 3740},
+          {"name": "frame_pacing", "mean_ns": 4500}
+        ]
+      },
+      "stress": {
+        "status": "passed",
+        "scale": 1,
+        "report": "build/phase-j-local/reports/stress/macos-arm64.json",
+        "scenarios": [
+          {"name": "window_churn", "operation_count": 64},
+          {"name": "many_entities", "operation_count": 2000},
+          {"name": "large_uniform_list", "operation_count": 50000},
+          {"name": "ime_composition", "operation_count": 1000},
+          {"name": "clipboard_ownership", "operation_count": 1000},
+          {"name": "drag_drop_cancel", "operation_count": 1000},
+          {"name": "asset_reload", "operation_count": 2000},
+          {"name": "task_cancellation", "operation_count": 2000}
+        ]
+      },
+      "release": {
+        "status": "passed",
+        "archive": "cgpui-macos-arm64-release.tar.gz",
+        "sha256": "154e683d1eb5339d0664a7fce562ee58b2e78b4608b9d962190af77d84fa57db",
+        "manifest_files": 199,
+        "archive_entries": 200,
+        "reproducible": true
+      },
+      "architecture_header": {
+        "status": "passed",
+        "tests_passed": 174,
+        "tests_total": 174,
+        "duration_seconds": 84.209,
+        "log": "build/phase-j-local/macos-arm64-architecture.log"
+      }
+    },
     "x86_64": {"runner": "macos-15-intel", "status": "pending"}
   },
   "preserved_macos_evidence": "Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84)",
   "notes": [
     "The final WSLg full suite passes x11_input_test; isolated Xvfb remains the authoritative complete 11/11 X11 acceptance matrix.",
-    "Phase J all-desktop completion remains pending native arm64 and x86_64 macOS verification."
+    "Local native arm64 verification passes; native arm64 and x86_64 CI evidence is still required before all-desktop completion."
   ]
 }
