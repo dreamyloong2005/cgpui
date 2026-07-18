@@ -433,7 +433,7 @@ git commit -m "test: require phase j macos examples"
 - Modify: `tests/api_parity/phase_j_performance_baseline_audit_test.cpp`
 - Modify: `tests/architecture/phase_j_performance_baseline_structure_test.cpp`
 
-- [ ] **Step 1: Add RED assertions for active macOS platforms**
+- [x] **Step 1: Add RED assertions for active macOS platforms**
 
 Require the policy, runner, validator, and wrapper to contain both
 `macos-arm64` and `macos-x86_64`; require the validator to compare
@@ -451,7 +451,7 @@ if (!contains(policy, "\"macos-arm64\"") ||
 Run the focused pair. Expected: `0/2`; behavior exits at the new platform
 assertion and structure exits because the wrapper is missing.
 
-- [ ] **Step 2: Extend the runner and validator without duplicating metrics**
+- [x] **Step 2: Extend the runner and validator without duplicating metrics**
 
 Change only the runner platform predicate:
 
@@ -479,7 +479,7 @@ Add the exact policy key while retaining all budgets:
 Replace the old exclusion note with
 `"macOS arm64 and x86_64 retain separate reports at the same revision."`.
 
-- [ ] **Step 3: Create the thin native wrapper**
+- [x] **Step 3: Create the thin native wrapper**
 
 ```bash
 #!/usr/bin/env bash
@@ -513,7 +513,7 @@ python3 tools/gpui_parity/validate_performance_baseline.py \
   --report "$output_path/macos-$arch.json"
 ```
 
-- [ ] **Step 4: Run GREEN and the staged guard**
+- [x] **Step 4: Run GREEN and the staged guard**
 
 ```bash
 bash -n scripts/ci/macos-performance-baseline.sh
@@ -526,7 +526,7 @@ xmake run -P . phase_j_macos_completion_test; test $? -eq 40
 
 Expected: focused tests pass `2/2`; completion advances to stress exit `40`.
 
-- [ ] **Step 5: Commit the performance band**
+- [x] **Step 5: Commit the performance band**
 
 ```bash
 git add scripts/ci/macos-performance-baseline.sh \
