@@ -12998,3 +12998,9 @@
 - Keeping build metadata and the exact dependency lock under `metadata/` makes
   the package manifest self-describing without widening the public include or
   library surface.
+- Apple Python 3.9 does not support `newline=` on `Path.write_text`; using
+  `Path.open(..., newline="\n")` preserves deterministic LF output and keeps
+  the shared archive writer compatible with the local macOS toolchain.
+- The deterministic macOS archive uses the same USTAR plus fixed-mtime gzip
+  path as Linux. Architecture and deployment target are content-manifest
+  fields, so arm64 and x86_64 artifacts cannot be mistaken for each other.

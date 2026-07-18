@@ -48,5 +48,12 @@ int main() {
   if (macos_package.empty() || !contains(macos_package, "#!/usr/bin/env bash") ||
       !contains(macos_package, "MACOSX_DEPLOYMENT_TARGET") ||
       line_count(macos_package) > 230) return 5;
+  const std::string macos_release =
+      read_source("scripts/ci/macos-phase-j-release.sh");
+  if (macos_release.empty() ||
+      !contains(macos_release, "#!/usr/bin/env bash") ||
+      !contains(macos_release, "macos-package.sh") ||
+      !contains(macos_release, "create-release-artifact.py") ||
+      line_count(macos_release) > 150) return 6;
   return 0;
 }

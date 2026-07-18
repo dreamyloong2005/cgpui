@@ -6,8 +6,11 @@
   "content_manifest": "release-manifest.json",
   "archives": {
     "windows": "cgpui-windows-release.zip",
-    "linux": "cgpui-linux-release.tar.gz"
+    "linux": "cgpui-linux-release.tar.gz",
+    "macos_arm64": "cgpui-macos-arm64-release.tar.gz",
+    "macos_x86_64": "cgpui-macos-x86_64-release.tar.gz"
   },
+  "macos_deployment_target": "13.0",
   "normalization": {
     "path_order": "utf8_bytewise_ascending",
     "file_mode": "0644",

@@ -25,6 +25,8 @@ int main() {
   const std::string linux = read_source("scripts/ci/linux-phase-j-release.sh");
   const std::string linux_package = read_source("scripts/ci/linux-package.sh");
   const std::string macos_package = read_source("scripts/ci/macos-package.sh");
+  const std::string macos_release =
+      read_source("scripts/ci/macos-phase-j-release.sh");
   const std::string bootstrap =
       read_source(".github/actions/setup-phase-j-dependencies/action.yml");
   const std::string workflow = read_source(".github/workflows/phase-j-windows-linux.yml");
@@ -74,5 +76,14 @@ int main() {
       !contains(macos_package, "metadata/build.json") ||
       !contains(macos_package, "metadata/xmake-requires.lock") ||
       !contains(macos_package, "arm64|x86_64")) return 9;
+  if (!contains(packer, "\"macos\"") ||
+      !contains(packer, "architecture") ||
+      !contains(packer, "deployment_target") ||
+      !contains(policy, "cgpui-macos-arm64-release.tar.gz") ||
+      !contains(policy, "cgpui-macos-x86_64-release.tar.gz") ||
+      !contains(policy, "\"macos_deployment_target\": \"13.0\"") ||
+      !contains(macos_release, "macos-package.sh") ||
+      !contains(macos_release, "create-release-artifact.py") ||
+      !contains(macos_release, "cmp -s")) return 10;
   return 0;
 }

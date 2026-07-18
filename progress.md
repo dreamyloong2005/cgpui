@@ -25812,3 +25812,10 @@
 - A real arm64 Release package stages seven static libraries, one arm64 Mach-O
   demo, two metadata files, and all 187/187 public headers. The reparsed base
   manifest records macOS, arm64, Release, and deployment target 13.0.
+- Task 6 RED confirms the existing packer rejects `--platform macos`, while the
+  extended release guards return behavior 10 and structure 6. GREEN adds the
+  two exact artifact names and a 95-line native Release owner.
+- Two arm64 tar.gz writes from the same package tree match at SHA-256
+  `c11ea8f5784647edce1de02a95a0624cdabe956ea0fe694c4e519fb7eb5a11f4`.
+  Independent audit verifies all 199 manifest files and 200 archive entries;
+  focused release tests pass 2/2 and completion advances to raw exit 60.
