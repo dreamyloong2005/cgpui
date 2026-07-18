@@ -12992,3 +12992,9 @@
 - The platform-neutral `TestApp` stress surface completes all eight scenarios
   on native macOS arm64, so architecture-specific evidence belongs in report
   identity and CI selection rather than duplicated scenario implementations.
+- The macOS package boundary needs seven archives: the five platform-neutral
+  layers plus `cgpui_platform_macos` and `cgpui_renderer_metal`. The native
+  hello-window executable is an arm64 Mach-O in the arm64 package.
+- Keeping build metadata and the exact dependency lock under `metadata/` makes
+  the package manifest self-describing without widening the public include or
+  library surface.

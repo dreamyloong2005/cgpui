@@ -25806,3 +25806,9 @@
 - Focused stress guards pass 2/2; wrong-architecture and parent-traversal probes
   each reject with exit 3; completion advances to raw exit 50. A real arm64
   scale-1 run emits eight unique scenarios and all report `complete`.
+- Task 5 RED is exact at release behavior exit 9 and structure exit 5. GREEN
+  adds a 177-line native package owner with all destructive work gated behind
+  architecture, deployment-target, Xmake-version, and workspace checks.
+- A real arm64 Release package stages seven static libraries, one arm64 Mach-O
+  demo, two metadata files, and all 187/187 public headers. The reparsed base
+  manifest records macOS, arm64, Release, and deployment target 13.0.

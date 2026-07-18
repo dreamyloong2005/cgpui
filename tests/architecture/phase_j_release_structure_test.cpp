@@ -44,5 +44,9 @@ int main() {
       line_count(read_source("scripts/ci/windows-phase-j-release.ps1")) > 100 ||
       line_count(read_source("scripts/ci/linux-phase-j-release.sh")) > 100 ||
       line_count(read_source(".github/workflows/phase-j-windows-linux.yml")) > 260) return 4;
+  const std::string macos_package = read_source("scripts/ci/macos-package.sh");
+  if (macos_package.empty() || !contains(macos_package, "#!/usr/bin/env bash") ||
+      !contains(macos_package, "MACOSX_DEPLOYMENT_TARGET") ||
+      line_count(macos_package) > 230) return 5;
   return 0;
 }

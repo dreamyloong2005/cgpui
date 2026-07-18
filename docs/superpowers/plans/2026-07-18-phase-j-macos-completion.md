@@ -666,14 +666,14 @@ git commit -m "test: add phase j macos stress matrix"
 - Modify: `tests/api_parity/phase_j_release_audit_test.cpp`
 - Modify: `tests/architecture/phase_j_release_structure_test.cpp`
 
-- [ ] **Step 1: Make release guards RED for the macOS package contract**
+- [x] **Step 1: Make release guards RED for the macOS package contract**
 
 Require `macos-package.sh`, seven exact static libraries, `hello_window`,
 `deployment_target`, `metadata/build.json`, `metadata/xmake-requires.lock`, and
 the two supported architectures. Expected: focused release behavior returns
 the new package exit and structure reports the missing script.
 
-- [ ] **Step 2: Implement strict argument and output-root checks**
+- [x] **Step 2: Implement strict argument and output-root checks**
 
 The script interface is `macos-package.sh <arm64|x86_64> <debug|release>
 [output-root]`. Begin with:
@@ -706,7 +706,7 @@ output_root="$(cd "$output_probe" && pwd -P)$output_suffix"
 Only after these checks may the script run `rm -rf -- "$output_root"` and create
 the build/config/global/package/temp directories.
 
-- [ ] **Step 3: Configure, build, and stage the exact package payload**
+- [x] **Step 3: Configure, build, and stage the exact package payload**
 
 Use repository-local config/global/package/temp roots and:
 
@@ -731,7 +731,7 @@ Install libraries at mode `0644`, `hello_window` at `0755`, all
 `metadata/build.json` containing schema version, architecture, deployment target,
 Xmake version first line, `sw_vers` product/build values, and Xcode version.
 
-- [ ] **Step 4: Write and immediately reparse the base manifest**
+- [x] **Step 4: Write and immediately reparse the base manifest**
 
 The manifest object is exact except for the requested architecture and mode:
 
@@ -755,7 +755,7 @@ Fail unless the reparsed object is identical, all required paths exist, the
 staged public-header count equals the repository count, and every staged library
 comes from `$binary_root`.
 
-- [ ] **Step 5: Run syntax and focused GREEN checks**
+- [x] **Step 5: Run syntax and focused GREEN checks**
 
 ```bash
 bash -n scripts/ci/macos-package.sh
@@ -768,7 +768,7 @@ xmake test -P . -y -j 1 -v phase_j_release_audit_test/default \
 Expected: release tests pass `2/2`; the comprehensive completion guard remains
 at exit `50` because the Release wrapper and macOS policy entries are next.
 
-- [ ] **Step 6: Commit the package stage**
+- [x] **Step 6: Commit the package stage**
 
 ```bash
 git add scripts/ci/macos-package.sh \
