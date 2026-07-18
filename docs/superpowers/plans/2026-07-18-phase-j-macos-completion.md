@@ -1220,12 +1220,21 @@ git commit -m "docs: reopen phase j macos verification"
 ### Task 9: Run and Record the Complete Local arm64 Matrix
 
 **Files:**
+- Modify: `docs/gpui-complete-parity-ledger.json`
 - Modify: `docs/gpui-phase-j-final-verification.json`
+- Modify: `scripts/ci/macos-debug.sh`
+- Modify: `tests/architecture/phase_g_action_macro_structure_test.cpp`
+- Modify: `tests/architecture/phase_g_architecture_header_matrix_structure_test.cpp`
+- Modify: `tests/architecture/phase_g_linux_debug_packaging_structure_test.cpp`
+- Modify: `tests/architecture/phase_g_release_packaging_structure_test.cpp`
+- Modify: `tests/architecture/phase_g_windows_debug_packaging_structure_test.cpp`
+- Modify: `tests/architecture/phase_h_macos_example_smoke_structure_test.cpp`
+- Modify: `tests/architecture/phase_h_macos_full_debug_verification_structure_test.cpp`
 - Modify: `task_plan.md`
 - Modify: `findings.md`
 - Modify: `progress.md`
 
-- [ ] **Step 1: Confirm the native environment before any build**
+- [x] **Step 1: Confirm the native environment before any build**
 
 ```bash
 test "$(uname -s)" = Darwin
@@ -1242,7 +1251,7 @@ Expected: all checks exit `0`. If the Xmake suffix changes but remains the
 3.0.9 line, record the observed line in evidence and continue only after the
 scripts' locked-version checks pass.
 
-- [ ] **Step 2: Run the full Debug suite and official examples**
+- [x] **Step 2: Run the full Debug suite and official examples**
 
 ```bash
 bash scripts/ci/macos-debug.sh build/phase-j-local/macos-arm64-debug \
@@ -1254,7 +1263,7 @@ bash scripts/ci/macos-example-smoke.sh \
 Expected: complete Xmake Debug summary has zero failures; 21 canonical example
 targets, native smoke/pixel/input groups, and four `hello_window` modes pass.
 
-- [ ] **Step 3: Run performance, stress, Release, and structure matrices**
+- [x] **Step 3: Run performance, stress, Release, and structure matrices**
 
 ```bash
 CGPUI_PERFORMANCE_OUTPUT_DIR=build/phase-j-local/reports/performance \
@@ -1271,7 +1280,7 @@ Expected: eight performance metrics pass policy; exactly eight stress scenarios
 pass profile; the arm64 archive reproduces byte-for-byte and every archived hash
 matches; every architecture/header target passes.
 
-- [ ] **Step 4: Audit generated evidence with structured readers**
+- [x] **Step 4: Audit generated evidence with structured readers**
 
 ```bash
 python3 tools/gpui_parity/validate_performance_baseline.py \
@@ -1287,7 +1296,7 @@ python3 -m json.tool build/phase-j-local/macos-arm64-release/artifacts/release-m
 Expected: both validators exit `0`; one exact archive SHA-256 is printed; JSON
 parses; performance and stress reports remain in separate subdirectories.
 
-- [ ] **Step 5: Record provisional arm64 evidence without closing Phase J**
+- [x] **Step 5: Record provisional arm64 evidence without closing Phase J**
 
 Set `macos.arm64.status` to `passed_local`, record the executed commands, Debug
 test count/duration from the summary, archive name/SHA-256/manifest file count,
@@ -1295,7 +1304,7 @@ eight performance metrics, and eight stress scenarios. Keep x86_64 `pending`,
 overall status `pending`, `phase_j_status=complete_non_macos`, and required macOS
 gaps at `1`.
 
-- [ ] **Step 6: Re-run focused guards and commit local evidence**
+- [x] **Step 6: Re-run focused guards and commit local evidence**
 
 ```bash
 xmake test -P . -y -j 1 -v phase_j_macos_completion_test/default \
@@ -1303,7 +1312,18 @@ xmake test -P . -y -j 1 -v phase_j_macos_completion_test/default \
   phase_j_final_closeout_test/default \
   phase_j_final_closeout_structure_test/default
 git diff --check
-git add docs/gpui-phase-j-final-verification.json task_plan.md findings.md progress.md
+git add docs/gpui-complete-parity-ledger.json \
+  docs/gpui-phase-j-final-verification.json \
+  docs/superpowers/plans/2026-07-18-phase-j-macos-completion.md \
+  scripts/ci/macos-debug.sh \
+  tests/architecture/phase_g_action_macro_structure_test.cpp \
+  tests/architecture/phase_g_architecture_header_matrix_structure_test.cpp \
+  tests/architecture/phase_g_linux_debug_packaging_structure_test.cpp \
+  tests/architecture/phase_g_release_packaging_structure_test.cpp \
+  tests/architecture/phase_g_windows_debug_packaging_structure_test.cpp \
+  tests/architecture/phase_h_macos_example_smoke_structure_test.cpp \
+  tests/architecture/phase_h_macos_full_debug_verification_structure_test.cpp \
+  task_plan.md findings.md progress.md
 git commit -m "test: record local phase j macos arm64"
 ```
 

@@ -89,7 +89,7 @@ int main() {
   }
   if (line_count(wrapper) > 20 || line_count(core) > 190 ||
       line_count(workflow) > 150 ||
-      line_count(xmake) > 4340) return 6;
+      line_count(xmake) > 4350) return 6;
 
   constexpr const char* completion =
       "Phase G Step 668 adds a Linux Debug CI packaging path with "

@@ -82,7 +82,7 @@ mkdir -p "$XMAKE_CONFIGDIR" "$XMAKE_GLOBALDIR/.xmake/repositories" \
 
 cd "$repo_root"
 xmake f -y -c -m debug -P "$repo_root"
-xmake test -y -P "$repo_root"
+xmake test -y -P "$repo_root" -j 1 -v
 git diff --check
 
 printf '%s\n' "macOS Debug verification passed"

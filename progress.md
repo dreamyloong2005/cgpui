@@ -25833,3 +25833,26 @@
 - All prior Windows, WSLg, X11, Windows/Linux Release, performance, stress, and
   Phase H 380/380 values remain unchanged. The final closeout/completion pair
   passes 2/2 and current user guides contain no active macOS-exclusion prose.
+
+## 2026-07-18 Phase J Local arm64 Verification
+
+- Confirmed Darwin arm64, macOS 26.5.2 (25F84), Xcode 26.6 (17F113), Xmake
+  v3.0.9+HEAD.2b184e178, the pinned Xmake repository commit, and deployment
+  target 13.0 before native execution.
+- The initial full Debug run passed 399/406 and exposed seven stale structure
+  assumptions. Updated those guards for the thin Phase J module, shared example
+  inventory, and dependency-helper ownership; the focused 7/7 regression and
+  fresh complete Debug rerun then passed.
+- The full Debug suite passes 406/406 in 11.458 seconds. The official-example
+  runner builds 21 canonical targets and passes 8/8 native tests plus all four
+  `hello_window` modes.
+- The arm64 performance and stress wrappers produce valid reports with eight
+  metrics and eight complete scenarios. Both structured validators exit 0.
+- The arm64 Release wrapper reproduces byte-for-byte at SHA-256
+  `154e683d1eb5339d0664a7fce562ee58b2e78b4608b9d962190af77d84fa57db`;
+  199 manifest files and 200 archive entries pass independent inspection.
+- The architecture/header matrix passes 174/174 in 84.209 seconds. Final
+  verification now records arm64 as `passed_local`, x86_64 remains `pending`,
+  and Task 10 native dual-architecture CI is next.
+- The final Task 9 closeout/completion gate passes 4/4 in 1.165 seconds with
+  all-desktop authority still pending.

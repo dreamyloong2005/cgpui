@@ -3808,12 +3808,12 @@
     "phase_j_steps_835_840_status": "complete_non_macos",
     "phase_j_required_non_macos_gaps": 0,
     "phase_j_macos_completion_status": "pending_native_dual_arch_verification",
-    "phase_j_required_macos_gaps": 2,
+    "phase_j_required_macos_gaps": 1,
     "phase_j_macos_architectures": ["arm64", "x86_64"],
     "phase_j_macos_deployment_target": "13.0",
     "phase_j_final_verification": "Phase J Step 840 completes non-macOS closure with Windows/WSLg/isolated-Xvfb verification, reproducible Windows/Linux Release artifacts, passing Windows/Wayland/X11 performance and stress reports, and preserved Phase H macOS evidence without new macOS execution.",
     "phase_j_final_verification_source": "docs/gpui-phase-j-final-verification.json",
-    "phase_j_current_handoff": "Phase J macOS arm64 local verification, then native arm64/x86_64 CI",
+    "phase_j_current_handoff": "Phase J native arm64/x86_64 CI and artifact verification",
     "phase_j_upstream_drift_handoff": "Phase J Steps 841+ upstream drift delta plan"
   },
   "categories": [

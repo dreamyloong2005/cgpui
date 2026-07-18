@@ -4902,9 +4902,10 @@ implementation slice.
 ## 2026-07-17 Phase J Non-macOS Baseline and Active macOS Completion Goal
 
 - Status: complete_non_macos
-- Active work status: product_implementation_task_9_next
+- Active work status: product_implementation_task_10_next
 - macOS completion status: pending_native_dual_arch_verification
-- Required macOS gaps: 2 (`arm64`, `x86_64`)
+- Required macOS gaps: 1 (`x86_64`; arm64 has complete local evidence and still
+  requires native CI confirmation)
 - macOS deployment target: 13.0
 - Authoritative scope: Phase J Steps 799-840+ in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
@@ -4937,6 +4938,12 @@ implementation slice.
 - Verification policy: keep Xmake build/test commands serial with `-j 1`, use
   RED-GREEN tracer guards at the public seams above, keep `.vscode/` untracked,
   and commit completed slices locally without pushing unless requested.
+- Task 9 local arm64 matrix: Debug 406/406, 21 official example targets plus
+  native smoke coverage, eight performance metrics, eight stress scenarios,
+  deterministic Release SHA-256
+  `154e683d1eb5339d0664a7fce562ee58b2e78b4608b9d962190af77d84fa57db`,
+  and architecture/header 174/174 all pass. Task 10 native dual-architecture CI
+  and artifact verification is next; all-desktop authority remains pending.
 
 ### Errors Encountered During Phase J
 
@@ -4983,3 +4990,5 @@ implementation slice.
 | The first post-closeout Windows full suite passed 492/494; only the documentation and release audits returned exits `6` and `8` | Steps 835-840 final Windows regression | Both guards still froze the completed Step 835 handoff; migrate their dynamic ledger assertion to `Phase J Steps 841+ upstream drift delta plan`, rebuild each target serially, and require the focused pair plus the full suite to pass |
 | The local Python environment does not provide `markdown_it` | Steps 835-840 final Markdown audit | Use a read-only PowerShell Markdown link-target scan for repository-local links; no dependency installation or source change is required |
 | The first fallback Markdown scan treated code-like `T&` text in `findings.md` as a link target | Steps 835-840 final Markdown audit | Restrict the documentation-link audit to README and `docs/**/*.md`; all 85 user documentation files then report zero broken local links |
+| The first local arm64 Debug run passed 399/406 because seven structure guards froze the pre-Phase-J root budget, target inventory, duplicate example inventory, or dependency-helper ownership | Task 9 local Debug verification | Align the focused guards with the thin Phase J module and current owners, pass the focused 7/7 regression, then rerun the complete Debug suite at 406/406 |
+| The first Task 9 performance invocation sourced the Bash dependency helper from the default zsh and rejected a derived `/build` path | Task 9 performance verification | Confirm the shell mismatch with a minimal source probe, then run every dependency activation explicitly under `/bin/bash`; no source change or workspace-external output was needed |

@@ -102,7 +102,7 @@ int main() {
   if (line_count(windows_core) > 190 || line_count(linux_core) > 190 ||
       line_count(windows_debug) > 35 || line_count(windows_release) > 35 ||
       line_count(linux_debug) > 20 || line_count(linux_release) > 20 ||
-      line_count(workflow) > 150 || line_count(xmake) > 4340) return 7;
+      line_count(workflow) > 150 || line_count(xmake) > 4350) return 7;
 
   constexpr const char* completion =
       "Phase G Step 669 adds Windows and Linux Release CI packaging paths "

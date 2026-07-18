@@ -91,7 +91,7 @@ int main() {
     return 5;
   }
   if (line_count(macros) > 150 || line_count(behavior) > 45 ||
-      line_count(cleanliness) > 20 || line_count(xmake) > 4340) {
+      line_count(cleanliness) > 20 || line_count(xmake) > 4350) {
     return 6;
   }
 
