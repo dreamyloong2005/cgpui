@@ -3742,7 +3742,7 @@
     "phase_j_steps_799_804_status": "complete",
     "phase_j_steps_805_810_status": "complete",
     "phase_j_upstream_audit": "Phase J Step 804 locks the live pinned-upstream audit at 55 public re-exports/modules, 20 official Cargo examples, 32 accepted ledger rows, and zero unresolved required rows.",
-    "phase_j_official_example_evidence": "Phase J Step 810 locks all 20 official examples to canonical CGPUI targets, Windows/Wayland/X11 compile-and-smoke execution, focused pixel/input evidence, and explicit C++ adaptations; new macOS execution remains excluded by user scope.",
+    "phase_j_official_example_evidence": "Phase J Step 810 locks all 20 official examples to canonical CGPUI targets, Windows/Wayland/X11 compile-and-smoke execution, focused pixel/input evidence, explicit C++ adaptations, and required macOS mappings pending native dual-architecture verification.",
     "phase_j_official_example_sources": [
       "docs/gpui-upstream-snapshot.json",
       "docs/gpui-official-example-matrix.json",
@@ -3755,7 +3755,7 @@
       "tests/architecture/phase_j_official_example_structure_test.cpp"
     ],
     "phase_j_steps_811_816_status": "complete",
-    "phase_j_performance_evidence": "Phase J Step 816 adds a public-API performance runner for startup, first frame, resize, text layout, large-list scrolling, image loading, async wakeups, and frame pacing, with checked-in regression budgets, JSON reports, and Windows/Wayland/X11 CI wrappers.",
+    "phase_j_performance_evidence": "Phase J Step 816 adds a public-API performance runner for startup, first frame, resize, text layout, large-list scrolling, image loading, async wakeups, and frame pacing, with checked-in regression budgets, JSON reports, Windows/Wayland/X11 evidence, and macOS arm64/x86_64 wrappers pending native CI.",
     "phase_j_performance_sources": [
       "tests/performance/phase_j_performance_runner.cpp",
       "docs/gpui-performance-baseline-policy.json",
@@ -3766,7 +3766,7 @@
       "tests/architecture/phase_j_performance_baseline_structure_test.cpp"
     ],
     "phase_j_steps_817_822_status": "complete",
-    "phase_j_stress_evidence": "Phase J Step 822 adds a public stress runner for window churn, entity churn, large uniform lists, IME composition, clipboard ownership, DnD cancellation, concurrent asset reload, and task cancellation, with checked-in scale floors, JSON reports, and Windows/Wayland/X11 wrappers.",
+    "phase_j_stress_evidence": "Phase J Step 822 adds a public stress runner for window churn, entity churn, large uniform lists, IME composition, clipboard ownership, DnD cancellation, concurrent asset reload, and task cancellation, with checked-in scale floors, JSON reports, Windows/Wayland/X11 evidence, and macOS arm64/x86_64 wrappers pending native CI.",
     "phase_j_stress_sources": [
       "include/cgpui/ui/test_app.hpp",
       "src/ui/test_app_input.cpp",
@@ -3792,22 +3792,29 @@
       "tests/architecture/phase_j_documentation_structure_test.cpp"
     ],
     "phase_j_steps_829_834_status": "complete_non_macos",
-    "phase_j_release_evidence": "Phase J Step 834 completes deterministic Windows/Linux release archives for identical package trees, per-file SHA-256 manifests, locked dependency bootstrap, Windows/Wayland/X11 performance and stress CI, example jobs, and architecture/header jobs. Windows Release built and verified locally; Linux Release execution remains in the final WSL matrix. New macOS packaging and CI remain excluded by user scope.",
+    "phase_j_release_evidence": "Phase J Step 834 completes deterministic Windows/Linux release archives and implements architecture-specific macOS arm64/x86_64 tar.gz archives with per-file SHA-256 manifests, locked dependency bootstrap, and desktop CI. Native dual-architecture macOS verification remains pending.",
     "phase_j_release_sources": [
       "docs/gpui-release-artifact-policy.json",
       "scripts/ci/create-release-artifact.py",
       "scripts/ci/windows-phase-j-release.ps1",
       "scripts/ci/linux-phase-j-release.sh",
       ".github/actions/setup-phase-j-dependencies/action.yml",
-      ".github/workflows/phase-j-windows-linux.yml",
+      "scripts/ci/macos-package.sh",
+      "scripts/ci/macos-phase-j-release.sh",
+      ".github/workflows/phase-j-desktop.yml",
       "tests/api_parity/phase_j_release_audit_test.cpp",
       "tests/architecture/phase_j_release_structure_test.cpp"
     ],
     "phase_j_steps_835_840_status": "complete_non_macos",
     "phase_j_required_non_macos_gaps": 0,
+    "phase_j_macos_completion_status": "pending_native_dual_arch_verification",
+    "phase_j_required_macos_gaps": 2,
+    "phase_j_macos_architectures": ["arm64", "x86_64"],
+    "phase_j_macos_deployment_target": "13.0",
     "phase_j_final_verification": "Phase J Step 840 completes non-macOS closure with Windows/WSLg/isolated-Xvfb verification, reproducible Windows/Linux Release artifacts, passing Windows/Wayland/X11 performance and stress reports, and preserved Phase H macOS evidence without new macOS execution.",
     "phase_j_final_verification_source": "docs/gpui-phase-j-final-verification.json",
-    "phase_j_current_handoff": "Phase J Steps 841+ upstream drift delta plan"
+    "phase_j_current_handoff": "Phase J macOS arm64 local verification, then native arm64/x86_64 CI",
+    "phase_j_upstream_drift_handoff": "Phase J Steps 841+ upstream drift delta plan"
   },
   "categories": [
     "application_and_app_context",

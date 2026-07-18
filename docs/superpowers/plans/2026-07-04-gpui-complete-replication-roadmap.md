@@ -2039,20 +2039,25 @@ usable as a C++23 GPUI replacement.
   fail if any required API row lacks a C++ equivalent or accepted adaptation.
 - [x] Steps 805-810: Compile every official example equivalent on every active
   platform and run smoke/pixel/input tests where possible.
+  - [ ] macOS arm64/x86_64: compile and smoke all 20 official equivalents.
 - [x] Steps 811-816: Add performance baselines: startup, first frame, resize,
   text layout, list scrolling, image loading, async wakeups, and frame pacing.
+  - [ ] macOS arm64/x86_64: retain and validate all eight performance reports.
 - [x] Steps 817-822: Add stress tests: window churn, many entities, large
   uniform lists, IME composition, clipboard ownership changes, DnD cancel,
   asset reload, and task cancellation.
+  - [ ] macOS arm64/x86_64: complete all eight stress scenarios.
 - [x] Steps 823-828: Complete documentation: getting started, architecture,
   platform dependencies, examples, migration notes from GPUI concepts to
   C++23 concepts, and non-goal list.
 - [x] Steps 829-834: Package Windows/Linux builds, CI jobs, dependency
-  bootstrap scripts, and release artifacts. New macOS packaging/CI execution
-  remains excluded by the Phase J user scope.
+  bootstrap scripts, and release artifacts.
+  - [ ] macOS arm64/x86_64: reproduce and verify both Release tar.gz artifacts.
 - [x] Steps 835-840: Run final non-macOS matrix verification and lock the parity
   ledger. Any remaining unchecked required row blocks the "fully replicated"
   claim.
+  - [ ] macOS arm64/x86_64: pass Debug, examples, performance, stress, Release,
+    architecture/header CI and close the all-desktop ledger.
 - [ ] Steps 841+: Reserve for upstream drift. If upstream GPUI changes after
   the pinned revision, add a new parity delta plan instead of mutating the
   completed roadmap.
@@ -2063,8 +2068,8 @@ usable as a C++23 GPUI replacement.
   is next.
 - Phase J Step 810 locks all 20 official examples to canonical CGPUI targets,
   Windows/Wayland/X11 compile-and-smoke execution, focused pixel/input evidence,
-  and explicit C++ adaptations; new macOS execution remains excluded by user
-  scope. Step 811 reproducible performance baselines are next.
+  explicit C++ adaptations, and required macOS mappings. Native arm64/x86_64
+  execution remains pending. Step 811 reproducible performance baselines is next.
 - Phase J Step 816 adds a public-API performance runner for startup, first
   frame, resize, text layout, large-list scrolling, image loading, async
   wakeups, and frame pacing, with checked-in regression budgets, JSON reports,
@@ -2083,19 +2088,21 @@ usable as a C++23 GPUI replacement.
   and non-macOS release/example/performance/stress/architecture CI. The local
   Windows Release artifact contains 197 hashed files plus its manifest and is
   byte-reproducible at SHA-256 `14d6fc8819b913f48763579431f57cf2ee7f7b0c79eabb7c5208940b2dcecee5`;
-  final Linux Release execution remains in Steps 835-840. New macOS packaging
-  and CI remain excluded by user scope. Step 835 final non-macOS verification
-  is next.
+  final Linux Release execution remains in Steps 835-840. Architecture-specific
+  macOS packaging and desktop CI are implemented, with native arm64/x86_64
+  execution pending. Step 835 final non-macOS verification is next.
 - Phase J Step 840 completes non-macOS closure with zero required gaps,
   Windows/WSLg/isolated-Xvfb verification, passing Windows/Wayland/X11
   performance and stress reports, and reproducible Windows/Linux Release
-  archives. New macOS execution remains excluded by user scope; preserved
-  Phase H evidence stays at 380/380. Steps 841+ own future upstream drift.
+  archives. Phase J macOS completion remains pending native arm64/x86_64
+  verification; preserved Phase H evidence stays at 380/380. Steps 841+ remain
+  reserved for future upstream drift.
 
 ## Immediate Next Slice
 
-Phase J Steps 841+ begin only when a new pinned upstream revision requires a
-separate parity delta plan; completed Phase J evidence remains immutable.
+Phase J macOS arm64 local verification is next, followed by native arm64/x86_64
+CI and all-desktop ledger closeout. Steps 841+ remain reserved for a new pinned
+upstream revision and a separate parity delta plan.
 
 ### Historical Slice Log
 

@@ -49,6 +49,13 @@ Linux compiles focused Wayland and X11 targets. Selection is deterministic:
 `CGPUI_LINUX_BACKEND`, then `WAYLAND_DISPLAY`, then `DISPLAY`. Vulkan enables
 only the surface extension required by the selected native handle.
 
+## macOS Verification Boundary
+
+Cocoa and Metal share the public runtime and renderer contracts while native
+evidence remains architecture-specific. Phase J retains separate arm64 and
+x86_64 reports and Release artifacts at deployment target 13.0; both native
+CI matrices must pass before all-desktop completion authority can be claimed.
+
 ## Structure Enforcement
 
 Architecture tests guard leaf ownership, aggregate-header cleanliness, source

@@ -13011,3 +13011,9 @@
 - The existing dependency action can remain thin on Darwin by invoking
   `macos-dependencies.sh --github-env`; this keeps pinned repository checkout
   ownership out of YAML and out of `macos-debug.sh`.
+- Pending authority must be additive: the historical non-macOS closure stays
+  complete, while `phase_j_required_macos_gaps: 2` prevents new implementation
+  from being mistaken for verified native arm64/x86_64 completion.
+- Steps 841+ remain reserved for upstream drift. Reopening the macOS gates under
+  Steps 805-840 keeps the pinned revision and historical Phase J evidence
+  stable while making the actual next verification work explicit.

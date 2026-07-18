@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "phase": "J",
-  "scope": "non_macos",
-  "status": "passed",
+  "scope": "all_desktop",
+  "status": "pending",
   "upstream_revision": "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0",
   "windows_debug": {
     "status": "passed",
@@ -57,10 +57,14 @@
     "scenarios_per_platform": 8,
     "reports": "artifacts/phase-j-stress"
   },
-  "macos_execution": "excluded_by_user",
+  "macos": {
+    "deployment_target": "13.0",
+    "arm64": {"runner": "macos-15", "status": "pending"},
+    "x86_64": {"runner": "macos-15-intel", "status": "pending"}
+  },
   "preserved_macos_evidence": "Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84)",
   "notes": [
     "The final WSLg full suite passes x11_input_test; isolated Xvfb remains the authoritative complete 11/11 X11 acceptance matrix.",
-    "No new macOS build, test, package, or CI execution was performed in Phase J."
+    "Phase J all-desktop completion remains pending native arm64 and x86_64 macOS verification."
   ]
 }

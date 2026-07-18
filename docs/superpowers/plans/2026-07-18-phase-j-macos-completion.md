@@ -1131,7 +1131,7 @@ git commit -m "ci: add phase j macos matrices"
 - Modify: `progress.md`
 - Modify: `tests/api_parity/phase_j_final_closeout_test.cpp`
 
-- [ ] **Step 1: Write RED closeout assertions for pending dual-architecture work**
+- [x] **Step 1: Write RED closeout assertions for pending dual-architecture work**
 
 Keep the historical Phase H evidence assertion. Replace current exclusion
 assertions with exact pending fields:
@@ -1148,7 +1148,7 @@ if (!contains(ledger, "\"phase_j_status\": \"complete_non_macos\"") ||
 
 Expected: final closeout behavior is RED before authority files change.
 
-- [ ] **Step 2: Add explicit pending fields while preserving every old result**
+- [x] **Step 2: Add explicit pending fields while preserving every old result**
 
 Keep `phase_j_status`, Steps 829-834/835-840 status, and all historical hashes
 and counts unchanged. Add:
@@ -1174,7 +1174,7 @@ and add:
 Retain the complete original Windows, WSLg, X11, Windows Release, Linux Release,
 performance, stress, and `preserved_macos_evidence` objects.
 
-- [ ] **Step 3: Reopen Steps 805-840 in place in user-facing authority**
+- [x] **Step 3: Reopen Steps 805-840 in place in user-facing authority**
 
 Roadmap checkboxes remain checked for the historical non-macOS portions, and a
 new unchecked nested line under each affected band states its exact macOS gate.
@@ -1194,7 +1194,7 @@ native arm64/x86_64 CI”; Steps 841+ remain reserved and unchanged. Remove all
 current “macOS excluded” prose from README/current guides and replace it with
 the pending dual-architecture contract. Historical dated prose remains intact.
 
-- [ ] **Step 4: Run pending-state GREEN checks**
+- [x] **Step 4: Run pending-state GREEN checks**
 
 ```bash
 xmake build -P . -y -j 1 phase_j_final_closeout_test
@@ -1209,7 +1209,7 @@ git diff --check
 Expected: `2/2`; completion guard accepts the explicit pending state, while no
 document claims Phase J complete for all desktop platforms.
 
-- [ ] **Step 5: Commit pending authority**
+- [x] **Step 5: Commit pending authority**
 
 ```bash
 git add README.md docs task_plan.md findings.md progress.md \
