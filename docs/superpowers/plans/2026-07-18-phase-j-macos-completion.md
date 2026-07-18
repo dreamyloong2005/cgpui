@@ -786,7 +786,7 @@ git commit -m "build: stage native macos packages"
 - Modify: `tests/api_parity/phase_j_release_audit_test.cpp`
 - Modify: `tests/architecture/phase_j_release_structure_test.cpp`
 
-- [ ] **Step 1: Run a RED packer probe using a temporary package tree**
+- [x] **Step 1: Run a RED packer probe using a temporary package tree**
 
 ```bash
 probe=$(mktemp -d)
@@ -812,7 +812,7 @@ python3 scripts/ci/create-release-artifact.py --platform macos \
 Expected: argparse rejects `macos` as an invalid platform before the packer
 change. Remove only the printed temporary probe directory after inspection.
 
-- [ ] **Step 2: Extend the structured archive writer**
+- [x] **Step 2: Extend the structured archive writer**
 
 Change platform choices to `("windows", "linux", "macos")`. After reading the
 base manifest, enforce:
@@ -832,7 +832,7 @@ Add `architecture` to every content manifest and add
 `deployment_target: "13.0"` only for macOS. Keep Windows ZIP behavior and route
 Linux/macOS through the existing deterministic USTAR plus gzip writer.
 
-- [ ] **Step 3: Create the one-architecture Release wrapper**
+- [x] **Step 3: Create the one-architecture Release wrapper**
 
 Use interface `macos-phase-j-release.sh <arm64|x86_64> [output-root]`, repeat
 the native host, parent traversal, workspace, deployment target, and Xmake
@@ -878,7 +878,7 @@ every manifest file size/SHA-256/mode, `platform=macos`, exact architecture,
 `mode=release`, and `deployment_target=13.0`. Remove only the verification
 archive after it passes and copy `release-manifest.json` beside the artifact.
 
-- [ ] **Step 4: Extend release policy with exact artifact names**
+- [x] **Step 4: Extend release policy with exact artifact names**
 
 ```json
 "archives": {
@@ -890,7 +890,7 @@ archive after it passes and copy `release-manifest.json` beside the artifact.
 "macos_deployment_target": "13.0"
 ```
 
-- [ ] **Step 5: Run GREEN and advance the staged guard**
+- [x] **Step 5: Run GREEN and advance the staged guard**
 
 ```bash
 python3 -m py_compile scripts/ci/create-release-artifact.py
@@ -904,7 +904,7 @@ xmake run -P . phase_j_macos_completion_test; test $? -eq 60
 
 Expected: release pair passes `2/2`; completion advances to CI exit `60`.
 
-- [ ] **Step 6: Commit deterministic Release support**
+- [x] **Step 6: Commit deterministic Release support**
 
 ```bash
 git add scripts/ci/macos-phase-j-release.sh scripts/ci/create-release-artifact.py \

@@ -18,7 +18,9 @@ CONTENT_MANIFEST = "release-manifest.json"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--platform", choices=("windows", "linux"), required=True)
+    parser.add_argument(
+        "--platform", choices=("windows", "linux", "macos"), required=True
+    )
     parser.add_argument("--package-root", type=Path, required=True)
     parser.add_argument("--package-name", required=True)
     parser.add_argument("--archive-name", required=True)
@@ -60,6 +62,14 @@ def write_content_manifest(
     base_manifest = json.loads((package_root / "manifest.json").read_text("utf-8-sig"))
     if base_manifest.get("platform") != platform or base_manifest.get("mode") != "release":
         raise SystemExit("package manifest platform/mode does not match release request")
+    architecture = base_manifest.get("architecture")
+    if not isinstance(architecture, str) or not architecture:
+        raise SystemExit("package manifest architecture is missing")
+    if platform == "macos":
+        if architecture not in {"arm64", "x86_64"}:
+            raise SystemExit("unsupported macOS package architecture")
+        if base_manifest.get("deployment_target") != "13.0":
+            raise SystemExit("macOS package deployment target must be 13.0")
     entries = [
         {
             "path": relative,
@@ -73,12 +83,16 @@ def write_content_manifest(
         "schema_version": 1,
         "package": package_name,
         "platform": platform,
+        "architecture": architecture,
         "archive": archive_name,
         "source_date_epoch": epoch,
         "files": entries,
     }
+    if platform == "macos":
+        manifest["deployment_target"] = "13.0"
     path = package_root / CONTENT_MANIFEST
-    path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
+    with path.open("w", encoding="utf-8", newline="\n") as output:
+        output.write(json.dumps(manifest, indent=2) + "\n")
     return path
 
 
