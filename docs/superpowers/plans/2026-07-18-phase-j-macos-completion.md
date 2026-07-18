@@ -29,7 +29,8 @@
 
 - Native architectures are exactly `arm64` and `x86_64`; `uname -m` must equal the requested value.
 - Every macOS configure/build/test entry exports `MACOSX_DEPLOYMENT_TARGET=13.0`.
-- Xmake must report `xmake v3.0.9`; all build/test commands use `-j 1` where the subcommand accepts it.
+- Xmake must report `xmake v3.0.9`; all build/test commands use noninteractive
+  `-y` and `-j 1` where the subcommand accepts those options.
 - Release names are exactly `cgpui-macos-arm64-release.tar.gz` and `cgpui-macos-x86_64-release.tar.gz`.
 - Runners record platform as `macos-arm64` or `macos-x86_64`.
 - Current authority stays `complete_non_macos` while either native architecture is unverified.
@@ -57,7 +58,7 @@ global repository state is not Phase J evidence.
 - Modify: `xmake.lua:4132`
 - Modify: `scripts/ci/architecture-header-targets.txt`
 
-- [ ] **Step 1: Establish the pinned local dependency environment**
+- [x] **Step 1: Establish the pinned local dependency environment**
 
 Create the helper with function
 `cgpui_configure_macos_dependency_environment <root> [--github-env]`. It
@@ -122,7 +123,7 @@ Run `bash -n scripts/ci/macos-dependencies.sh`, source it, invoke it with the
 fixed implementation dependency root above, and require the checked-out commit
 from `git -C "$XMAKE_GLOBALDIR/.xmake/repositories/xmake-repo" rev-parse HEAD`.
 
-- [ ] **Step 2: Write the behavior guard with staged failure bands**
+- [x] **Step 2: Write the behavior guard with staged failure bands**
 
 Create a source-only guard using the repository's `read_source`, `contains`, and
 `count` helpers. The main body must use stable exit bands so later tasks have an
@@ -172,7 +173,7 @@ int main() {
 }
 ```
 
-- [ ] **Step 3: Write the structure guard before creating the owned files**
+- [x] **Step 3: Write the structure guard before creating the owned files**
 
 Require the thin root include, the new module, all focused scripts, the
 desktop workflow, and architecture manifest registration. Enforce these line
@@ -200,7 +201,7 @@ if (!contains(manifest,
     "phase_j_macos_completion_structure_test.cpp")) return 30;
 ```
 
-- [ ] **Step 4: Register both guards in a focused Xmake module**
+- [x] **Step 4: Register both guards in a focused Xmake module**
 
 ```lua
 target("phase_j_macos_completion_structure_test")
@@ -222,22 +223,22 @@ Add `includes("build/xmake/phase_j_macos_targets.lua")` after the existing
 Phase J closeout include and append the exact structure target/source pair to
 `scripts/ci/architecture-header-targets.txt`.
 
-- [ ] **Step 5: Run the deliberate RED guards**
+- [x] **Step 5: Run the deliberate RED guards**
 
 Run:
 
 ```bash
-xmake build -P . -j 1 phase_j_macos_completion_test
-xmake build -P . -j 1 phase_j_macos_completion_structure_test
-xmake run -P . phase_j_macos_completion_test
-xmake run -P . phase_j_macos_completion_structure_test
+xmake build -P . -y -j 1 phase_j_macos_completion_test
+xmake build -P . -y -j 1 phase_j_macos_completion_structure_test
+CGPUI_SOURCE_ROOT="$PWD" build/macosx/arm64/release/phase_j_macos_completion_test
+CGPUI_SOURCE_ROOT="$PWD" build/macosx/arm64/release/phase_j_macos_completion_structure_test
 ```
 
 Expected: both targets compile; behavior exits `20` because all 20 matrix rows
 still exclude macOS, and structure exits `10` because the focused scripts and
 desktop workflow do not exist.
 
-- [ ] **Step 6: Commit the RED guard boundary**
+- [x] **Step 6: Commit the RED guard boundary**
 
 ```bash
 git add scripts/ci/macos-dependencies.sh build/xmake/phase_j_macos_targets.lua \
@@ -277,9 +278,9 @@ budgets only if the new exact checks exceed the current limits.
 Run:
 
 ```bash
-xmake build -P . -j 1 phase_j_official_example_audit_test
-xmake build -P . -j 1 phase_j_official_example_structure_test
-xmake test -P . -j 1 -v phase_j_official_example_audit_test/default \
+xmake build -P . -y -j 1 phase_j_official_example_audit_test
+xmake build -P . -y -j 1 phase_j_official_example_structure_test
+xmake test -P . -y -j 1 -v phase_j_official_example_audit_test/default \
   phase_j_official_example_structure_test/default
 ```
 
@@ -328,7 +329,7 @@ native_tests=(
   macos_platform_services_test/default
   macos_accessibility_test/default
 )
-xmake test -P "$repo_root" -j 1 -v "${native_tests[@]}"
+xmake test -P "$repo_root" -y -j 1 -v "${native_tests[@]}"
 ```
 
 Retain the four `hello_window/macos_*` smoke modes and run them with `-j 1 -v`.
@@ -401,9 +402,9 @@ Expected: exit `0`, `official_examples=20`, `mapped_examples=20`,
 
 ```bash
 bash -n scripts/ci/macos-example-smoke.sh
-xmake build -P . -j 1 phase_j_official_example_audit_test
-xmake build -P . -j 1 phase_j_official_example_structure_test
-xmake test -P . -j 1 -v phase_j_official_example_audit_test/default \
+xmake build -P . -y -j 1 phase_j_official_example_audit_test
+xmake build -P . -y -j 1 phase_j_official_example_structure_test
+xmake test -P . -y -j 1 -v phase_j_official_example_audit_test/default \
   phase_j_official_example_structure_test/default
 xmake run -P . phase_j_macos_completion_test; test $? -eq 30
 ```
@@ -504,7 +505,7 @@ output_path="$(cd "$output_probe" && pwd -P)$output_suffix"
 [[ "$output_path" != "$root" && "$output_path/" == "$root/"* ]] || exit 3
 mkdir -p "$output_path"
 cd "$root"
-xmake build -P "$root" -j 1 phase_j_performance_runner
+xmake build -P "$root" -y -j 1 phase_j_performance_runner
 xmake run -P "$root" phase_j_performance_runner --platform "macos-$arch" \
   --output "$output_path/macos-$arch.json" --iterations "$iterations"
 python3 tools/gpui_parity/validate_performance_baseline.py \
@@ -516,9 +517,9 @@ python3 tools/gpui_parity/validate_performance_baseline.py \
 
 ```bash
 bash -n scripts/ci/macos-performance-baseline.sh
-xmake build -P . -j 1 phase_j_performance_baseline_audit_test
-xmake build -P . -j 1 phase_j_performance_baseline_structure_test
-xmake test -P . -j 1 -v phase_j_performance_baseline_audit_test/default \
+xmake build -P . -y -j 1 phase_j_performance_baseline_audit_test
+xmake build -P . -y -j 1 phase_j_performance_baseline_structure_test
+xmake test -P . -y -j 1 -v phase_j_performance_baseline_audit_test/default \
   phase_j_performance_baseline_structure_test/default
 xmake run -P . phase_j_macos_completion_test; test $? -eq 40
 ```
@@ -626,7 +627,7 @@ output_path="$(cd "$output_probe" && pwd -P)$output_suffix"
 [[ "$output_path" != "$root" && "$output_path/" == "$root/"* ]] || exit 3
 mkdir -p "$output_path"
 cd "$root"
-xmake build -P "$root" -j 1 phase_j_stress_runner
+xmake build -P "$root" -y -j 1 phase_j_stress_runner
 xmake run -P "$root" phase_j_stress_runner --platform "macos-$arch" \
   --output "$output_path/macos-$arch.json" --scale "$scale"
 python3 tools/gpui_parity/validate_stress_report.py \
@@ -638,9 +639,9 @@ python3 tools/gpui_parity/validate_stress_report.py \
 
 ```bash
 bash -n scripts/ci/macos-stress-matrix.sh
-xmake build -P . -j 1 phase_j_stress_audit_test
-xmake build -P . -j 1 phase_j_stress_structure_test
-xmake test -P . -j 1 -v phase_j_stress_audit_test/default \
+xmake build -P . -y -j 1 phase_j_stress_audit_test
+xmake build -P . -y -j 1 phase_j_stress_structure_test
+xmake test -P . -y -j 1 -v phase_j_stress_audit_test/default \
   phase_j_stress_structure_test/default
 xmake run -P . phase_j_macos_completion_test; test $? -eq 50
 ```
@@ -715,8 +716,8 @@ export XMAKE_PKG_CACHEDIR="${XMAKE_PKG_CACHEDIR:-$output_root/pkg-cache}"
 export XMAKE_PKG_INSTALLDIR="${XMAKE_PKG_INSTALLDIR:-$output_root/pkg-install}"
 export TMPDIR="${TMPDIR:-$output_root/tmp}"
 xmake f -P "$repo_root" -y -c -m "$mode" -a "$arch" --ccache=n -o "$build_root"
-xmake build -P "$repo_root" -j 1 cgpui_app
-xmake build -P "$repo_root" -j 1 hello_window
+xmake build -P "$repo_root" -y -j 1 cgpui_app
+xmake build -P "$repo_root" -y -j 1 hello_window
 binary_root="$build_root/macosx/$arch/$mode"
 libraries=(
   libcgpui_core.a libcgpui_platform.a libcgpui_platform_macos.a
@@ -757,9 +758,9 @@ comes from `$binary_root`.
 
 ```bash
 bash -n scripts/ci/macos-package.sh
-xmake build -P . -j 1 phase_j_release_audit_test
-xmake build -P . -j 1 phase_j_release_structure_test
-xmake test -P . -j 1 -v phase_j_release_audit_test/default \
+xmake build -P . -y -j 1 phase_j_release_audit_test
+xmake build -P . -y -j 1 phase_j_release_structure_test
+xmake test -P . -y -j 1 -v phase_j_release_audit_test/default \
   phase_j_release_structure_test/default
 ```
 
@@ -893,9 +894,9 @@ archive after it passes and copy `release-manifest.json` beside the artifact.
 ```bash
 python3 -m py_compile scripts/ci/create-release-artifact.py
 bash -n scripts/ci/macos-phase-j-release.sh
-xmake build -P . -j 1 phase_j_release_audit_test
-xmake build -P . -j 1 phase_j_release_structure_test
-xmake test -P . -j 1 -v phase_j_release_audit_test/default \
+xmake build -P . -y -j 1 phase_j_release_audit_test
+xmake build -P . -y -j 1 phase_j_release_structure_test
+xmake test -P . -y -j 1 -v phase_j_release_audit_test/default \
   phase_j_release_structure_test/default
 xmake run -P . phase_j_macos_completion_test; test $? -eq 60
 ```
@@ -1040,7 +1041,7 @@ for target in "${targets[@]}"; do
 done
 filters=()
 for target in "${targets[@]}"; do filters+=("$target/default"); done
-xmake test -P "$repo_root" -j 1 -v "${filters[@]}"
+xmake test -P "$repo_root" -y -j 1 -v "${filters[@]}"
 ```
 
 - [ ] **Step 6: Rename and extend the workflow with four matrices**
@@ -1089,9 +1090,9 @@ bash -n scripts/ci/macos-debug.sh scripts/ci/macos-dependencies.sh \
   scripts/ci/macos-architecture-header.sh
 ruby -e 'require "yaml"; YAML.load_file(".github/workflows/phase-j-desktop.yml"); YAML.load_file(".github/actions/setup-phase-j-dependencies/action.yml")'
 test ! -e .github/workflows/phase-j-windows-linux.yml
-xmake build -P . -j 1 phase_j_release_audit_test
-xmake build -P . -j 1 phase_j_release_structure_test
-xmake test -P . -j 1 -v phase_j_release_audit_test/default \
+xmake build -P . -y -j 1 phase_j_release_audit_test
+xmake build -P . -y -j 1 phase_j_release_structure_test
+xmake test -P . -y -j 1 -v phase_j_release_audit_test/default \
   phase_j_release_structure_test/default
 xmake run -P . phase_j_macos_completion_test; test $? -eq 70
 xmake run -P . phase_j_macos_completion_structure_test
@@ -1195,9 +1196,9 @@ the pending dual-architecture contract. Historical dated prose remains intact.
 - [ ] **Step 4: Run pending-state GREEN checks**
 
 ```bash
-xmake build -P . -j 1 phase_j_final_closeout_test
-xmake build -P . -j 1 phase_j_macos_completion_test
-xmake test -P . -j 1 -v phase_j_final_closeout_test/default \
+xmake build -P . -y -j 1 phase_j_final_closeout_test
+xmake build -P . -y -j 1 phase_j_macos_completion_test
+xmake test -P . -y -j 1 -v phase_j_final_closeout_test/default \
   phase_j_macos_completion_test/default
 python3 -m json.tool docs/gpui-complete-parity-ledger.json >/dev/null
 python3 -m json.tool docs/gpui-phase-j-final-verification.json >/dev/null
@@ -1296,7 +1297,7 @@ gaps at `1`.
 - [ ] **Step 6: Re-run focused guards and commit local evidence**
 
 ```bash
-xmake test -P . -j 1 -v phase_j_macos_completion_test/default \
+xmake test -P . -y -j 1 -v phase_j_macos_completion_test/default \
   phase_j_macos_completion_structure_test/default \
   phase_j_final_closeout_test/default \
   phase_j_final_closeout_structure_test/default
@@ -1425,11 +1426,11 @@ Keep the exact Phase H 380/380 assertion and the Windows/Linux evidence checks.
 - [ ] **Step 6: Run the final local closeout and static audits**
 
 ```bash
-xmake build -P . -j 1 phase_j_macos_completion_test
-xmake build -P . -j 1 phase_j_macos_completion_structure_test
-xmake build -P . -j 1 phase_j_final_closeout_test
-xmake build -P . -j 1 phase_j_final_closeout_structure_test
-xmake test -P . -j 1 -v phase_j_macos_completion_test/default \
+xmake build -P . -y -j 1 phase_j_macos_completion_test
+xmake build -P . -y -j 1 phase_j_macos_completion_structure_test
+xmake build -P . -y -j 1 phase_j_final_closeout_test
+xmake build -P . -y -j 1 phase_j_final_closeout_structure_test
+xmake test -P . -y -j 1 -v phase_j_macos_completion_test/default \
   phase_j_macos_completion_structure_test/default \
   phase_j_final_closeout_test/default \
   phase_j_final_closeout_structure_test/default

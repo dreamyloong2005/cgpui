@@ -25765,3 +25765,23 @@
   no target compiled. Moved the pinned dependency helper to Task 1 and verified
   the unchanged source-only Phase J closeout guard directly with Apple Clang;
   it exits 0.
+- Started inline product implementation in the current feature-branch checkout
+  after the user declined a linked worktree. Task 1 begins test-first with the
+  staged behavior/structure completion guards before the dependency helper.
+- Task 1 RED is exact: direct Apple Clang builds of both new guards exit `10`
+  while `macos-dependencies.sh` is absent. The first GREEN helper command used
+  zsh rather than Bash and failed before repository setup; subsequent helper
+  verification is constrained to its documented Bash entry surface.
+- The corrected Bash helper checks out repository commit
+  `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`; the behavior guard advances to
+  exit `20` and the structure guard remains at its expected later-file exit
+  `10`. The first Xmake build then stopped only because the plan omitted `-y`
+  from a dependency-installing noninteractive command.
+- After adding `-y`, the isolated package graph installed and both completion
+  targets built successfully. Xmake wraps intentional nonzero guard exits as
+  `255`, so raw staged-band assertions now execute the built target files
+  directly; this does not change guard behavior.
+- Task 1 GREEN is complete: helper syntax and repository-root/parent-traversal/
+  outside-workspace rejection pass, the pinned checkout SHA matches, both new
+  Xmake targets compile, behavior advances from raw exit `10` to `20`, and
+  structure remains at the expected missing-later-files exit `10`.
