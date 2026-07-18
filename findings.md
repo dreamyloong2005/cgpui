@@ -12948,3 +12948,23 @@
   tar.gz has SHA-256
   `a710e93f995a63fff1a6efb56d80bf1372c19a78c6bd0d6c58f677cfe3290e72`;
   all 199 content-manifest hashes match and the archive has 200 entries.
+
+## 2026-07-18 Phase J macOS Completion Planning
+
+- The approved design reopens Phase J Steps 799-840 in place; it does not use
+  the Steps 841+ upstream-drift reservation or create a Phase K.
+- macOS completion requires all 20 official examples, all performance metrics,
+  all eight stress scenarios, deterministic Release packaging, CI, and final
+  evidence on native arm64 and x86_64 runners.
+- Release artifacts remain architecture-specific, target macOS 13.0, and use
+  `macos-15` plus `macos-15-intel`; Universal 2, signing, notarization, and DMG
+  delivery remain out of scope.
+- Existing Phase H 380/380 and Windows/Linux/X11 results are immutable
+  historical evidence. Current authority remains `complete_non_macos` until
+  both native macOS architecture matrices pass and final artifacts are audited.
+- The existing dependency lock contains `macosx|arm64` but no
+  `macosx|x86_64` section. The implementation plan therefore locks the same
+  CMake, LunaSVG, Ninja, and PlutoVG versions for Intel before CI execution.
+- Unisolated Xmake repository setup can fall back to an unusable Gitee remote
+  on this host. The implementation plan creates the pinned repository-local
+  macOS dependency helper in Task 1 so every later Xmake call is deterministic.

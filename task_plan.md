@@ -4899,14 +4899,18 @@ implementation slice.
 | The first broad PowerShell JSON audit used case-insensitive object conversion and the first debug/stale-handoff searches included historical prose | Phase I static audit | Parse tracked JSON with `ConvertFrom-Json -AsHashtable`, inspect only added debug-marker lines, and distinguish immutable Phase H history from active `phase_*_current_handoff` fields |
 | WSL has no named non-system user and the first nested `awk` user-enumeration probe was misquoted | Phase I final WSL focused verification | Use the established root-only distro entry with `XMAKE_ROOT=y` and direct `wsl.exe --cd ... -- env ... xmake` invocations; no WSL recovery or installation is needed |
 
-## 2026-07-17 Active Phase J Non-macOS Execution Goal
+## 2026-07-17 Phase J Non-macOS Baseline and Active macOS Completion Goal
 
 - Status: complete_non_macos
+- Active work status: implementation_plan_complete_awaiting_execution_choice
 - Authoritative scope: Phase J Steps 799-840+ in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- User scope: complete every platform-neutral, Windows, Wayland, and X11 part
-  of Phase J. Exclude new macOS builds, tests, packaging, and CI execution;
-  preserve the completed Phase H macOS evidence without claiming a rerun.
+- Approved completion design:
+  `docs/superpowers/specs/2026-07-18-phase-j-macos-completion-design.md`.
+- Active user scope: reopen Phase J Steps 799-840 in place and complete the
+  macOS official-example, performance, stress, dual-architecture Release, CI,
+  and final-verification work. Preserve the completed Phase H 380/380 and all
+  Windows, Wayland, and X11 historical evidence unchanged.
 - Pre-agreed public seams:
   1. [x] Steps 799-804: pinned-upstream extractor output and required-row audit.
   2. [x] Steps 805-810: official-example equivalents compiled and exercised on
@@ -4921,6 +4925,12 @@ implementation slice.
      dependency bootstrap, manifests, and release artifacts.
   7. [x] Steps 835-840+: final Windows/WSL/X11 matrices, locked parity ledger,
      non-macOS closeout guard, and explicit upstream-drift policy.
+  8. [x] Write and self-review the detailed Phase J macOS completion
+     implementation plan; commit it separately before implementation.
+  9. [ ] Execute the approved implementation plan on
+     `codex/phase-j-macos-completion` with RED/GREEN guards and focused commits.
+  10. [ ] Push the feature branch, require native arm64 and x86_64 macOS CI,
+      close the all-desktop authority, and merge only after every matrix passes.
 - Verification policy: keep Xmake build/test commands serial with `-j 1`, use
   RED-GREEN tracer guards at the public seams above, keep `.vscode/` untracked,
   and commit completed slices locally without pushing unless requested.
@@ -4929,6 +4939,8 @@ implementation slice.
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A Phase J macOS plan self-review patch used a wrapped line-budget sentence as an exact anchor and was rejected atomically | macOS completion implementation-plan self-review | Re-read the narrow plan ranges and apply short independent anchors; no partial plan edit occurred |
+| A submission-time `xmake build phase_j_final_closeout_test` used the unisolated default repository and failed while cloning Gitee without interactive credentials | macOS completion plan verification | Move the pinned macOS dependency helper to Task 1 so every implementation Xmake call uses repository-local roots; verify the unchanged source-only closeout guard directly with the system C++ compiler |
 | The first Phase J ledger probe indexed nonexistent `required_surface_summary` and exited after correctly reporting status counts | Steps 799-804 inventory | Use the live schema's `rows` array; keep the failed probe out of implementation decisions and rerun with the correct key |
 | The first planning synchronization patch used a long Phase I error-table row as an exact anchor and was rejected atomically | Steps 799-804 planning synchronization | Reapply with short section and checklist anchors, move the misplaced Phase J probe row into this table, and confirm no partial edit occurred |
 | `xmake test -j 1 -v` reported `nothing to test` when given target names without their registered test suffix | Steps 799-804 focused verification | Use the repository's exact `target/default` names; both registered tests pass 1/1, and direct `xmake run` also exits zero |
