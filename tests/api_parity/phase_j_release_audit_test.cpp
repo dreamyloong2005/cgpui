@@ -24,6 +24,7 @@ int main() {
   const std::string windows = read_source("scripts/ci/windows-phase-j-release.ps1");
   const std::string linux = read_source("scripts/ci/linux-phase-j-release.sh");
   const std::string linux_package = read_source("scripts/ci/linux-package.sh");
+  const std::string macos_package = read_source("scripts/ci/macos-package.sh");
   const std::string bootstrap =
       read_source(".github/actions/setup-phase-j-dependencies/action.yml");
   const std::string workflow = read_source(".github/workflows/phase-j-windows-linux.yml");
@@ -62,5 +63,16 @@ int main() {
   if (!contains(roadmap, "- [x] Steps 829-834: Package Windows/Linux builds") ||
       !contains(ledger, "\"phase_j_steps_829_834_status\": \"complete_non_macos\"") ||
       !contains(ledger, "Phase J Steps 841+ upstream drift delta plan")) return 8;
+  constexpr std::array macos_libraries{
+      "libcgpui_core.a", "libcgpui_platform.a", "libcgpui_platform_macos.a",
+      "libcgpui_renderer.a", "libcgpui_renderer_metal.a", "libcgpui_ui.a",
+      "libcgpui_app.a"};
+  for (const auto* library : macos_libraries)
+    if (!contains(macos_package, library)) return 9;
+  if (!contains(macos_package, "hello_window") ||
+      !contains(macos_package, "deployment_target") ||
+      !contains(macos_package, "metadata/build.json") ||
+      !contains(macos_package, "metadata/xmake-requires.lock") ||
+      !contains(macos_package, "arm64|x86_64")) return 9;
   return 0;
 }
