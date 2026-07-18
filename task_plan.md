@@ -4902,7 +4902,7 @@ implementation slice.
 ## 2026-07-17 Phase J Non-macOS Baseline and Active macOS Completion Goal
 
 - Status: complete_non_macos
-- Active work status: product_implementation_task_10_next
+- Active work status: product_implementation_task_10_ci_retry_next
 - macOS completion status: pending_native_dual_arch_verification
 - Required macOS gaps: 1 (`x86_64`; arm64 has complete local evidence and still
   requires native CI confirmation)
@@ -4994,3 +4994,6 @@ implementation slice.
 | The first Task 9 performance invocation sourced the Bash dependency helper from the default zsh and rejected a derived `/build` path | Task 9 performance verification | Confirm the shell mismatch with a minimal source probe, then run every dependency activation explicitly under `/bin/bash`; no source change or workspace-external output was needed |
 | Native workflow run 29629487926 passes macOS runner setup but multiple arm64/x86_64 product commands return opaque Xmake exit 255; public raw logs require authenticated repository access | Task 10 native CI verification | Add a tested focused wrapper that retains the complete command log and emits its last 80 lines as one GitHub error annotation while preserving the original exit code, then push a normal follow-up commit for actionable evidence |
 | Workflow run 29629948951 emits the requested compiler annotation, but GitHub truncates the 80-line message near 4 KiB before the final error; it also reruns already-complete Windows/Linux jobs outside the approved scope | Task 10 native CI diagnosis | Add a long-log regression and cap the escaped annotation to its final 3500 characters; narrow `phase-j-desktop.yml` to the four dual-architecture macOS matrices while preserving all historical non-macOS evidence |
+| The first local target-minimum compile probe sourced the macOS Bash helper from zsh, leaving `BASH_SOURCE` undefined and deriving `/build` | Task 10 deployment-target verification | No workspace-external write succeeded; rerun the isolated probe explicitly through `/bin/bash -c`, as required by the helper's supported entry surface |
+| The local Python environment does not provide `PyYAML` for the workflow syntax probe | Task 10 focused verification | Use the system Ruby YAML parser for the same read-only syntax check; do not install an unneeded dependency |
+| The constructor exception-safety RED wrapper assigned zsh's read-only `status` parameter | Task 10 task-pool review | Keep the compiled RED guard unchanged and rerun the wrapper with the ordinary variable name `exit_code` |

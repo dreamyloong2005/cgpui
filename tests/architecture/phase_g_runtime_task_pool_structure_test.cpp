@@ -61,7 +61,9 @@ int main() {
 
   if (!contains(pool_header, "class WindowRuntime::RuntimeTaskPool") ||
       !contains(pool_header, "std::array<std::deque<Work>, 3> queues_") ||
-      !contains(pool_header, "std::vector<std::jthread> workers_") ||
+      !contains(pool_header, "std::vector<std::thread> workers_") ||
+      contains(pool_header, "std::jthread") ||
+      contains(pool_header, "std::stop_token") ||
       !contains(pool_header, "std::size_t active_work_count_") ||
       !contains(pool_header, "std::size_t peak_active_work_count_") ||
       !contains(pool_header, "std::size_t completed_work_count_")) {
@@ -73,7 +75,12 @@ int main() {
       !contains(pool_source, "RuntimeTaskPool::run_worker(") ||
       !contains(pool_source, "RuntimeTaskPool::shutdown()") ||
       !contains(pool_source, "queues_[runtime_task_priority_index(priority)]") ||
-      !contains(pool_source, "workers.swap(workers_)")) {
+      !contains(pool_source, "workers.swap(workers_)") ||
+      !contains(pool_source, "worker.join()") ||
+      !contains(pool_source,
+                "catch (...) {\n    shutdown();\n    throw;\n  }") ||
+      contains(pool_source, "std::jthread") ||
+      contains(pool_source, "std::stop_token")) {
     return 3;
   }
   if (!contains(runtime_internal, "std::unique_ptr<RuntimeTaskPool> task_pool_") ||

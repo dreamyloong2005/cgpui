@@ -25878,3 +25878,19 @@
 - Retired the 11 historical Windows/Linux jobs from the active Phase J desktop
   workflow. Their scripts, release policy, ledger values, and completed evidence
   remain unchanged; the next run contains exactly eight macOS jobs as approved.
+- Run `29630347423` provided the actionable compiler failure: both native
+  architectures reject `std::stop_token` and `std::jthread` in the runtime task
+  pool. Added a structure RED, replaced the pool workers with joined
+  `std::thread` instances, and passed the pool/priority matrix 4/4.
+- Added a deployment-target structure RED for all six direct macOS Xmake entry
+  scripts. Each now configures Xmake with the requested native architecture and
+  `--target_minver="$MACOSX_DEPLOYMENT_TARGET"`; the structure guard, Bash
+  syntax, and CI annotation helper pass.
+- A fresh isolated Xmake configuration reports SDK target
+  `arm64-apple-macos13.0`; it compiles `runtime_task_pool.cpp` and passes the
+  four focused pool/priority tests 4/4 in 2.362 seconds. The next action is the
+  full focused regression/diff audit, then a normal follow-up commit and push.
+- Submission review added constructor exception safety for the explicit thread
+  pool through a verified RED `3`/GREEN cycle; partial worker creation now
+  stops and joins before rethrowing. The final focused pool, release, macOS
+  completion, and closeout matrix passes 10/10 in 1.585 seconds.

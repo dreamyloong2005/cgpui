@@ -19,6 +19,8 @@ done < "$matrix"
 [[ ${#targets[@]} -gt 0 ]] || exit 4
 
 cd "$repo_root"
+xmake f -P "$repo_root" -y -m debug -a "$arch" \
+  --target_minver="$MACOSX_DEPLOYMENT_TARGET"
 for target in "${targets[@]}"; do
   xmake build -P "$repo_root" -y -j 1 "$target"
 done
