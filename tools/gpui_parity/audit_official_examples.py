@@ -55,11 +55,9 @@ def main() -> int:
         equivalents = row.get("equivalent_targets", [])
         if row.get("status") != "complete":
             issues.append(f"{name}: mapping is not complete")
-        for platform in ("windows", "wayland", "x11"):
+        for platform in ("windows", "wayland", "x11", "macos"):
             if platforms.get(platform) != "compiled_and_smoked":
                 issues.append(f"{name}: {platform} is not compiled_and_smoked")
-        if platforms.get("macos") != "excluded_by_user":
-            issues.append(f"{name}: macOS execution boundary is not explicit")
         if not equivalents or any(target not in allowed_targets for target in equivalents):
             issues.append(f"{name}: equivalent target is absent from the canonical inventory")
         for target in equivalents:
@@ -67,6 +65,8 @@ def main() -> int:
                 issues.append(f"{name}: {target} has no Xmake target")
         if not verification.get("smoke_tests"):
             issues.append(f"{name}: smoke evidence is empty")
+        if not verification.get("macos_tests"):
+            issues.append(f"{name}: macOS verification evidence is empty")
         pixel_evidence += len(verification.get("pixel_tests", []))
         input_evidence += len(verification.get("input_tests", []))
     if pixel_evidence == 0 or input_evidence == 0:
@@ -75,7 +75,10 @@ def main() -> int:
     report = {
         "input_evidence": input_evidence,
         "issues": issues,
-        "macos_execution": "excluded_by_user",
+        "macos_execution": "required",
+        "macos_mapped_examples": sum(
+            bool(row.get("verification", {}).get("macos_tests")) for row in rows
+        ),
         "mapped_examples": len(mapped),
         "matrix_sha256": sha256(args.matrix),
         "official_examples": len(official),

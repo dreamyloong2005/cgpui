@@ -25785,3 +25785,11 @@
   outside-workspace rejection pass, the pinned checkout SHA matches, both new
   Xmake targets compile, behavior advances from raw exit `10` to `20`, and
   structure remains at the expected missing-later-files exit `10`.
+- Task 2 RED passed through the intended raw exit `3` in both focused guards.
+  GREEN moves the macOS runner to the canonical 21-target inventory, adds nine
+  native test groups plus four hello-window modes, and removes the duplicate
+  inventory file.
+- The regenerated official-example audit reports 20 official, 20 mapped, and
+  20 macOS-mapped examples with zero issues. Focused behavior/structure passes
+  2/2, runner deployment-target and wrong-architecture probes each reject with
+  exit 3, and the comprehensive completion guard advances to raw exit `30`.

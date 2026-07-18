@@ -259,7 +259,7 @@ git commit -m "test: establish phase j macos completion"
 - Modify: `tests/api_parity/phase_j_official_example_audit_test.cpp`
 - Modify: `tests/architecture/phase_j_official_example_structure_test.cpp`
 
-- [ ] **Step 1: Make the existing focused audit tests RED for macOS**
+- [x] **Step 1: Make the existing focused audit tests RED for macOS**
 
 Replace the exclusion assertions with these requirements:
 
@@ -287,7 +287,7 @@ xmake test -P . -y -j 1 -v phase_j_official_example_audit_test/default \
 Expected: `0/2`; the behavior guard reports exit `3`, and the structure guard
 reports its new macOS runner/inventory exit.
 
-- [ ] **Step 2: Use the canonical example inventory and native test groups**
+- [x] **Step 2: Use the canonical example inventory and native test groups**
 
 Delete `scripts/ci/macos-example-targets.txt`. In the runner, validate
 `CGPUI_EXPECTED_ARCH`, deployment target, and Xmake before the loop, then use:
@@ -334,7 +334,7 @@ xmake test -P "$repo_root" -y -j 1 -v "${native_tests[@]}"
 
 Retain the four `hello_window/macos_*` smoke modes and run them with `-j 1 -v`.
 
-- [ ] **Step 3: Make the matrix and auditor represent required macOS execution**
+- [x] **Step 3: Make the matrix and auditor represent required macOS execution**
 
 For each of the 20 rows, change `"macos": "excluded_by_user"` to
 `"macos": "compiled_and_smoked"` and add a non-empty `macos_tests` array under
@@ -398,7 +398,7 @@ python3 tools/gpui_parity/audit_official_examples.py \
 Expected: exit `0`, `official_examples=20`, `mapped_examples=20`,
 `macos_mapped_examples=20`, and no issues.
 
-- [ ] **Step 4: Run GREEN and syntax verification**
+- [x] **Step 4: Run GREEN and syntax verification**
 
 ```bash
 bash -n scripts/ci/macos-example-smoke.sh
@@ -412,7 +412,7 @@ xmake run -P . phase_j_macos_completion_test; test $? -eq 30
 Expected: official-example tests pass `2/2`; the staged completion guard advances
 from exit `20` to exit `30` because performance is next.
 
-- [ ] **Step 5: Commit the example band**
+- [x] **Step 5: Commit the example band**
 
 ```bash
 git add scripts/ci/macos-example-smoke.sh scripts/ci/macos-example-targets.txt \

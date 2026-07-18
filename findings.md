@@ -12974,3 +12974,10 @@
 - The repository-local macOS dependency root successfully installs the locked
   CMake 4.3.4, Ninja 1.13.2, PlutoVG 1.3.3, and LunaSVG 3.5.0 graph without
   touching the user's global Xmake repository.
+- The Phase H macOS-specific example inventory was byte-identical to the shared
+  21-target inventory. Removing it eliminates duplicate ownership while the
+  Phase J runner adds native Cocoa/Metal pixel, input, service, accessibility,
+  and cross-window lifecycle groups.
+- The official-example auditor now treats macOS as an active platform and
+  reports `macos_mapped_examples: 20`; per-row `macos_tests` keeps native
+  evidence explicit instead of inferring it from general smoke coverage.

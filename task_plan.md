@@ -4902,7 +4902,7 @@ implementation slice.
 ## 2026-07-17 Phase J Non-macOS Baseline and Active macOS Completion Goal
 
 - Status: complete_non_macos
-- Active work status: product_implementation_task_2_next
+- Active work status: product_implementation_task_3_next
 - Authoritative scope: Phase J Steps 799-840+ in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
 - Approved completion design:
