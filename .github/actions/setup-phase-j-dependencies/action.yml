@@ -30,3 +30,9 @@ runs:
       if: runner.os == 'Linux'
       shell: bash
       run: bash ./scripts/ci/linux-dependencies.sh build/phase-j-ci/dependencies/linux --github-env
+    - name: Configure macOS dependency roots
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        root="$GITHUB_WORKSPACE/build/phase-j-ci/dependencies/macos-$RUNNER_ARCH"
+        bash ./scripts/ci/macos-dependencies.sh "$root" --github-env

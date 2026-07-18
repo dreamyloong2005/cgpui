@@ -25819,3 +25819,11 @@
   `c11ea8f5784647edce1de02a95a0624cdabe956ea0fe694c4e519fb7eb5a11f4`.
   Independent audit verifies all 199 manifest files and 200 archive entries;
   focused release tests pass 2/2 and completion advances to raw exit 60.
+- Task 7 RED sees the unrenamed workflow at release behavior exit 1 and
+  structure exit 3. GREEN renames it to the desktop workflow, preserves all
+  existing Windows/Linux jobs, and adds four arm64/x86_64 macOS matrices.
+- The setup action now delegates Darwin roots to the shared pinned helper,
+  Intel receives the same four locked dependency versions as arm64, and the
+  architecture/header wrapper consumes the shared 173-target inventory.
+- Both YAML files parse, release tests pass 2/2, the comprehensive structure
+  guard exits 0, and behavior advances to pending-authority exit 70.

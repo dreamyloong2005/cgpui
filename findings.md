@@ -13004,3 +13004,10 @@
 - The deterministic macOS archive uses the same USTAR plus fixed-mtime gzip
   path as Linux. Architecture and deployment target are content-manifest
   fields, so arm64 and x86_64 artifacts cannot be mistaken for each other.
+- macOS CI needs four separate matrix owners because Debug/examples,
+  performance/stress, Release artifacts, and architecture/header validation
+  retain different outputs and failure scopes while sharing the same two
+  native runner identities.
+- The existing dependency action can remain thin on Darwin by invoking
+  `macos-dependencies.sh --github-env`; this keeps pinned repository checkout
+  ownership out of YAML and out of `macos-debug.sh`.

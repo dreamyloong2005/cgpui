@@ -7,6 +7,16 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
 fi
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+arch=${CGPUI_EXPECTED_ARCH:-$(uname -m)}
+if [[ ! "$arch" =~ ^(arm64|x86_64)$ || "$(uname -m)" != "$arch" ]]; then
+  echo "macos-debug.sh requires the requested native architecture" >&2
+  exit 2
+fi
+export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-13.0}"
+if [[ "$MACOSX_DEPLOYMENT_TARGET" != "13.0" ]]; then
+  echo "macos-debug.sh requires macOS deployment target 13.0" >&2
+  exit 2
+fi
 output_input="${1:-$repo_root/build/phase-h-ci/macos-debug}"
 if [[ "$output_input" != /* ]]; then
   output_input="$repo_root/$output_input"
@@ -53,38 +63,22 @@ printf 'macOS %s (%s)\n' "$(sw_vers -productVersion)" \
 xcodebuild -version
 printf '%s\n' "$xmake_version"
 
-export XMAKE_CONFIGDIR="$output_root/config"
-export XMAKE_GLOBALDIR="$output_root/global"
-export XMAKE_PKG_CACHEDIR="$output_root/pkg-cache"
-export XMAKE_PKG_INSTALLDIR="$output_root/pkg-install"
-export TMPDIR="$output_root/tmp"
+needs_dependency_setup=false
+for variable in XMAKE_CONFIGDIR XMAKE_GLOBALDIR XMAKE_PKG_CACHEDIR \
+  XMAKE_PKG_INSTALLDIR TMPDIR; do
+  [[ -n "${!variable:-}" ]] || needs_dependency_setup=true
+done
+if [[ "$needs_dependency_setup" == true ]]; then
+  source "$repo_root/scripts/ci/macos-dependencies.sh"
+  cgpui_configure_macos_dependency_environment "$output_root/dependencies"
+fi
+export XMAKE_CONFIGDIR="${XMAKE_CONFIGDIR:-$output_root/config}"
+export XMAKE_GLOBALDIR="${XMAKE_GLOBALDIR:-$output_root/global}"
+export XMAKE_PKG_CACHEDIR="${XMAKE_PKG_CACHEDIR:-$output_root/pkg-cache}"
+export XMAKE_PKG_INSTALLDIR="${XMAKE_PKG_INSTALLDIR:-$output_root/pkg-install}"
+export TMPDIR="${TMPDIR:-$output_root/tmp}"
 mkdir -p "$XMAKE_CONFIGDIR" "$XMAKE_GLOBALDIR/.xmake/repositories" \
   "$XMAKE_PKG_CACHEDIR" "$XMAKE_PKG_INSTALLDIR" "$TMPDIR"
-
-repository="$XMAKE_GLOBALDIR/.xmake/repositories/xmake-repo"
-repository_commit="b9256335e0b6e70808e23dfe71627d8a4dcc0abf"
-if [[ -d "$repository/.git" ]] &&
-   [[ "$(git -C "$repository" config --get remote.origin.promisor || true)" == "true" ]]; then
-  rm -rf -- "$repository"
-fi
-if [[ ! -d "$repository/.git" ]]; then
-  git clone --no-checkout \
-    https://github.com/xmake-io/xmake-repo.git "$repository"
-fi
-git -C "$repository" fetch --depth 1 origin "$repository_commit"
-git -C "$repository" checkout --detach "$repository_commit"
-touch "$repository/updated"
-
-locked_repository="$XMAKE_CONFIGDIR/repositories/efa340bf3b6f6de54c5f0ab8c98fba7d.lock"
-if [[ -d "$locked_repository/.git" ]] &&
-   ! git -C "$locked_repository" cat-file -e "$repository_commit^{commit}"; then
-  rm -rf -- "$locked_repository"
-fi
-if [[ ! -d "$locked_repository/.git" ]]; then
-  mkdir -p "$(dirname "$locked_repository")"
-  git clone --shared "$repository" "$locked_repository"
-fi
-git -C "$locked_repository" checkout --detach "$repository_commit"
 
 cd "$repo_root"
 xmake f -y -c -m debug -P "$repo_root"

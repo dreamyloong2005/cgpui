@@ -29,7 +29,13 @@ int main() {
       read_source("scripts/ci/macos-phase-j-release.sh");
   const std::string bootstrap =
       read_source(".github/actions/setup-phase-j-dependencies/action.yml");
-  const std::string workflow = read_source(".github/workflows/phase-j-windows-linux.yml");
+  const std::string workflow = read_source(".github/workflows/phase-j-desktop.yml");
+  const std::string old_workflow =
+      read_source(".github/workflows/phase-j-windows-linux.yml");
+  const std::string lock = read_source("xmake-requires.lock");
+  const std::string macos_debug = read_source("scripts/ci/macos-debug.sh");
+  const std::string macos_architecture =
+      read_source("scripts/ci/macos-architecture-header.sh");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger = read_source("docs/gpui-complete-parity-ledger.json");
@@ -85,5 +91,21 @@ int main() {
       !contains(macos_release, "macos-package.sh") ||
       !contains(macos_release, "create-release-artifact.py") ||
       !contains(macos_release, "cmp -s")) return 10;
+  constexpr std::array macos_jobs{
+      "macos-debug-examples", "macos-performance-stress", "macos-release",
+      "macos-architecture-header"};
+  for (const auto* job : macos_jobs)
+    if (!contains(workflow, job)) return 11;
+  if (!old_workflow.empty() ||
+      !contains(workflow, "macos-15") ||
+      !contains(workflow, "macos-15-intel") ||
+      !contains(workflow, "CGPUI_EXPECTED_ARCH") ||
+      !contains(workflow, "MACOSX_DEPLOYMENT_TARGET: \"13.0\"") ||
+      !contains(workflow, "cgpui-macos-${{ matrix.arch }}-release") ||
+      !contains(bootstrap, "Configure macOS dependency roots") ||
+      !contains(bootstrap, "macos-dependencies.sh") ||
+      !contains(lock, "[\"macosx|x86_64\"]") ||
+      !contains(macos_debug, "${XMAKE_CONFIGDIR:-") ||
+      !contains(macos_architecture, "architecture-header-targets.txt")) return 11;
   return 0;
 }

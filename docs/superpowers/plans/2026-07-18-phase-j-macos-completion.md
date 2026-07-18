@@ -926,14 +926,14 @@ git commit -m "build: add deterministic macos releases"
 - Modify: `tests/api_parity/phase_j_release_audit_test.cpp`
 - Modify: `tests/architecture/phase_j_release_structure_test.cpp`
 
-- [ ] **Step 1: Make structure and release guards RED for the renamed workflow**
+- [x] **Step 1: Make structure and release guards RED for the renamed workflow**
 
 Change every current workflow reference to `phase-j-desktop.yml`; require the
 old path to be absent, require four macOS job names, both pinned runners,
 architecture checks, deployment target, and architecture-specific uploads.
 Expected: RED because the workflow has not yet been renamed.
 
-- [ ] **Step 2: Add Darwin repository-local dependency roots**
+- [x] **Step 2: Add Darwin repository-local dependency roots**
 
 `macos-dependencies.sh` already exposes the complete pinned-root function used
 by local commands. The dependency action invokes that function rather than
@@ -976,7 +976,7 @@ root name:
 
 Keep the Xmake version and cache key inputs unchanged.
 
-- [ ] **Step 3: Lock the x86_64 macOS package graph**
+- [x] **Step 3: Lock the x86_64 macOS package graph**
 
 Add a `['macosx|x86_64']` section to `xmake-requires.lock` containing the same
 four package identities and versions as the existing arm64 section: CMake
@@ -995,7 +995,7 @@ rg -n -A 48 '\["macosx\|arm64"\]|\["macosx\|x86_64"\]' \
 Expected: both architecture sections exist and each reports all four packages
 plus the locked repository commit.
 
-- [ ] **Step 4: Make macOS Debug consume configured roots**
+- [x] **Step 4: Make macOS Debug consume configured roots**
 
 Change each unconditional root export to a defaulting export, for example:
 
@@ -1013,7 +1013,7 @@ function only when one of the five Xmake roots is absent; remove the duplicated
 repository bootstrap from `macos-debug.sh`. Keep the Phase H test command and
 historical output text intact.
 
-- [ ] **Step 5: Create the macOS architecture/header runner**
+- [x] **Step 5: Create the macOS architecture/header runner**
 
 Parse the shared `target|source` inventory with strict Darwin, architecture,
 deployment-target, and Xmake checks. The complete control flow is:
@@ -1045,7 +1045,7 @@ for target in "${targets[@]}"; do filters+=("$target/default"); done
 xmake test -P "$repo_root" -y -j 1 -v "${filters[@]}"
 ```
 
-- [ ] **Step 6: Rename and extend the workflow with four matrices**
+- [x] **Step 6: Rename and extend the workflow with four matrices**
 
 Use this exact matrix in each macOS job:
 
@@ -1084,7 +1084,7 @@ The release job uploads `cgpui-macos-${{ matrix.arch }}-release` from
 existing Windows/Linux jobs byte-for-byte except workflow display name and
 references required by the rename.
 
-- [ ] **Step 7: Run local static CI verification**
+- [x] **Step 7: Run local static CI verification**
 
 ```bash
 bash -n scripts/ci/macos-debug.sh scripts/ci/macos-dependencies.sh \
@@ -1102,7 +1102,7 @@ xmake run -P . phase_j_macos_completion_structure_test
 Expected: YAML parses; release pair and structure guard pass; behavior advances
 to authority exit `70`.
 
-- [ ] **Step 8: Commit desktop CI**
+- [x] **Step 8: Commit desktop CI**
 
 ```bash
 git add scripts/ci/macos-debug.sh scripts/ci/macos-architecture-header.sh \

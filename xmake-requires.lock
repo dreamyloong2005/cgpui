@@ -238,6 +238,40 @@
             version = "v1.3.3"
         }
     },
+    ["macosx|x86_64"] = {
+        ["cmake#f56260b5"] = {
+            repo = {
+                branch = "master",
+                commit = "82466fe9815001a215d26b7c119bb223d757949d",
+                url = "https://github.com/xmake-io/xmake-repo.git"
+            },
+            version = "4.3.4"
+        },
+        ["lunasvg#f56260b5"] = {
+            repo = {
+                branch = "master",
+                commit = "82466fe9815001a215d26b7c119bb223d757949d",
+                url = "https://github.com/xmake-io/xmake-repo.git"
+            },
+            version = "v3.5.0"
+        },
+        ["ninja#f56260b5"] = {
+            repo = {
+                branch = "master",
+                commit = "82466fe9815001a215d26b7c119bb223d757949d",
+                url = "https://github.com/xmake-io/xmake-repo.git"
+            },
+            version = "v1.13.2"
+        },
+        ["plutovg#f56260b5"] = {
+            repo = {
+                branch = "master",
+                commit = "82466fe9815001a215d26b7c119bb223d757949d",
+                url = "https://github.com/xmake-io/xmake-repo.git"
+            },
+            version = "v1.3.3"
+        }
+    },
     ["windows|x64"] = {
         ["cmake#f56260b5"] = {
             repo = {
