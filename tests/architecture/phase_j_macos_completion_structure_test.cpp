@@ -19,6 +19,15 @@ bool contains(const std::string& text, std::string_view value) {
   return text.find(value) != std::string::npos;
 }
 
+std::size_t count(const std::string& text, std::string_view value) {
+  std::size_t result = 0;
+  for (std::size_t offset = text.find(value); offset != std::string::npos;
+       offset = text.find(value, offset + value.size())) {
+    ++result;
+  }
+  return result;
+}
+
 std::size_t line_count(const std::string& text) {
   std::size_t result = 0;
   for (const char value : text) result += value == '\n' ? 1U : 0U;
@@ -49,6 +58,8 @@ int main() {
       "scripts/ci/macos-performance-baseline.sh",
       "scripts/ci/macos-stress-matrix.sh",
       "scripts/ci/macos-architecture-header.sh",
+      "scripts/ci/run-with-github-annotation.sh",
+      "tests/ci/run_with_github_annotation_test.sh",
       ".github/workflows/phase-j-desktop.yml"};
   for (const auto* path : required_paths) {
     if (read_source(path).empty()) return 10;
@@ -68,6 +79,14 @@ int main() {
           "phase_j_macos_completion_structure_test.cpp")) {
     return 30;
   }
+  const std::string annotation =
+      read_source("scripts/ci/run-with-github-annotation.sh");
+  const std::string workflow =
+      read_source(".github/workflows/phase-j-desktop.yml");
+  if (!contains(annotation, "CI command failed (exit %s)") ||
+      count(workflow, "run-with-github-annotation.sh") != 6) {
+    return 35;
+  }
   if (line_count(module) > 30 || line_count(behavior) > 130 ||
       line_count(self) > 120 ||
       line_count(read_source("scripts/ci/macos-dependencies.sh")) > 150 ||
@@ -78,7 +97,10 @@ int main() {
       line_count(read_source("scripts/ci/macos-stress-matrix.sh")) > 100 ||
       line_count(read_source("scripts/ci/macos-architecture-header.sh")) >
           100 ||
-      line_count(read_source(".github/workflows/phase-j-desktop.yml")) > 360) {
+      line_count(annotation) > 80 ||
+      line_count(read_source("tests/ci/run_with_github_annotation_test.sh")) >
+          80 ||
+      line_count(workflow) > 360) {
     return 40;
   }
   return 0;

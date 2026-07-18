@@ -25856,3 +25856,18 @@
   and Task 10 native dual-architecture CI is next.
 - The final Task 9 closeout/completion gate passes 4/4 in 1.165 seconds with
   all-desktop authority still pending.
+
+## 2026-07-18 Phase J Native CI Diagnosis
+
+- Pushed `3e898091` and identified Phase J desktop workflow run
+  `29629487926` at the exact feature-branch head SHA.
+- The first run starts all eight macOS jobs but both arm64 and x86_64 Debug
+  groups, both arm64 performance/Release groups, and arm64 architecture/header
+  return exit 255 from their first Xmake product command. Setup and explicit
+  architecture checks pass, so the failure is after runner selection.
+- Added `run-with-github-annotation.sh` and a real shell behavior test. The six
+  macOS workflow commands now retain full output, preserve the original exit
+  code, and expose the last 80 lines in a public error annotation on failure.
+- The helper RED fails at missing implementation with exit 127, then GREEN
+  passes behavior plus the updated Phase J structure guard. Workflow YAML also
+  parses successfully.

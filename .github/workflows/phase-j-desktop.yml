@@ -186,8 +186,8 @@ jobs:
         with:
           platform: macos
       - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
-      - run: bash ./scripts/ci/macos-debug.sh build/phase-j-ci/macos-${{ matrix.arch }}-debug
-      - run: bash ./scripts/ci/macos-example-smoke.sh
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-debug.log" -- bash ./scripts/ci/macos-debug.sh build/phase-j-ci/macos-${{ matrix.arch }}-debug
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-examples.log" -- bash ./scripts/ci/macos-example-smoke.sh
 
   macos-performance-stress:
     strategy:
@@ -208,8 +208,8 @@ jobs:
         with:
           platform: macos
       - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
-      - run: bash ./scripts/ci/macos-performance-baseline.sh
-      - run: bash ./scripts/ci/macos-stress-matrix.sh
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-performance.log" -- bash ./scripts/ci/macos-performance-baseline.sh
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-stress.log" -- bash ./scripts/ci/macos-stress-matrix.sh
       - uses: actions/upload-artifact@v4
         with:
           name: phase-j-macos-${{ matrix.arch }}-reports
@@ -237,7 +237,7 @@ jobs:
         with:
           platform: macos
       - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
-      - run: bash ./scripts/ci/macos-phase-j-release.sh ${{ matrix.arch }}
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-release.log" -- bash ./scripts/ci/macos-phase-j-release.sh ${{ matrix.arch }}
       - uses: actions/upload-artifact@v4
         with:
           name: cgpui-macos-${{ matrix.arch }}-release
@@ -263,4 +263,4 @@ jobs:
         with:
           platform: macos
       - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
-      - run: bash ./scripts/ci/macos-architecture-header.sh
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-architecture.log" -- bash ./scripts/ci/macos-architecture-header.sh
