@@ -4,7 +4,7 @@
 
 **Goal:** Reopen Phase J Steps 799-840 in place and complete official examples, performance, stress, deterministic Release packaging, CI, and final native verification for macOS arm64 and x86_64 without rewriting prior platform evidence.
 
-**Architecture:** Existing platform-neutral Phase J runners and validators remain the source of behavior; focused macOS shell entry points provide native host, architecture, deployment-target, and output-root policy. A new thin Xmake module owns two completion guards, the Windows/Linux workflow becomes the all-desktop workflow, and final authority changes from `complete_non_macos` to `complete` only after downloaded artifacts and successful native jobs prove both architectures.
+**Architecture:** Existing platform-neutral Phase J runners and validators remain the source of behavior; focused macOS shell entry points provide native host, architecture, deployment-target, and output-root policy. A new thin Xmake module owns two completion guards, the Phase J desktop workflow executes only the approved macOS completion matrices, and final authority changes from `complete_non_macos` to `complete` only after downloaded artifacts and successful native jobs prove both architectures.
 
 **Tech Stack:** C++23, Objective-C++, Xmake 3.0.9, Bash, Python 3.12, JSON, GitHub Actions, Cocoa/AppKit, Metal, Git, GitHub CLI.
 
@@ -22,7 +22,7 @@
 - `scripts/ci/macos-dependencies.sh` owns repository-local Xmake roots and the pinned macOS Xmake repository checkout shared by local runs and CI.
 - `scripts/ci/macos-architecture-header.sh` owns the macOS architecture/header target matrix.
 - `scripts/ci/create-release-artifact.py` remains the single deterministic archive writer.
-- `.github/actions/setup-phase-j-dependencies/action.yml` owns OS-specific Xmake dependency roots; `.github/workflows/phase-j-desktop.yml` owns the desktop job matrices.
+- `.github/actions/setup-phase-j-dependencies/action.yml` owns OS-specific Xmake dependency roots; `.github/workflows/phase-j-desktop.yml` owns only the four dual-architecture macOS completion matrices.
 - `docs/gpui-*.json`, the roadmap, ledgers, README, and focused guides own policy and evidence. Historical Phase H, Windows, Wayland, and X11 values are never recomputed.
 
 ## Fixed Contracts
@@ -1080,9 +1080,9 @@ Upload:
 ```
 
 The release job uploads `cgpui-macos-${{ matrix.arch }}-release` from
-`build/phase-j-release/macos-${{ matrix.arch }}/artifacts`. Preserve all
-existing Windows/Linux jobs byte-for-byte except workflow display name and
-references required by the rename.
+`build/phase-j-release/macos-${{ matrix.arch }}/artifacts`. Windows/Linux
+scripts, policies, and historical evidence remain preserved, but the approved
+macOS-only verification scope does not execute their jobs in this workflow.
 
 - [x] **Step 7: Run local static CI verification**
 

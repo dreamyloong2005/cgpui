@@ -23,6 +23,19 @@ expected_annotation='::error title=CI command failed (exit 7)::first%0Asecond'
 [[ "$failure_output" == *"$expected_annotation"* ]]
 
 set +e
+long_output=$(GITHUB_ACTIONS=true \
+  "$helper" "$test_root/long.log" -- bash -c \
+  'for _ in $(seq 1 100); do printf "%0100d\n" 0; done; printf "final-error\n"; exit 9' \
+  2>&1)
+long_status=$?
+set -e
+annotation_line=$(printf '%s\n' "$long_output" | sed -n '/^::error/p')
+[[ "$long_status" -eq 9 ]]
+[[ "$annotation_line" == ::error* ]]
+[[ "$annotation_line" == *"final-error"* ]]
+[[ ${#annotation_line} -lt 4096 ]] || exit 1
+
+set +e
 "$helper" "$test_root/usage.log" >/dev/null 2>&1
 usage_status=$?
 set -e

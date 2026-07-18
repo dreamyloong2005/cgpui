@@ -13054,3 +13054,11 @@
 - The helper behavior test proves success passthrough, failure exit 7
   passthrough, newline escaping, log retention, and usage rejection. The Phase
   J structure guard requires all six macOS wrapper commands to use it.
+- Run `29629948951` proves GitHub truncates an error annotation near 4 KiB; an
+  80-line compiler tail can therefore lose its final error. The helper now
+  caps the escaped message at the last 3500 characters, with a long-log
+  regression requiring the final marker and a sub-4096 annotation.
+- The same run also executes and fails historical Windows/Linux jobs. Those
+  jobs are outside the user's macOS-only verification scope and already have
+  preserved Phase J evidence, so the active workflow now owns only the four
+  dual-architecture macOS completion matrices.
