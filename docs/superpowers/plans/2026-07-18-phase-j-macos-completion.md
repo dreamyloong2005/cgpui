@@ -1332,6 +1332,10 @@ Expected: `4/4`; no authority field says complete all-desktop.
 ### Task 10: Prove Both Native Architectures, Close Phase J, and Merge
 
 **Files:**
+- Modify: `.github/workflows/phase-j-desktop.yml`
+- Create: `scripts/ci/run-with-github-annotation.sh`
+- Create: `tests/ci/run_with_github_annotation_test.sh`
+- Modify: `tests/architecture/phase_j_macos_completion_structure_test.cpp`
 - Modify: `docs/gpui-phase-j-final-verification.json`
 - Modify: `docs/gpui-complete-parity-ledger.json`
 - Modify: `docs/gpui-complete-parity-ledger.md`

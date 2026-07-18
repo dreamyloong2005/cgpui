@@ -13039,3 +13039,18 @@
   remain required, so Phase J authority stays `complete_non_macos`/`pending`.
 - The focused closeout/completion gate accepts this provisional state at 4/4;
   no checked-in authority field claims completed all-desktop verification.
+
+## 2026-07-18 Phase J Native CI Diagnosis
+
+- Workflow run `29629487926` targets local-evidence commit `3e898091` and
+  starts all eight native macOS jobs. Both architectures pass their explicit
+  host-architecture and dependency-setup steps, then multiple job groups return
+  Xmake exit 255 from their first product build/test wrapper.
+- Public run metadata identifies the failing command but GitHub requires an
+  authenticated repository session for raw job logs. A focused CI annotation
+  helper is therefore the smallest evidence-gathering boundary: it preserves
+  command output and exit status while publishing the last 80 log lines as one
+  public check annotation on failure.
+- The helper behavior test proves success passthrough, failure exit 7
+  passthrough, newline escaping, log retention, and usage rejection. The Phase
+  J structure guard requires all six macOS wrapper commands to use it.
