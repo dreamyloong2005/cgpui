@@ -12968,3 +12968,9 @@
 - Unisolated Xmake repository setup can fall back to an unusable Gitee remote
   on this host. The implementation plan creates the pinned repository-local
   macOS dependency helper in Task 1 so every later Xmake call is deterministic.
+- Task 1 confirms Xmake wraps any intentional nonzero test-program exit as
+  command exit `255`; staged completion bands must execute the built guard
+  directly when the exact raw exit number matters.
+- The repository-local macOS dependency root successfully installs the locked
+  CMake 4.3.4, Ninja 1.13.2, PlutoVG 1.3.3, and LunaSVG 3.5.0 graph without
+  touching the user's global Xmake repository.

@@ -4902,7 +4902,7 @@ implementation slice.
 ## 2026-07-17 Phase J Non-macOS Baseline and Active macOS Completion Goal
 
 - Status: complete_non_macos
-- Active work status: implementation_plan_complete_awaiting_execution_choice
+- Active work status: product_implementation_task_2_next
 - Authoritative scope: Phase J Steps 799-840+ in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
 - Approved completion design:
@@ -4941,6 +4941,9 @@ implementation slice.
 |-------|---------|------------|
 | A Phase J macOS plan self-review patch used a wrapped line-budget sentence as an exact anchor and was rejected atomically | macOS completion implementation-plan self-review | Re-read the narrow plan ranges and apply short independent anchors; no partial plan edit occurred |
 | A submission-time `xmake build phase_j_final_closeout_test` used the unisolated default repository and failed while cloning Gitee without interactive credentials | macOS completion plan verification | Move the pinned macOS dependency helper to Task 1 so every implementation Xmake call uses repository-local roots; verify the unchanged source-only closeout guard directly with the system C++ compiler |
+| The first dependency-helper GREEN command sourced the Bash helper from the default zsh, where `BASH_SOURCE` is undefined, and attempted rejected `/build` directory creation | Task 1 dependency helper verification | Keep the helper's supported entry surface as Bash, run source/function/Xmake commands inside `bash -c`, and confirm no workspace-external files were created |
+| The first isolated Xmake guard build stopped at the dependency confirmation prompt because the implementation-plan command omitted `-y` | Task 1 Xmake RED verification | Add noninteractive `-y` to implementation-plan Xmake build/test commands and rerun against the already-pinned repository-local dependency root |
+| Xmake built both Task 1 guards but `xmake run` normalized their intentional raw exits `20` and `10` to command exit `255` | Task 1 staged-band verification | Use Xmake only to prove target registration/build, then execute the target files directly with `CGPUI_SOURCE_ROOT` when asserting staged raw exit bands |
 | The first Phase J ledger probe indexed nonexistent `required_surface_summary` and exited after correctly reporting status counts | Steps 799-804 inventory | Use the live schema's `rows` array; keep the failed probe out of implementation decisions and rerun with the correct key |
 | The first planning synchronization patch used a long Phase I error-table row as an exact anchor and was rejected atomically | Steps 799-804 planning synchronization | Reapply with short section and checklist anchors, move the misplaced Phase J probe row into this table, and confirm no partial edit occurred |
 | `xmake test -j 1 -v` reported `nothing to test` when given target names without their registered test suffix | Steps 799-804 focused verification | Use the repository's exact `target/default` names; both registered tests pass 1/1, and direct `xmake run` also exits zero |
