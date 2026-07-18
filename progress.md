@@ -25894,3 +25894,43 @@
   pool through a verified RED `3`/GREEN cycle; partial worker creation now
   stops and joins before rethrowing. The final focused pool, release, macOS
   completion, and closeout matrix passes 10/10 in 1.585 seconds.
+- Committed the compatibility follow-up as `1acd02b9` and pushed the feature
+  branch. Native macOS-only workflow run `29630949183` matches that head SHA
+  and starts with exactly eight jobs; it is queued pending runner capacity.
+- Run `29630949183` completes all four arm64 jobs successfully: Debug/examples,
+  performance/stress, Release, and architecture/header. All four Intel groups
+  remain in progress, so final authority is still pending.
+- Run `29630949183` finishes with all eight native jobs successful at exact head
+  `1acd02b9`. Four expected artifacts are present and non-expired, with public
+  metadata digests, but anonymous downloads return `401 Requires authentication`.
+  Final authority remains pending until the browser is signed in and all four
+  artifact contents pass the planned independent validators and manifest audit.
+
+## 2026-07-18 Phase J Native Artifact Audit
+
+- Used the authenticated GitHub browser session to download all four artifacts
+  from run `29630949183` into `build/phase-j-ci-download/`.
+- Validated both performance reports and both eight-scenario stress reports
+  against the checked-in policies.
+- Audited both Release packages independently: 199/199 manifest hashes match,
+  each archive has 200 entries, metadata is deterministic, embedded manifests
+  match, and `lipo` reports the expected `arm64` and `x86_64` slices.
+- Recorded the exact workflow, job, artifact, report, runner, and Release hash
+  evidence in `docs/gpui-phase-j-final-verification.json`.
+- Tightened the final closeout and release audit guards first; before authority
+  updates they fail at the expected exits `20` and `8`.
+- Updated current authority to complete with zero Phase J/macOS gaps, marked all
+  macOS roadmap subitems complete, and moved the handoff to Steps 841+ only.
+- Found and repaired a stale source-matrix `macos_execution=excluded_by_user`
+  field through a verified RED exit `3`; the generator now validates the source
+  field and emits a refreshed complete report with zero issues.
+- Configured a fresh locked arm64 Release guard root at macOS 13.0, built seven
+  focused targets serially, and passed the final closeout, release, official
+  example, macOS completion, and structure matrix 7/7.
+- The remaining Phase J documentation, performance, stress, upstream, and
+  official-example structure guards pass 9/9; the CI annotation helper, JSON,
+  YAML, Bash syntax, generated audit reproducibility, and diff checks pass.
+- Submission diff review found no blocking issue and removed the only generated
+  noise (`xmake-requires.lock` EOF metadata) from the change set. Task 10 Steps
+  1-6 are complete; closeout commit, a new eight-job macOS run, and fast-forward
+  integration remain.

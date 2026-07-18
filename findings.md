@@ -13076,3 +13076,23 @@
 - Replacing RAII `std::jthread` workers requires preserving constructor failure
   cleanup. A second structure RED freezes the partial-construction catch path;
   it reuses `shutdown()` to join created workers before rethrowing.
+- Run `29630949183` completes all eight arm64/x86_64 macOS jobs successfully at
+  head `1acd02b9`. The public API exposes four non-expired artifact records and
+  their GitHub-generated SHA-256 digests, but both REST and web download paths
+  require authentication, so their contents are not yet independently audited.
+
+## 2026-07-18 Phase J Native Artifact Audit
+
+- The authenticated GitHub session allowed all four workflow artifacts from
+  run `29630949183` to be downloaded under `build/phase-j-ci-download/`.
+- Both architecture-specific performance reports pass the checked-in policy,
+  and both stress reports pass all eight required scenarios.
+- Each Release artifact contains 200 archive entries and a manifest covering
+  199 files; all 199 content hashes match, deterministic metadata is preserved,
+  and the embedded manifest agrees with the downloaded release manifest.
+- `lipo -archs` confirms `arm64` for SHA-256
+  `9c29c096c66afcc0d864efdb05b6fc3f7f549bc0534eda0a2d756dc782ef5afa`
+  and `x86_64` for SHA-256
+  `d0911ddedefe93cd0f97838ff98c44572845b88165d8e92233c970dde7f51b78`.
+- Both packages record macOS 13.0 Release metadata. Native runner evidence is
+  macOS 15.7.7 (24G720) with Xcode 16.4 (16F6) on both architectures.

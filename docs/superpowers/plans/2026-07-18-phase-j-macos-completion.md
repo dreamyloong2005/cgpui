@@ -1349,7 +1349,7 @@ Expected: `4/4`; no authority field says complete all-desktop.
 - Modify: `progress.md`
 - Modify: `tests/api_parity/phase_j_final_closeout_test.cpp`
 
-- [ ] **Step 1: Push the feature branch and identify its desktop workflow run**
+- [x] **Step 1: Push the feature branch and identify its desktop workflow run**
 
 ```bash
 git status --short
@@ -1361,7 +1361,7 @@ gh run list --workflow phase-j-desktop.yml \
 Expected: clean worktree before push; branch push succeeds; the newest run's
 head SHA equals local `git rev-parse HEAD`.
 
-- [ ] **Step 2: Wait for every native job instead of merging early**
+- [x] **Step 2: Wait for every native job instead of merging early**
 
 ```bash
 run_id=$(gh run list --workflow phase-j-desktop.yml \
@@ -1392,7 +1392,7 @@ compile reports `arm64-apple-macos13.0`. These are normal follow-up repairs
 under Step 2; final authority remains pending until a replacement eight-job run
 passes and both artifact sets are independently audited.
 
-- [ ] **Step 3: Download and independently audit both architectures**
+- [x] **Step 3: Download and independently audit both architectures**
 
 ```bash
 rm -rf build/phase-j-ci-download
@@ -1424,7 +1424,7 @@ Expected: all four reports pass, each stress report has exactly eight scenario
 rows, and each Release artifact directory contains its named archive plus
 `manifest.json`/`release-manifest.json` evidence.
 
-- [ ] **Step 4: Change final authority only from observed successful evidence**
+- [x] **Step 4: Change final authority only from observed successful evidence**
 
 Use the exact run URL, head SHA, job names, report contents, archive SHA-256
 values, and manifest counts printed by Step 3. Make these semantic changes:
@@ -1444,7 +1444,7 @@ workflow run URL/head SHA, Debug/examples, performance, stress, Release archive,
 SHA-256, reproducibility, and manifest counts. Preserve every pre-existing
 Windows/WSL/X11/Phase H value byte-for-byte.
 
-- [ ] **Step 5: Tighten the final closeout guard to require complete authority**
+- [x] **Step 5: Tighten the final closeout guard to require complete authority**
 
 Replace pending acceptance with:
 
@@ -1460,7 +1460,7 @@ if (!contains(ledger, "\"phase_j_status\": \"complete\"") ||
 
 Keep the exact Phase H 380/380 assertion and the Windows/Linux evidence checks.
 
-- [ ] **Step 6: Run the final local closeout and static audits**
+- [x] **Step 6: Run the final local closeout and static audits**
 
 ```bash
 xmake build -P . -y -j 1 phase_j_macos_completion_test

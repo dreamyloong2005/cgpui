@@ -71,7 +71,7 @@ int main() {
       !contains(policy, "cgpui-windows-release.zip") ||
       !contains(policy, "cgpui-linux-release.tar.gz")) return 7;
   if (!contains(roadmap, "- [x] Steps 829-834: Package Windows/Linux builds") ||
-      !contains(ledger, "\"phase_j_steps_829_834_status\": \"complete_non_macos\"") ||
+      !contains(ledger, "\"phase_j_steps_829_834_status\": \"complete\"") ||
       !contains(ledger, "Phase J Steps 841+ upstream drift delta plan")) return 8;
   constexpr std::array macos_libraries{
       "libcgpui_core.a", "libcgpui_platform.a", "libcgpui_platform_macos.a",

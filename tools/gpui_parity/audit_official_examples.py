@@ -44,6 +44,8 @@ def main() -> int:
         issues.append("official example names are missing, duplicated, or unexpected")
     if len(mapped) != len(rows):
         issues.append("official example mappings contain duplicate names")
+    if matrix.get("macos_execution") != "required":
+        issues.append("macOS execution is not required")
 
     pixel_evidence = 0
     input_evidence = 0

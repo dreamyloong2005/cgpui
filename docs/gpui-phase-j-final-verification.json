@@ -2,7 +2,7 @@
   "schema_version": 1,
   "phase": "J",
   "scope": "all_desktop",
-  "status": "pending",
+  "status": "passed",
   "upstream_revision": "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0",
   "windows_debug": {
     "status": "passed",
@@ -59,89 +59,176 @@
   },
   "macos": {
     "deployment_target": "13.0",
+    "workflow_run": {
+      "id": 29630949183,
+      "url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183",
+      "head_sha": "1acd02b99ffa97b7dd374252b849a058948ea22e",
+      "status": "passed",
+      "jobs_passed": 8,
+      "jobs_total": 8
+    },
     "arm64": {
       "runner": "macos-15",
-      "status": "passed_local",
-      "evidence_scope": "local_native_arm64",
+      "status": "passed_native",
+      "evidence_scope": "native_ci",
       "host": {
-        "os": "macOS 26.5.2 (25F84)",
+        "os": "macOS 15.7.7 (24G720)",
         "architecture": "arm64",
-        "xcode": "26.6 (17F113)",
+        "xcode": "16.4 (16F6)",
         "xmake": "v3.0.9+HEAD.2b184e178"
       },
-      "commands": [
-        "bash scripts/ci/macos-debug.sh build/phase-j-local/macos-arm64-debug",
-        "bash scripts/ci/macos-example-smoke.sh",
-        "CGPUI_PERFORMANCE_OUTPUT_DIR=build/phase-j-local/reports/performance bash scripts/ci/macos-performance-baseline.sh",
-        "CGPUI_STRESS_OUTPUT_DIR=build/phase-j-local/reports/stress bash scripts/ci/macos-stress-matrix.sh",
-        "bash scripts/ci/macos-phase-j-release.sh arm64 build/phase-j-local/macos-arm64-release",
-        "bash scripts/ci/macos-architecture-header.sh"
-      ],
       "debug": {
         "status": "passed",
         "tests_passed": 406,
         "tests_total": 406,
-        "duration_seconds": 11.458,
-        "log": "build/phase-j-local/macos-arm64-debug.log"
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240577"
       },
       "examples": {
         "status": "passed",
         "canonical_targets": 21,
-        "native_tests": 8,
+        "native_tests": 9,
         "hello_window_modes": 4,
-        "log": "build/phase-j-local/macos-arm64-examples.log"
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240577"
       },
       "performance": {
         "status": "passed",
         "iterations": 64,
-        "report": "build/phase-j-local/reports/performance/macos-arm64.json",
+        "report": "phase-j-macos-arm64-reports/phase-j-performance/macos-arm64.json",
         "metrics": [
-          {"name": "startup", "mean_ns": 51921},
-          {"name": "first_frame", "mean_ns": 64136},
-          {"name": "resize", "mean_ns": 1813},
-          {"name": "text_layout", "mean_ns": 19520},
-          {"name": "list_scrolling", "mean_ns": 80348},
-          {"name": "image_loading", "mean_ns": 4675},
-          {"name": "async_wakeup", "mean_ns": 3740},
-          {"name": "frame_pacing", "mean_ns": 4500}
-        ]
+          {"name": "startup", "mean_ns": 45148},
+          {"name": "first_frame", "mean_ns": 46818},
+          {"name": "resize", "mean_ns": 272},
+          {"name": "text_layout", "mean_ns": 2583},
+          {"name": "list_scrolling", "mean_ns": 18767},
+          {"name": "image_loading", "mean_ns": 2590},
+          {"name": "async_wakeup", "mean_ns": 231},
+          {"name": "frame_pacing", "mean_ns": 325}
+        ],
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240564"
       },
       "stress": {
         "status": "passed",
         "scale": 1,
-        "report": "build/phase-j-local/reports/stress/macos-arm64.json",
+        "report": "phase-j-macos-arm64-reports/phase-j-stress/macos-arm64.json",
         "scenarios": [
-          {"name": "window_churn", "operation_count": 64},
-          {"name": "many_entities", "operation_count": 2000},
-          {"name": "large_uniform_list", "operation_count": 50000},
-          {"name": "ime_composition", "operation_count": 1000},
-          {"name": "clipboard_ownership", "operation_count": 1000},
-          {"name": "drag_drop_cancel", "operation_count": 1000},
-          {"name": "asset_reload", "operation_count": 2000},
-          {"name": "task_cancellation", "operation_count": 2000}
-        ]
+          {"name": "window_churn", "operation_count": 64, "status": "complete"},
+          {"name": "many_entities", "operation_count": 2000, "status": "complete"},
+          {"name": "large_uniform_list", "operation_count": 50000, "status": "complete"},
+          {"name": "ime_composition", "operation_count": 1000, "status": "complete"},
+          {"name": "clipboard_ownership", "operation_count": 1000, "status": "complete"},
+          {"name": "drag_drop_cancel", "operation_count": 1000, "status": "complete"},
+          {"name": "asset_reload", "operation_count": 2000, "status": "complete"},
+          {"name": "task_cancellation", "operation_count": 2000, "status": "complete"}
+        ],
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240564"
+      },
+      "reports_artifact": {
+        "id": 8425476643,
+        "name": "phase-j-macos-arm64-reports",
+        "sha256": "16a75810182893ac13b7af2f7bbb042632abfd60c17757286984139bc4f41a63"
       },
       "release": {
         "status": "passed",
         "archive": "cgpui-macos-arm64-release.tar.gz",
-        "sha256": "154e683d1eb5339d0664a7fce562ee58b2e78b4608b9d962190af77d84fa57db",
+        "sha256": "9c29c096c66afcc0d864efdb05b6fc3f7f549bc0534eda0a2d756dc782ef5afa",
         "manifest_files": 199,
         "archive_entries": 200,
-        "reproducible": true
+        "reproducible": true,
+        "binary_architecture": "arm64",
+        "artifact_id": 8425486353,
+        "artifact_sha256": "1e4718cc8d100ad2f40b56f98e3e94689cbaa312f8fbf8d0ddba1e0cd11a6251",
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240565"
       },
       "architecture_header": {
         "status": "passed",
         "tests_passed": 174,
         "tests_total": 174,
-        "duration_seconds": 84.209,
-        "log": "build/phase-j-local/macos-arm64-architecture.log"
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240561"
       }
     },
-    "x86_64": {"runner": "macos-15-intel", "status": "pending"}
+    "x86_64": {
+      "runner": "macos-15-intel",
+      "status": "passed_native",
+      "evidence_scope": "native_ci",
+      "host": {
+        "os": "macOS 15.7.7 (24G720)",
+        "architecture": "x86_64",
+        "xcode": "16.4 (16F6)",
+        "xmake": "v3.0.9+HEAD.2b184e178"
+      },
+      "debug": {
+        "status": "passed",
+        "tests_passed": 406,
+        "tests_total": 406,
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240585"
+      },
+      "examples": {
+        "status": "passed",
+        "canonical_targets": 21,
+        "native_tests": 9,
+        "hello_window_modes": 4,
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240585"
+      },
+      "performance": {
+        "status": "passed",
+        "iterations": 64,
+        "report": "phase-j-macos-x86_64-reports/phase-j-performance/macos-x86_64.json",
+        "metrics": [
+          {"name": "startup", "mean_ns": 501934},
+          {"name": "first_frame", "mean_ns": 465062},
+          {"name": "resize", "mean_ns": 534},
+          {"name": "text_layout", "mean_ns": 5729},
+          {"name": "list_scrolling", "mean_ns": 23523},
+          {"name": "image_loading", "mean_ns": 5562},
+          {"name": "async_wakeup", "mean_ns": 648},
+          {"name": "frame_pacing", "mean_ns": 1326}
+        ],
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240584"
+      },
+      "stress": {
+        "status": "passed",
+        "scale": 1,
+        "report": "phase-j-macos-x86_64-reports/phase-j-stress/macos-x86_64.json",
+        "scenarios": [
+          {"name": "window_churn", "operation_count": 64, "status": "complete"},
+          {"name": "many_entities", "operation_count": 2000, "status": "complete"},
+          {"name": "large_uniform_list", "operation_count": 50000, "status": "complete"},
+          {"name": "ime_composition", "operation_count": 1000, "status": "complete"},
+          {"name": "clipboard_ownership", "operation_count": 1000, "status": "complete"},
+          {"name": "drag_drop_cancel", "operation_count": 1000, "status": "complete"},
+          {"name": "asset_reload", "operation_count": 2000, "status": "complete"},
+          {"name": "task_cancellation", "operation_count": 2000, "status": "complete"}
+        ],
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240584"
+      },
+      "reports_artifact": {
+        "id": 8425670109,
+        "name": "phase-j-macos-x86_64-reports",
+        "sha256": "7b1272649d46023537ca68e735e949c6ce9836f3d7fd6a1763af781efe0dc187"
+      },
+      "release": {
+        "status": "passed",
+        "archive": "cgpui-macos-x86_64-release.tar.gz",
+        "sha256": "d0911ddedefe93cd0f97838ff98c44572845b88165d8e92233c970dde7f51b78",
+        "manifest_files": 199,
+        "archive_entries": 200,
+        "reproducible": true,
+        "binary_architecture": "x86_64",
+        "artifact_id": 8425702619,
+        "artifact_sha256": "925987d15f1cc252fa1a223638fffb140233ae2676c0b4a165e1c78aeda45297",
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240600"
+      },
+      "architecture_header": {
+        "status": "passed",
+        "tests_passed": 174,
+        "tests_total": 174,
+        "job_url": "https://github.com/dreamyloong2005/cgpui/actions/runs/29630949183/job/88044240566"
+      }
+    }
   },
   "preserved_macos_evidence": "Phase H macOS full debug passes 380/380 on macOS 26.5.2 (25F84)",
   "notes": [
     "The final WSLg full suite passes x11_input_test; isolated Xvfb remains the authoritative complete 11/11 X11 acceptance matrix.",
-    "Local native arm64 verification passes; native arm64 and x86_64 CI evidence is still required before all-desktop completion."
+    "Native arm64 and x86_64 CI passes 8/8 in workflow run 29630949183; all four downloaded artifacts pass policy, digest, manifest, and architecture audits."
   ]
 }

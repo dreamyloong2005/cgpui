@@ -53,8 +53,8 @@ only the surface extension required by the selected native handle.
 
 Cocoa and Metal share the public runtime and renderer contracts while native
 evidence remains architecture-specific. Phase J retains separate arm64 and
-x86_64 reports and Release artifacts at deployment target 13.0; both native
-CI matrices must pass before all-desktop completion authority can be claimed.
+x86_64 reports and Release artifacts at deployment target 13.0. Both native
+CI matrices pass and are recorded in the final verification authority.
 
 ## Structure Enforcement
 
