@@ -25793,3 +25793,10 @@
   20 macOS-mapped examples with zero issues. Focused behavior/structure passes
   2/2, runner deployment-target and wrong-architecture probes each reject with
   exit 3, and the comprehensive completion guard advances to raw exit `30`.
+- Task 3 RED is exact at behavior exit 6 and structure exit 5. GREEN adds both
+  macOS report identities, active-platform validator policy, a 68-line native
+  wrapper, and preserves all eight existing metric implementations/budgets.
+- Focused performance guards pass 2/2; wrong-architecture and parent-traversal
+  wrapper probes each reject with exit 3; completion advances to raw exit 40.
+  The real Release runner graph builds in 164.587 seconds and emits a parsed
+  `macos-arm64` report with exactly eight metrics at one probe iteration.

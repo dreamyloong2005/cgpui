@@ -37,6 +37,8 @@ int main() {
       "tests/api_parity/phase_j_performance_baseline_audit_test.cpp");
   const std::string manifest =
       read_source("scripts/ci/architecture-header-targets.txt");
+  const std::string macos =
+      read_source("scripts/ci/macos-performance-baseline.sh");
   if (module.empty() || root.empty() || runner.empty() || audit.empty() ||
       manifest.empty()) return 1;
   if (!contains(root, "includes(\"build/xmake/phase_j_performance_targets.lua\")") ||
@@ -52,5 +54,11 @@ int main() {
   }
   if (line_count(runner) > 320 || line_count(module) > 40 ||
       line_count(audit) > 100) return 4;
+  if (macos.empty() || !contains(macos, "CGPUI_EXPECTED_ARCH") ||
+      !contains(macos, "MACOSX_DEPLOYMENT_TARGET") ||
+      !contains(macos, "phase_j_performance_runner") ||
+      line_count(macos) > 100) {
+    return 5;
+  }
   return 0;
 }

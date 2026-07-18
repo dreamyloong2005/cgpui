@@ -12981,3 +12981,8 @@
 - The official-example auditor now treats macOS as an active platform and
   reports `macos_mapped_examples: 20`; per-row `macos_tests` keeps native
   evidence explicit instead of inferring it from general smoke coverage.
+- The performance runner needs no macOS-native implementation branch: its
+  public `TestApp` metrics are platform-neutral, while `macos-arm64` and
+  `macos-x86_64` report identities preserve architecture-specific evidence.
+- The performance wrapper's workspace path policy can be tested before a build;
+  wrong-architecture and parent-traversal probes both reject with exit 3.

@@ -18,6 +18,8 @@ def main() -> int:
     expected = policy["metrics"]
     actual = {row["name"]: row for row in report.get("metrics", [])}
     issues: list[str] = []
+    if report.get("platform") not in policy.get("platforms", []):
+        issues.append("report platform is not active in policy")
     if report.get("schema_version") != policy.get("schema_version"):
         issues.append("schema version differs from policy")
     if set(actual) != set(expected):

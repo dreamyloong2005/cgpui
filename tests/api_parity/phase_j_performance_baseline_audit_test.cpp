@@ -32,12 +32,14 @@ int main() {
       read_source("scripts/ci/windows-performance-baseline.ps1");
   const std::string linux =
       read_source("scripts/ci/linux-performance-baseline.sh");
+  const std::string macos =
+      read_source("scripts/ci/macos-performance-baseline.sh");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string* required[]{
-      &runner, &policy, &validator, &windows, &linux, &roadmap, &ledger};
+  const std::string* required[]{&runner, &policy, &validator, &windows,
+                                &linux,  &roadmap, &ledger};
   for (const auto* source : required) if (source->empty()) return 1;
 
   constexpr std::array metrics{
@@ -58,6 +60,14 @@ int main() {
   if (!contains(roadmap, "- [x] Steps 811-816: Add performance baselines") ||
       !contains(ledger, "\"phase_j_steps_811_816_status\": \"complete\"")) {
     return 5;
+  }
+  if (!contains(policy, "\"macos-arm64\"") ||
+      !contains(policy, "\"macos-x86_64\"") ||
+      !contains(runner, "platform == \"macos-arm64\"") ||
+      !contains(runner, "platform == \"macos-x86_64\"") ||
+      !contains(validator, "report.get(\"platform\")") ||
+      !contains(macos, "phase_j_performance_runner")) {
+    return 6;
   }
   return 0;
 }
