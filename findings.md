@@ -12986,3 +12986,9 @@
   `macos-x86_64` report identities preserve architecture-specific evidence.
 - The performance wrapper's workspace path policy can be tested before a build;
   wrong-architecture and parent-traversal probes both reject with exit 3.
+- The stress runner already contained exactly one window-churn insertion and
+  seven other scenarios; the new audit freezes that count instead of changing
+  scenario behavior.
+- The platform-neutral `TestApp` stress surface completes all eight scenarios
+  on native macOS arm64, so architecture-specific evidence belongs in report
+  identity and CI selection rather than duplicated scenario implementations.

@@ -29,6 +29,7 @@ int main() {
   const std::string header = read_source("include/cgpui/ui/test_app.hpp");
   const std::string input = read_source("src/ui/test_app_input.cpp");
   const std::string manifest = read_source("scripts/ci/architecture-header-targets.txt");
+  const std::string macos = read_source("scripts/ci/macos-stress-matrix.sh");
   if (module.empty() || root.empty() || runner.empty() || header.empty() ||
       input.empty() || manifest.empty()) return 1;
   if (!contains(root, "includes(\"build/xmake/phase_j_stress_targets.lua\")") ||
@@ -40,5 +41,10 @@ int main() {
       !contains(manifest, "phase_j_stress_structure_test")) return 3;
   if (line_count(runner) > 360 || line_count(module) > 40 ||
       line_count(header) > 145 || line_count(input) > 110) return 4;
+  if (macos.empty() || !contains(macos, "CGPUI_EXPECTED_ARCH") ||
+      !contains(macos, "MACOSX_DEPLOYMENT_TARGET") ||
+      !contains(macos, "phase_j_stress_runner") || line_count(macos) > 100) {
+    return 5;
+  }
   return 0;
 }
