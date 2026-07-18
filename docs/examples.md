@@ -17,7 +17,7 @@ runtime-internal, renderer-internal, and platform-internal includes.
 
 `docs/gpui-official-example-matrix.json` maps every example in the pinned GPUI
 revision to one or more canonical CGPUI targets. It records Windows, Wayland,
-and X11 compile/smoke status plus focused pixel and input evidence.
+X11, and macOS compile/smoke status plus focused pixel and input evidence.
 
 Some mappings are intentional C++ adaptations:
 
@@ -25,8 +25,8 @@ Some mappings are intentional C++ adaptations:
   state handles.
 - `pattern`: the public SVG source/raster pipeline.
 - `grid_layout`: nested horizontal and vertical flex containers.
-- `mouse_pressure`: non-macOS pointer movement, buttons, capture, and drag; no
-  native pressure claim.
+- `mouse_pressure`: pointer movement, buttons, capture, and drag; no native
+  pressure claim.
 
 ## Desktop Demo
 
@@ -40,7 +40,8 @@ first-frame, resize, close, and complete interaction modes are documented in
 - Wayland: `scripts/ci/linux-example-smoke.sh`
 - X11: `scripts/ci/linux-x11-example-smoke.sh`
 - Isolated Xvfb wrapper: `scripts/ci/linux-x11-xvfb-example-smoke.sh`
+- macOS: `scripts/ci/macos-example-smoke.sh`
 
 The scripts build targets serially, run noninteractive public entrypoints, and
-execute registered/native smoke modes. New macOS example execution is excluded
-from the current Phase J scope; Phase H evidence remains historical.
+execute registered/native smoke modes. macOS arm64 and x86_64 execution is
+required and remains pending final native CI verification.

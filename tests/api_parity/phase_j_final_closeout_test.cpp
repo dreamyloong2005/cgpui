@@ -59,9 +59,14 @@ int main() {
       !contains(verification, "\"windows_release\"") ||
       !contains(verification, "\"linux_release\"") ||
       !contains(verification, "\"performance\"") ||
-      !contains(verification, "\"stress\"") ||
-      !contains(verification, "\"macos_execution\": \"excluded_by_user\"") ||
-      !contains(verification, "\"status\": \"passed\"")) return 30;
+      !contains(verification, "\"stress\"")) return 30;
+  if (!contains(ledger, "\"phase_j_status\": \"complete_non_macos\"") ||
+      !contains(ledger, "\"phase_j_macos_completion_status\": "
+                        "\"pending_native_dual_arch_verification\"") ||
+      !contains(ledger, "\"phase_j_required_non_macos_gaps\": 0") ||
+      !contains(verification, "\"status\": \"pending\"") ||
+      !contains(verification, "\"arm64\"") ||
+      !contains(verification, "\"x86_64\"")) return 30;
 
   if (!contains(drift, "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0") ||
       !contains(drift, "Steps 841+") ||

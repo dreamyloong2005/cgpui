@@ -4902,7 +4902,10 @@ implementation slice.
 ## 2026-07-17 Phase J Non-macOS Baseline and Active macOS Completion Goal
 
 - Status: complete_non_macos
-- Active work status: product_implementation_task_8_next
+- Active work status: product_implementation_task_9_next
+- macOS completion status: pending_native_dual_arch_verification
+- Required macOS gaps: 2 (`arm64`, `x86_64`)
+- macOS deployment target: 13.0
 - Authoritative scope: Phase J Steps 799-840+ in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
 - Approved completion design:

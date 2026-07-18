@@ -25827,3 +25827,9 @@
   architecture/header wrapper consumes the shared 173-target inventory.
 - Both YAML files parse, release tests pass 2/2, the comprehensive structure
   guard exits 0, and behavior advances to pending-authority exit 70.
+- Task 8 closeout RED is exact at exit 30. GREEN keeps Phase J authority at
+  `complete_non_macos`, records two required macOS gaps, and marks arm64 plus
+  x86_64 native verification pending at deployment target 13.0.
+- All prior Windows, WSLg, X11, Windows/Linux Release, performance, stress, and
+  Phase H 380/380 values remain unchanged. The final closeout/completion pair
+  passes 2/2 and current user guides contain no active macOS-exclusion prose.

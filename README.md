@@ -12,8 +12,9 @@ without a Rust FFI layer.
 - Linux: X11/XCB + Vulkan
 - macOS: Cocoa + Metal
 
-The current Phase J task excludes new macOS execution. The completed Phase H
-macOS evidence remains recorded in the parity ledger.
+Phase J macOS completion is pending native arm64 and x86_64 verification at a
+macOS 13.0 deployment target. The completed Phase H 380/380 evidence remains
+recorded separately in the parity ledger.
 
 ## Quick Start
 
