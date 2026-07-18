@@ -46,11 +46,15 @@ int main() {
       read_source("scripts/ci/linux-x11-example-smoke.sh");
   const std::string xvfb =
       read_source("scripts/ci/linux-x11-xvfb-example-smoke.sh");
+  const std::string macos =
+      read_source("scripts/ci/macos-example-smoke.sh");
+  const std::string macos_inventory =
+      read_source("scripts/ci/macos-example-targets.txt");
   const std::string auditor =
       read_source("tools/gpui_parity/audit_official_examples.py");
-  const std::string* required[]{&self, &behavior, &module, &xmake, &manifest,
-                                &canonical, &windows, &wayland, &x11, &xvfb,
-                                &auditor};
+  const std::string* required[]{&self,    &behavior, &module, &xmake,
+                                &manifest, &canonical, &windows, &wayland,
+                                &x11,      &xvfb,    &macos,  &auditor};
   for (const auto* source : required) {
     if (source->empty()) return 1;
   }
@@ -75,11 +79,15 @@ int main() {
       !contains(x11, "hello_window/$test_name") ||
       !contains(xvfb, "unshare --mount") || !contains(xvfb, "Xvfb") ||
       !contains(xvfb, "linux-x11-example-smoke.sh") ||
+      !contains(macos, "scripts/ci/example-targets.txt") ||
+      !macos_inventory.empty() ||
       !contains(auditor, "--matrix") || !contains(auditor, "--snapshot") ||
-      !contains(auditor, "--output")) {
+      !contains(auditor, "--output") ||
+      !contains(auditor, "(\"windows\", \"wayland\", \"x11\", \"macos\")") ||
+      !contains(auditor, "macos_tests")) {
     return 3;
   }
-  if (line_count(self) > 100 || line_count(behavior) > 150 ||
+  if (line_count(self) > 120 || line_count(behavior) > 150 ||
       line_count(module) > 30 || line_count(x11) > 130 ||
       line_count(xvfb) > 80 ||
       line_count(auditor) > 180) {

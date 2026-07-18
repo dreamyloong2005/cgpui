@@ -1,12 +1,13 @@
 {
   "input_evidence": 13,
   "issues": [],
-  "macos_execution": "excluded_by_user",
+  "macos_execution": "required",
+  "macos_mapped_examples": 20,
   "mapped_examples": 20,
-  "matrix_sha256": "b3469d59429076d7e05e70d6666c3389242069e28369f047b5cdfd31abb947b6",
+  "matrix_sha256": "1cba790b4e926fbdcd8c526a91e272df75e7b186142c5c9459528f99cfb03d95",
   "official_examples": 20,
   "pixel_evidence": 14,
-  "snapshot_sha256": "7df3df65929bcf0bece548439c390a0ab0e3f850aa6c434d44913b90419504af",
+  "snapshot_sha256": "58783aa5aff56d2d35342f6bac50686ea8d8d75cdc1405697157fb4c5a628748",
   "status": "complete",
   "target_count": 21,
   "upstream_revision": "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0"
