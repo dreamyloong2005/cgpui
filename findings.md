@@ -13062,3 +13062,17 @@
   jobs are outside the user's macOS-only verification scope and already have
   preserved Phase J evidence, so the active workflow now owns only the four
   dual-architecture macOS completion matrices.
+- macOS-only run `29630347423` exposes the shared hosted-runner root cause:
+  Apple libc++ does not provide `std::stop_token` or `std::jthread` for the
+  configured target. The runtime task pool now uses explicit `std::thread`
+  workers, protected stop state, notification, queue draining, and joins.
+- A task-pool structure RED requires `std::thread`, rejects both unsupported
+  C++ library types, and requires explicit join. The focused pool/priority
+  behavior and structure matrix passes 4/4 under a fresh macOS 13.0 config.
+- `MACOSX_DEPLOYMENT_TARGET=13.0` alone did not affect Xmake: local compile
+  commands still targeted `arm64-apple-macos26.5`. All six direct macOS entry
+  scripts now pass `--target_minver="$MACOSX_DEPLOYMENT_TARGET"`; a fresh Xmake
+  compile and link use `arm64-apple-macos13.0`.
+- Replacing RAII `std::jthread` workers requires preserving constructor failure
+  cleanup. A second structure RED freezes the partial-construction catch path;
+  it reuses `shutdown()` to join created workers before rethrowing.

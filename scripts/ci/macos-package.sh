@@ -46,7 +46,8 @@ export XMAKE_PKG_CACHEDIR="${XMAKE_PKG_CACHEDIR:-$output_root/pkg-cache}"
 export XMAKE_PKG_INSTALLDIR="${XMAKE_PKG_INSTALLDIR:-$output_root/pkg-install}"
 export TMPDIR="${TMPDIR:-$output_root/tmp}"
 
-xmake f -P "$repo_root" -y -c -m "$mode" -a "$arch" --ccache=n -o "$build_root"
+xmake f -P "$repo_root" -y -c -m "$mode" -a "$arch" --ccache=n \
+  --target_minver="$MACOSX_DEPLOYMENT_TARGET" -o "$build_root"
 xmake build -P "$repo_root" -y -j 1 cgpui_app
 xmake build -P "$repo_root" -y -j 1 hello_window
 

@@ -28,6 +28,8 @@ output_path="$(cd "$output_probe" && pwd -P)$output_suffix"
 mkdir -p "$output_path"
 
 cd "$root"
+xmake f -P "$root" -y -m release -a "$arch" \
+  --target_minver="$MACOSX_DEPLOYMENT_TARGET"
 xmake build -P "$root" -y -j 1 phase_j_stress_runner
 xmake run -P "$root" phase_j_stress_runner --platform "macos-$arch" \
   --output "$output_path/macos-$arch.json" --scale "$scale"

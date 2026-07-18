@@ -22,6 +22,8 @@ if [[ "$(xmake --version | sed -n '1p')" != *"xmake v3.0.9"* ]]; then
   exit 3
 fi
 cd "$repo_root"
+xmake f -P "$repo_root" -y -m debug -a "$expected_arch" \
+  --target_minver="$MACOSX_DEPLOYMENT_TARGET"
 
 while IFS= read -r target; do
   [[ -z "$target" || "$target" == \#* ]] && continue

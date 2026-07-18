@@ -53,6 +53,8 @@ int main() {
 
   constexpr std::array required_paths{
       "scripts/ci/macos-dependencies.sh",
+      "scripts/ci/macos-debug.sh",
+      "scripts/ci/macos-example-smoke.sh",
       "scripts/ci/macos-package.sh",
       "scripts/ci/macos-phase-j-release.sh",
       "scripts/ci/macos-performance-baseline.sh",
@@ -63,6 +65,16 @@ int main() {
       ".github/workflows/phase-j-desktop.yml"};
   for (const auto* path : required_paths) {
     if (read_source(path).empty()) return 10;
+  }
+  constexpr std::array target_minver_scripts{
+      "scripts/ci/macos-debug.sh", "scripts/ci/macos-example-smoke.sh",
+      "scripts/ci/macos-package.sh",
+      "scripts/ci/macos-performance-baseline.sh",
+      "scripts/ci/macos-stress-matrix.sh",
+      "scripts/ci/macos-architecture-header.sh"};
+  for (const auto* path : target_minver_scripts) {
+    if (!contains(read_source(path),
+                  "--target_minver=\"$MACOSX_DEPLOYMENT_TARGET\"")) return 15;
   }
   if (!contains(root,
                 "includes(\"build/xmake/phase_j_macos_targets.lua\")") ||

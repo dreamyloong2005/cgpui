@@ -81,7 +81,8 @@ mkdir -p "$XMAKE_CONFIGDIR" "$XMAKE_GLOBALDIR/.xmake/repositories" \
   "$XMAKE_PKG_CACHEDIR" "$XMAKE_PKG_INSTALLDIR" "$TMPDIR"
 
 cd "$repo_root"
-xmake f -y -c -m debug -P "$repo_root"
+xmake f -y -c -m debug -P "$repo_root" -a "$arch" \
+  --target_minver="$MACOSX_DEPLOYMENT_TARGET"
 xmake test -y -P "$repo_root" -j 1 -v
 git diff --check
 

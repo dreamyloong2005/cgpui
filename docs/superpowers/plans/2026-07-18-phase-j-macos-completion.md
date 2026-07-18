@@ -1380,6 +1380,18 @@ architectures produce eight successful job conclusions. On failure, diagnose
 the failing job, add a focused regression, push a normal follow-up commit, and
 repeat this step with the new run; never force-push.
 
+Implementation diagnosis (2026-07-18): run `29630347423` exposed unsupported
+`std::stop_token` and `std::jthread` use in the runtime task pool on both hosted
+Apple runners. The focused repair uses joined `std::thread` workers and freezes
+that compatibility boundary in the existing pool structure guard, including
+partial-construction cleanup before rethrowing. A second
+configuration gap was also confirmed: exporting `MACOSX_DEPLOYMENT_TARGET`
+alone left Xmake targeting the host SDK version. Every direct macOS entry point
+now passes `--target_minver="$MACOSX_DEPLOYMENT_TARGET"`, and a fresh local
+compile reports `arm64-apple-macos13.0`. These are normal follow-up repairs
+under Step 2; final authority remains pending until a replacement eight-job run
+passes and both artifact sets are independently audited.
+
 - [ ] **Step 3: Download and independently audit both architectures**
 
 ```bash

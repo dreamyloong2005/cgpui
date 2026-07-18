@@ -8,7 +8,6 @@
 #include <deque>
 #include <functional>
 #include <mutex>
-#include <stop_token>
 #include <thread>
 #include <vector>
 
@@ -36,12 +35,12 @@ class WindowRuntime::RuntimeTaskPool {
   void shutdown();
 
  private:
-  void run_worker(std::stop_token stop_token);
+  void run_worker();
 
   mutable std::mutex mutex_;
   std::condition_variable_any condition_;
   std::array<std::deque<Work>, 3> queues_;
-  std::vector<std::jthread> workers_;
+  std::vector<std::thread> workers_;
   std::size_t active_work_count_ = 0;
   std::size_t peak_active_work_count_ = 0;
   std::size_t completed_work_count_ = 0;

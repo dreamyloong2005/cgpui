@@ -53,6 +53,8 @@ esac
 iterations="${CGPUI_PERFORMANCE_ITERATIONS:-64}"
 mkdir -p "$output_path"
 cd "$root"
+xmake f -P "$root" -y -m release -a "$arch" \
+  --target_minver="$MACOSX_DEPLOYMENT_TARGET"
 xmake build -P "$root" -y -j 1 phase_j_performance_runner
 xmake run -P "$root" phase_j_performance_runner \
   --platform "macos-$arch" --output "$output_path/macos-$arch.json" \
