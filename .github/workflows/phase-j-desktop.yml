@@ -1,4 +1,4 @@
-name: Phase J Windows and Linux Release
+name: Phase J Desktop Release
 
 on:
   push:
@@ -166,3 +166,101 @@ jobs:
         run: ./scripts/ci/windows-architecture-header.ps1
       - if: runner.os == 'Linux'
         run: bash ./scripts/ci/linux-architecture-header.sh
+
+  macos-debug-examples:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    env:
+      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-phase-j-dependencies
+        with:
+          platform: macos
+      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
+      - run: bash ./scripts/ci/macos-debug.sh build/phase-j-ci/macos-${{ matrix.arch }}-debug
+      - run: bash ./scripts/ci/macos-example-smoke.sh
+
+  macos-performance-stress:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    env:
+      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-phase-j-dependencies
+        with:
+          platform: macos
+      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
+      - run: bash ./scripts/ci/macos-performance-baseline.sh
+      - run: bash ./scripts/ci/macos-stress-matrix.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase-j-macos-${{ matrix.arch }}-reports
+          path: |
+            artifacts/phase-j-performance/macos-${{ matrix.arch }}.json
+            artifacts/phase-j-stress/macos-${{ matrix.arch }}.json
+          if-no-files-found: error
+
+  macos-release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    env:
+      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-phase-j-dependencies
+        with:
+          platform: macos
+      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
+      - run: bash ./scripts/ci/macos-phase-j-release.sh ${{ matrix.arch }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cgpui-macos-${{ matrix.arch }}-release
+          path: build/phase-j-release/macos-${{ matrix.arch }}/artifacts
+          if-no-files-found: error
+
+  macos-architecture-header:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    env:
+      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-phase-j-dependencies
+        with:
+          platform: macos
+      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
+      - run: bash ./scripts/ci/macos-architecture-header.sh
