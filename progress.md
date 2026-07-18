@@ -25744,3 +25744,24 @@
   clean: focused Xmake ownership and line budgets remain intact, all seven
   Phase J bands have guarded evidence, and the new CI workflow contains only
   Windows, Wayland, and X11/Linux jobs with no macOS execution.
+
+## 2026-07-18 Phase J macOS Completion Planning
+
+- Synchronized local `master` with `origin/master`, created
+  `codex/phase-j-macos-completion`, and committed the approved design as
+  `48ea3e83 docs: design phase j macos completion`.
+- User approved reopening Phase J Steps 799-840 for full macOS completion with
+  separate arm64/x86_64 Release artifacts, native validation on both
+  architectures, macOS 13.0 deployment target, feature-branch CI, and merge
+  only after every native matrix passes.
+- Restored the file-based planning context after session catch-up. The working
+  tree is clean and the detailed implementation plan is now in progress; no
+  product implementation has started.
+- Wrote and self-reviewed
+  `docs/superpowers/plans/2026-07-18-phase-j-macos-completion.md` with ten
+  task-level commits, exact RED/GREEN commands, native arm64/x86_64 gates,
+  fixed macOS 13.0 packaging contracts, desktop CI, and final merge procedure.
+- A submission-time Xmake verification exposed the unisolated Gitee fallback;
+  no target compiled. Moved the pinned dependency helper to Task 1 and verified
+  the unchanged source-only Phase J closeout guard directly with Apple Clang;
+  it exits 0.
