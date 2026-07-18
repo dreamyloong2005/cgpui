@@ -71,7 +71,8 @@ int main() {
       count(matrix, "\"macos\": \"compiled_and_smoked\"") !=
           examples.size() ||
       count(matrix, "\"macos_tests\":") != examples.size() ||
-      count(matrix, "\"status\": \"complete\"") != examples.size()) {
+      count(matrix, "\"status\": \"complete\"") != examples.size() ||
+      !contains(matrix, "\"macos_execution\": \"required\"")) {
     return 3;
   }
   if (!contains(matrix, "\"windows\": \"compiled_and_smoked\"") ||

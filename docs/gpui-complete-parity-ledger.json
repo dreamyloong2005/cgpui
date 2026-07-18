@@ -3738,11 +3738,11 @@
     ],
     "phase_i_current_handoff": "Phase J Step 799 re-run upstream extractor against the pinned revision",
     "phase_f_current_handoff": "Phase J Step 799 re-run upstream extractor against the pinned revision",
-    "phase_j_status": "complete_non_macos",
+    "phase_j_status": "complete",
     "phase_j_steps_799_804_status": "complete",
     "phase_j_steps_805_810_status": "complete",
     "phase_j_upstream_audit": "Phase J Step 804 locks the live pinned-upstream audit at 55 public re-exports/modules, 20 official Cargo examples, 32 accepted ledger rows, and zero unresolved required rows.",
-    "phase_j_official_example_evidence": "Phase J Step 810 locks all 20 official examples to canonical CGPUI targets, Windows/Wayland/X11 compile-and-smoke execution, focused pixel/input evidence, explicit C++ adaptations, and required macOS mappings pending native dual-architecture verification.",
+    "phase_j_official_example_evidence": "Phase J Step 810 locks all 20 official examples to canonical CGPUI targets, Windows/Wayland/X11/macOS compile-and-smoke execution, focused pixel/input evidence, and explicit C++ adaptations; native macOS arm64 and x86_64 execution passes in workflow run 29630949183.",
     "phase_j_official_example_sources": [
       "docs/gpui-upstream-snapshot.json",
       "docs/gpui-official-example-matrix.json",
@@ -3755,7 +3755,7 @@
       "tests/architecture/phase_j_official_example_structure_test.cpp"
     ],
     "phase_j_steps_811_816_status": "complete",
-    "phase_j_performance_evidence": "Phase J Step 816 adds a public-API performance runner for startup, first frame, resize, text layout, large-list scrolling, image loading, async wakeups, and frame pacing, with checked-in regression budgets, JSON reports, Windows/Wayland/X11 evidence, and macOS arm64/x86_64 wrappers pending native CI.",
+    "phase_j_performance_evidence": "Phase J Step 816 adds a public-API performance runner for startup, first frame, resize, text layout, large-list scrolling, image loading, async wakeups, and frame pacing, with checked-in regression budgets and passing Windows, Wayland, X11, macOS arm64, and macOS x86_64 JSON reports.",
     "phase_j_performance_sources": [
       "tests/performance/phase_j_performance_runner.cpp",
       "docs/gpui-performance-baseline-policy.json",
@@ -3766,7 +3766,7 @@
       "tests/architecture/phase_j_performance_baseline_structure_test.cpp"
     ],
     "phase_j_steps_817_822_status": "complete",
-    "phase_j_stress_evidence": "Phase J Step 822 adds a public stress runner for window churn, entity churn, large uniform lists, IME composition, clipboard ownership, DnD cancellation, concurrent asset reload, and task cancellation, with checked-in scale floors, JSON reports, Windows/Wayland/X11 evidence, and macOS arm64/x86_64 wrappers pending native CI.",
+    "phase_j_stress_evidence": "Phase J Step 822 adds a public stress runner for window churn, entity churn, large uniform lists, IME composition, clipboard ownership, DnD cancellation, concurrent asset reload, and task cancellation, with checked-in scale floors and all eight scenarios passing on Windows, Wayland, X11, macOS arm64, and macOS x86_64.",
     "phase_j_stress_sources": [
       "include/cgpui/ui/test_app.hpp",
       "src/ui/test_app_input.cpp",
@@ -3791,8 +3791,8 @@
       "tests/api_parity/phase_j_documentation_audit_test.cpp",
       "tests/architecture/phase_j_documentation_structure_test.cpp"
     ],
-    "phase_j_steps_829_834_status": "complete_non_macos",
-    "phase_j_release_evidence": "Phase J Step 834 completes deterministic Windows/Linux release archives and implements architecture-specific macOS arm64/x86_64 tar.gz archives with per-file SHA-256 manifests, locked dependency bootstrap, and desktop CI. Native dual-architecture macOS verification remains pending.",
+    "phase_j_steps_829_834_status": "complete",
+    "phase_j_release_evidence": "Phase J Step 834 completes deterministic Windows/Linux release archives and architecture-specific macOS arm64/x86_64 tar.gz archives with per-file SHA-256 manifests, locked dependency bootstrap, and desktop CI. Native arm64 and x86_64 packages pass 199/199 manifest hashes, 200 archive entries, deterministic metadata, and Mach-O architecture audits.",
     "phase_j_release_sources": [
       "docs/gpui-release-artifact-policy.json",
       "scripts/ci/create-release-artifact.py",
@@ -3805,15 +3805,16 @@
       "tests/api_parity/phase_j_release_audit_test.cpp",
       "tests/architecture/phase_j_release_structure_test.cpp"
     ],
-    "phase_j_steps_835_840_status": "complete_non_macos",
+    "phase_j_steps_835_840_status": "complete",
+    "phase_j_required_gaps": 0,
     "phase_j_required_non_macos_gaps": 0,
-    "phase_j_macos_completion_status": "pending_native_dual_arch_verification",
-    "phase_j_required_macos_gaps": 1,
+    "phase_j_macos_completion_status": "complete",
+    "phase_j_required_macos_gaps": 0,
     "phase_j_macos_architectures": ["arm64", "x86_64"],
     "phase_j_macos_deployment_target": "13.0",
-    "phase_j_final_verification": "Phase J Step 840 completes non-macOS closure with Windows/WSLg/isolated-Xvfb verification, reproducible Windows/Linux Release artifacts, passing Windows/Wayland/X11 performance and stress reports, and preserved Phase H macOS evidence without new macOS execution.",
+    "phase_j_final_verification": "Phase J Step 840 completes all-desktop closure with Windows/WSLg/isolated-Xvfb verification, reproducible Windows/Linux Release artifacts, passing Windows/Wayland/X11 performance and stress reports, preserved Phase H 380/380 evidence, and native macOS arm64/x86_64 Debug, examples, performance, stress, Release, and architecture/header verification in workflow run 29630949183.",
     "phase_j_final_verification_source": "docs/gpui-phase-j-final-verification.json",
-    "phase_j_current_handoff": "Phase J native arm64/x86_64 CI and artifact verification",
+    "phase_j_current_handoff": "Phase J Steps 841+ upstream drift only",
     "phase_j_upstream_drift_handoff": "Phase J Steps 841+ upstream drift delta plan"
   },
   "categories": [

@@ -43,5 +43,5 @@ first-frame, resize, close, and complete interaction modes are documented in
 - macOS: `scripts/ci/macos-example-smoke.sh`
 
 The scripts build targets serially, run noninteractive public entrypoints, and
-execute registered/native smoke modes. macOS arm64 and x86_64 execution is
-required and remains pending final native CI verification.
+execute registered/native smoke modes. macOS arm64 and x86_64 execution passes
+in the Phase J native CI matrix.

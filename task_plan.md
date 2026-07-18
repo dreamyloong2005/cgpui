@@ -4901,11 +4901,10 @@ implementation slice.
 
 ## 2026-07-17 Phase J Non-macOS Baseline and Active macOS Completion Goal
 
-- Status: complete_non_macos
-- Active work status: product_implementation_task_10_ci_retry_next
-- macOS completion status: pending_native_dual_arch_verification
-- Required macOS gaps: 1 (`x86_64`; arm64 has complete local evidence and still
-  requires native CI confirmation)
+- Status: complete
+- Active work status: product_implementation_task_10_closeout_ready_to_commit
+- macOS completion status: complete
+- Required macOS gaps: 0
 - macOS deployment target: 13.0
 - Authoritative scope: Phase J Steps 799-840+ in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
@@ -4931,7 +4930,7 @@ implementation slice.
      non-macOS closeout guard, and explicit upstream-drift policy.
   8. [x] Write and self-review the detailed Phase J macOS completion
      implementation plan; commit it separately before implementation.
-  9. [ ] Execute the approved implementation plan on
+  9. [x] Execute the approved implementation plan on
      `codex/phase-j-macos-completion` with RED/GREEN guards and focused commits.
   10. [ ] Push the feature branch, require native arm64 and x86_64 macOS CI,
       close the all-desktop authority, and merge only after every matrix passes.
@@ -4942,8 +4941,9 @@ implementation slice.
   native smoke coverage, eight performance metrics, eight stress scenarios,
   deterministic Release SHA-256
   `154e683d1eb5339d0664a7fce562ee58b2e78b4608b9d962190af77d84fa57db`,
-  and architecture/header 174/174 all pass. Task 10 native dual-architecture CI
-  and artifact verification is next; all-desktop authority remains pending.
+  and architecture/header 174/174 all pass. Task 10 native workflow run
+  `29630949183` passes all eight jobs, and both architecture artifacts pass
+  independent report, manifest, deterministic metadata, and Mach-O audits.
 
 ### Errors Encountered During Phase J
 
@@ -4997,3 +4997,7 @@ implementation slice.
 | The first local target-minimum compile probe sourced the macOS Bash helper from zsh, leaving `BASH_SOURCE` undefined and deriving `/build` | Task 10 deployment-target verification | No workspace-external write succeeded; rerun the isolated probe explicitly through `/bin/bash -c`, as required by the helper's supported entry surface |
 | The local Python environment does not provide `PyYAML` for the workflow syntax probe | Task 10 focused verification | Use the system Ruby YAML parser for the same read-only syntax check; do not install an unneeded dependency |
 | The constructor exception-safety RED wrapper assigned zsh's read-only `status` parameter | Task 10 task-pool review | Keep the compiled RED guard unchanged and rerun the wrapper with the ordinary variable name `exit_code` |
+| Run 29630949183 passes all eight native jobs, but GitHub returns `401 Requires authentication` for public-repository artifact downloads | Task 10 artifact audit | Preserve the stronger independent-content audit requirement; ask the user to sign in to GitHub in the Codex browser, then download and validate all four artifacts |
+| A single `xmake build` invocation passed six target names, but this local Xmake accepts one target argument and returned exit 255 | Task 10 final local closeout | Build each focused target in its own serial `xmake build -P . -y -j 1 <target>` invocation before running the grouped registered tests |
+| The first single-target GREEN attempt used the default `~/.xmake` repository and failed cloning the unavailable Gitee mirror before compiling | Task 10 final local closeout | Obtain the source-only RED with the system C++ compiler, then run GREEN builds under the already-pinned repository-local macOS dependency environment |
+| The first seven-test GREEN matrix passed 6/7; `phase_j_macos_completion_test` returned exit 70 after the human ledger replaced its last explicit `Phase J macOS completion` phrase | Task 10 final authority wording | Preserve the all-desktop completion sentence and add an explicit verified macOS completion sentence backed by the same dual-architecture evidence |

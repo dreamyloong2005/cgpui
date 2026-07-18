@@ -52,4 +52,4 @@ from the full Wayland suite.
 The production target uses Xcode, AppKit, QuartzCore, CoreText, and Metal.
 Phase J pins Xmake 3.0.9 and targets macOS 13.0 on native arm64 and x86_64
 runners. `scripts/ci/macos-dependencies.sh` owns repository-local dependency
-roots; both architectures remain pending final native verification.
+roots; both architectures pass final native verification.

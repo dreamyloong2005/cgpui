@@ -16,6 +16,12 @@ std::string read_source(const char* path) {
 bool contains(const std::string& text, std::string_view value) {
   return text.find(value) != std::string::npos;
 }
+std::size_t count(const std::string& text, std::string_view value) {
+  std::size_t result = 0;
+  for (std::size_t offset = text.find(value); offset != std::string::npos;
+       offset = text.find(value, offset + value.size())) ++result;
+  return result;
+}
 }  // namespace
 
 int main() {
@@ -44,12 +50,12 @@ int main() {
     if (!contains(roadmap, bands[index])) return 10 + static_cast<int>(index);
 
   if (!contains(ledger, "\"required\": 0") ||
-      !contains(ledger, "\"phase_j_status\": \"complete_non_macos\"") ||
-      !contains(ledger, "\"phase_j_steps_835_840_status\": \"complete_non_macos\"") ||
+      !contains(ledger, "\"phase_j_status\": \"complete\"") ||
+      !contains(ledger, "\"phase_j_steps_835_840_status\": \"complete\"") ||
       !contains(ledger, "\"phase_j_required_non_macos_gaps\": 0") ||
       !contains(ledger, "Phase J Steps 841+ upstream drift delta plan")) return 20;
-  if (!contains(ledger_md, "Phase J Step 840 completes non-macOS") ||
-      !contains(task_plan, "- Status: complete_non_macos") ||
+  if (!contains(ledger_md, "Phase J all-desktop completion passes") ||
+      !contains(task_plan, "- Status: complete") ||
       !contains(task_plan, "7. [x] Steps 835-840+")) return 21;
 
   if (!contains(verification, "\"schema_version\": 1") ||
@@ -60,13 +66,17 @@ int main() {
       !contains(verification, "\"linux_release\"") ||
       !contains(verification, "\"performance\"") ||
       !contains(verification, "\"stress\"")) return 30;
-  if (!contains(ledger, "\"phase_j_status\": \"complete_non_macos\"") ||
-      !contains(ledger, "\"phase_j_macos_completion_status\": "
-                        "\"pending_native_dual_arch_verification\"") ||
-      !contains(ledger, "\"phase_j_required_non_macos_gaps\": 0") ||
-      !contains(verification, "\"status\": \"pending\"") ||
-      !contains(verification, "\"arm64\"") ||
-      !contains(verification, "\"x86_64\"")) return 30;
+  if (!contains(ledger, "\"phase_j_steps_829_834_status\": \"complete\"") ||
+      !contains(ledger, "\"phase_j_macos_completion_status\": \"complete\"") ||
+      !contains(ledger, "\"phase_j_required_gaps\": 0") ||
+      !contains(ledger, "\"phase_j_required_macos_gaps\": 0") ||
+      !contains(verification, "\"scope\": \"all_desktop\"") ||
+      !contains(verification, "\"status\": \"passed\"") ||
+      count(verification, "\"status\": \"passed_native\"") != 2 ||
+      !contains(verification, "29630949183") ||
+      !contains(verification, "1acd02b99ffa97b7dd374252b849a058948ea22e") ||
+      !contains(verification, "9c29c096c66afcc0d864efdb05b6fc3f7f549bc0534eda0a2d756dc782ef5afa") ||
+      !contains(verification, "d0911ddedefe93cd0f97838ff98c44572845b88165d8e92233c970dde7f51b78")) return 30;
 
   if (!contains(drift, "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0") ||
       !contains(drift, "Steps 841+") ||

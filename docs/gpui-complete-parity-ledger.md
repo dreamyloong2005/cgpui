@@ -818,18 +818,16 @@ consume C: drive space again.
 - Phase J Step 810 locks all 20 official examples to canonical CGPUI targets,
   Windows/Wayland/X11 compile-and-smoke execution, focused pixel/input
   evidence, explicit C++ adaptations, and required macOS mappings. Native
-  arm64/x86_64 execution remains pending. Phase J Step 811 reproducible
-  performance baselines are next.
+  arm64/x86_64 execution passes in workflow run `29630949183`.
 - Phase J Step 816 adds a public-API performance runner for startup, first
   frame, resize, text layout, large-list scrolling, image loading, async
   wakeups, and frame pacing. Checked-in regression budgets and JSON-report
-  wrappers cover Windows, Wayland, X11, and pending macOS arm64/x86_64 reports.
-  Phase J Step 817 public stress runner is next.
+  wrappers cover Windows, Wayland, X11, and passing macOS arm64/x86_64 reports.
 - Phase J Step 822 adds a public stress runner for window churn, entity churn,
   large uniform lists, IME composition, clipboard ownership, DnD cancellation,
   concurrent asset reload, and task cancellation. Checked-in scale floors and
-  JSON-report wrappers cover Windows, Wayland, X11, and pending macOS
-  arm64/x86_64 reports. Phase J Step 823 getting-started documentation is next.
+  JSON-report wrappers cover Windows, Wayland, X11, and passing macOS
+  arm64/x86_64 reports.
 - Phase J Step 828 completes focused getting-started, architecture, platform
   dependency, example, GPUI-to-C++23 migration, and non-goal guides. README is
   now a current desktop-target navigation entry. Phase J Step 829 reproducible
@@ -839,15 +837,16 @@ consume C: drive space again.
   bootstrap, Windows/Wayland/X11 performance and stress CI, example jobs, and
   architecture/header jobs. Windows Release built and verified locally; Linux
   Release execution remains in the final WSL matrix. Architecture-specific
-  macOS packages and desktop CI are implemented, with native arm64/x86_64
-  execution pending. Phase J Step 835 final non-macOS matrix verification is next.
-- Phase J Step 840 completes non-macOS closure with zero required gaps. The
+  macOS packages and desktop CI pass on native arm64 and x86_64 runners.
+- Phase J all-desktop completion passes with zero required gaps. The
   final matrix records Windows and WSLg Debug coverage, isolated Xvfb X11 at
   11/11, passing Windows/Wayland/X11 performance and stress reports, and
-  byte-reproducible Windows/Linux Release archives. Phase J macOS completion is
-  pending native arm64/x86_64 verification, while Phase H macOS evidence remains
-  380/380. The current handoff is arm64 local verification followed by native
-  dual-architecture CI; Steps 841+ remain reserved for upstream drift.
+  byte-reproducible Windows/Linux Release archives. Native macOS workflow run
+  `29630949183` passes all eight arm64/x86_64 jobs at deployment target 13.0;
+  both Release packages pass 199/199 manifest hashes, 200 archive entries, and
+  architecture audits. Phase J macOS completion is therefore verified for both
+  native architectures. Phase H macOS evidence remains 380/380 as historical
+  evidence. The current handoff is Steps 841+ upstream drift only.
 
 ## Categories
 
