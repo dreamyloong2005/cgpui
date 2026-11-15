@@ -2,6 +2,8 @@
 
 #include "cgpui/core/error.hpp"
 #include "cgpui/core/window.hpp"
+#include "cgpui/platform/platform_appearance.hpp"
+#include "cgpui/platform/platform_dpi_awareness.hpp"
 #include "cgpui/platform/platform_file_dialog.hpp"
 #include "cgpui/platform/platform_font_discovery.hpp"
 #include "cgpui/platform/platform_native_menu.hpp"
@@ -45,6 +47,10 @@ class PlatformApplication {
   virtual PlatformOpenUrlResult open_url(std::string url);
   virtual void set_reopen_callback(PlatformReopenCallback callback);
   virtual PlatformReopenResult request_reopen();
+  [[nodiscard]] virtual SystemAppearance system_appearance() const;
+  virtual void set_system_appearance_callback(
+      SystemAppearanceCallback callback);
+  [[nodiscard]] virtual PlatformDpiAwarenessState dpi_awareness() const;
 
   virtual int run() = 0;
   virtual void quit() = 0;

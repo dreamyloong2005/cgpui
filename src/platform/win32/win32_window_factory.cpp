@@ -1,4 +1,6 @@
 #include "win32_window_factory_internal.hpp"
+#include "win32_dpi_awareness_internal.hpp"
+#include "win32_system_appearance_internal.hpp"
 
 namespace cgpui {
 
@@ -7,6 +9,7 @@ Result<std::unique_ptr<Win32Window>> create_win32_window(
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
     HWND owner) {
+  (void)win32_declare_dpi_awareness();
   constexpr const wchar_t* class_name = L"CGPUIWindow";
   WNDCLASSEXW window_class{};
   window_class.cbSize = sizeof(WNDCLASSEXW);
@@ -50,6 +53,8 @@ Result<std::unique_ptr<Win32Window>> create_win32_window(
         .message = "CreateWindowExW failed"});
   }
   window->apply_window_chrome(descriptor.chrome);
+  (void)win32_apply_immersive_dark_mode(
+      hwnd, win32_read_system_appearance().mode == SystemAppearanceMode::dark);
   ShowWindow(hwnd, SW_SHOW);
   window->update_size();
   return window;

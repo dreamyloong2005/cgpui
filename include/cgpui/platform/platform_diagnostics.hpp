@@ -22,6 +22,7 @@ enum class PlatformDiagnosticKind {
   window_chrome,
   window_scale,
   scheduling,
+  appearance,
 };
 
 struct PlatformDiagnosticEvent {

@@ -241,6 +241,7 @@ std::uint64_t next_window_runtime_id_ = 2;
 std::vector<WindowRuntimeRecord> window_runtime_records_;
 #include "runtime_window_ownership_state_internal.hpp"
 #include "runtime_platform_service_state_internal.hpp"
+#include "runtime_system_appearance_internal.hpp"
 #include "runtime_theme_scheduling_internal.hpp"
 Theme app_theme_;
 std::unordered_map<std::uint64_t, Theme> window_themes_;

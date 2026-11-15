@@ -50,6 +50,11 @@ int main() {
   if (hwnd == nullptr) {
     return 3;
   }
+  // Per-monitor v2: pin 96 DPI so client pixels equal logical points here.
+  RECT dpi_bounds{};
+  GetWindowRect(hwnd, &dpi_bounds);
+  SendMessageW(hwnd, WM_DPICHANGED, MAKEWPARAM(96, 96),
+               reinterpret_cast<LPARAM>(&dpi_bounds));
   constexpr cgpui::Point position{31.0F, 47.0F};
   const LPARAM screen_position = screen_point_lparam(hwnd, position);
   SendMessageW(

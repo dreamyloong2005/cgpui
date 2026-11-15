@@ -27,8 +27,8 @@ storage, syntax highlighting rules, agent protocol) stays in the consumer.
 | ID | Capability | Status |
 |---|---|---|
 | C0 | Commit DirectWrite glyph rasterization; capability build module | done (`17fdc168`, this commit) |
-| C1 | Per-Monitor V2 DPI awareness declared by the framework at startup | planned |
-| C2 | System appearance: light/dark, accent color, transparency-effects and reduced-motion settings, change notifications; immersive dark title bar | planned |
+| C1 | Per-Monitor V2 DPI awareness declared by the framework at startup | done (with C2, this commit); see `docs/system-appearance.md` |
+| C2 | System appearance: light/dark, accent color, transparency-effects and reduced-motion settings, change notifications; immersive dark title bar | done (this commit); real settings toggles and the visual title bar not yet observed |
 | C3 | Window backdrop material: DWM Mica / Acrylic / tabbed, transparent Vulkan composition, graceful opaque fallback | planned |
 | C4 | Custom title bar: client-area extension, hit-test regions (caption, min/max/close, resize borders), Snap Layout on maximize button | planned |
 | C5 | Box shadow rendering in Vulkan (blurred rounded-rect shadow, spread, offset, inset excluded) | planned |

@@ -1,4 +1,5 @@
 #include "win32_window_factory_internal.hpp"
+#include "win32_system_application_internal.hpp"
 #include "win32_message_dialog_internal.hpp"
 #include "win32_open_url_internal.hpp"
 #include "win32_timer_wakeup_internal.hpp"
@@ -10,7 +11,7 @@
 namespace cgpui {
 namespace {
 
-class Win32Application final : public PlatformApplication {
+class Win32Application final : public Win32SystemApplication {
  public:
   Win32Application() : instance_(GetModuleHandleW(nullptr)) {
     ole_initialization_result_ = OleInitialize(nullptr);
@@ -151,8 +152,7 @@ class Win32Application final : public PlatformApplication {
   }
 
   HINSTANCE instance_ = nullptr;
-  HRESULT ole_initialization_result_ = S_FALSE;
-  bool ole_initialized_ = false;
+  HRESULT ole_initialization_result_ = S_FALSE; bool ole_initialized_ = false;
   Win32NativeMenuState native_menu_state_;
   PlatformMenuInstallationResult last_menu_installation_;
   Win32NativeFileDialogState native_file_dialog_state_;

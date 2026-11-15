@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/app/window.hpp"
+#include "cgpui/platform/platform_dpi_awareness.hpp"
 
 #include <memory>
 #include <optional>
@@ -24,6 +25,9 @@ class App {
   [[nodiscard]] Window root_window() const;
   [[nodiscard]] std::optional<Window> window(
       WindowRuntimeId runtime_id) const;
+  [[nodiscard]] SystemAppearance system_appearance() const;
+  void set_system_appearance_callback(SystemAppearanceCallback callback) const;
+  [[nodiscard]] PlatformDpiAwarenessState dpi_awareness() const;
 
  private:
   WindowRuntime* runtime_ = nullptr;

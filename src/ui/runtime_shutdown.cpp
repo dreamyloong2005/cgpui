@@ -7,6 +7,9 @@
 namespace cgpui {
 
 WindowRuntime::~WindowRuntime() {
+  if (system_appearance_bridge_installed_) {
+    application_.set_system_appearance_callback({});
+  }
   cross_thread_entity_queue_->shutdown();
   async_io_registry_->shutdown();
   {

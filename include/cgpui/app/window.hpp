@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/platform/platform_appearance.hpp"
 #include "cgpui/ui/runtime_input_state.hpp"
 #include "cgpui/ui/runtime_window_options.hpp"
 
@@ -19,6 +20,7 @@ class Window {
   [[nodiscard]] DpiScale scale() const;
   [[nodiscard]] ViewInputState input_state() const;
   [[nodiscard]] bool focused() const;
+  [[nodiscard]] SystemAppearance appearance() const;
 
   void request_render() const;
   void request_layout() const;
