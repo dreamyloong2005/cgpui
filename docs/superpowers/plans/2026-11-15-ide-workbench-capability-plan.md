@@ -22,21 +22,50 @@ storage, syntax highlighting rules, agent protocol) stays in the consumer.
 - Behavior that needs a real window, GPU, or human observation is recorded as
   unverified until it has been observed.
 
+## Working rules (all capabilities)
+
+- Scope per capability: Windows (Win32 + Vulkan) **and** Linux (Wayland +
+  Vulkan; X11 only where an existing X11 backend already covers the area).
+  macOS is planned only, in
+  `2026-11-15-ide-workbench-macos-plan.md`; do not implement Cocoa/Metal code.
+- Never pack several declarations or statements onto one line to satisfy a
+  line-count tripwire. Split modules instead. If an existing tripwire must
+  move, raise it explicitly in every test that guards that file and state the
+  old and new limit in the commit message.
+- Unsupported native services return typed results with `supported = false`
+  and a reason; never fabricate success.
+- Windows gate: from `D:\Dev\Projects\cgpui`, `xmake build -y -a` and
+  `xmake test -y` fully green, `git diff --check` clean.
+- Linux gate (WSL2 `archlinux`, running as root, `XMAKE_ROOT=y`): commit on
+  Windows first, then in WSL
+  `cd ~/cgpui-linux && git fetch -q origin && git checkout -q --detach origin/master`
+  followed by `xmake build -y -a` and `xmake test -y`. `~/cgpui-linux` is a
+  clone of the Windows repository; never edit it directly. Fix Linux failures
+  on Windows and commit again. Install system packages with `pacman` only if
+  an xmake package is not suitable, and record them in
+  `docs/platform-dependencies.md`.
+- Known environment flakes, not regressions: `x11_input_test` fails only under
+  the parallel test run (passes standalone); `win32_clipboard_unicode_test`
+  fails when another process holds the clipboard. Re-run them standalone.
+- Record anything only observable in a real window (visual material, title
+  bar color, IME candidate placement) as "not visually verified" in the
+  capability doc until observed.
+
 ## Capabilities
 
-| ID | Capability | Status |
-|---|---|---|
-| C0 | Commit DirectWrite glyph rasterization; capability build module | done (`17fdc168`, this commit) |
-| C1 | Per-Monitor V2 DPI awareness declared by the framework at startup | done (with C2, this commit); see `docs/system-appearance.md` |
-| C2 | System appearance: light/dark, accent color, transparency-effects and reduced-motion settings, change notifications; immersive dark title bar | done (this commit); real settings toggles and the visual title bar not yet observed |
-| C3 | Window backdrop material: DWM Mica / Acrylic / tabbed, transparent Vulkan composition, graceful opaque fallback | planned |
-| C4 | Custom title bar: client-area extension, hit-test regions (caption, min/max/close, resize borders), Snap Layout on maximize button | planned |
-| C5 | Box shadow rendering in Vulkan (blurred rounded-rect shadow, spread, offset, inset excluded) | planned |
-| C6 | In-app backdrop blur for overlays (offscreen copy + separable blur, clipped to rounded rect) | planned |
-| C7 | DirectWrite shaping and real metrics: glyph ids, advances, clusters, font fallback runs, line metrics; caret/hit-test/selection consume shaped advances | planned |
-| C8 | IME composition detail: cursor position and clause attributes (IMM32 `GCS_CURSORPOS`, `GCS_COMPATTR`) | planned |
-| C9 | Workbench widgets: splitter, tabs, tree view, tooltip, context menu / popover | planned |
-| C10 | SDK package refresh from a committed tree, with manifest and consumer instructions | planned |
+| ID | Capability | Windows | Linux (Wayland) |
+|---|---|---|---|
+| C0 | Commit DirectWrite glyph rasterization; capability build module | done `17fdc168` | n/a (fallback rasterizer unchanged) |
+| C1 | Per-monitor DPI | done `b775b8c2`: PMv2 declared before the first window | existing fractional-scale path; verify only |
+| C2 | System appearance: light/dark, accent, transparency, reduced motion, high contrast, change notifications; dark title bar | done `b775b8c2`, review `320091c9`; not visually verified | planned: xdg-desktop-portal Settings (`org.freedesktop.appearance`) over D-Bus |
+| C3 | Window backdrop material, transparent Vulkan composition, opaque fallback | planned: DWM Mica / Acrylic / tabbed | planned: transparent surface + compositor blur protocol when advertised (`ext_background_effect_v1` / KDE blur), else typed unsupported |
+| C4 | Custom title bar: hit-test regions (caption, buttons, resize borders) | planned: `WM_NCCALCSIZE` / `WM_NCHITTEST`, Snap Layout | planned: xdg-decoration negotiation, client-side `xdg_toplevel.move/resize`, window menu |
+| C5 | Box shadow rendering in Vulkan | planned (shared renderer) | same |
+| C6 | In-app backdrop blur for overlays | planned (shared renderer) | same |
+| C7 | Native shaping and real metrics; caret / hit-test / selection use shaped advances | planned: DirectWrite `IDWriteTextAnalyzer` | planned: HarfBuzz + FreeType + fontconfig |
+| C8 | IME composition cursor and clause attributes | planned: IMM32 `GCS_CURSORPOS` / `GCS_COMPATTR` | planned: `text-input-v3` preedit cursor |
+| C9 | Workbench widgets: splitter, tabs, tree view, tooltip, context menu / popover | planned | planned (popups via `xdg_popup`) |
+| C10 | SDK packages from a committed tree, manifest, consumer instructions | planned | planned |
 
 ## Order and rationale
 
