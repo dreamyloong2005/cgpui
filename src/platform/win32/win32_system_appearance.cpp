@@ -52,9 +52,20 @@ SystemAppearance win32_read_system_appearance() {
   appearance.transparency_effects_enabled =
       read_personalize_dword(L"EnableTransparency").value_or(1U) != 0U;
 
+  // The user's accent color lives in DWM\AccentColor (0xAABBGGRR). The DWM
+  // colorization color is the frame tint and only serves as a fallback.
+  DWORD accent = 0;
+  DWORD accent_size = sizeof(accent);
   DWORD colorization = 0;
   BOOL opaque_blend = FALSE;
-  if (SUCCEEDED(DwmGetColorizationColor(&colorization, &opaque_blend))) {
+  if (RegGetValueW(
+          HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\DWM",
+          L"AccentColor", RRF_RT_REG_DWORD, nullptr, &accent,
+          &accent_size) == ERROR_SUCCESS) {
+    appearance.accent_color_available = true;
+    appearance.accent_color = Color{
+        channel(accent, 0), channel(accent, 8), channel(accent, 16), 1.0F};
+  } else if (SUCCEEDED(DwmGetColorizationColor(&colorization, &opaque_blend))) {
     appearance.accent_color_available = true;
     appearance.accent_color = Color{
         channel(colorization, 16), channel(colorization, 8),

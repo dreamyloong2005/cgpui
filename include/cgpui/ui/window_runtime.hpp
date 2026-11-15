@@ -62,7 +62,8 @@ class WindowRuntime {
   void set_after_frame_callback(WindowRuntimeFrameCallback callback);
   void set_after_render_callback(WindowRuntimeRenderCallback callback);
   void set_after_event_callback(WindowRuntimeEventCallback callback);
-  void set_close_requested_callback(WindowRuntimeFrameCallback callback); void set_system_appearance_callback(SystemAppearanceCallback callback);
+  void set_close_requested_callback(WindowRuntimeFrameCallback callback);
+  void set_system_appearance_callback(SystemAppearanceCallback callback);
   void set_error_callback(WindowRuntimeErrorCallback callback);
   void set_element_root(const Element* element);
   void set_element_tree(std::unique_ptr<ElementTree> tree);
@@ -184,7 +185,9 @@ class WindowRuntime {
   [[nodiscard]] Result<PlatformOpenUrlResult> try_open_url(std::string url);
   [[nodiscard]] const PlatformOpenUrlResult& open_url_result() const;
   [[nodiscard]] Result<PlatformReopenResult> try_request_reopen();
-  [[nodiscard]] const PlatformReopenResult& reopen_result() const; [[nodiscard]] SystemAppearance system_appearance() const; [[nodiscard]] PlatformDpiAwarenessState dpi_awareness() const;
+  [[nodiscard]] const PlatformReopenResult& reopen_result() const;
+  [[nodiscard]] SystemAppearance system_appearance() const;
+  [[nodiscard]] PlatformDpiAwarenessState dpi_awareness() const;
   void set_app_theme(Theme theme);
   [[nodiscard]] const Theme& app_theme() const;
   void set_window_theme(WindowRuntimeId runtime_id, Theme theme);

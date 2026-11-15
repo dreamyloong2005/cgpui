@@ -73,7 +73,7 @@ app.set_system_appearance_callback(
 | --- | --- |
 | `mode` | `HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize` `AppsUseLightTheme` (0 = dark; missing = light) |
 | `transparency_effects_enabled` | same key, `EnableTransparency` (missing = enabled) |
-| `accent_color` | `DwmGetColorizationColor`; RGB is kept, alpha is reported as 1 because the DWM alpha is the frame blend intensity, not part of the accent |
+| `accent_color` | `HKCU\Software\Microsoft\Windows\DWM\AccentColor` (0xAABBGGRR, the user accent); falls back to `DwmGetColorizationColor` (the frame tint). Alpha is reported as 1 |
 | `client_area_animation_enabled` | `SystemParametersInfoW(SPI_GETCLIENTAREAANIMATION)` |
 | `high_contrast` | `SystemParametersInfoW(SPI_GETHIGHCONTRAST)`, `HCF_HIGHCONTRASTON` |
 

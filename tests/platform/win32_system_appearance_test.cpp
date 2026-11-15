@@ -49,12 +49,24 @@ int check_direct_reads(const cgpui::SystemAppearance& appearance) {
   if (appearance.transparency_effects_enabled !=
       (personalize_dword(L"EnableTransparency", 1U) != 0U)) return 12;
   DWORD color = 0;
+  DWORD color_size = sizeof(color);
   BOOL opaque = FALSE;
-  if (SUCCEEDED(DwmGetColorizationColor(&color, &opaque))) {
+  const bool registry_accent =
+      RegGetValueW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\DWM",
+                   L"AccentColor", RRF_RT_REG_DWORD, nullptr, &color,
+                   &color_size) == ERROR_SUCCESS;
+  if (!registry_accent && SUCCEEDED(DwmGetColorizationColor(&color, &opaque))) {
+    // DWM colorization is 0xAARRGGBB; convert to the registry's 0xAABBGGRR.
+    color = (color & 0xFF00FF00U) | ((color >> 16) & 0xFFU) |
+            ((color & 0xFFU) << 16);
+  } else if (!registry_accent) {
+    color = 0;
+  }
+  if (registry_accent || color != 0) {
     if (!appearance.accent_color_available ||
-        !close_to(appearance.accent_color.r, ((color >> 16) & 0xFFU) / 255.0F) ||
+        !close_to(appearance.accent_color.r, (color & 0xFFU) / 255.0F) ||
         !close_to(appearance.accent_color.g, ((color >> 8) & 0xFFU) / 255.0F) ||
-        !close_to(appearance.accent_color.b, (color & 0xFFU) / 255.0F) ||
+        !close_to(appearance.accent_color.b, ((color >> 16) & 0xFFU) / 255.0F) ||
         appearance.accent_color.a != 1.0F) return 13;
   }
   BOOL animation = TRUE;

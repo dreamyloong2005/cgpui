@@ -1179,7 +1179,7 @@ int main() {
       line_count(element_context_header) > 120 ||
       line_count(view_handle_header) > 180 ||
       line_count(window_context_header) > 120 ||
-      line_count(window_runtime_header) > 260 ||
+      line_count(window_runtime_header) > 263 ||
       line_count(runtime_action_templates_header) > 120 ||
       line_count(runtime_action_enablement_templates_header) > 100 ||
       line_count(runtime_command_palette_templates_header) > 80 ||

@@ -13,10 +13,7 @@ namespace {
 
 class Win32Application final : public Win32SystemApplication {
  public:
-  Win32Application() : instance_(GetModuleHandleW(nullptr)) {
-    ole_initialization_result_ = OleInitialize(nullptr);
-    ole_initialized_ = SUCCEEDED(ole_initialization_result_);
-  }
+  Win32Application() : instance_(GetModuleHandleW(nullptr)) {}
 
   ~Win32Application() override { if (ole_initialized_) OleUninitialize(); }
 
@@ -152,7 +149,9 @@ class Win32Application final : public Win32SystemApplication {
   }
 
   HINSTANCE instance_ = nullptr;
-  HRESULT ole_initialization_result_ = S_FALSE; bool ole_initialized_ = false;
+  // OLE (drag and drop, clipboard) is initialized with the application and
+  // released by the destructor when this initialization succeeded.
+  bool ole_initialized_ = SUCCEEDED(OleInitialize(nullptr));
   Win32NativeMenuState native_menu_state_;
   PlatformMenuInstallationResult last_menu_installation_;
   Win32NativeFileDialogState native_file_dialog_state_;
