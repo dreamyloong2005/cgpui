@@ -37,7 +37,7 @@ int main() {
     const auto coverage_header = read("src/ui/text_glyph_coverage_win32_internal.hpp");
     const auto production = read("src/renderer/vulkan/vulkan_report_text_quads.cpp");
     const auto build = read("xmake.lua");
-    const auto module = read("build/xmake/native_text_targets.lua");
+    const auto module = read("build/xmake/capabilities/native_text_targets.lua");
     const auto pixel_shape = read("tests/renderer/vulkan_text_pixel_shape_support.hpp");
     require(lines(pixel_shape) <= 60 && has(pixel_shape, "text_ink_shape("),
             "pixel glyph shape inspection must stay in a focused test helper");
@@ -60,7 +60,7 @@ int main() {
     const auto renderer_start = module.find("target(\"cgpui_renderer\")");
     const auto renderer_end = module.find("target_end()", renderer_start);
     const auto renderer = module.substr(renderer_start, renderer_end - renderer_start);
-    require(renderer_start != std::string::npos && has(build, "includes(\"build/xmake/native_text_targets.lua\")") &&
+    require(renderer_start != std::string::npos && has(build, "includes(\"build/xmake/capabilities/*.lua\")") &&
             has(renderer, "text_glyph_rasterizer.cpp") && has(renderer, "text_glyph_raster_win32.cpp") &&
             has(renderer, "text_glyph_coverage_win32.cpp") && has(renderer, "add_syslinks(\"dwrite\""),
             "native rasterizer must be owned and linked by cgpui_renderer");

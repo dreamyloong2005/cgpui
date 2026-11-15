@@ -64,8 +64,12 @@ int main() {
       read_source("build/xmake/phase_j_release_targets.lua");
   const std::string phase_j_closeout =
       read_source("build/xmake/phase_j_closeout_targets.lua");
-  const std::string native_text =
-      read_source("build/xmake/native_text_targets.lua");
+  std::string capability_targets;
+  for (const auto& entry : fs::directory_iterator(root / "build/xmake/capabilities")) {
+    if (!entry.is_regular_file() || entry.path().extension() != ".lua") continue;
+    std::ifstream module(entry.path());
+    capability_targets.append(std::istreambuf_iterator<char>(module), {});
+  }
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -78,7 +82,7 @@ int main() {
       &matrix, &windows, &linux, &workflow, &previous, &xmake, &phase_h_targets,
       &phase_h_closeout, &phase_i_targets, &phase_i_closeout,
       &phase_j_audit, &phase_j_examples, &phase_j_performance, &phase_j_stress,
-      &phase_j_documentation, &phase_j_release, &phase_j_closeout, &native_text,
+      &phase_j_documentation, &phase_j_release, &phase_j_closeout, &capability_targets,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -86,7 +90,7 @@ int main() {
       xmake + phase_h_targets + phase_h_closeout + phase_i_targets +
       phase_i_closeout + phase_j_audit + phase_j_examples +
       phase_j_performance + phase_j_stress + phase_j_documentation +
-      phase_j_release + phase_j_closeout + native_text;
+      phase_j_release + phase_j_closeout + capability_targets;
 
   std::unordered_set<std::string> targets;
   std::unordered_set<std::string> sources;
