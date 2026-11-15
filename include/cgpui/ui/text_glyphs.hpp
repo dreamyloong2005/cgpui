@@ -18,6 +18,12 @@ struct GlyphAtlasKey {
   std::uint32_t glyph_id = 0;
   std::size_t byte_offset = 0;
   std::size_t byte_length = 0;
+  // The fallback shaper's numeric glyph_id is a position, not a font glyph.
+  // Keep the actual cluster so different strings cannot alias in the atlas.
+  std::string text;
+  // Native coverage currently fits the supplied layout cell.
+  float raster_advance = 0.0F;
+  TextShapingBackend shaping_backend = TextShapingBackend::deterministic_fallback;
 
   friend bool operator==(const GlyphAtlasKey&, const GlyphAtlasKey&) = default;
 };

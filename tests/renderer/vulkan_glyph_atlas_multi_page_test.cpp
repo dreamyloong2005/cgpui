@@ -37,8 +37,9 @@ cgpui::TextDraw three_page_text_draw() {
       .bounds = cgpui::Rect{.size = cgpui::Size{512.0F, 512.0F}},
       .color = cgpui::Color{.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
       .font = cgpui::FontDescriptor{.family = "Inter"},
-      .content = "multi-page",
-      .byte_length = 10,
+      // Synthetic fixed-size cells isolate atlas paging from native font ink.
+      .content = "",
+      .byte_length = 0,
       .font_size = 128.0F,
       .device_font_size = 128.0F,
   };

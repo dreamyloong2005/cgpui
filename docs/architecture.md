@@ -15,6 +15,9 @@
 Aggregate headers remain thin. Public non-template bodies live in focused
 `.cpp` files; template and constexpr bodies stay in focused public leaves.
 
+[Native text rasterization](native-text-rasterization.md) documents the focused
+DirectWrite coverage modules, standard Vulkan glyph-atlas path, and support limits.
+
 ## Public Authoring Boundary
 
 `cgpui/prelude.hpp` is the preferred application include. `App`, `Window`,

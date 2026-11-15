@@ -94,6 +94,8 @@ std::vector<TextGlyphPaint> text_glyph_paint_metadata(
                 .glyph_id = glyph.glyph_id,
                 .byte_offset = glyph.byte_offset,
                 .byte_length = glyph.byte_length,
+                .text = run.text.substr(glyph.byte_offset, glyph.byte_length),
+                .shaping_backend = run.used_backend,
             },
         .origin = logical_origin,
         .advance = glyph.advance,

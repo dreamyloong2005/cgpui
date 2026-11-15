@@ -2198,7 +2198,8 @@ int main(int argc, char** argv) {
   if (line_count(report_text_quads) > 140 ||
       !contains(report_text_quads, "vulkan_build_textured_glyph_quads(") ||
       !contains(report_text_quads, "normalized_atlas_bounds(") ||
-      !contains(report_text_quads, "rasterize_fallback_glyph(") ||
+      !contains(report_text_quads, "rasterize_text_glyph(") ||
+      contains(report_text_quads, "rasterize_fallback_glyph(") ||
       contains(report_text_quads, "vulkan_plan_glyph_atlas_uploads(") ||
       contains(report_text_quads, "vulkan_plan_image_uploads(")) {
     return 42;

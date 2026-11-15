@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/core/error.hpp"
 #include "cgpui/renderer/glyph_uploads.hpp"
 #include "cgpui/renderer/renderer_commands.hpp"
 
@@ -66,6 +67,9 @@ class GlyphCache {
         .page_index = pages_.back().page_index,
         .atlas_bounds = atlas_bounds,
         .advance = glyph.advance,
+        .left_bearing = glyph.left_bearing,
+        .top_bearing = glyph.top_bearing,
+        .baseline = glyph.baseline,
     };
     pages_.back().entries.push_back(entry);
     entries_.push_back(entry);
@@ -116,6 +120,10 @@ class GlyphCache {
   [[nodiscard]] std::span<const GlyphUploadRecord> upload_records() const {
     return uploads_;
   }
+
+  void set_rasterization_error(Error error);
+  void clear_rasterization_error();
+  [[nodiscard]] const std::optional<Error>& rasterization_error() const;
 
  private:
   [[nodiscard]] const GlyphAtlasEntry* find_entry(
@@ -170,6 +178,7 @@ class GlyphCache {
   std::vector<GlyphCacheRecord> lookups_;
   std::vector<GlyphAtlasPage> pages_;
   std::vector<GlyphUploadRecord> uploads_;
+  std::optional<Error> rasterization_error_;
 };
 
 void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache);

@@ -4,8 +4,12 @@ namespace cgpui {
 
 Result<void> VulkanRendererState::prepare_glyph_atlas_frame(
     std::span<const TextDraw> text_draws) {
+  glyph_cache_.clear_rasterization_error();
   VulkanGlyphAtlasDrawData draw_data =
       vulkan_plan_glyph_atlas_draw_data(text_draws, glyph_cache_);
+  if (glyph_cache_.rasterization_error()) {
+    return std::unexpected(*glyph_cache_.rasterization_error());
+  }
   const std::vector<GlyphAtlasUploadBatch> batches =
       vulkan_plan_glyph_atlas_uploads(
           glyph_cache_.upload_records(),

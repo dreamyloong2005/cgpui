@@ -9,9 +9,7 @@ add_requires("lunasvg")
 
 local public_includedirs = "include"
 
-if is_plat("windows") then
-    add_requires("vulkansdk")
-end
+if is_plat("windows") then add_requires("vulkansdk") end
 
 if is_plat("linux") then
     add_requires("wayland", {system = true})
@@ -4130,6 +4128,7 @@ includes("build/xmake/phase_j_stress_targets.lua")
 includes("build/xmake/phase_j_documentation_targets.lua")
 includes("build/xmake/phase_j_release_targets.lua")
 includes("build/xmake/phase_j_closeout_targets.lua")
+includes("build/xmake/native_text_targets.lua")
 
 target("phase_g_final_closeout_test")
     set_kind("binary")

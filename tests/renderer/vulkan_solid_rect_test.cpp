@@ -556,8 +556,10 @@ int test_text_draw_uses_glyph_cache_metadata() {
 
   return cache.lookups()[2].hit && cache.lookups()[3].hit &&
                  cache.entries()[0].atlas_bounds.origin.x == 0.0F &&
-                 cache.entries()[1].atlas_bounds.origin.x == 10.0F &&
-                 cache.upload_records()[0].alpha.size() == 200
+                 cache.entries()[1].atlas_bounds.origin.x == cache.entries()[0].atlas_bounds.size.width &&
+                 !cache.upload_records()[0].alpha.empty() &&
+                 cache.upload_records()[0].alpha.size() ==
+                     cache.upload_records()[0].stride * cache.upload_records()[0].height
              ? 0
              : 13;
 }
@@ -601,17 +603,19 @@ int test_text_draw_builds_textured_glyph_quads_from_atlas_entries() {
   }
 
   const cgpui::TexturedGlyphQuad& first = quads[0];
+  const auto& first_entry = cache.entries()[0];
+  const auto& second_entry = cache.entries()[1];
   if (first.key != text.glyphs[0].key || first.page_index != 0 ||
-      first.device_bounds.origin.x != 4.0F ||
-      first.device_bounds.origin.y != 6.0F ||
-      first.device_bounds.size.width != 10.0F ||
-      first.device_bounds.size.height != 20.0F ||
+      first.device_bounds.origin.x != 4.0F + first_entry.left_bearing ||
+      first.device_bounds.origin.y != 6.0F + first_entry.top_bearing ||
+      first.device_bounds.size.width != first_entry.atlas_bounds.size.width ||
+      first.device_bounds.size.height != first_entry.atlas_bounds.size.height ||
       first.atlas_bounds.origin.x != 0.0F ||
       first.atlas_bounds.origin.y != 0.0F ||
       first.atlas_uv_bounds.origin.x != 0.0F ||
       first.atlas_uv_bounds.origin.y != 0.0F ||
-      first.atlas_uv_bounds.size.width != 10.0F / 256.0F ||
-      first.atlas_uv_bounds.size.height != 20.0F / 256.0F) {
+      first.atlas_uv_bounds.size.width != first_entry.atlas_bounds.size.width / 256.0F ||
+      first.atlas_uv_bounds.size.height != first_entry.atlas_bounds.size.height / 256.0F) {
     return 27;
   }
   if (first.color.r != color.r || first.color.g != color.g ||
@@ -627,10 +631,10 @@ int test_text_draw_builds_textured_glyph_quads_from_atlas_entries() {
 
   const cgpui::TexturedGlyphQuad& second = quads[1];
   return second.key == text.glyphs[1].key && second.page_index == 0 &&
-                 second.device_bounds.origin.x == 14.0F &&
-                 second.device_bounds.origin.y == 6.0F &&
-                 second.atlas_bounds.origin.x == 10.0F &&
-                 second.atlas_uv_bounds.origin.x == 10.0F / 256.0F &&
+                 second.device_bounds.origin.x == 14.0F + second_entry.left_bearing &&
+                 second.device_bounds.origin.y == 6.0F + second_entry.top_bearing &&
+                 second.atlas_bounds.origin.x == first_entry.atlas_bounds.size.width &&
+                 second.atlas_uv_bounds.origin.x == first_entry.atlas_bounds.size.width / 256.0F &&
                  second.color.a == color.a && second.metadata == metadata
              ? 0
              : 29;

@@ -18,6 +18,9 @@ struct GlyphAtlasEntry {
   std::size_t page_index = 0;
   Rect atlas_bounds;
   float advance = 0.0F;
+  float left_bearing = 0.0F;
+  float top_bearing = 0.0F;
+  float baseline = 0.0F;
 
   friend bool operator==(
       const GlyphAtlasEntry&,
