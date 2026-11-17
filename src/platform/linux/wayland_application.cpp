@@ -37,6 +37,8 @@ WaylandApplication::WaylandApplication()
     return;
   }
   cursor_theme_ = create_wayland_cursor_theme(compositor_, shm_);
+  set_fractional_scale_available(
+      fractional_scale_manager_ != nullptr && viewporter_ != nullptr);
 
   if (shell_ != nullptr) {
     static const xdg_wm_base_listener shell_listener{

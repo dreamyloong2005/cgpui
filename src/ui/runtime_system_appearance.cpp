@@ -21,6 +21,16 @@ void WindowRuntime::set_system_appearance_callback(
       [this](const SystemAppearanceChange& change) {
         handle_system_appearance_change(change);
       });
+  // Records whether the backend can deliver changes at all; the reason for
+  // an unsupported backend is in SystemAppearance::unsupported_reason.
+  const SystemAppearance appearance = application_.system_appearance();
+  record_platform_diagnostic(PlatformDiagnosticEvent{
+      .kind = PlatformDiagnosticKind::appearance,
+      .backend = appearance.backend,
+      .operation = "system-appearance-monitor",
+      .supported = appearance.supported,
+      .succeeded = appearance.supported,
+  });
 }
 
 void WindowRuntime::handle_system_appearance_change(

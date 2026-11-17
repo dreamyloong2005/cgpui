@@ -4,7 +4,8 @@ namespace cgpui {
 
 int WaylandApplication::run() {
   return wayland_run_event_loop(
-      display_, wakeup_pipe_[0], timer_wakeup_, running_, windows_);
+      display_, wakeup_pipe_[0], timer_wakeup_, running_, windows_,
+      appearance_event_source());
 }
 
 void WaylandApplication::request_wakeup() { wayland_request_wakeup(wakeup_pipe_[1]); }

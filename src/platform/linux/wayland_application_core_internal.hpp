@@ -1,12 +1,12 @@
 #pragma once
-#include "wayland_internal.hpp"
+#include "wayland_system_application_internal.hpp"
 #include "wayland_cursor_theme_internal.hpp"
 #include "wayland_pointer_scroll_frame_internal.hpp"
 #include "wayland_timer_wakeup_internal.hpp"
 
 namespace cgpui {
 
-class WaylandApplication final : public PlatformApplication {
+class WaylandApplication final : public WaylandSystemApplication {
  public:
   WaylandApplication();
   ~WaylandApplication() override;

@@ -2,6 +2,7 @@
 
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/ui/text.hpp"
+#include "wayland_event_source_internal.hpp"
 #include "wayland_protocol_internal.hpp"
 
 #include <wayland-client.h>
@@ -86,7 +87,8 @@ int wayland_run_event_loop(
     int wakeup_read_fd,
     WaylandTimerWakeup& timer_wakeup,
     std::atomic_bool& running,
-    std::vector<WaylandWindow*>& windows);
+    std::vector<WaylandWindow*>& windows,
+    WaylandEventSource* source);
 void wayland_request_wakeup(int wakeup_write_fd);
 void wayland_bind_registry_global(
     wl_registry* registry,

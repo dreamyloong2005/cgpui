@@ -89,7 +89,7 @@ int main() {
                 "target(\"phase_f_wayland_keyboard_layout_structure_test\")")) {
     return 4;
   }
-  if (line_count(input) > 115 || line_count(keyboard) > 145 ||
+  if (line_count(input) > 117 || line_count(keyboard) > 145 ||
       line_count(behavior) > 165) {
     return 5;
   }

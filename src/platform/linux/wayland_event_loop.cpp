@@ -16,6 +16,10 @@ void drain_wakeup_pipe(int wakeup_read_fd) {
   }
 }
 
+int source_descriptor(const WaylandEventSource* source) {
+  return source == nullptr ? -1 : source->descriptor();
+}
+
 void dispatch_wakeup(std::vector<WaylandWindow*>& windows) {
   for (WaylandWindow* window : windows) {
     if (window != nullptr) {
@@ -31,7 +35,8 @@ int wayland_run_event_loop(
     int wakeup_read_fd,
     WaylandTimerWakeup& timer_wakeup,
     std::atomic_bool& running,
-    std::vector<WaylandWindow*>& windows) {
+    std::vector<WaylandWindow*>& windows,
+    WaylandEventSource* source) {
   while (running.load() && display != nullptr) {
     while (wl_display_prepare_read(display) != 0) {
       if (wl_display_dispatch_pending(display) == -1) return 1;
@@ -43,7 +48,8 @@ int wayland_run_event_loop(
       return 1;
     }
 
-    std::array<pollfd, 3> fds{
+    const bool source_pending = source != nullptr && source->has_pending();
+    std::array<pollfd, 4> fds{
         pollfd{
             .fd = wl_display_get_fd(display),
             .events = static_cast<short>(POLLIN | (flush_pending ? POLLOUT : 0)),
@@ -59,8 +65,10 @@ int wayland_run_event_loop(
             .events = POLLIN,
             .revents = 0,
         },
+        pollfd{.fd = source_descriptor(source), .events = POLLIN, .revents = 0},
     };
-    const int poll_result = poll(fds.data(), fds.size(), -1);
+    const int poll_result =
+        poll(fds.data(), fds.size(), source_pending ? 0 : -1);
     if (poll_result == -1) {
       wl_display_cancel_read(display);
       if (errno == EINTR) {
@@ -85,6 +93,7 @@ int wayland_run_event_loop(
       timer_wakeup.drain();
       if (running.load()) dispatch_wakeup(windows);
     }
+    if (source_pending || fds[3].revents != 0) source->dispatch();
   }
   return 0;
 }

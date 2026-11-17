@@ -13,7 +13,8 @@ bool operator==(const SystemAppearance& lhs, const SystemAppearance& rhs) {
          lhs.transparency_effects_enabled == rhs.transparency_effects_enabled &&
          lhs.client_area_animation_enabled ==
              rhs.client_area_animation_enabled &&
-         lhs.high_contrast == rhs.high_contrast;
+         lhs.high_contrast == rhs.high_contrast &&
+         lhs.unsupported_reason == rhs.unsupported_reason;
 }
 
 // Platforms without a native appearance source report a typed unsupported
@@ -23,6 +24,7 @@ SystemAppearance PlatformApplication::system_appearance() const {
       .supported = false,
       .backend = "unsupported",
       .mode = SystemAppearanceMode::light,
+      .unsupported_reason = "no system appearance source on this backend",
   };
 }
 

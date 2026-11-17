@@ -77,7 +77,8 @@ int check_fallback() {
   const cgpui::SystemAppearance appearance = bare.system_appearance();
   if (appearance.supported || appearance.backend != "unsupported" ||
       appearance.mode != cgpui::SystemAppearanceMode::light ||
-      appearance.accent_color_available || appearance.high_contrast) {
+      appearance.accent_color_available || appearance.high_contrast ||
+      appearance.unsupported_reason.empty()) {
     return fail(1, "fallback appearance fabricated a native reading");
   }
   const cgpui::PlatformDpiAwarenessState dpi = bare.dpi_awareness();
@@ -135,6 +136,13 @@ int main() {
                  event.backend == "fake";
         });
     if (count != 2) return fail(7, "appearance diagnostics not recorded");
+    const auto monitors = std::ranges::count_if(
+        diagnostics, [](const cgpui::PlatformDiagnosticEvent& event) {
+          return event.kind == cgpui::PlatformDiagnosticKind::appearance &&
+                 event.operation == "system-appearance-monitor" &&
+                 event.backend == "fake" && event.supported;
+        });
+    if (monitors != 1) return fail(9, "monitor installation not recorded");
   }
   if (platform.callback || platform.install_count != 2) {
     return fail(8, "runtime destruction must clear the platform bridge");

@@ -116,7 +116,7 @@ int main() {
       !contains(wayland_source, "timerfd_create(CLOCK_MONOTONIC") ||
       !contains(wayland_source, "timerfd_settime") ||
       !contains(wayland_core, "WaylandTimerWakeup timer_wakeup_") ||
-      !contains(wayland_event_loop, "std::array<pollfd, 3>") ||
+      !contains(wayland_event_loop, "std::array<pollfd, 4>") ||
       !contains(wayland_event_loop, "timer_wakeup.drain()")) return 6;
   if (!contains(behavior, "std::vector<std::uint64_t>({50, 20, 10})") ||
       !contains(behavior, "schedule_repeating_timer(10") ||

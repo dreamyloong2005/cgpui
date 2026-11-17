@@ -21,6 +21,8 @@ struct SystemAppearance {
   bool transparency_effects_enabled = false;
   bool client_area_animation_enabled = true;
   bool high_contrast = false;
+  // Why the snapshot is unsupported; empty when supported is true.
+  std::string unsupported_reason;
 };
 
 [[nodiscard]] bool operator==(
