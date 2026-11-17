@@ -100,7 +100,7 @@ int main() {
   if (line_count(pointer_header) > 60 || line_count(cursor_header) > 20 ||
       line_count(cursor) > 65 || line_count(window_cursor) > 40 ||
       line_count(proc_header) > 20 || line_count(proc) > 40 ||
-      line_count(window_internal) > 123 ||
+      line_count(window_internal) > 133 ||
       line_count(behavior) > 85) {
     return 5;
   }

@@ -2,6 +2,7 @@
 
 #include "cgpui/core/entity.hpp"
 #include "cgpui/core/geometry.hpp"
+#include "cgpui/core/window_title_bar.hpp"
 #include "cgpui/platform/clipboard.hpp"
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/renderer/renderer.hpp"
@@ -172,6 +173,11 @@ class PaintList {
   void invalidate_image(ImageAssetId asset_id);
   [[nodiscard]] std::span<const ImageAsset* const> image_uploads() const;
   [[nodiscard]] std::span<const ImageAssetId> image_invalidations() const;
+  // Client title bar regions; bounds pass through the current transform and
+  // clip, like the paint commands around them.
+  void add_window_control_region(WindowControlArea area, Rect bounds);
+  [[nodiscard]] std::span<const WindowControlRegion> window_control_regions()
+      const;
   void set_text_measurement_cache(TextMeasurementCache* cache);
   [[nodiscard]] std::span<const PaintCommand> commands() const;
 
@@ -187,6 +193,7 @@ class PaintList {
   std::vector<PaintCommand> commands_;
   std::vector<const ImageAsset*> image_uploads_;
   std::vector<ImageAssetId> image_invalidations_;
+  std::vector<WindowControlRegion> window_control_regions_;
   std::vector<Rect> clip_stack_;
   std::vector<PaintMetadata> metadata_stack_;
   DpiScale scale_;

@@ -2,6 +2,7 @@
 
 #include "cgpui/core/geometry.hpp"
 #include "cgpui/core/window_backdrop.hpp"
+#include "cgpui/core/window_title_bar.hpp"
 
 #include <cstdint>
 #include <cstddef>
@@ -30,6 +31,7 @@ struct WindowChromeOptions {
   bool decorations = true;
   bool resizable = true;
   bool transparent_background = false;
+  WindowTitleBarMode title_bar = WindowTitleBarMode::system;
 };
 
 struct WindowDescriptor {

@@ -2,6 +2,7 @@
 
 #include "cgpui/platform/platform_appearance.hpp"
 #include "cgpui/platform/platform_window_backdrop.hpp"
+#include "cgpui/platform/platform_window_title_bar.hpp"
 #include "cgpui/renderer/renderer_surface_composition.hpp"
 #include "cgpui/ui/runtime_input_state.hpp"
 #include "cgpui/ui/runtime_window_options.hpp"
@@ -28,6 +29,11 @@ class Window {
   // creation-time request.
   PlatformWindowBackdropState set_backdrop(WindowBackdrop backdrop) const;
   [[nodiscard]] RendererSurfaceComposition surface_composition() const;
+  // Client title bar support: native frame metrics, and window actions for
+  // app-drawn controls (see docs/client-title-bar.md).
+  [[nodiscard]] PlatformWindowFrameMetrics frame_metrics() const;
+  PlatformWindowActionResult perform_window_action(
+      PlatformWindowActionRequest request) const;
 
   void request_render() const;
   void request_layout() const;

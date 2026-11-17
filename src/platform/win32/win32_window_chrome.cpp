@@ -4,6 +4,8 @@ namespace cgpui {
 
 PlatformWindowChromeState Win32Window::apply_window_chrome(
     WindowChromeOptions options) {
+  const WindowTitleBarMode previous_title_bar =
+      chrome_state_.platform.applied.title_bar;
   chrome_state_ = Win32WindowChromeState{
       .platform =
           PlatformWindowChromeState{
@@ -19,6 +21,7 @@ PlatformWindowChromeState Win32Window::apply_window_chrome(
   };
 
   if (hwnd_ != nullptr) {
+    title_bar_.dpi = GetDpiForWindow(hwnd_);
     if (display_command_state_.fullscreen) {
       display_command_state_.windowed_style = chrome_state_.style;
       display_command_state_.windowed_extended_style =
@@ -42,6 +45,11 @@ PlatformWindowChromeState Win32Window::apply_window_chrome(
         0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE |
             SWP_FRAMECHANGED);
+    const PlatformWindowBackdropState backdrop = backdrop_.state();
+    if (options.title_bar != previous_title_bar &&
+        backdrop.requested != WindowBackdrop::none) {
+      (void)apply_window_backdrop(backdrop.requested, backdrop.transparent_surface);
+    }
   }
 
   return chrome_state_.platform;

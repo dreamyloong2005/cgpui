@@ -25,6 +25,7 @@ struct Win32BackdropInputs {
   std::uint32_t os_build = 0;
   bool layered = false;
   bool transparency_effects_enabled = true;
+  bool client_title_bar = false;
 };
 
 struct Win32BackdropPlan {
@@ -55,7 +56,8 @@ class Win32WindowBackdrop {
       HWND hwnd,
       WindowBackdrop backdrop,
       bool transparent_surface,
-      bool layered);
+      bool layered,
+      bool client_title_bar);
   PlatformWindowBackdropState reevaluate(const SystemAppearance& appearance);
   void detach();
   [[nodiscard]] const PlatformWindowBackdropState& state() const;
@@ -67,6 +69,7 @@ class Win32WindowBackdrop {
   WindowBackdrop requested_ = WindowBackdrop::none;
   bool transparent_surface_ = false;
   bool layered_ = false;
+  bool client_title_bar_ = false;
   PlatformWindowBackdropState state_{
       .backend = "win32", .reason = "backdrop not applied yet"};
 };

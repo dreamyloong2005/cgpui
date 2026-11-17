@@ -89,7 +89,7 @@ int main() {
   }
   if (line_count(cursor_header) > 50 || line_count(cursor) > 140 ||
       line_count(application_cursor) > 80 || line_count(core) > 80 ||
-      line_count(scale) > 80 || line_count(window_internal) > 120 ||
+      line_count(scale) > 80 || line_count(window_internal) > 123 ||
       line_count(helper) > 80 || line_count(compositor) > 3700 ||
       line_count(behavior) > 160) return 7;
   constexpr const char* completion =

@@ -13,3 +13,4 @@
 #include "cgpui/ui/element_image_nodes.hpp"
 #include "cgpui/ui/element_interaction_nodes.hpp"
 #include "cgpui/ui/element_scroll_nodes.hpp"
+#include "cgpui/ui/element_window_control_nodes.hpp"

@@ -2,6 +2,7 @@
 #include "wayland_test_clipboard_source_state.hpp"
 #include "wayland_test_clipboard_transfer.hpp"
 #include "wayland_test_drag_offer_state.hpp"
+#include "wayland_test_toplevel_requests.hpp"
 
 #include <wayland-server-core.h>
 #include <wayland-server-protocol.h>
@@ -2310,9 +2311,11 @@ void WaylandTestCompositor::State::dispatch_pending_pointer_button() {
     return;
   }
 
+  const std::uint32_t button_serial = next_pointer_serial++;
+  wayland_test_record_pointer_button_serial(button_serial);
   wl_pointer_send_button(
       pointer_resource,
-      next_pointer_serial++,
+      button_serial,
       pointer_time++,
       request.button,
       request.pressed ? WL_POINTER_BUTTON_STATE_PRESSED
@@ -3104,13 +3107,9 @@ const WaylandTestCompositor::State::XdgToplevelImplementation
         },
         .set_title = [](wl_client*, wl_resource*, const char*) {},
         .set_app_id = [](wl_client*, wl_resource*, const char*) {},
-        .show_window_menu = [](
-            wl_client*, wl_resource*, wl_resource*, std::uint32_t,
-            std::int32_t, std::int32_t) {},
-        .move = [](wl_client*, wl_resource*, wl_resource*, std::uint32_t) {},
-        .resize = [](
-            wl_client*, wl_resource*, wl_resource*, std::uint32_t,
-            std::uint32_t) {},
+        .show_window_menu = &wayland_test_toplevel_show_window_menu,
+        .move = &wayland_test_toplevel_move,
+        .resize = &wayland_test_toplevel_resize,
         .set_max_size = [](
             wl_client*, wl_resource*, std::int32_t, std::int32_t) {},
         .set_min_size = [](

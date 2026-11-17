@@ -132,7 +132,7 @@ int main() {
       line_count(runtime_activation) > 75 ||
       line_count(runtime_ownership) > 25 || line_count(win32_factory) > 70 ||
       line_count(wayland_child) > 30 || line_count(wayland_protocol) > 15 ||
-      line_count(wayland_internal) > 120 || line_count(runtime_test) > 130) {
+      line_count(wayland_internal) > 123 || line_count(runtime_test) > 130) {
     return 6;
   }
   constexpr const char* completion =

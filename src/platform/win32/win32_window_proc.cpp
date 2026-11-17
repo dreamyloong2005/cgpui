@@ -19,6 +19,8 @@ LRESULT CALLBACK win32_window_proc(
           message, wparam, lparam, window, result) ||
       win32_window_proc_handle_command(
           message, wparam, lparam, window, result) ||
+      win32_window_proc_handle_title_bar(
+          hwnd, message, wparam, lparam, window, result) ||
       win32_window_proc_handle_lifecycle(
           hwnd,
           message,

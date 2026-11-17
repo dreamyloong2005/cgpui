@@ -38,6 +38,14 @@ class Win32Window final
       WindowChromeOptions options) override;
   PlatformWindowBackdropState apply_window_backdrop(WindowBackdrop backdrop, bool transparent_surface) override;
   [[nodiscard]] PlatformWindowBackdropState window_backdrop_state() const override;
+  void set_window_control_regions(
+      std::vector<WindowControlRegion> regions) override;
+  [[nodiscard]] PlatformWindowFrameMetrics frame_metrics() const override;
+  PlatformWindowActionResult perform_window_action(
+      PlatformWindowActionRequest request) override;
+  bool title_bar_message(
+      HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam,
+      LRESULT& result) override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
   bool accessibility_object(WPARAM wparam, LPARAM lparam, LRESULT& result) override;
@@ -98,6 +106,7 @@ class Win32Window final
   void revoke_drop_target();
   Point client_position_from_screen(POINTL point) const;
   void apply_ime_text_input_placement();
+  [[nodiscard]] bool client_title_bar_active() const;
   HINSTANCE instance_ = nullptr;
   HWND hwnd_ = nullptr;
   HCURSOR current_cursor_ = nullptr;
@@ -108,6 +117,7 @@ class Win32Window final
   PlatformWindowCloseController close_controller_;
   Win32WindowChromeState chrome_state_;
   Win32WindowBackdrop backdrop_;
+  Win32ClientTitleBar title_bar_;
   bool active_ = false;
   bool focused_ = false;
   bool suppress_pointer_capture_lost_ = false;

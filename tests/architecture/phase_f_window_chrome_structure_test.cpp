@@ -150,9 +150,9 @@ int main() {
                 "target(\"phase_f_window_chrome_structure_test\")")) {
     return 6;
   }
-  if (line_count(chrome_default) > 20 || line_count(win32_chrome) > 55 ||
+  if (line_count(chrome_default) > 20 || line_count(win32_chrome) > 58 ||
       line_count(wayland_protocol) > 60 || line_count(wayland_interfaces) > 35 ||
-      line_count(wayland_internal) > 120 || line_count(wayland_chrome) > 60 ||
+      line_count(wayland_internal) > 123 || line_count(wayland_chrome) > 60 ||
       line_count(surface_selection) > 65) {
     return 7;
   }

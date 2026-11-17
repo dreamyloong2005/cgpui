@@ -26,6 +26,7 @@ struct WindowOptions {
   WindowOptions& resizable(bool enabled);
   WindowOptions& transparent(bool enabled);
   WindowOptions& backdrop(WindowBackdrop backdrop);
+  WindowOptions& title_bar(WindowTitleBarMode mode);
   [[nodiscard]] WindowDescriptor to_descriptor() const;
 };
 

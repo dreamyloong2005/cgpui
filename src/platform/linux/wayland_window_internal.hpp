@@ -2,6 +2,7 @@
 
 #include "wayland_internal.hpp"
 #include "wayland_window_state.hpp"
+#include "wayland_window_title_bar_state_internal.hpp"
 #include "../platform_window_close_internal.hpp"
 namespace cgpui {
 
@@ -38,6 +39,7 @@ class WaylandWindow final : public PlatformWindow {
   PlatformWindowChromeState apply_window_chrome(
       WindowChromeOptions options) override;
 #include "wayland_window_backdrop_internal.hpp"
+#include "wayland_window_title_bar_internal.hpp"
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
   [[nodiscard]] CursorShape cursor_shape() const;
@@ -110,6 +112,7 @@ class WaylandWindow final : public PlatformWindow {
   CursorShape cursor_shape_ = CursorShape::default_arrow;
   WaylandWindowChromeState chrome_state_;
   WaylandWindowBackdrop backdrop_;
+  WaylandClientTitleBar title_bar_;
   WaylandXdgConfigureState pending_configure_;
   bool configured_ = false;
   bool focused_ = false;

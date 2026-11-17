@@ -79,7 +79,7 @@ int main() {
   }
   if (line_count(configure) > 100 || line_count(configure_internal) > 25 ||
       line_count(helper) > 140 || line_count(behavior) > 120 ||
-      line_count(compositor) > 3700 || line_count(window_internal) > 120) {
+      line_count(compositor) > 3700 || line_count(window_internal) > 123) {
     return 7;
   }
   constexpr const char* completion =

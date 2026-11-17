@@ -14,7 +14,10 @@ KeyboardModifiers current_modifiers() {
 
 DWORD win32_window_style_for(const WindowChromeOptions& chrome) {
   DWORD style = chrome.decorations ? WS_OVERLAPPEDWINDOW : WS_POPUP;
-  if (!chrome.titlebar_visible) {
+  // A client title bar keeps WS_CAPTION: WM_NCCALCSIZE removes the caption
+  // area, and the style keeps snap, the system menu and min/max animations.
+  if (!chrome.titlebar_visible &&
+      chrome.title_bar != WindowTitleBarMode::client) {
     style &= ~WS_CAPTION;
   }
   if (!chrome.resizable) {

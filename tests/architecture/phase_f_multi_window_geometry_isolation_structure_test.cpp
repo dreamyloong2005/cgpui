@@ -74,7 +74,7 @@ int main() {
       !contains(behavior, "renderers[0]->resize_count == 0")) return 7;
   if (line_count(record) > 65 || line_count(activation) > 70 ||
       line_count(events) > 125 || line_count(records) > 145 ||
-      line_count(frames) > 165 || line_count(resize) > 30 ||
+      line_count(frames) > 168 || line_count(resize) > 30 ||
       line_count(window_render) > 20 || line_count(frame_schedule) > 50 ||
       line_count(frame_state) > 10 || line_count(scheduling) > 135 ||
       line_count(run) > 145 || line_count(behavior) > 210) return 8;

@@ -45,6 +45,20 @@ Result<void> render_view(
     TextMeasurementCache* text_measurement_cache,
     Color clear_color,
     FrameStatistics* statistics) {
+  return render_view(
+      renderer, view, viewport_size, scale, text_measurement_cache,
+      clear_color, nullptr, statistics);
+}
+
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    DpiScale scale,
+    TextMeasurementCache* text_measurement_cache,
+    Color clear_color,
+    std::vector<WindowControlRegion>* window_control_regions,
+    FrameStatistics* statistics) {
   if (statistics != nullptr) {
     statistics->begin_frame_count += 1;
   }
@@ -68,6 +82,10 @@ Result<void> render_view(
   paint_list.set_scale(scale);
   paint_list.set_text_measurement_cache(text_measurement_cache);
   view.paint(paint_list, viewport_size);
+  if (window_control_regions != nullptr) {
+    const auto regions = paint_list.window_control_regions();
+    window_control_regions->assign(regions.begin(), regions.end());
+  }
   if (statistics != nullptr) {
     statistics->paint_pass_count += 1;
     statistics->paint_command_count = paint_list.commands().size();

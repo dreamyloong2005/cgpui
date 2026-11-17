@@ -55,6 +55,11 @@ ElementBuilder ElementBuilder::on_key(KeyHandler handler) && {
   return std::move(*this);
 }
 
+ElementBuilder ElementBuilder::window_control_area(WindowControlArea area) && {
+  window_control_area_ = area;
+  return std::move(*this);
+}
+
 ElementBuilder ElementBuilder::child(std::unique_ptr<Element> child) && {
   if (child) {
     children_.push_back(std::move(child));

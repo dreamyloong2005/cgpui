@@ -117,6 +117,8 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder on_pointer_up(PointerButtonHandler handler) &&;
   [[nodiscard]] ElementBuilder on_pointer_move(PointerMoveHandler handler) &&;
   [[nodiscard]] ElementBuilder on_key(KeyHandler handler) &&;
+  // Client title bar region for this element (GPUI's window_control_area).
+  [[nodiscard]] ElementBuilder window_control_area(WindowControlArea area) &&;
   [[nodiscard]] ElementBuilder child(std::unique_ptr<Element> child) &&;
   [[nodiscard]] ElementBuilder child(ElementBuilder child) &&;
   [[nodiscard]] ElementBuilder children(std::vector<AnyElement> children) &&;
@@ -161,6 +163,7 @@ class ElementBuilder {
   PointerButtonHandler pointer_up_handler_;
   PointerMoveHandler pointer_move_handler_;
   KeyHandler key_handler_;
+  std::optional<WindowControlArea> window_control_area_;
   std::vector<std::unique_ptr<Element>> children_;
 };
 

@@ -42,6 +42,11 @@ WindowOptions& WindowOptions::backdrop(WindowBackdrop backdrop_value) {
   return *this;
 }
 
+WindowOptions& WindowOptions::title_bar(WindowTitleBarMode mode) {
+  descriptor.chrome.title_bar = mode;
+  return *this;
+}
+
 WindowDescriptor WindowOptions::to_descriptor() const {
   return descriptor;
 }

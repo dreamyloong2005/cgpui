@@ -53,6 +53,7 @@ Result<void> WindowRuntime::try_draw_frame() {
   update_platform_accessibility_tree();
   apply_focused_text_ime_placement();
 
+  std::vector<WindowControlRegion> window_control_regions;
   auto result = render_view(
       *renderer_,
       view_,
@@ -60,11 +61,14 @@ Result<void> WindowRuntime::try_draw_frame() {
       scale_,
       nullptr,
       runtime_window_clear_color(window_),
+      &window_control_regions,
       &frame_statistics);
   if (!result) {
     abort_frame_scheduling();
     return std::unexpected(result.error());
   }
+  runtime_publish_window_control_regions(
+      window_, element_tree(), scale_, std::move(window_control_regions));
   last_renderer_frame_diagnostics_ =
       runtime_renderer_frame_diagnostic_snapshot(*renderer_);
 
@@ -131,6 +135,7 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
         record, *accessibility_snapshot);
   }
 
+  std::vector<WindowControlRegion> window_control_regions;
   auto result = render_view(
       *record.renderer,
       view,
@@ -138,10 +143,13 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
       record.scale,
       nullptr,
       runtime_window_clear_color(record.window),
+      &window_control_regions,
       &frame_statistics);
   if (!result) {
     return std::unexpected(result.error());
   }
+  runtime_publish_window_control_regions(
+      record.window, nullptr, record.scale, std::move(window_control_regions));
   last_renderer_frame_diagnostics_ =
       runtime_renderer_frame_diagnostic_snapshot(*record.renderer);
 

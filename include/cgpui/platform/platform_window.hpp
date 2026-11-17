@@ -10,10 +10,12 @@
 #include "cgpui/platform/platform_window_lifecycle.hpp"
 #include "cgpui/platform/platform_window_pointer_capture.hpp"
 #include "cgpui/platform/platform_window_position.hpp"
+#include "cgpui/platform/platform_window_title_bar.hpp"
 
 #include <functional>
 #include <optional>
 #include <string_view>
+#include <vector>
 
 namespace cgpui {
 
@@ -45,6 +47,12 @@ class PlatformWindow {
       WindowBackdrop backdrop, bool transparent_surface);
   [[nodiscard]] virtual PlatformWindowBackdropState
   window_backdrop_state() const;
+  // Client title bar: regions painted this frame, in logical client pixels.
+  virtual void set_window_control_regions(
+      std::vector<WindowControlRegion> regions);
+  [[nodiscard]] virtual PlatformWindowFrameMetrics frame_metrics() const;
+  virtual PlatformWindowActionResult perform_window_action(
+      PlatformWindowActionRequest request);
   virtual void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update);
 };

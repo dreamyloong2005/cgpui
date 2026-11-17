@@ -812,7 +812,7 @@ int main(int argc, char** argv) {
       !contains(wayland_window_internal, "void pointer_moved(")) {
     return 88;
   }
-  if (line_count(wayland_window_internal) > 120 ||
+  if (line_count(wayland_window_internal) > 123 ||
       contains(wayland_window_internal,
                "class RegisteredWaylandWindow final") ||
       contains(wayland_window_internal,

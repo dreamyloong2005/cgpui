@@ -6,6 +6,7 @@
 #include "ui_paint_internal.hpp"
 #include "runtime_renderer_diagnostics_internal.hpp"
 #include "runtime_window_backdrop_internal.hpp"
+#include "runtime_window_title_bar_internal.hpp"
 
 #include <algorithm>
 #include <expected>

@@ -18,6 +18,9 @@ void Win32Window::update_size_for_dpi(float dpi) {
 }
 
 void Win32Window::dpi_changed(WPARAM wparam, LPARAM lparam) {
+  // Set before SetWindowPos, which recalculates the client title bar frame.
+  title_bar_.dpi = HIWORD(wparam);
+  const UINT frame = client_title_bar_active() ? SWP_FRAMECHANGED : 0U;
   if (lparam != 0) {
     const auto* rect = reinterpret_cast<const RECT*>(lparam);
     SetWindowPos(
@@ -27,7 +30,7 @@ void Win32Window::dpi_changed(WPARAM wparam, LPARAM lparam) {
         rect->top,
         rect->right - rect->left,
         rect->bottom - rect->top,
-        SWP_NOZORDER | SWP_NOACTIVATE);
+        SWP_NOZORDER | SWP_NOACTIVATE | frame);
   }
   update_size_for_dpi(static_cast<float>(HIWORD(wparam)));
 }

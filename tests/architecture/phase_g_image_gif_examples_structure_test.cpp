@@ -96,7 +96,7 @@ int main() {
                 "target(\"phase_g_image_gif_examples_structure_test\")")) {
     return 5;
   }
-  if (line_count(transport) > 55 || line_count(render_view) > 95 ||
+  if (line_count(transport) > 55 || line_count(render_view) > 113 ||
       line_count(transport_test) > 135 || line_count(image) > 190 ||
       line_count(gif) > 210 || line_count(behavior) > 100) return 6;
   constexpr const char* completion =

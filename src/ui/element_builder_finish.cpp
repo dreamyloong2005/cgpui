@@ -48,6 +48,12 @@ std::unique_ptr<Element> ElementBuilder::finish(
     apply_element_attributes(*focusable_element);
     element = std::move(focusable_element);
   }
+  if (window_control_area_.has_value()) {
+    auto area_element = std::make_unique<WindowControlAreaElement>(
+        std::move(element), *window_control_area_);
+    apply_element_attributes(*area_element);
+    element = std::move(area_element);
+  }
   return element;
 }
 

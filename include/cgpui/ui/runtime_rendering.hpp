@@ -31,6 +31,17 @@ Result<void> render_view(
     TextMeasurementCache* text_measurement_cache,
     Color clear_color,
     FrameStatistics* statistics);
+// window_control_regions: receives the client title bar regions painted in
+// this frame (logical pixels), for PlatformWindow::set_window_control_regions.
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    DpiScale scale,
+    TextMeasurementCache* text_measurement_cache,
+    Color clear_color,
+    std::vector<WindowControlRegion>* window_control_regions,
+    FrameStatistics* statistics);
 [[nodiscard]] int run_app(
     PlatformApplication& application,
     View& view,

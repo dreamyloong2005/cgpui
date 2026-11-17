@@ -1,4 +1,5 @@
 #include "wayland_application_internal.hpp"
+#include "wayland_window_title_bar_api.hpp"
 
 namespace cgpui {
 
@@ -61,15 +62,18 @@ void WaylandApplication::handle_pointer_button(
     std::uint32_t button,
     std::uint32_t state) {
   (void)pointer;
-  (void)serial;
-  (void)time;
   auto* app = static_cast<WaylandApplication*>(data);
-  if (app->pointer_window_ != nullptr) {
+  WaylandWindow* window = app->pointer_window_;
+  if (window != nullptr) {
+    const MouseButton mouse_button = mouse_button_from_wayland(button);
+    const bool pressed = state == WL_POINTER_BUTTON_STATE_PRESSED;
     wayland_window_pointer_button(
-        *app->pointer_window_,
-        mouse_button_from_wayland(button),
-        state == WL_POINTER_BUTTON_STATE_PRESSED,
-        app->pointer_position_);
+        *window, mouse_button, pressed, app->pointer_position_);
+    if (app->pointer_window_ == window) {
+      wayland_window_title_bar_pointer_button(
+          *window, app->seat_, serial, time, mouse_button, pressed,
+          app->pointer_position_);
+    }
   }
 }
 

@@ -60,6 +60,13 @@ Win32BackdropPlan win32_plan_window_backdrop(const Win32BackdropInputs& inputs) 
   plan.backdrop_type = backdrop_type(material);
   state.title_bar = material;
   state.mechanism = type_mechanism(plan.backdrop_type);
+  if (!inputs.transparent_surface && inputs.client_title_bar) {
+    state.title_bar = WindowBackdrop::none;
+    state.reason = "renderer surface does not composite with alpha and the "
+                   "system title bar is replaced by a client title bar; the "
+                   "material is not visible";
+    return plan;
+  }
   if (!inputs.transparent_surface) {
     state.reason = "renderer surface does not composite with alpha; the "
                    "material is drawn on the title bar only";

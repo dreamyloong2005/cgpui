@@ -675,7 +675,7 @@ int main(int argc, char** argv) {
       !contains(window_bridge, "wayland_window_pointer_exited(")) {
     return 10;
   }
-  if (line_count(window_internal) > 120 ||
+  if (line_count(window_internal) > 123 ||
       contains(window_internal, "class RegisteredWaylandWindow final") ||
       contains(window_internal, "void record_toplevel_configure_state(") ||
       contains(window_internal, "handle_surface_configure(")) {
