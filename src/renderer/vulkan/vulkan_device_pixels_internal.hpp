@@ -20,5 +20,7 @@ namespace cgpui {
 [[nodiscard]] ImageDraw vulkan_to_device_pixels(ImageDraw draw, DpiScale scale);
 [[nodiscard]] BoxShadowDraw vulkan_to_device_pixels(
     BoxShadowDraw draw, DpiScale scale);
+[[nodiscard]] BackdropBlurDraw vulkan_to_device_pixels(
+    BackdropBlurDraw draw, DpiScale scale);
 
 } // namespace cgpui

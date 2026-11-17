@@ -80,3 +80,134 @@ does not implement them yet; see the macOS plan.
   corner can differ from an exact convolution by a few 1/255 steps.
 - Rotated or skewed transforms are evaluated in the box's local space; the
   sharp-edge ramp uses `fwidth` of the local point.
+
+## C6 backdrop blur
+
+### API
+
+- `PaintList::draw_backdrop_blur(Rect bounds, BorderRadii radius, float
+  blur_radius, std::optional<Color> tint = std::nullopt)` blurs what was
+  painted before it inside the rounded rect. Paint the overlay's own fill
+  after it.
+- `Style::backdrop_blur` (`BackdropBlur { float radius; std::optional<Color>
+  tint; }`), `Style::with_backdrop_blur`, `ElementBuilder::backdrop_blur`.
+  A styled box paints shadow, then backdrop blur, then its fill. Not yet in
+  `StyleOverlay`, the cascade, or tweening.
+- Renderer: `BackdropBlurDraw`, `RenderFrame::draw_backdrop_blur`,
+  `Renderer::backdrop_blur_support()` returning `RendererEffectSupport {
+  bool supported; std::string reason; }`. Diagnostics:
+  `RendererFrameDiagnosticSnapshot::backdrop_blur` (`blurred_backdrop_count`,
+  `offscreen_pass_count`, `offscreen_targets_allocated`),
+  `RendererDrawCounts::backdrop_blur_count`,
+  `FrameStatistics::backdrop_blur_command_count`.
+
+### Conventions
+
+- `blur_radius` is the Gaussian standard deviation in logical pixels, like
+  CSS `backdrop-filter: blur(r)`; this differs from the box-shadow blur
+  radius, which is 2 sigma. It scales to device pixels with the DPI.
+- Tint: `mix(blurred, tint.rgb, tint.a)` inside the mask; no tint mixes
+  nothing. Composed opacity scales the mask, which has a one-device-pixel
+  antialiased edge.
+- The blur reads content up to 3 sigma outside the rect, clamped to the
+  frame edge, so the panel edge is not darkened.
+- Without support the frame draws the tint as a plain rounded rect. Vulkan
+  reports `supported = false` with a reason when the swapchain format lacks
+  optimal-tiling `COLOR_ATTACHMENT`, `SAMPLED_IMAGE` or
+  `SAMPLED_IMAGE_FILTER_LINEAR`; backends without an override (Metal today)
+  use the same tint-only default.
+
+### Implementation and scheduling
+
+- `vulkan_plan_backdrop_blur` (headless) computes, per visible backdrop, the
+  region (device bounds of the transformed rect + 1 px, grown by
+  `ceil(3 sigma)`, clamped), a downsample factor (1 up to sigma 4 device px,
+  2 up to 16, 4 up to 48, else 8), the texel sigma
+  `sqrt(sigma^2 - (f^2 - 1) / 12) / f` (removes the box filter's variance),
+  a tap radius `ceil(3 sigma')` capped at 48, and a 6-vertex composite quad.
+- A frame with at least one planned backdrop renders into an offscreen
+  scene image (swapchain format) instead of the swapchain. The draw order
+  is split at each backdrop: a scene pass (clear first, load later), then
+  three small passes over the region (box downsample scene to ping,
+  horizontal Gaussian ping to pong, vertical pong to ping); the next scene
+  pass starts with the composite (ping sampled linearly, rounded mask,
+  tint) and continues with the following draws. The swapchain pass copies
+  the scene with `texelFetch`, so presentation and pixel capture are
+  unchanged. Offscreen passes are render-pass compatible with the swapchain
+  pass, so all existing pipelines draw into them; each ends with a barrier
+  to `SHADER_READ_ONLY_OPTIMAL`.
+- Multiple overlays: each backdrop blurs everything drawn before it,
+  including earlier composites. No count limit; each adds four passes
+  (`4 * backdrops + 1` offscreen passes per frame).
+- Zero cost without a backdrop: the plan is cleared, recording keeps the
+  single swapchain pass, and no image, pipeline or buffer exists until the
+  first backdrop frame (asserted by the pixel test through
+  `offscreen_pass_count == 0` and `offscreen_targets_allocated == false`).
+  After that the three targets (about 14.6 MB at 1350 x 900), four
+  pipelines and three render passes are kept and reused, and are recreated
+  only when the swapchain format or extent changes.
+- Backdrop frames are never replayed by command-buffer reuse.
+- SPIR-V for `shaders/backdrop_*.glsl` is embedded in
+  `vulkan_backdrop_blur_shader_binaries.cpp`, generated with
+  `glslc -fshader-stage=<stage> -O --target-env=vulkan1.0` and checked with
+  `spirv-val`.
+
+### Tests
+
+- `vulkan_backdrop_blur_pixel_test` (Windows, real swapchain) over 2 px
+  black/white stripes: every pixel of a row inside the panel is 128 +- 4
+  (the stripe mean; sigma 4 removes the 4 px period); pixels outside and in
+  the corner cut by the 12 px radius keep exact 0/255; a 50% red tint gives
+  (192, 64, 64) +- 5; a rect drawn afterwards lands on top unblurred; two
+  backdrops report 9 offscreen passes and the second blurs a black square
+  drawn after the first; scale 1.5 blurs inside and keeps outside exact; a
+  frame without a backdrop reports 0 passes and no targets. Under
+  `VK_LAYER_KHRONOS_validation` the only message is the pre-existing
+  `VUID-vkQueueSubmit-pSignalSemaphores-00067` (one `render_finished`
+  semaphore for all swapchain images), which two plain frames reproduce.
+- `vulkan_backdrop_blur_plan_test` (Windows and Linux, headless),
+  `backdrop_blur_submission_test` (paint order, tint-only default),
+  `backdrop_blur_structure_test`.
+
+### Real window (Windows 11, 144 DPI)
+
+`example_backdrop_blur` (`examples/backdrop_blur`, registered in
+`build/xmake/capabilities/backdrop_blur_targets.lua`): 900 x 600 logical =
+1350 x 900 physical client; 6 px colored stripes and 48 px text behind a
+420 x 260 panel with radius 18, box shadow (offset 0,16, blur 48, black
+45%), backdrop blur 20 with a 35% white tint, 25% white fill, 1 px border.
+Captured 2026-11-17 with `D:\Dev\shots\shot.ps1` to
+`D:\Dev\shots\c6_backdrop_blur.jpg` (window rect 1372 x 956):
+
+- Inside the panel, row y = 550 (capture coordinates) from x = 420 to 940
+  stays within 229..239 per channel, while the same stripes outside are full
+  contrast (red 213,41,37 next to white 247..255). Text behind the panel is
+  not legible; stripes read as soft pastel bands.
+- Corners are rounded; stripes and text are unchanged up to the panel edge.
+- Shadow below the panel at x = 1010: 218 at y = 690, then 223, 227, 232
+  (y = 720), 241 (740), 246 (760), 249 (780), 250 (800, background).
+
+### Measured frame time (debug build, 1350 x 900)
+
+`CGPUI_EXAMPLE_BENCH_FRAMES=300`: 300 repainted frames after 10 warm-up
+frames, mean renderer CPU stage timers (`RendererFrameTimings`), two runs:
+
+| | total | pacing wait | resource prep | recording | offscreen passes |
+|---|---|---|---|---|---|
+| backdrop blur | 4.39 / 4.87 ms | 0.90 / 1.11 ms | 1.32 / 1.31 ms | 0.094 / 0.092 ms | 5 |
+| no blur (`CGPUI_EXAMPLE_NO_BLUR=1`) | 4.63 / 4.58 ms | 0.83 / 0.79 ms | 1.31 / 1.32 ms | 0.023 / 0.024 ms | 0 |
+
+Totals are within run-to-run noise; recording costs +0.07 ms. GPU time is
+not measured directly (no timestamp queries); it shows only indirectly in
+the next frame's pacing wait (+0.1 to 0.3 ms here).
+
+### Not verified
+
+- Wayland real window and Linux pixel output (only headless tests run in
+  WSL); Metal (tint-only default, see the macOS plan).
+- The tint-only fallback on a device lacking the format features (none
+  available; covered by the headless support test and the default
+  `RenderFrame` test).
+- GPU cost on an integrated GPU; large sigma (factor 8) visually; a
+  release build.
+- Box shadows in a real window beyond the example panel.

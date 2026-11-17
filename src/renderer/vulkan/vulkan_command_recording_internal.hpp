@@ -5,6 +5,7 @@
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
 #include "vulkan_frame_command_reuse_internal.hpp"
 #include "vulkan_frame_draw_recording_internal.hpp"
+#include "vulkan_frame_effects_internal.hpp"
 #include "vulkan_frame_pixel_capture_internal.hpp"
 #include "vulkan_image_texture_uploads_internal.hpp"
 
@@ -33,6 +34,6 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
     const VulkanImageTextureUploadResources& image_texture_uploads,
     const VulkanFramePixelCaptureCommand& pixel_capture,
     VulkanFrameCommandReuseState& command_reuse_state,
-    const VulkanBoxShadowDrawResources& box_shadow = {});
+    const VulkanFrameEffects& effects = {});
 
 } // namespace cgpui

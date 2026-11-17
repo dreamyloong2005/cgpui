@@ -27,6 +27,24 @@ void submit_paint_command_to_frame(
     }
     return;
   }
+  if (command.kind == PaintCommandKind::backdrop_blur) {
+    const BackdropBlurPaint& backdrop = command.backdrop_blur;
+    frame.draw_backdrop_blur(BackdropBlurDraw{
+        .rect = backdrop.bounds,
+        .radius = backdrop.radius,
+        .blur_radius = backdrop.blur_radius,
+        .tint = backdrop.tint,
+        .clip_rect = command.clip_rect,
+        .clip_stack = command.clip_stack,
+        .composition_stack = command.composition_stack,
+        .metadata = command.metadata,
+    });
+    if (statistics != nullptr) {
+      statistics->submitted_command_count += 1;
+      statistics->backdrop_blur_command_count += 1;
+    }
+    return;
+  }
   if (command.kind == PaintCommandKind::image) {
     const ImagePaint& image = command.image;
     frame.draw_image(ImageDraw{

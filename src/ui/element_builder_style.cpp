@@ -122,6 +122,11 @@ ElementBuilder ElementBuilder::shadow(BoxShadow shadow) && {
   return std::move(*this);
 }
 
+ElementBuilder ElementBuilder::backdrop_blur(BackdropBlur blur) && {
+  style_state_.base = style_state_.base.with_backdrop_blur(blur);
+  return std::move(*this);
+}
+
 ElementBuilder ElementBuilder::shadow_sm() && {
   return std::move(*this).shadow(BoxShadow{
       .color = rgba(0, 0, 0, 0.18F),

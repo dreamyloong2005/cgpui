@@ -78,6 +78,11 @@ void paint_styled_box_base(
   if (style.box_shadow.has_value()) {
     paint_list.draw_box_shadow(*bounds, *style.box_shadow, style.border_radius);
   }
+  if (style.backdrop_blur.has_value()) {
+    paint_list.draw_backdrop_blur(
+        *bounds, style.border_radius, style.backdrop_blur->radius,
+        style.backdrop_blur->tint);
+  }
 
   const std::optional<float> uniform_border_width =
       style.border_color.has_value()

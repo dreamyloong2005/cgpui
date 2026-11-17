@@ -124,6 +124,12 @@ Style Style::with_border_radius_token(ThemeTokenId id) const {
   return style;
 }
 
+Style Style::with_backdrop_blur(BackdropBlur blur) const {
+  Style style = *this;
+  style.backdrop_blur = blur;
+  return style;
+}
+
 Style Style::with_box_shadow(BoxShadow shadow) const {
   Style style = *this;
   style.box_shadow = shadow;

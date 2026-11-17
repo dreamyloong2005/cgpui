@@ -3,7 +3,9 @@
 #include "cgpui/renderer/renderer_types.hpp"
 #include "cgpui/ui/style_values.hpp"
 
+#include <cstddef>
 #include <optional>
+#include <string>
 
 namespace cgpui {
 
@@ -21,6 +23,33 @@ struct BoxShadowDraw {
   RendererClipStackRecord clip_stack;
   RendererCompositionStackRecord composition_stack;
   PaintMetadata metadata;
+};
+
+// Blurs what the frame drew before this command inside the rounded rect,
+// then mixes `tint` over it (tint alpha = mix amount). `blur_radius` is the
+// Gaussian standard deviation in logical pixels, like CSS
+// `backdrop-filter: blur()`. Draws after it land on top. Without renderer
+// support only the tint is drawn.
+struct BackdropBlurDraw {
+  Rect rect;
+  BorderRadii radius;
+  float blur_radius = 0.0F;
+  std::optional<Color> tint;
+  std::optional<Rect> clip_rect;
+  RendererClipStackRecord clip_stack;
+  RendererCompositionStackRecord composition_stack;
+  PaintMetadata metadata;
+};
+
+struct RendererEffectSupport {
+  bool supported = false;
+  std::string reason;
+};
+
+struct RendererBackdropBlurDiagnostics {
+  std::size_t blurred_backdrop_count = 0;
+  std::size_t offscreen_pass_count = 0;
+  bool offscreen_targets_allocated = false;
 };
 
 } // namespace cgpui

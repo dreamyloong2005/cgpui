@@ -96,6 +96,7 @@ enum class RendererPrimitiveKind {
   text_caret,
   image,
   box_shadow,
+  backdrop_blur,
 };
 
 [[nodiscard]] constexpr std::string_view renderer_primitive_kind_name(
@@ -115,6 +116,8 @@ enum class RendererPrimitiveKind {
       return "image";
     case RendererPrimitiveKind::box_shadow:
       return "box_shadow";
+    case RendererPrimitiveKind::backdrop_blur:
+      return "backdrop_blur";
   }
 
   return "unknown";

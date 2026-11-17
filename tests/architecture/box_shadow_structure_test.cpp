@@ -41,7 +41,7 @@ int main() {
     limit("src/renderer/vulkan/vulkan_box_shadow_pipeline_internal.hpp", 45);
     limit("src/renderer/vulkan/vulkan_box_shadow_pipeline.cpp", 140);
     limit("src/renderer/vulkan/vulkan_box_shadow_buffers.cpp", 90);
-    limit("src/renderer/vulkan/vulkan_box_shadow_frame.cpp", 30);
+    limit("src/renderer/vulkan/vulkan_frame_effects.cpp", 90);
     limit("src/renderer/vulkan/vulkan_box_shadow_shader_binaries.cpp", 360);
     const auto effects = read("include/cgpui/renderer/renderer_effect_draws.hpp");
     const auto fragment = read("src/renderer/vulkan/shaders/box_shadow.frag.glsl");

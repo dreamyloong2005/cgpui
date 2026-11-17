@@ -106,4 +106,14 @@ BoxShadowDraw vulkan_to_device_pixels(BoxShadowDraw draw, DpiScale scale) {
   return draw;
 }
 
+// The blur radius is a length (standard deviation) and scales too.
+BackdropBlurDraw vulkan_to_device_pixels(BackdropBlurDraw draw, DpiScale scale) {
+  if (!scales(scale)) return draw;
+  draw.rect = scaled(draw.rect, scale.value);
+  draw.radius = scaled(draw.radius, scale.value);
+  draw.blur_radius *= scale.value;
+  scale_common(draw, scale.value);
+  return draw;
+}
+
 } // namespace cgpui

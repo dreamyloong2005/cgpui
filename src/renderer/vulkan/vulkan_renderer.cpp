@@ -21,6 +21,13 @@ class VulkanFrame final : public RenderFrame {
   void draw_box_shadow(const BoxShadowDraw& shadow) override {
     append_draw(box_shadows_, shadow, RendererPrimitiveKind::box_shadow);
   }
+  void draw_backdrop_blur(const BackdropBlurDraw& backdrop) override {
+    if (!state_->backdrop_blur_support().supported) {
+      RenderFrame::draw_backdrop_blur(backdrop);  // typed fallback: tint only
+      return;
+    }
+    append_draw(backdrops_, backdrop, RendererPrimitiveKind::backdrop_blur);
+  }
   void draw_text(const TextDraw& text) override {
     append_draw(text_draws_, text, RendererPrimitiveKind::text);
   }
@@ -58,6 +65,7 @@ class VulkanFrame final : public RenderFrame {
   std::vector<SolidRect> rects_;
   std::vector<RoundedRectDraw> rounded_rects_;
   std::vector<BoxShadowDraw> box_shadows_;
+  std::vector<BackdropBlurDraw> backdrops_;
   std::vector<TextDraw> text_draws_;
   std::vector<TextSelectionDraw> text_selections_;
   std::vector<TextCaretDraw> text_carets_;
@@ -91,6 +99,9 @@ class VulkanRenderer final : public Renderer {
   [[nodiscard]] RendererSurfaceComposition surface_composition()
       const override {
     return state_->surface_composition();
+  }
+  [[nodiscard]] RendererEffectSupport backdrop_blur_support() const override {
+    return state_->backdrop_blur_support();
   }
   Result<RendererSurfaceComposition> set_transparent_surface(
       bool transparent) override {
@@ -152,6 +163,7 @@ Result<void> VulkanFrame::present() {
       rects_,
       rounded_rects_,
       box_shadows_,
+      backdrops_,
       text_draws_,
       text_selections_,
       text_carets_,

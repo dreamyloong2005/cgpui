@@ -36,6 +36,7 @@ struct FrameStatistics {
   std::size_t text_caret_command_count = 0;
   std::size_t image_command_count = 0;
   std::size_t box_shadow_command_count = 0;
+  std::size_t backdrop_blur_command_count = 0;
   std::size_t clip_stack_command_count = 0;
   std::size_t max_clip_stack_depth = 0;
   std::size_t composition_stack_command_count = 0;

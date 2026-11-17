@@ -1,5 +1,6 @@
 #pragma once
 
+#include "vulkan_backdrop_blur_resources_internal.hpp"
 #include "vulkan_device_internal.hpp"
 #include "vulkan_frame_command_reuse_internal.hpp"
 #include "vulkan_frame_diagnostic_snapshot_internal.hpp"
@@ -33,6 +34,7 @@ class VulkanRendererState final {
   Result<void> request_pixel_capture() const;
   [[nodiscard]] const RendererFramePixels* last_frame_pixels() const;
   [[nodiscard]] RendererSurfaceComposition surface_composition() const;
+  [[nodiscard]] RendererEffectSupport backdrop_blur_support() const;
   Result<RendererSurfaceComposition> set_transparent_surface(bool transparent);
   Result<void> present_frame(
       Color color,
@@ -40,6 +42,7 @@ class VulkanRendererState final {
       std::span<const SolidRect> rects,
       std::span<const RoundedRectDraw> rounded_rects,
       std::span<const BoxShadowDraw> box_shadows,
+      std::span<const BackdropBlurDraw> backdrops,
       std::span<const TextDraw> text_draws,
       std::span<const TextSelectionDraw> text_selections,
       std::span<const TextCaretDraw> text_carets,
@@ -71,8 +74,12 @@ class VulkanRendererState final {
       std::span<const SolidRect> rects);
   Result<void> prepare_rounded_rect_frame(
       std::span<const RoundedRectDraw> rounded_rects);
-  Result<void> prepare_box_shadow_frame(
-      std::span<const BoxShadowDraw> box_shadows);
+  Result<void> prepare_effect_frame(
+      std::span<const BoxShadowDraw> box_shadows,
+      std::span<const BackdropBlurDraw> backdrops);
+  [[nodiscard]] VulkanFrameEffects frame_effects() const;
+  [[nodiscard]] RendererBackdropBlurDiagnostics backdrop_blur_diagnostics()
+      const;
   Result<void> prepare_image_texture_frame(
       std::span<const ImageDraw> image_draws,
       std::span<const ImageUploadBatch> image_uploads,
@@ -155,6 +162,8 @@ class VulkanRendererState final {
   VulkanRoundedRectBufferResources solid_rect_buffers_;
   VulkanRoundedRectBufferResources rounded_rect_buffers_;
   VulkanRoundedRectBufferResources box_shadow_buffers_;
+  VulkanBackdropBlurResources backdrop_blur_resources_;
+  VulkanBackdropBlurPlan backdrop_blur_plan_;
   std::vector<RendererCommandBatch> last_command_batches_;
   RendererUploadByteCounts pending_frame_upload_bytes_;
   RendererFrameDiagnosticSnapshot last_frame_diagnostic_snapshot_;

@@ -221,6 +221,14 @@ struct BoxShadow {
   float spread_radius = 0.0F;
 };
 
+// Blur of what is drawn behind a box (CSS backdrop-filter: blur()).
+// `radius` is the Gaussian standard deviation in logical pixels; `tint`
+// is mixed over the blurred backdrop by its alpha.
+struct BackdropBlur {
+  float radius = 0.0F;
+  std::optional<Color> tint;
+};
+
 struct FontDescriptor {
   std::string family;
 

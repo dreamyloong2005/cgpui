@@ -36,6 +36,7 @@ enum class PaintCommandKind {
   solid_rect,
   rounded_rect,
   box_shadow,
+  backdrop_blur,
   text,
   text_selection,
   text_caret,
@@ -55,6 +56,13 @@ struct BoxShadowPaint {
   Rect bounds;
   BoxShadow shadow;
   BorderRadii radius;
+};
+
+struct BackdropBlurPaint {
+  Rect bounds;
+  BorderRadii radius;
+  float blur_radius = 0.0F;
+  std::optional<Color> tint;
 };
 
 struct TextPaint {
@@ -105,6 +113,7 @@ struct PaintCommand {
   SolidRect solid_rect;
   RoundedRect rounded_rect;
   BoxShadowPaint box_shadow;
+  BackdropBlurPaint backdrop_blur;
   TextPaint text;
   TextSelectionPaint text_selection;
   TextCaretPaint text_caret;
@@ -138,6 +147,13 @@ class PaintList {
       BorderRadii radius,
       float border_width);
   void draw_box_shadow(Rect bounds, BoxShadow shadow, BorderRadii radius = {});
+  // Blurs what was painted before it inside the rounded rect; paint the
+  // overlay's own fill after it. `blur_radius` is a standard deviation.
+  void draw_backdrop_blur(
+      Rect bounds,
+      BorderRadii radius,
+      float blur_radius,
+      std::optional<Color> tint = std::nullopt);
   void fill_text(
       Rect bounds,
       Color color,

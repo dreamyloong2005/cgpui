@@ -34,6 +34,8 @@ std::size_t& primitive_draw_count(
       return counts.image_count;
     case RendererPrimitiveKind::box_shadow:
       return counts.box_shadow_count;
+    case RendererPrimitiveKind::backdrop_blur:
+      return counts.backdrop_blur_count;
   }
   return counts.solid_rect_count;
 }

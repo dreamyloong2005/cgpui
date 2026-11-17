@@ -13,6 +13,7 @@ struct Style {
   std::optional<Color> foreground_color;
   std::optional<Color> border_color;
   std::optional<BoxShadow> box_shadow;
+  std::optional<BackdropBlur> backdrop_blur;
   std::optional<Rect> clip_rect;
   FontDescriptor font;
   Size preferred_size;
@@ -63,6 +64,7 @@ struct Style {
   [[nodiscard]] Style with_border_radius(BorderRadii radius) const;
   [[nodiscard]] Style with_border_radius_token(ThemeTokenId id) const;
   [[nodiscard]] Style with_box_shadow(BoxShadow shadow) const;
+  [[nodiscard]] Style with_backdrop_blur(BackdropBlur blur) const;
   [[nodiscard]] Style with_overflow(Overflow value) const;
   [[nodiscard]] Style with_z_index(int value) const;
   [[nodiscard]] Style with_layer(int value) const;

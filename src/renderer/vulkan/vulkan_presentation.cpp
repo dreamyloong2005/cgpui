@@ -10,6 +10,7 @@ Result<void> VulkanRendererState::present_frame(
     std::span<const SolidRect> rects,
     std::span<const RoundedRectDraw> rounded_rects,
     std::span<const BoxShadowDraw> box_shadows,
+    std::span<const BackdropBlurDraw> backdrops,
     std::span<const TextDraw> text_draws,
     std::span<const TextSelectionDraw> text_selections,
     std::span<const TextCaretDraw> text_carets,
@@ -36,7 +37,7 @@ Result<void> VulkanRendererState::present_frame(
   if (auto result = prepare_rounded_rect_frame(rounded_rects); !result) {
     return result;
   }
-  if (auto result = prepare_box_shadow_frame(box_shadows); !result) {
+  if (auto result = prepare_effect_frame(box_shadows, backdrops); !result) {
     return result;
   }
   if (auto result = prepare_image_texture_frame(
@@ -102,11 +103,7 @@ Result<void> VulkanRendererState::present_frame(
           glyph_atlas_uploads_,
           image_texture_resources_, image_texture_uploads_,
           *pixel_capture,
-          command_reuse_states_[image_index],
-          VulkanBoxShadowDrawResources{
-              .pipeline = &box_shadow_pipeline_resources_,
-              .buffers = &box_shadow_buffers_,
-          });
+          command_reuse_states_[image_index], frame_effects());
       !result) {
     return recover_after_failed_record(result.error().message);
   }
@@ -115,7 +112,7 @@ Result<void> VulkanRendererState::present_frame(
       vulkan_build_frame_diagnostic_resources(
           draw_order, solid_rect_buffers_.draws, rounded_rect_buffers_.draws,
           glyph_atlas_draw_bindings_, image_draws, last_command_batches_,
-          box_shadow_buffers_.draws);
+          box_shadow_buffers_.draws, backdrop_blur_plan_.passes);
 
   VkCommandBuffer command_buffer = command_buffers_[image_index];
   if (auto result = submit_frame(command_buffer); !result) {
@@ -163,6 +160,7 @@ Result<void> VulkanRendererState::present_frame(
       std::move(diagnostic_resources),
       pending_frame_upload_bytes_,
       diagnostic_timer.timings());
+  last_frame_diagnostic_snapshot_.backdrop_blur = backdrop_blur_diagnostics();
   has_frame_diagnostic_snapshot_ = true;
 
   return {};

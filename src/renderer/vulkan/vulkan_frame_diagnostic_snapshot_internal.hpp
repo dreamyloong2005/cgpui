@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/renderer/renderer_frame_diagnostic_snapshot.hpp"
+#include "vulkan_backdrop_blur_plan_internal.hpp"
 #include "vulkan_frame_draw_order_internal.hpp"
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 
@@ -26,7 +27,8 @@ vulkan_build_frame_diagnostic_resources(
     std::span<const VulkanGlyphAtlasDrawBinding> text_bindings,
     std::span<const ImageDraw> image_draws,
     std::span<const RendererCommandBatch> command_batches,
-    std::span<const VulkanRoundedRectDrawRange> box_shadow_draws = {});
+    std::span<const VulkanRoundedRectDrawRange> box_shadow_draws = {},
+    std::span<const VulkanBackdropBlurPass> backdrop_passes = {});
 
 [[nodiscard]] RendererFrameDiagnosticSnapshot
 vulkan_build_frame_diagnostic_snapshot(

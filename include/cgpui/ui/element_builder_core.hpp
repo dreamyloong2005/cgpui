@@ -81,6 +81,7 @@ class ElementBuilder {
   [[nodiscard]] ElementBuilder rounded(float radius) &&;
   [[nodiscard]] ElementBuilder shadow(BoxShadow shadow) &&;
   [[nodiscard]] ElementBuilder shadow_sm() &&;
+  [[nodiscard]] ElementBuilder backdrop_blur(BackdropBlur blur) &&;
   [[nodiscard]] ElementBuilder opacity(float value) &&;
   [[nodiscard]] ElementBuilder gap(float value) &&;
   [[nodiscard]] ElementBuilder align_items(AlignItems value) &&;

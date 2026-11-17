@@ -13,6 +13,7 @@ VulkanRendererState::~VulkanRendererState() {
     vulkan_destroy_rounded_rect_buffers(device_, solid_rect_buffers_);
     vulkan_destroy_rounded_rect_buffers(device_, rounded_rect_buffers_);
     vulkan_destroy_rounded_rect_buffers(device_, box_shadow_buffers_);
+    vulkan_destroy_backdrop_blur_resources(device_, backdrop_blur_resources_);
     vulkan_destroy_image_vertex_buffer(device_, image_vertex_buffer_);
     vulkan_destroy_text_vertex_buffer(device_, text_vertex_buffer_);
     vulkan_destroy_frame_pixel_capture(device_, frame_pixel_capture_);

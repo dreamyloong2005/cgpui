@@ -19,6 +19,8 @@ class RenderFrame {
   virtual void draw_rect(const SolidRect& rect) = 0;
   virtual void draw_rounded_rect(const RoundedRectDraw& rect) { (void)rect; }
   virtual void draw_box_shadow(const BoxShadowDraw& shadow) { (void)shadow; }
+  // Backends without backdrop blur draw the tint only.
+  virtual void draw_backdrop_blur(const BackdropBlurDraw& backdrop);
   virtual void draw_text(const TextDraw& text) { (void)text; }
   virtual void draw_text_selection(const TextSelectionDraw& selection) {
     (void)selection;
@@ -41,6 +43,7 @@ class Renderer {
   last_frame_diagnostic_snapshot() const;
   [[nodiscard]] virtual const RendererFramePixels* last_frame_pixels() const;
   [[nodiscard]] virtual RendererSurfaceComposition surface_composition() const;
+  [[nodiscard]] virtual RendererEffectSupport backdrop_blur_support() const;
   // Recreates the presentation surface with or without alpha composition.
   virtual Result<RendererSurfaceComposition> set_transparent_surface(
       bool transparent);

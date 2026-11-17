@@ -25,7 +25,8 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
     const VulkanImageTextureUploadResources& image_texture_uploads,
     const VulkanFramePixelCaptureCommand& pixel_capture,
     VulkanFrameCommandReuseState& command_reuse_state,
-    const VulkanBoxShadowDrawResources& box_shadow) {
+    const VulkanFrameEffects& effects) {
+  const VulkanBoxShadowDrawResources& box_shadow = effects.box_shadow;
   if (auto result = vulkan_validate_glyph_atlas_draw_bindings(
           glyph_atlas_draw_bindings,
           glyph_atlas_draw_quads,
@@ -101,10 +102,13 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
       .box_shadow_draws = box_shadow_buffers.draws,
       .draw_order = draw_order,
   };
+  // Backdrop frames sample their own offscreen output and are never reused.
+  const bool single_use =
+      pixel_capture.enabled() || effects.backdrop_blur.active();
   const VulkanFrameCommandReusePlan reuse_plan =
       vulkan_plan_frame_command_reuse(
           command_reuse_state, signature, has_pending_uploads,
-          pixel_capture.enabled());
+          single_use);
   if (reuse_plan.action == VulkanFrameCommandReuseAction::reuse) {
     vulkan_commit_frame_command_reuse(command_reuse_state);
     return VulkanFrameCommandRecordingResult{
@@ -145,40 +149,36 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
       !result) {
     return std::unexpected(result.error());
   }
-  VkClearValue clear_value{};
-  clear_value.color = VkClearColorValue{{color.r, color.g, color.b, color.a}};
-  const VkRenderPassBeginInfo render_pass_info{
-      .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-      .renderPass = render_pass,
-      .framebuffer = framebuffer,
-      .renderArea =
-          VkRect2D{
-              .offset = VkOffset2D{.x = 0, .y = 0},
-              .extent = extent,
-          },
-      .clearValueCount = 1,
-      .pClearValues = &clear_value,
-  };
-  vkCmdBeginRenderPass(
-      command_buffer,
-      &render_pass_info,
-      VK_SUBPASS_CONTENTS_INLINE);
-
-  vulkan_record_frame_draws(
-      command_buffer,
-      extent,
-      rounded_rect_pipeline_resources,
-      solid_rect_buffers,
-      rounded_rect_buffers,
-      text_pipeline_resources,
-      text_vertex_buffer,
-      *text_draw_commands,
-      image_pipeline_resources,
-      image_vertex_buffer,
-      *image_draw_commands,
-      draw_order,
-      box_shadow);
-  vkCmdEndRenderPass(command_buffer);
+  const auto record_draws =
+      [&](std::span<const VulkanFrameDrawOrderEntry> segment) {
+        vulkan_record_frame_draws(
+            command_buffer, extent, rounded_rect_pipeline_resources,
+            solid_rect_buffers, rounded_rect_buffers, text_pipeline_resources,
+            text_vertex_buffer, *text_draw_commands, image_pipeline_resources,
+            image_vertex_buffer, *image_draw_commands, segment, box_shadow);
+      };
+  if (effects.backdrop_blur.active()) {
+    (void)vulkan_record_backdrop_blur_frame(
+        command_buffer, effects.backdrop_blur,
+        {.render_pass = render_pass, .framebuffer = framebuffer,
+         .extent = extent, .clear_color = color},
+        draw_order, record_draws);
+  } else {
+    VkClearValue clear_value{};
+    clear_value.color = VkClearColorValue{{color.r, color.g, color.b, color.a}};
+    const VkRenderPassBeginInfo render_pass_info{
+        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+        .renderPass = render_pass,
+        .framebuffer = framebuffer,
+        .renderArea = {.offset = {.x = 0, .y = 0}, .extent = extent},
+        .clearValueCount = 1,
+        .pClearValues = &clear_value,
+    };
+    vkCmdBeginRenderPass(
+        command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+    record_draws(draw_order);
+    vkCmdEndRenderPass(command_buffer);
+  }
   vulkan_record_frame_pixel_capture(command_buffer, pixel_capture);
   if (auto result = require_vk_success(
           vkEndCommandBuffer(command_buffer),
@@ -188,7 +188,7 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
   }
   vulkan_commit_frame_command_recording(
       command_reuse_state, signature, has_pending_uploads,
-      pixel_capture.enabled());
+      single_use);
   return VulkanFrameCommandRecordingResult{
       .action = VulkanFrameCommandReuseAction::record,
       .reason = reuse_plan.reason,
