@@ -90,6 +90,7 @@ int WindowRuntime::run(
     return 1;
   }
   renderer_ = *renderer_result;
+  (void)runtime_apply_window_backdrop(*window_, renderer_, descriptor.backdrop);
   if (WindowRuntimeRecord* root_record =
           find_window_runtime_record(root_window_runtime_id_);
       root_record != nullptr) {

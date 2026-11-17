@@ -36,6 +36,7 @@ void Win32Window::detach() {
   set_pointer_capture(false);
   revoke_drop_target();
   uia_accessibility_.detach();
+  backdrop_.detach();
   hwnd_ = nullptr;
 }
 

@@ -21,14 +21,18 @@ VkCompositeAlphaFlagBitsKHR choose_vulkan_composite_alpha(
       VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
       VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
   };
+  // CGPUI renders premultiplied color. Inherit lets the native window decide
+  // and is the only other mode worth trying; post-multiplied would need
+  // straight-alpha output and is not selected.
   constexpr std::array transparent_preference{
       VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
-      VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
       VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
       VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
   };
-  const auto& preference =
-      transparent_background ? transparent_preference : opaque_preference;
+  const std::span<const VkCompositeAlphaFlagBitsKHR> preference =
+      transparent_background
+          ? std::span<const VkCompositeAlphaFlagBitsKHR>(transparent_preference)
+          : std::span<const VkCompositeAlphaFlagBitsKHR>(opaque_preference);
   for (VkCompositeAlphaFlagBitsKHR alpha : preference) {
     if ((supported_alpha & alpha) != 0) {
       return alpha;

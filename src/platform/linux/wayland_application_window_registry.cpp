@@ -34,6 +34,10 @@ void WaylandApplication::handle_global(
     const char* interface,
     std::uint32_t version) {
   auto* app = static_cast<WaylandApplication*>(data);
+  if (wayland_bind_backdrop_global(
+          registry, name, interface, version, app->backdrop_globals())) {
+    return;
+  }
   wayland_bind_registry_global(
       registry,
       name,

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "cgpui/platform/platform_appearance.hpp"
+#include "cgpui/platform/platform_window_backdrop.hpp"
+#include "cgpui/renderer/renderer_surface_composition.hpp"
 #include "cgpui/ui/runtime_input_state.hpp"
 #include "cgpui/ui/runtime_window_options.hpp"
 
@@ -21,6 +23,11 @@ class Window {
   [[nodiscard]] ViewInputState input_state() const;
   [[nodiscard]] bool focused() const;
   [[nodiscard]] SystemAppearance appearance() const;
+  [[nodiscard]] PlatformWindowBackdropState backdrop() const;
+  // Applies a backdrop to the live native window. The descriptor keeps the
+  // creation-time request.
+  PlatformWindowBackdropState set_backdrop(WindowBackdrop backdrop) const;
+  [[nodiscard]] RendererSurfaceComposition surface_composition() const;
 
   void request_render() const;
   void request_layout() const;

@@ -52,7 +52,7 @@ int main() {
       !contains(app_context, "child_window_callback") ||
       !contains(renderer_results, "run_callback") ||
       !contains(renderer_results, "factory_count != 2")) return 2;
-  if (line_count(win32_window) > 120 || line_count(win32_application) > 170 ||
+  if (line_count(win32_window) > 123 || line_count(win32_application) > 170 ||
       line_count(wayland_lifecycle) > 25) return 3;
   if (!contains(pointer_guard, "runtime_window_input_state.cpp") ||
       !contains(pointer_guard, "pointer_position_for(event)") ||

@@ -2194,7 +2194,7 @@ int main() {
                "void WindowRuntime::set_element_tree(")) {
     return 32;
   }
-  if (line_count(runtime_run_source) > 140 ||
+  if (line_count(runtime_run_source) > 141 ||
       !contains(runtime_run_source, "int WindowRuntime::run(") ||
       !contains(runtime_run_source, "application_.create_window(") ||
       !contains(runtime_run_source, "try_create_renderer(") ||

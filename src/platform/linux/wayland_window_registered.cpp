@@ -82,6 +82,16 @@ PlatformWindowChromeState RegisteredWaylandWindow::apply_window_chrome(
   return window_->apply_window_chrome(options);
 }
 
+PlatformWindowBackdropState RegisteredWaylandWindow::apply_window_backdrop(
+    WindowBackdrop backdrop, bool transparent_surface) {
+  return window_->apply_window_backdrop(backdrop, transparent_surface);
+}
+
+PlatformWindowBackdropState
+RegisteredWaylandWindow::window_backdrop_state() const {
+  return window_->window_backdrop_state();
+}
+
 void RegisteredWaylandWindow::update_accessibility_tree(
     PlatformAccessibilityTreeUpdate update) {
   window_->update_accessibility_tree(std::move(update));

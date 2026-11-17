@@ -36,6 +36,8 @@ WaylandApplication::WaylandApplication()
     initialization_error_ = "wl_display_roundtrip failed";
     return;
   }
+  // ext_background_effect_v1 sends its capabilities after the bind.
+  if (backdrop_globals().ext_manager != nullptr) wl_display_roundtrip(display_);
   cursor_theme_ = create_wayland_cursor_theme(compositor_, shm_);
   set_fractional_scale_available(
       fractional_scale_manager_ != nullptr && viewporter_ != nullptr);
@@ -75,6 +77,7 @@ WaylandApplication::~WaylandApplication() {
     wl_seat_destroy(seat_);
   }
   output_scales_.reset();
+  wayland_reset_backdrop_globals(backdrop_globals());
   if (data_device_manager_ != nullptr) {
     wl_data_device_manager_destroy(data_device_manager_);
   }

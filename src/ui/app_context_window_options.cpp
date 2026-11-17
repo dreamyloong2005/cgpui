@@ -37,6 +37,11 @@ WindowOptions& WindowOptions::transparent(bool enabled) {
   return *this;
 }
 
+WindowOptions& WindowOptions::backdrop(WindowBackdrop backdrop_value) {
+  descriptor.backdrop = backdrop_value;
+  return *this;
+}
+
 WindowDescriptor WindowOptions::to_descriptor() const {
   return descriptor;
 }

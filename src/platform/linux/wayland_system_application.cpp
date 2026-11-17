@@ -12,14 +12,17 @@ WaylandSystemApplication::WaylandSystemApplication()
 WaylandSystemApplication::~WaylandSystemApplication() = default;
 
 // The portal connection is made on first use, so applications that never
-// ask for the appearance do not touch the session bus.
+// ask for the appearance do not touch the session bus. The portal has no
+// transparency key; a bound compositor blur protocol decides it instead.
 SystemAppearance WaylandSystemApplication::system_appearance() const {
-  return appearance_monitor_->appearance();
+  return wayland_backdrop_appearance(
+      appearance_monitor_->appearance(), backdrop_globals_);
 }
 
 void WaylandSystemApplication::set_system_appearance_callback(
     SystemAppearanceCallback callback) {
-  appearance_monitor_->set_callback(std::move(callback));
+  appearance_monitor_->set_callback(wayland_backdrop_appearance_callback(
+      std::move(callback), &backdrop_globals_));
 }
 
 PlatformDpiAwarenessState WaylandSystemApplication::dpi_awareness() const {
@@ -28,6 +31,10 @@ PlatformDpiAwarenessState WaylandSystemApplication::dpi_awareness() const {
 
 void WaylandSystemApplication::set_fractional_scale_available(bool available) {
   fractional_scale_available_ = available;
+}
+
+WaylandBackdropGlobals& WaylandSystemApplication::backdrop_globals() {
+  return backdrop_globals_;
 }
 
 WaylandEventSource* WaylandSystemApplication::appearance_event_source() {

@@ -32,6 +32,19 @@ Result<void> render_view(
     DpiScale scale,
     TextMeasurementCache* text_measurement_cache,
     FrameStatistics* statistics) {
+  return render_view(
+      renderer, view, viewport_size, scale, text_measurement_cache,
+      runtime_default_clear_color, statistics);
+}
+
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    DpiScale scale,
+    TextMeasurementCache* text_measurement_cache,
+    Color clear_color,
+    FrameStatistics* statistics) {
   if (statistics != nullptr) {
     statistics->begin_frame_count += 1;
   }
@@ -46,7 +59,7 @@ Result<void> render_view(
     });
   }
 
-  (*frame)->clear(Color{.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F});
+  (*frame)->clear(clear_color);
   if (statistics != nullptr) {
     statistics->clear_count += 1;
   }
@@ -78,6 +91,5 @@ Result<void> render_view(
   }
   return result;
 }
-
 
 } // namespace cgpui

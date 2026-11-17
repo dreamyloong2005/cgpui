@@ -571,6 +571,7 @@ struct WaylandTestCompositor::State {
       return false;
     }
 
+    for (const auto& install : global_installers) install(display);
     running.store(true);
     server_thread = std::thread([this] { run(); });
     return true;
@@ -1524,6 +1525,7 @@ struct WaylandTestCompositor::State {
   std::vector<std::unique_ptr<SurfaceState>> surfaces;
   std::thread server_thread;
   std::atomic_bool running{false};
+  std::vector<std::function<void(wl_display*)>> global_installers;
   std::atomic_bool close_on_initial_configure_ack{false};
   std::atomic_bool close_pending{false};
   std::atomic_bool close_sent{false};
@@ -3204,6 +3206,11 @@ void WaylandTestCompositor::stop() {
 
 const std::string& WaylandTestCompositor::socket_name() const {
   return state_->socket_name;
+}
+
+void WaylandTestCompositor::add_global_installer(
+    std::function<void(wl_display*)> installer) {
+  state_->global_installers.push_back(std::move(installer));
 }
 
 void WaylandTestCompositor::set_close_on_initial_configure_ack(bool enabled) {

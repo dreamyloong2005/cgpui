@@ -1,0 +1,98 @@
+#include "win32_window_backdrop_internal.hpp"
+#include "win32_system_appearance_internal.hpp"
+
+#include <dwmapi.h>
+
+namespace cgpui {
+namespace {
+
+constexpr const wchar_t* backdrop_property = L"CGPUIWindowBackdrop";
+
+BOOL CALLBACK reevaluate_window(HWND hwnd, LPARAM lparam) {
+  auto* backdrop =
+      static_cast<Win32WindowBackdrop*>(GetPropW(hwnd, backdrop_property));
+  if (backdrop != nullptr) {
+    (void)backdrop->reevaluate(
+        *reinterpret_cast<const SystemAppearance*>(lparam));
+  }
+  return TRUE;
+}
+
+} // namespace
+
+Win32WindowBackdrop::~Win32WindowBackdrop() { detach(); }
+
+PlatformWindowBackdropState Win32WindowBackdrop::apply(
+    HWND hwnd,
+    WindowBackdrop backdrop,
+    bool transparent_surface,
+    bool layered) {
+  if (hwnd != hwnd_) {
+    detach();
+    hwnd_ = hwnd;
+    if (hwnd_ != nullptr) SetPropW(hwnd_, backdrop_property, this);
+  }
+  requested_ = backdrop;
+  transparent_surface_ = transparent_surface;
+  layered_ = layered;
+  return reevaluate(win32_read_system_appearance());
+}
+
+PlatformWindowBackdropState Win32WindowBackdrop::reevaluate(
+    const SystemAppearance& appearance) {
+  return apply_plan(win32_plan_window_backdrop(Win32BackdropInputs{
+      .requested = requested_,
+      .transparent_surface = transparent_surface_,
+      .os_build = win32_os_build_number(),
+      .layered = layered_,
+      .transparency_effects_enabled = appearance.transparency_effects_enabled,
+  }));
+}
+
+PlatformWindowBackdropState Win32WindowBackdrop::apply_plan(
+    const Win32BackdropPlan& plan) {
+  state_ = plan.state;
+  if (hwnd_ == nullptr) {
+    state_.applied = WindowBackdrop::none;
+    state_.title_bar = WindowBackdrop::none;
+    state_.reason = "window has no HWND";
+    return state_;
+  }
+  if (!plan.touch_dwm) return state_;
+  const DWORD type = plan.backdrop_type;
+  const HRESULT set = DwmSetWindowAttribute(
+      hwnd_, win32_system_backdrop_attribute, &type, sizeof(type));
+  // Margins of -1 extend the frame (and its backdrop) over the whole client
+  // area; zero margins restore the normal opaque client area.
+  const int extent = plan.extend_frame ? -1 : 0;
+  const MARGINS margins{extent, extent, extent, extent};
+  const HRESULT extended = DwmExtendFrameIntoClientArea(hwnd_, &margins);
+  if (FAILED(set) || FAILED(extended)) {
+    state_.applied = WindowBackdrop::none;
+    if (FAILED(set)) state_.title_bar = WindowBackdrop::none;
+    state_.reason = FAILED(set)
+        ? "DwmSetWindowAttribute(DWMWA_SYSTEMBACKDROP_TYPE) failed"
+        : "DwmExtendFrameIntoClientArea failed";
+  }
+  return state_;
+}
+
+void Win32WindowBackdrop::detach() {
+  if (hwnd_ != nullptr && IsWindow(hwnd_)) {
+    RemovePropW(hwnd_, backdrop_property);
+  }
+  hwnd_ = nullptr;
+}
+
+const PlatformWindowBackdropState& Win32WindowBackdrop::state() const {
+  return state_;
+}
+
+void win32_reevaluate_thread_window_backdrops(
+    const SystemAppearance& appearance) {
+  EnumThreadWindows(
+      GetCurrentThreadId(), reevaluate_window,
+      reinterpret_cast<LPARAM>(&appearance));
+}
+
+} // namespace cgpui

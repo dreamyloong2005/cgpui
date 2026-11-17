@@ -1,6 +1,7 @@
 #pragma once
 
 #include "win32_system_appearance_internal.hpp"
+#include "win32_window_backdrop_internal.hpp"
 
 namespace cgpui {
 

@@ -1,4 +1,5 @@
 #include "vulkan_internal.hpp"
+#include "vulkan_surface_composition_internal.hpp"
 
 namespace cgpui {
 
@@ -88,6 +89,9 @@ Result<VulkanSwapchainResources> VulkanRendererState::create_swapchain_resources
     return std::unexpected(result.error());
   }
 
+  surface_composition_ = vulkan_surface_composition(
+      details->capabilities.supportedCompositeAlpha,
+      descriptor_.transparent_background);
   return resources;
 }
 

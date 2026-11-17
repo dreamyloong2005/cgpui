@@ -4,6 +4,7 @@
 #include "cgpui/renderer/glyph_atlas.hpp"
 #include "cgpui/renderer/renderer_frame_diagnostic_snapshot.hpp"
 #include "cgpui/renderer/renderer_frame_pixels.hpp"
+#include "cgpui/renderer/renderer_surface_composition.hpp"
 
 #include <memory>
 #include <span>
@@ -38,6 +39,10 @@ class Renderer {
   [[nodiscard]] virtual const RendererFrameDiagnosticSnapshot*
   last_frame_diagnostic_snapshot() const;
   [[nodiscard]] virtual const RendererFramePixels* last_frame_pixels() const;
+  [[nodiscard]] virtual RendererSurfaceComposition surface_composition() const;
+  // Recreates the presentation surface with or without alpha composition.
+  virtual Result<RendererSurfaceComposition> set_transparent_surface(
+      bool transparent);
 };
 
 Result<std::unique_ptr<Renderer>> create_renderer(

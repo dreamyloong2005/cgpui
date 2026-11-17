@@ -51,6 +51,7 @@ void WindowRuntime::activate_native_window_for_record(
 
   record.window = window.get();
   record.renderer = *renderer_result;
+  (void)runtime_apply_window_backdrop(*window, record.renderer, record.descriptor.backdrop);
   record.framebuffer_size = window_state.framebuffer_size;
   record.viewport_size = to_logical_pixels(
       window_state.framebuffer_size,

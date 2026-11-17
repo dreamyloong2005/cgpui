@@ -58,6 +58,8 @@ Result<void> WindowRuntime::try_draw_frame() {
       view_,
       viewport_size_,
       scale_,
+      nullptr,
+      runtime_window_clear_color(window_),
       &frame_statistics);
   if (!result) {
     abort_frame_scheduling();
@@ -134,6 +136,8 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
       view,
       record.viewport_size,
       record.scale,
+      nullptr,
+      runtime_window_clear_color(record.window),
       &frame_statistics);
   if (!result) {
     return std::unexpected(result.error());

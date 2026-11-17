@@ -26,10 +26,14 @@ class WaylandSystemApplication : public PlatformApplication {
  protected:
   void set_fractional_scale_available(bool available);
   [[nodiscard]] WaylandEventSource* appearance_event_source();
+  // Compositor blur globals; they also decide
+  // SystemAppearance::transparency_effects_enabled.
+  [[nodiscard]] WaylandBackdropGlobals& backdrop_globals();
 
  private:
   std::unique_ptr<WaylandPortalAppearanceMonitor> appearance_monitor_;
   bool fractional_scale_available_ = false;
+  WaylandBackdropGlobals backdrop_globals_;
 };
 
 } // namespace cgpui

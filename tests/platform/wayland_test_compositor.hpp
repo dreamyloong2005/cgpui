@@ -6,11 +6,14 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <optional>
 #include <vector>
+
+struct wl_display;
 
 namespace cgpui::test {
 
@@ -65,6 +68,8 @@ class WaylandTestCompositor {
 
   [[nodiscard]] const std::string& socket_name() const;
 
+  // Runs on the server display in start(), before the server thread.
+  void add_global_installer(std::function<void(wl_display*)> installer);
   void set_close_on_initial_configure_ack(bool enabled);
   void request_close();
   void request_resize_configure(std::int32_t width, std::int32_t height);

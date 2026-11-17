@@ -56,6 +56,10 @@ WaylandApplication::create_window_with_parent(
   }
 
   WaylandWindow* raw_window = window->get();
+  raw_window->attach_backdrop(compositor_, &backdrop_globals());
+  // The renderer does not exist yet; the runtime re-applies the backdrop
+  // with the real surface composition once it does.
+  (void)raw_window->apply_window_backdrop(descriptor.backdrop, false);
   register_window(raw_window);
   return make_registered_wayland_window(
       std::move(*window),

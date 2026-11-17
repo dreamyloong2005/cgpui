@@ -37,6 +37,7 @@ class WaylandWindow final : public PlatformWindow {
       std::optional<ImeTextInputPlacement> placement) override;
   PlatformWindowChromeState apply_window_chrome(
       WindowChromeOptions options) override;
+#include "wayland_window_backdrop_internal.hpp"
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
   [[nodiscard]] CursorShape cursor_shape() const;
@@ -108,6 +109,7 @@ class WaylandWindow final : public PlatformWindow {
       create_wayland_atspi_accessibility_adapter();
   CursorShape cursor_shape_ = CursorShape::default_arrow;
   WaylandWindowChromeState chrome_state_;
+  WaylandWindowBackdrop backdrop_;
   WaylandXdgConfigureState pending_configure_;
   bool configured_ = false;
   bool focused_ = false;

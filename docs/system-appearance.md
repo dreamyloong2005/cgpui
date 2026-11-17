@@ -124,7 +124,7 @@ whose reply wraps the value in one more variant.
 | `accent_color` | `org.freedesktop.appearance` `accent-color` ((ddd) sRGB). Each component must be in [0, 1]; otherwise, or when the key is absent, `accent_color_available = false`. Alpha is reported as 1 |
 | `high_contrast` | `org.freedesktop.appearance` `contrast` (u): 1 = high contrast; absent = false |
 | `client_area_animation_enabled` | `org.gnome.desktop.interface` `enable-animations` (b) when the portal backend exposes it (GNOME and portals that forward GSettings); otherwise the default `true` |
-| `transparency_effects_enabled` | always `false`: the portal has no such key. C3 (window backdrop) will set it from the compositor's blur protocol support |
+| `transparency_effects_enabled` | not from the portal (it has no such key): `true` when the compositor advertises a usable blur protocol, `ext_background_effect_manager_v1` with its blur capability or `org_kde_kwin_blur_manager`, else `false`. Set in `system_appearance()` and in every change callback, also when the portal is unavailable. See docs/window-backdrop.md |
 
 Changes: CGPUI adds a match rule for `SettingChanged` from the portal before
 the first read, so a change between subscribing and reading is not lost. The
@@ -159,7 +159,8 @@ installed and nothing provides `org.freedesktop.portal.Desktop`.
 `dbus-send --session ... org.freedesktop.portal.Settings.ReadOne` returns
 `org.freedesktop.DBus.Error.ServiceUnknown: The name is not activatable`, so
 CGPUI reports the unsupported snapshot there. Installing a portal backend in
-the distro was not tried.
+the distro was not tried. WSLg advertises no blur protocol either, so
+`transparency_effects_enabled` is `false`.
 
 DPI awareness: Wayland has no process-wide switch; CGPUI scales each surface
 itself. `dpi_awareness()` reports `backend = "wayland"`,

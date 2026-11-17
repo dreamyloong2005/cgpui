@@ -4,6 +4,7 @@
 #include "cgpui/core/window.hpp"
 #include "cgpui/platform/native_surface.hpp"
 #include "cgpui/platform/platform_accessibility.hpp"
+#include "cgpui/platform/platform_window_backdrop.hpp"
 #include "cgpui/platform/platform_window_chrome.hpp"
 #include "cgpui/platform/platform_window_close.hpp"
 #include "cgpui/platform/platform_window_lifecycle.hpp"
@@ -39,6 +40,11 @@ class PlatformWindow {
       std::optional<ImeTextInputPlacement> placement) = 0;
   virtual PlatformWindowChromeState apply_window_chrome(
       WindowChromeOptions options);
+  // transparent_surface: the renderer surface composites with alpha.
+  virtual PlatformWindowBackdropState apply_window_backdrop(
+      WindowBackdrop backdrop, bool transparent_surface);
+  [[nodiscard]] virtual PlatformWindowBackdropState
+  window_backdrop_state() const;
   virtual void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update);
 };

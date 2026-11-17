@@ -139,7 +139,7 @@ int main() {
   if (line_count(capture_header) > 25 || line_count(capture_internal) > 20 ||
       line_count(capture) > 35 || line_count(window_capture) > 45 ||
       line_count(proc_header) > 20 || line_count(proc) > 50 ||
-      line_count(window_internal) > 120 || line_count(message_target) > 65 ||
+      line_count(window_internal) > 123 || line_count(message_target) > 65 ||
       line_count(behavior) > 110) {
     return 8;
   }

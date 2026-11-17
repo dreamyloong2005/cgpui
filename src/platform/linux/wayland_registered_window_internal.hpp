@@ -26,6 +26,10 @@ class RegisteredWaylandWindow final : public PlatformWindow {
       std::optional<ImeTextInputPlacement> placement) override;
   PlatformWindowChromeState apply_window_chrome(
       WindowChromeOptions options) override;
+  PlatformWindowBackdropState apply_window_backdrop(
+      WindowBackdrop backdrop, bool transparent_surface) override;
+  [[nodiscard]] PlatformWindowBackdropState window_backdrop_state()
+      const override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
   [[nodiscard]] WaylandWindow& wayland_window() const;

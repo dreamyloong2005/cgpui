@@ -53,6 +53,9 @@ Result<std::unique_ptr<Win32Window>> create_win32_window(
         .message = "CreateWindowExW failed"});
   }
   window->apply_window_chrome(descriptor.chrome);
+  // The renderer does not exist yet; the runtime re-applies the backdrop
+  // with the real surface composition once it does.
+  (void)window->apply_window_backdrop(descriptor.backdrop, false);
   (void)win32_apply_immersive_dark_mode(
       hwnd, win32_read_system_appearance().mode == SystemAppearanceMode::dark);
   ShowWindow(hwnd, SW_SHOW);

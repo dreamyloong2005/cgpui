@@ -82,6 +82,14 @@ class VulkanRenderer final : public Renderer {
   [[nodiscard]] const RendererFramePixels* last_frame_pixels() const override {
     return state_->last_frame_pixels();
   }
+  [[nodiscard]] RendererSurfaceComposition surface_composition()
+      const override {
+    return state_->surface_composition();
+  }
+  Result<RendererSurfaceComposition> set_transparent_surface(
+      bool transparent) override {
+    return state_->set_transparent_surface(transparent);
+  }
 
  private:
   std::shared_ptr<VulkanRendererState> state_;

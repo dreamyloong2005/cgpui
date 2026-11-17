@@ -43,6 +43,7 @@ void Win32AppearanceMonitor::handle(SystemAppearanceChangeSource source) {
   last_appearance_ = current;
   win32_apply_title_bar_appearance_to_thread_windows(
       current.mode == SystemAppearanceMode::dark);
+  win32_reevaluate_thread_window_backdrops(current);
   if (!callback_) return;
   const SystemAppearanceCallback callback = callback_;
   callback(SystemAppearanceChange{

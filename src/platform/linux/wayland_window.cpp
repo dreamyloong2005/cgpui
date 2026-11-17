@@ -47,6 +47,7 @@ WaylandWindow::WaylandWindow(
       scale_changed_(std::move(scale_changed)) {}
 
 WaylandWindow::~WaylandWindow() {
+  backdrop_.release();
   if (viewport_ != nullptr) {
     wp_viewport_destroy(viewport_);
   }

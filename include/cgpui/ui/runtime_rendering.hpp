@@ -22,6 +22,15 @@ Result<void> render_view(
     DpiScale scale,
     TextMeasurementCache* text_measurement_cache,
     FrameStatistics* statistics = nullptr);
+// clear_color: alpha 0 lets a window backdrop show through the frame.
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    DpiScale scale,
+    TextMeasurementCache* text_measurement_cache,
+    Color clear_color,
+    FrameStatistics* statistics);
 [[nodiscard]] int run_app(
     PlatformApplication& application,
     View& view,

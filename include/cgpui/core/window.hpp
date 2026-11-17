@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/core/geometry.hpp"
+#include "cgpui/core/window_backdrop.hpp"
 
 #include <cstdint>
 #include <cstddef>
@@ -36,6 +37,7 @@ struct WindowDescriptor {
   Size size{1280.0F, 720.0F};
   std::optional<Point> position;
   WindowChromeOptions chrome;
+  WindowBackdrop backdrop = WindowBackdrop::none;
 };
 
 struct WindowState {

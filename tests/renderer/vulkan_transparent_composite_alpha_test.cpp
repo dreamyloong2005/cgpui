@@ -15,8 +15,10 @@ int main() {
   constexpr VkCompositeAlphaFlagsKHR opaque_and_post =
       VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR |
       VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR;
+  // Post-multiplied needs straight-alpha output, which CGPUI does not
+  // produce, so a transparent request falls back to opaque.
   if (cgpui::choose_vulkan_composite_alpha(opaque_and_post, true) !=
-      VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR) {
+      VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR) {
     return 3;
   }
   constexpr VkCompositeAlphaFlagsKHR opaque_and_inherit =

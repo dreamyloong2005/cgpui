@@ -1,6 +1,7 @@
 #pragma once
 
 #include "win32_internal.hpp"
+#include "win32_window_backdrop_internal.hpp"
 #include "win32_window_display_internal.hpp"
 #include "../platform_window_close_internal.hpp"
 #include <memory>
@@ -35,6 +36,8 @@ class Win32Window final
       std::optional<ImeTextInputPlacement> placement) override;
   PlatformWindowChromeState apply_window_chrome(
       WindowChromeOptions options) override;
+  PlatformWindowBackdropState apply_window_backdrop(WindowBackdrop backdrop, bool transparent_surface) override;
+  [[nodiscard]] PlatformWindowBackdropState window_backdrop_state() const override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
   bool accessibility_object(WPARAM wparam, LPARAM lparam, LRESULT& result) override;
@@ -104,6 +107,7 @@ class Win32Window final
   Win32WindowDisplayCommandState display_command_state_;
   PlatformWindowCloseController close_controller_;
   Win32WindowChromeState chrome_state_;
+  Win32WindowBackdrop backdrop_;
   bool active_ = false;
   bool focused_ = false;
   bool suppress_pointer_capture_lost_ = false;
