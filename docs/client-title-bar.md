@@ -236,6 +236,26 @@ and 144:
 - `DWMWA_CAPTION_BUTTON_BOUNDS` still reports a button area in client mode
   (`250,0,470,44` in window pixels for a 480 x 320 window at 144 DPI).
 
+Screenshots of `example_client_title_bar` (900 x 600 logical, 144 DPI,
+dark mode; PNG captured from the screen, values per pixel):
+
+- Before the DPI, scale and color fixes: window rect 900 x 600, client
+  878 x 589; the caption row covered client columns 0..584 and rows 0..31,
+  drawn as rgb(99,102,108) instead of rgb(32,34,38); the body was
+  rgb(80,84,89).
+- After: window rect 1372 x 911, client 1350 x 900; caption row
+  rgb(32,34,38) over all 1350 columns and rows 0..47 (rows 0..1 show the
+  Windows 11 window border, which overlaps the top client rows because there
+  is no top frame); command box rgb(52,55,61) at x 495..854; body
+  rgb(20,23,25).
+- Moving the cursor to client 1317,37 turned exactly client columns
+  1281..1349, rows 0..47 red (rgb(196,43,28)): the close button region
+  (logical 854..900) is hit-tested and painted at the same place.
+- No native DWM caption buttons appeared, with or without a Mica backdrop
+  that extends the frame with -1 margins: the caption-button area (client
+  x 989..1338, rows 2..47) was uniformly rgb(32,34,38) in both captures.
+  The -1 margins are kept.
+
 Wayland (`wayland_client_title_bar_test`, test compositor): client-side
 decorations requested; a caption press sends `move` with that press's
 serial; a second press sends `set_maximized`; a left-edge press sends
@@ -252,16 +272,13 @@ mode; the base window reports unsupported actions with a reason.
 
 ## Not verified
 
-- Nothing has been looked at. The Snap Layouts flyout over an app-drawn
-  maximize button, drag feel, double-click maximize, Aero Snap and the
-  right-click system menu were not tried by hand; only the hit-test codes
-  and messages that drive them were checked.
-- Whether DWM draws its own caption buttons into the client area when a
-  backdrop extends the frame with -1 margins (the button bounds attribute is
-  still reported). With an opaque swapchain they would be covered.
-- With no top non-client area, Windows 11 draws its window border over the
-  client edge; whether the top pixel rows are obscured was not looked at.
-  Windows 10 is not tested.
+- Only static screenshots and one hover were looked at. The Snap Layouts
+  flyout over an app-drawn maximize button, drag feel, double-click
+  maximize, Aero Snap and the right-click system menu were not tried by
+  hand; only the hit-test codes and messages that drive them were checked.
+- With no top non-client area, Windows 11 draws its 1-2 px window border
+  over the top client rows (observed); whether that matters for app
+  content there was not judged. Windows 10 is not tested.
 - `begin_move`, `begin_resize` and `show_window_menu` on Windows are not
   exercised by tests (they enter modal loops).
 - A maximized window with an auto-hide taskbar: no gap is reserved for

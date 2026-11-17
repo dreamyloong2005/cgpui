@@ -42,6 +42,9 @@ struct Win32BackdropPlan {
 // Real OS build from RtlGetVersion (GetVersionEx is manifest-dependent).
 [[nodiscard]] std::uint32_t win32_os_build_number();
 
+// Window property holding the window's Win32WindowBackdrop.
+inline constexpr const wchar_t* win32_window_backdrop_property = L"CGPUIWindowBackdrop";
+
 // Per-window backdrop owner. It remembers the last request so a system
 // appearance change can re-evaluate it, and publishes itself as a window
 // property so the appearance monitor can find it by HWND.
@@ -61,6 +64,7 @@ class Win32WindowBackdrop {
   PlatformWindowBackdropState reevaluate(const SystemAppearance& appearance);
   void detach();
   [[nodiscard]] const PlatformWindowBackdropState& state() const;
+  [[nodiscard]] bool frame_extended() const { return frame_extended_; }
 
  private:
   PlatformWindowBackdropState apply_plan(const Win32BackdropPlan& plan);
@@ -70,6 +74,7 @@ class Win32WindowBackdrop {
   bool transparent_surface_ = false;
   bool layered_ = false;
   bool client_title_bar_ = false;
+  bool frame_extended_ = false;
   PlatformWindowBackdropState state_{
       .backend = "win32", .reason = "backdrop not applied yet"};
 };

@@ -172,6 +172,16 @@ frame.
 Changing `chrome.transparent_background` after a backdrop was applied does
 not re-run the decision; apply the backdrop again.
 
+Redirection surface: with the frame extended, DWM composites the window's
+GDI redirection surface under the transparent swapchain. The class has no
+background brush and CGPUI never paints with GDI, so that surface stayed
+opaque white and covered the material. While the frame is extended,
+`win32_window_proc_background.cpp` answers `WM_ERASEBKGND` by filling the
+client black (GDI black has alpha 0, which DWM treats as transparent in an
+extended frame), and `apply_plan` invalidates with `RDW_ERASE` whenever it
+changes the margins so the surface is repainted at once. Windows without an
+extended frame keep the null brush and the default handling.
+
 ## Wayland
 
 Source: src/platform/linux/wayland_backdrop_globals.cpp (binding and
@@ -256,6 +266,22 @@ input timestamps, weston_rdprail_shell, weston_screenshooter). Wayland
 backdrops therefore report `supported = false` there, the surface stays
 opaque, and `transparency_effects_enabled` is false.
 
+## Observed on screen (2026-11-17)
+
+`example_client_title_bar` with `CGPUI_EXAMPLE_BACKDROP=1`, 144 DPI, dark
+mode, transparency effects on, captured from the screen (PNG). Before the
+erase fix every transparent client pixel was rgb(255,255,255) while the
+painted caption row was exact. After it, the transparent area shows the
+dark Mica material tinted by the desktop wallpaper: rgb(45..46,26,28..30)
+near the left edge shifting to rgb(35..38,27..29,37..42) near the right,
+varying smoothly. Painted pixels stay exact over the material: caption row
+rgb(32,34,38) across all 1350 columns in rows 2..47 (rows 0..1 are
+covered by the Windows 11 window border), command box
+rgb(52,55,61) at x 495..854. DWM did not draw its own caption buttons:
+every pixel of the caption row from client x 989 to 1338, rows 2..47, is
+rgb(32,34,38) (the app paints its buttons in the caption color until
+hovered), although `DWMWA_CAPTION_BUTTON_BOUNDS` reports a button area.
+
 ## Tests
 
 - `vulkan_surface_composition_test`, `vulkan_transparent_composite_alpha_test`:
@@ -278,14 +304,21 @@ opaque, and `transparency_effects_enabled` is false.
   `WaylandTestCompositor::add_global_installer`), checking transparency on,
   `applied = blur`, and one effect object, one region, one clear on the
   server.
-- `window_backdrop_structure_test` and three header-cleanliness tests.
+- `win32_backdrop_erase_test`: real window; without a backdrop
+  `WM_ERASEBKGND` paints nothing and the class brush is null; after
+  `apply_window_backdrop(mica, true)` the redirection surface reads back
+  black and a white repaint is erased to black (skipped with the reason
+  when the frame cannot be extended).
+- `window_backdrop_structure_test`, `backdrop_erase_structure_test` and
+  three header-cleanliness tests.
 
 ## Not verified
 
-- No material has been looked at. The DWM attribute was read back; whether
-  Mica, Mica Alt, or Acrylic actually shows behind the client area with a
-  pre-multiplied Vulkan swapchain (NVIDIA device) has not been observed, and
-  neither has the title-bar-only result on the Intel device.
+- Mica was observed on one machine only (dark mode, NVIDIA device). Mica
+  Alt and Acrylic were not looked at, nor the title-bar-only result on the
+  Intel device.
+- Resizing a Mica window was not watched for white or black flashes in
+  areas the swapchain has not presented yet.
 - Toggling transparency effects in Windows Settings has not been tried; the
   re-evaluation was driven with synthetic snapshots.
 - KDE blur has no test (no fake global); ext blur was tested only against

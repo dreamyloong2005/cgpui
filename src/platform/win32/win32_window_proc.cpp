@@ -3,6 +3,7 @@
 #include "win32_window_proc_cursor_internal.hpp"
 #include "win32_window_proc_pointer_capture_internal.hpp"
 #include "win32_window_proc_accessibility_internal.hpp"
+#include "win32_window_proc_background_internal.hpp"
 
 namespace cgpui {
 
@@ -19,6 +20,7 @@ LRESULT CALLBACK win32_window_proc(
           message, wparam, lparam, window, result) ||
       win32_window_proc_handle_command(
           message, wparam, lparam, window, result) ||
+      win32_window_proc_handle_background(hwnd, message, wparam, result) ||
       win32_window_proc_handle_title_bar(
           hwnd, message, wparam, lparam, window, result) ||
       win32_window_proc_handle_lifecycle(

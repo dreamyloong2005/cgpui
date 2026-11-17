@@ -6,11 +6,9 @@
 namespace cgpui {
 namespace {
 
-constexpr const wchar_t* backdrop_property = L"CGPUIWindowBackdrop";
-
 BOOL CALLBACK reevaluate_window(HWND hwnd, LPARAM lparam) {
   auto* backdrop =
-      static_cast<Win32WindowBackdrop*>(GetPropW(hwnd, backdrop_property));
+      static_cast<Win32WindowBackdrop*>(GetPropW(hwnd, win32_window_backdrop_property));
   if (backdrop != nullptr) {
     (void)backdrop->reevaluate(
         *reinterpret_cast<const SystemAppearance*>(lparam));
@@ -31,7 +29,7 @@ PlatformWindowBackdropState Win32WindowBackdrop::apply(
   if (hwnd != hwnd_) {
     detach();
     hwnd_ = hwnd;
-    if (hwnd_ != nullptr) SetPropW(hwnd_, backdrop_property, this);
+    if (hwnd_ != nullptr) SetPropW(hwnd_, win32_window_backdrop_property, this);
   }
   requested_ = backdrop;
   transparent_surface_ = transparent_surface;
@@ -70,6 +68,9 @@ PlatformWindowBackdropState Win32WindowBackdrop::apply_plan(
   const int extent = plan.extend_frame ? -1 : 0;
   const MARGINS margins{extent, extent, extent, extent};
   const HRESULT extended = DwmExtendFrameIntoClientArea(hwnd_, &margins);
+  frame_extended_ = plan.extend_frame && SUCCEEDED(extended);
+  // Erase again so the redirection surface DWM now shows is black (alpha 0).
+  RedrawWindow(hwnd_, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE);
   if (FAILED(set) || FAILED(extended)) {
     state_.applied = WindowBackdrop::none;
     if (FAILED(set)) state_.title_bar = WindowBackdrop::none;
@@ -82,7 +83,7 @@ PlatformWindowBackdropState Win32WindowBackdrop::apply_plan(
 
 void Win32WindowBackdrop::detach() {
   if (hwnd_ != nullptr && IsWindow(hwnd_)) {
-    RemovePropW(hwnd_, backdrop_property);
+    RemovePropW(hwnd_, win32_window_backdrop_property);
   }
   hwnd_ = nullptr;
 }
