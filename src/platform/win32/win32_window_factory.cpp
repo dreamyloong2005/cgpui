@@ -1,4 +1,5 @@
 #include "win32_window_factory_internal.hpp"
+#include "win32_window_client_size_internal.hpp"
 #include "win32_dpi_awareness_internal.hpp"
 #include "win32_system_appearance_internal.hpp"
 
@@ -53,6 +54,8 @@ Result<std::unique_ptr<Win32Window>> create_win32_window(
         .message = "CreateWindowExW failed"});
   }
   window->apply_window_chrome(descriptor.chrome);
+  // descriptor.size is the logical client size at the window's monitor DPI.
+  (void)win32_set_logical_client_size(hwnd, descriptor.size);
   // The renderer does not exist yet; the runtime re-applies the backdrop
   // with the real surface composition once it does.
   (void)window->apply_window_backdrop(descriptor.backdrop, false);

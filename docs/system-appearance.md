@@ -107,6 +107,23 @@ normal, sets `already_set_by_process`, and reports the awareness that is in
 effect. With Per-Monitor V2, client coordinates are physical pixels and
 `WindowState::scale` follows the monitor DPI; input is divided by that scale.
 
+Window size: `WindowDescriptor::size` is the logical client size. The
+factory creates the window, applies the chrome (a client title bar removes
+the caption in `WM_NCCALCSIZE`), then resizes it so the client area is
+`size x GetDpiForWindow / 96` physical pixels, using the measured window
+rect minus client rect as the frame
+(`src/platform/win32/win32_window_client_size.cpp`). Child windows use the
+same factory. `WM_DPICHANGED` keeps using the suggested rect. Window
+positions (`WindowDescriptor::position`, `request_position`,
+`position_state`) stay in physical virtual-screen coordinates, because
+mixed-DPI monitors have no single logical desktop space.
+
+Before this was fixed, a 900x600 request at 144 DPI produced a 900x600
+outer window with a 878x589 physical client area (585x393 logical). After
+the fix the window rect is 1372x911 and the client area is 1350x900
+physical (900x600 logical), measured with `GetWindowRect` /
+`GetClientRect` on `example_client_title_bar`.
+
 ## Wayland sources
 
 The Wayland application reads `org.freedesktop.portal.Settings` from

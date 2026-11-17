@@ -73,6 +73,9 @@ int main() {
                        .title("CGPUI client title bar")
                        .size(cgpui::Size{900.0F, 600.0F})
                        .title_bar(cgpui::WindowTitleBarMode::client)
+                       .backdrop(std::getenv("CGPUI_EXAMPLE_BACKDROP") != nullptr
+                                     ? cgpui::WindowBackdrop::mica
+                                     : cgpui::WindowBackdrop::none)
                        .to_descriptor();
   options.setup_context = [](cgpui::AppContext& app_context) {
     app_context.runtime.set_after_frame_callback(
