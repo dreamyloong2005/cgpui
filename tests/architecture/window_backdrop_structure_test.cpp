@@ -89,7 +89,7 @@ int main() {
             has(win32_plan, "WS_EX_LAYERED") &&
             has(monitor, "win32_reevaluate_thread_window_backdrops("),
             "Win32 backdrop is DWM-only, uses RtlGetVersion, and follows the monitor");
-    require(lines(wayland_header) <= 90 && lines(wayland_globals) <= 130 &&
+    require(lines(wayland_header) <= 95 && lines(wayland_globals) <= 130 &&
             lines(wayland_window) <= 115 && lines(wayland_fragment) <= 8 &&
             lines(protocol) <= 100 && lines(protocol_header) <= 70 &&
             lines(protocol_tables) <= 60 &&

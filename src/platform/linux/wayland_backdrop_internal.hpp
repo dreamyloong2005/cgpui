@@ -51,6 +51,16 @@ struct WaylandBackdropPlan {
     bool transparent_surface,
     WaylandBlurProtocol protocol);
 
+class WaylandWindow;
+
+// Gives a new window the blur globals and applies its creation-time request
+// with an opaque surface.
+void wayland_window_attach_backdrop(
+    WaylandWindow& window,
+    wl_compositor* compositor,
+    const WaylandBackdropGlobals* globals,
+    WindowBackdrop backdrop);
+
 // Per-surface blur objects. release() must run before the wl_surface is
 // destroyed.
 class WaylandWindowBackdrop {

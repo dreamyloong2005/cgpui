@@ -98,4 +98,13 @@ void WaylandWindow::attach_backdrop(
   backdrop_.attach(display_, compositor, surface_, globals);
 }
 
+void wayland_window_attach_backdrop(
+    WaylandWindow& window,
+    wl_compositor* compositor,
+    const WaylandBackdropGlobals* globals,
+    WindowBackdrop backdrop) {
+  window.attach_backdrop(compositor, globals);
+  (void)window.apply_window_backdrop(backdrop, false);
+}
+
 } // namespace cgpui
