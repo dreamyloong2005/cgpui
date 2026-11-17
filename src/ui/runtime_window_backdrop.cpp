@@ -26,6 +26,11 @@ PlatformWindowBackdropState runtime_apply_window_backdrop(
       backdrop, transparent->alpha_composited());
 }
 
+bool runtime_wants_transparent_surface(const WindowDescriptor& descriptor) {
+  return descriptor.chrome.transparent_background ||
+         descriptor.backdrop != WindowBackdrop::none;
+}
+
 Color runtime_window_clear_color(const PlatformWindow* window) {
   if (window == nullptr) return runtime_default_clear_color;
   const PlatformWindowBackdropState state = window->window_backdrop_state();

@@ -39,7 +39,7 @@ void WindowRuntime::activate_native_window_for_record(
           .framebuffer_size = window_state.framebuffer_size,
           .scale = window_state.scale,
           .transparent_background =
-              record.descriptor.chrome.transparent_background},
+              runtime_wants_transparent_surface(record.descriptor)},
       "Renderer factory returned an empty child renderer");
   if (!renderer_result) {
     record.window = nullptr;

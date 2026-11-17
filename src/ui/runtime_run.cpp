@@ -82,7 +82,7 @@ int WindowRuntime::run(
       .native_surface = window_->native_surface(),
       .framebuffer_size = window_state.framebuffer_size,
       .scale = window_state.scale,
-      .transparent_background = descriptor.chrome.transparent_background});
+      .transparent_background = runtime_wants_transparent_surface(descriptor)});
   if (!renderer_result) {
     if (error_callback_) {
       error_callback_(renderer_result.error());

@@ -47,6 +47,20 @@ if is_plat("windows", "linux") then
             add_syslinks("vulkan")
         end
         add_tests("default")
+
+    target("vulkan_device_preference_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/renderer/vulkan_device_preference_test.cpp"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
+        add_includedirs(
+            path.join(os.projectdir(), public_includedirs),
+            path.join(os.projectdir(), "src/renderer/vulkan"))
+        if is_plat("windows") then
+            add_packages("vulkansdk")
+        else
+            add_syslinks("vulkan")
+        end
+        add_tests("default")
 end
 
 if is_plat("windows") then
@@ -58,6 +72,14 @@ if is_plat("windows") then
             path.join(os.projectdir(), public_includedirs),
             path.join(os.projectdir(), "src/platform/win32"))
         add_syslinks("user32", "dwmapi", "advapi32")
+        add_tests("default")
+
+    target("win32_vulkan_backdrop_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/platform/win32_vulkan_backdrop_test.cpp"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32", "cgpui_renderer", "cgpui_renderer_vulkan")
+        add_packages("vulkansdk")
+        add_includedirs(path.join(os.projectdir(), public_includedirs))
         add_tests("default")
 end
 

@@ -206,14 +206,23 @@ Windows; vulkan-tools 1.4.357 in WSL):
 | `VK_KHR_wayland_surface` (WSLg) | Dozen on NVIDIA, Dozen on Intel, llvmpipe | 0x3 | OPAQUE, PRE_MULTIPLIED |
 | `VK_KHR_xcb_surface` (WSLg XWayland) | same three | 0x9 | OPAQUE, INHERIT |
 
-CGPUI's renderer takes the first suitable physical device, which on this
-machine is the Intel GPU. A probe that created a real Win32 window with
-`backdrop = mica` and a CGPUI Vulkan renderer recorded mask 0x9 and chose
-`INHERIT` for a transparent request, so the result was `applied = none`,
-`title_bar = mica`, reason "renderer surface does not composite with alpha;
-the material is drawn on the title bar only". The client area stays opaque
-here unless the NVIDIA device is used; CGPUI has no device preference for
-transparent surfaces yet.
+Device selection keeps enumeration order, except that a renderer created
+with `transparent_background = true` prefers the first suitable device whose
+surface supports `PRE_MULTIPLIED` (`vulkan_device_preference.cpp`). The
+runtime requests a transparent surface at creation when the window
+descriptor sets a backdrop or `chrome.transparent_background`
+(`runtime_wants_transparent_surface`).
+
+Before that preference existed, the renderer took the Intel GPU (mask 0x9),
+chose `INHERIT`, and reported `applied = none`, `title_bar = mica`.
+`win32_vulkan_backdrop_test` now creates a real window with `backdrop = mica`
+and a transparent renderer: it selected the NVIDIA device (mask 0x3),
+composited with premultiplied alpha, and `apply_window_backdrop` reported
+`applied = mica` with no reason. A backdrop requested only at runtime, on a
+window created without one, keeps the device chosen at creation; on this
+machine that is Intel, so it still gets the title bar only. Preferring the
+discrete GPU costs power on laptops; request a backdrop only when it is
+wanted.
 
 `win32_window_backdrop_test` read back `DWMWA_SYSTEMBACKDROP_TYPE` = 2 after
 `mica` (title bar at creation, then client area with
@@ -240,6 +249,10 @@ opaque, and `transparency_effects_enabled` is false.
 - `win32_window_backdrop_test`: decision table with synthetic builds and
   settings, then a real window with DWM read-back and the synthetic
   appearance path.
+- `vulkan_device_preference_test`: the device preference rule with the
+  masks above.
+- `win32_vulkan_backdrop_test`: real window and Vulkan renderer; the chosen
+  device's composition and the applied backdrop must agree.
 - `window_runtime_backdrop_test`: the runtime helper with a fake window and
   renderer (switch to transparent once, inherit treated as opaque,
   unsupported backend leaves the surface alone, clear color).

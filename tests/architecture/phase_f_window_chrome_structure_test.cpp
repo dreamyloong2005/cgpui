@@ -68,6 +68,8 @@ int main() {
   const std::string runtime_run = read_source("src/ui/runtime_run.cpp");
   const std::string runtime_activation =
       read_source("src/ui/runtime_window_activation.cpp");
+  const std::string runtime_backdrop =
+      read_source("src/ui/runtime_window_backdrop.cpp");
   const std::string compositor =
       read_source("tests/platform/wayland_test_compositor.cpp");
   const std::string win32_test =
@@ -90,7 +92,7 @@ int main() {
       &wayland_protocol, &wayland_interfaces, &wayland_registry,
       &wayland_application, &wayland_internal, &wayland_chrome,
       &surface_selection, &swapchain_create, &runtime_run,
-      &runtime_activation, &compositor, &win32_test, &wayland_test,
+      &runtime_activation, &runtime_backdrop, &compositor, &win32_test, &wayland_test,
       &alpha_test, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const std::string* source : required) {
@@ -127,9 +129,10 @@ int main() {
   if (!contains(surface_selection, "transparent_preference") ||
       !contains(surface_selection, "transparent_background") ||
       !contains(swapchain_create, "descriptor_.transparent_background") ||
-      !contains(runtime_run, "descriptor.chrome.transparent_background") ||
+      !contains(runtime_run, "runtime_wants_transparent_surface(descriptor)") ||
       !contains(runtime_activation,
-                "record.descriptor.chrome.transparent_background") ||
+                "runtime_wants_transparent_surface(record.descriptor)") ||
+      !contains(runtime_backdrop, "descriptor.chrome.transparent_background") ||
       !contains(alpha_test, "VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR")) {
     return 5;
   }

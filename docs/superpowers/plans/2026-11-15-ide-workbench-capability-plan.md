@@ -44,8 +44,8 @@ storage, syntax highlighting rules, agent protocol) stays in the consumer.
   on Windows and commit again. Install system packages with `pacman` only if
   an xmake package is not suitable, and record them in
   `docs/platform-dependencies.md`.
-- Known environment flakes, not regressions: `x11_input_test` fails only under
-  the parallel test run (passes standalone); `win32_clipboard_unicode_test`
+- Known environment flakes, not regressions: `x11_input_test` fails intermittently
+  (most often under the parallel run; re-run it standalone up to three times); `win32_clipboard_unicode_test`
   fails when another process holds the clipboard. Re-run them standalone.
 - Record anything only observable in a real window (visual material, title
   bar color, IME candidate placement) as "not visually verified" in the
@@ -58,7 +58,7 @@ storage, syntax highlighting rules, agent protocol) stays in the consumer.
 | C0 | Commit DirectWrite glyph rasterization; capability build module | done `17fdc168` | n/a (fallback rasterizer unchanged) |
 | C1 | Per-monitor DPI | done `b775b8c2`: PMv2 declared before the first window | done: reports `per_monitor_aware_v2` with `wp_fractional_scale_v1` + viewporter, else `per_monitor_aware` |
 | C2 | System appearance: light/dark, accent, transparency, reduced motion, high contrast, change notifications; dark title bar | done `b775b8c2`, review `320091c9`; not visually verified | done: xdg-desktop-portal Settings over D-Bus, `SettingChanged` on the UI loop; typed unsupported without a portal (WSLg has none); no real portal observed |
-| C3 | Window backdrop material, transparent Vulkan composition, opaque fallback | done (see `docs/window-backdrop.md`): `DWMWA_SYSTEMBACKDROP_TYPE` + frame extension, blur maps to acrylic, follows transparency setting; title bar only when the surface is not pre-multiplied (this machine's default Intel device); not visually verified | done: `ext_background_effect_v1` / KDE blur bound when advertised, premultiplied surface, transparency setting follows the protocol; WSLg has neither (typed unsupported, opaque); tested against a fake global only |
+| C3 | Window backdrop material, transparent Vulkan composition, opaque fallback | done (see `docs/window-backdrop.md`): `DWMWA_SYSTEMBACKDROP_TYPE` + frame extension, blur maps to acrylic, follows transparency setting; a creation-time backdrop prefers a GPU with premultiplied alpha (NVIDIA here, `applied = mica` measured); runtime-only requests keep the creation device; not visually verified | done: `ext_background_effect_v1` / KDE blur bound when advertised, premultiplied surface, transparency setting follows the protocol; WSLg has neither (typed unsupported, opaque); tested against a fake global only |
 | C4 | Custom title bar: hit-test regions (caption, buttons, resize borders) | planned: `WM_NCCALCSIZE` / `WM_NCHITTEST`, Snap Layout | planned: xdg-decoration negotiation, client-side `xdg_toplevel.move/resize`, window menu |
 | C5 | Box shadow rendering in Vulkan | planned (shared renderer) | same |
 | C6 | In-app backdrop blur for overlays | planned (shared renderer) | same |

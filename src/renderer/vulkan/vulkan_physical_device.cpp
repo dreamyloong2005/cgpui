@@ -1,4 +1,7 @@
 #include "vulkan_internal.hpp"
+#include "vulkan_device_preference_internal.hpp"
+
+#include <optional>
 
 namespace cgpui {
 
@@ -103,6 +106,9 @@ Result<void> VulkanRendererState::select_physical_device() {
     return result;
   }
 
+  // Enumeration order wins, except that a transparent surface prefers the
+  // first suitable device whose surface can composite premultiplied alpha.
+  std::optional<VulkanDeviceCandidate> selected;
   for (VkPhysicalDevice device : devices) {
     auto queue_families = find_queue_families(device);
     if (!queue_families) {
@@ -121,15 +127,27 @@ Result<void> VulkanRendererState::select_physical_device() {
       continue;
     }
 
-    physical_device_ = device;
-    graphics_queue_family_ = queue_families->families.graphics;
-    present_queue_family_ = queue_families->families.present;
-    return {};
+    const VulkanDeviceCandidate candidate{
+        .device = device,
+        .families = queue_families->families,
+        .composite_alpha = vulkan_surface_composite_alpha(device, surface_),
+    };
+    if (!selected || vulkan_prefer_device_candidate(
+                         candidate, *selected,
+                         descriptor_.transparent_background)) {
+      selected = candidate;
+    }
   }
 
-  return std::unexpected(vulkan_error(
-      ErrorCode::renderer_initialization_failed,
-      "No Vulkan physical device supports graphics, present, and swapchain"));
+  if (!selected) {
+    return std::unexpected(vulkan_error(
+        ErrorCode::renderer_initialization_failed,
+        "No Vulkan physical device supports graphics, present, and swapchain"));
+  }
+  physical_device_ = selected->device;
+  graphics_queue_family_ = selected->families.graphics;
+  present_queue_family_ = selected->families.present;
+  return {};
 }
 
 } // namespace cgpui
