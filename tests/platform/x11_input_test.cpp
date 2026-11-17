@@ -29,10 +29,13 @@ int main() {
   }
 
   std::atomic_int matched{0};
+  std::atomic_int exposed{0};
   auto window = (*app)->create_window(
       {.title = "CGPUI X11 Input", .size = {320.0F, 240.0F}},
       [&](const cgpui::PlatformEvent& event) {
-        if (const auto* moved = std::get_if<cgpui::PointerMoved>(&event);
+        if (std::holds_alternative<cgpui::WindowRedrawRequested>(event)) {
+          exposed.fetch_add(1);
+        } else if (const auto* moved = std::get_if<cgpui::PointerMoved>(&event);
             moved && moved->position.x == 21.0F && moved->position.y == 34.0F) {
           matched.fetch_add(1);
         } else if (const auto* button = std::get_if<cgpui::PointerButton>(&event);
@@ -62,6 +65,14 @@ int main() {
 
   std::atomic_bool finished{false};
   std::thread loop([&] { (*app)->run(); finished.store(true); });
+  // A pointer grab and synthetic input need a viewable window; under
+  // XWayland the first Expose can arrive after create_window returns.
+  if (!wait_for(exposed, 1)) {
+    (*app)->quit();
+    loop.join();
+    std::cerr << "X11 input: window was never exposed\n";
+    return 5;
+  }
   (*window)->set_cursor(cgpui::CursorShape::pointing_hand);
   (*window)->set_pointer_capture(true);
   (*window)->set_pointer_capture(false);
