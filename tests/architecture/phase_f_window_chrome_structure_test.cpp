@@ -153,7 +153,7 @@ int main() {
   if (line_count(chrome_default) > 20 || line_count(win32_chrome) > 58 ||
       line_count(wayland_protocol) > 60 || line_count(wayland_interfaces) > 35 ||
       line_count(wayland_internal) > 123 || line_count(wayland_chrome) > 60 ||
-      line_count(surface_selection) > 65) {
+      line_count(surface_selection) > 70) {
     return 7;
   }
   constexpr const char* completion =

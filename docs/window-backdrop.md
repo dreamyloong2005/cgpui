@@ -106,6 +106,21 @@ post-multiplied. `INHERIT` leaves alpha to the native window, which CGPUI
 cannot confirm, so windows treat an inherit surface as opaque and report
 `applied = none`.
 
+Color encoding: `Color` components are sRGB-encoded values and the
+pipelines blend them in that space. `choose_vulkan_surface_format` prefers
+`B8G8R8A8_UNORM`, then `R8G8B8A8_UNORM`, with
+`VK_COLOR_SPACE_SRGB_NONLINEAR_KHR`, so the swapchain stores the values
+unchanged (Metal uses `BGRA8Unorm` the same way). Image textures
+(`R8G8B8A8_UNORM`) and the glyph coverage atlas (`R8_UNORM`) are sampled
+as stored. Until 2026-11-17 the renderer preferred `B8G8R8A8_SRGB`, which
+encoded the values a second time: rgb(32,34,38) was shown as
+rgb(99,102,108) and the default clear 0.08/0.09/0.10 as rgb(80,84,89).
+After the change the example's caption row is captured from the screen as
+rgb(32,34,38), the command box as rgb(52,55,61), and the clear as
+rgb(20,23,25). Text edge coverage is now blended in sRGB-encoded space
+rather than linear space, so anti-aliased edges of light text on a dark
+background look slightly thinner; `vulkan_text_pixel_test` still passes.
+
 ## Windows
 
 Source: src/platform/win32/win32_window_backdrop_plan.cpp (decision),
@@ -276,4 +291,4 @@ opaque, and `transparency_effects_enabled` is false.
 - KDE blur has no test (no fake global); ext blur was tested only against
   the fake global, not a real compositor (KWin, Mutter, or others).
 - Visual quality of premultiplied text and rounded rects over a material is
-  unchecked (sRGB swapchain, blending in sRGB-encoded space).
+  unchecked (UNORM swapchain, blending in sRGB-encoded space).

@@ -131,13 +131,14 @@ bool is_blue_dominant(COLORREF color) {
   return blue >= green + 25 && green >= red + 40;
 }
 
+// The default clear 0.08/0.09/0.10 is stored unchanged by the UNORM
+// swapchain: rgb(20,23,26). An SRGB swapchain showed it as rgb(80,84,89).
 bool is_dark_clear_color(COLORREF color) {
   const auto red = static_cast<int>(GetRValue(color));
   const auto green = static_cast<int>(GetGValue(color));
   const auto blue = static_cast<int>(GetBValue(color));
-  return red >= 55 && red <= 110 && green >= 55 && green <= 115 &&
-         blue >= 55 && blue <= 125 && blue <= green + 25 &&
-         green <= red + 25;
+  return red >= 14 && red <= 26 && green >= 17 && green <= 29 &&
+         blue >= 20 && blue <= 32;
 }
 
 int test_glyph_cache_records_lookup_miss_and_hit() {

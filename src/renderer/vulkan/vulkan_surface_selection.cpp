@@ -2,14 +2,19 @@
 
 namespace cgpui {
 
+// Color components are sRGB-encoded and blended in that space. A UNORM
+// swapchain stores them unchanged; *_SRGB would encode them a second time.
 VkSurfaceFormatKHR choose_vulkan_surface_format(
     std::span<const VkSurfaceFormatKHR> formats) {
-  const auto preferred = std::ranges::find_if(
-      formats, [](const VkSurfaceFormatKHR& format) {
-        return format.format == VK_FORMAT_B8G8R8A8_SRGB &&
-               format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
-      });
-  return preferred != formats.end() ? *preferred : formats.front();
+  for (const VkFormat wanted : {VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM}) {
+    for (const VkSurfaceFormatKHR& format : formats) {
+      if (format.format == wanted &&
+          format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+        return format;
+      }
+    }
+  }
+  return formats.front();
 }
 
 VkCompositeAlphaFlagBitsKHR choose_vulkan_composite_alpha(
