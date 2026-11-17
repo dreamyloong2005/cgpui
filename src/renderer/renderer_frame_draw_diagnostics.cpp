@@ -32,6 +32,8 @@ std::size_t& primitive_draw_count(
       return counts.text_caret_count;
     case RendererPrimitiveKind::image:
       return counts.image_count;
+    case RendererPrimitiveKind::box_shadow:
+      return counts.box_shadow_count;
   }
   return counts.solid_rect_count;
 }

@@ -7,12 +7,14 @@ VulkanFrameDrawOrderCursor::VulkanFrameDrawOrderCursor(
     std::span<const VulkanRoundedRectDrawRange> solid_draws,
     std::span<const VulkanRoundedRectDrawRange> rounded_draws,
     std::span<const VulkanTextDrawCommand> text_commands,
-    std::span<const VulkanImageDrawCommand> image_commands)
+    std::span<const VulkanImageDrawCommand> image_commands,
+    std::span<const VulkanRoundedRectDrawRange> box_shadow_draws)
     : order_(order),
       solid_draws_(solid_draws),
       rounded_draws_(rounded_draws),
       text_commands_(text_commands),
-      image_commands_(image_commands) {}
+      image_commands_(image_commands),
+      box_shadow_draws_(box_shadow_draws) {}
 
 std::optional<VulkanResolvedFrameDraw> VulkanFrameDrawOrderCursor::next() {
   while (order_index_ < order_.size()) {
@@ -43,6 +45,23 @@ std::optional<VulkanResolvedFrameDraw> VulkanFrameDrawOrderCursor::next() {
         return VulkanResolvedFrameDraw{
             .resource_kind = VulkanFrameDrawResourceKind::rounded_rect,
             .resource_index = rounded_index_++,
+        };
+      }
+      continue;
+    }
+    if (entry.primitive_kind == RendererPrimitiveKind::box_shadow) {
+      while (box_shadow_index_ < box_shadow_draws_.size() &&
+             box_shadow_draws_[box_shadow_index_].source_index <
+                 entry.command_index) {
+        ++box_shadow_index_;
+      }
+      ++order_index_;
+      if (box_shadow_index_ < box_shadow_draws_.size() &&
+          box_shadow_draws_[box_shadow_index_].source_index ==
+              entry.command_index) {
+        return VulkanResolvedFrameDraw{
+            .resource_kind = VulkanFrameDrawResourceKind::box_shadow,
+            .resource_index = box_shadow_index_++,
         };
       }
       continue;

@@ -18,6 +18,7 @@ class RenderFrame {
   virtual void clear(Color color) = 0;
   virtual void draw_rect(const SolidRect& rect) = 0;
   virtual void draw_rounded_rect(const RoundedRectDraw& rect) { (void)rect; }
+  virtual void draw_box_shadow(const BoxShadowDraw& shadow) { (void)shadow; }
   virtual void draw_text(const TextDraw& text) { (void)text; }
   virtual void draw_text_selection(const TextSelectionDraw& selection) {
     (void)selection;

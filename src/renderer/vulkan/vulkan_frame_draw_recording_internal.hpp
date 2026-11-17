@@ -1,5 +1,6 @@
 #pragma once
 
+#include "vulkan_box_shadow_pipeline_internal.hpp"
 #include "vulkan_frame_draw_order_internal.hpp"
 #include "vulkan_rounded_rect_draw_recording_internal.hpp"
 #include "vulkan_text_draw_recording_internal.hpp"
@@ -18,6 +19,7 @@ void vulkan_record_frame_draws(
     const VulkanImagePipelineResources& image_pipeline_resources,
     const VulkanImageVertexBufferResources& image_vertex_buffer,
     std::span<const VulkanImageDrawCommand> image_commands,
-    std::span<const VulkanFrameDrawOrderEntry> draw_order);
+    std::span<const VulkanFrameDrawOrderEntry> draw_order,
+    const VulkanBoxShadowDrawResources& box_shadow = {});
 
 } // namespace cgpui

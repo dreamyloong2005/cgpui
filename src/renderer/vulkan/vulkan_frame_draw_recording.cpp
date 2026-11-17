@@ -16,13 +16,19 @@ void vulkan_record_frame_draws(
     const VulkanImagePipelineResources& image_pipeline_resources,
     const VulkanImageVertexBufferResources& image_vertex_buffer,
     std::span<const VulkanImageDrawCommand> image_commands,
-    std::span<const VulkanFrameDrawOrderEntry> draw_order) {
+    std::span<const VulkanFrameDrawOrderEntry> draw_order,
+    const VulkanBoxShadowDrawResources& box_shadow) {
+  static const VulkanRoundedRectBufferResources no_box_shadows;
+  const VulkanRoundedRectBufferResources& box_shadow_buffers =
+      box_shadow.buffers != nullptr ? *box_shadow.buffers : no_box_shadows;
   VulkanFrameDrawOrderCursor cursor(
       draw_order,
       solid_rect_buffers.draws,
       rounded_rect_buffers.draws,
       text_commands,
-      image_commands);
+      image_commands,
+      box_shadow.pipeline != nullptr ? box_shadow_buffers.draws
+                                     : std::span<const VulkanRoundedRectDrawRange>{});
   VulkanFramePipelineSwitchState switch_state;
   while (const std::optional<VulkanResolvedFrameDraw> resolved = cursor.next()) {
     const VulkanFramePipelineSwitchPlan switch_plan =
@@ -50,6 +56,14 @@ void vulkan_record_frame_draws(
             text_pipeline_resources,
             text_vertex_buffer,
             switch_plan.bind_pipeline);
+      } else if (resolved->resource_kind ==
+                 VulkanFrameDrawResourceKind::box_shadow) {
+        vulkan_bind_rounded_rect_draw_state(
+            command_buffer,
+            extent,
+            *box_shadow.pipeline,
+            box_shadow_buffers,
+            switch_plan.bind_pipeline);
       } else if (resolved->resource_kind == VulkanFrameDrawResourceKind::image) {
         vulkan_bind_image_draw_state(
             command_buffer,
@@ -70,6 +84,12 @@ void vulkan_record_frame_draws(
           command_buffer,
           extent,
           rounded_rect_buffers.draws[resolved->resource_index]);
+    } else if (resolved->resource_kind ==
+               VulkanFrameDrawResourceKind::box_shadow) {
+      vulkan_record_rounded_rect_draw(
+          command_buffer,
+          extent,
+          box_shadow_buffers.draws[resolved->resource_index]);
     } else if (resolved->resource_kind == VulkanFrameDrawResourceKind::text) {
       vulkan_record_text_draw(
           command_buffer,

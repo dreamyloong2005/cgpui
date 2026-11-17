@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/renderer/image_sampling.hpp"
+#include "cgpui/renderer/renderer_effect_draws.hpp"
 #include "cgpui/renderer/renderer_types.hpp"
 #include "cgpui/ui/text.hpp"
 
@@ -94,6 +95,7 @@ enum class RendererPrimitiveKind {
   text_selection,
   text_caret,
   image,
+  box_shadow,
 };
 
 [[nodiscard]] constexpr std::string_view renderer_primitive_kind_name(
@@ -111,6 +113,8 @@ enum class RendererPrimitiveKind {
       return "text_caret";
     case RendererPrimitiveKind::image:
       return "image";
+    case RendererPrimitiveKind::box_shadow:
+      return "box_shadow";
   }
 
   return "unknown";

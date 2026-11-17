@@ -18,6 +18,9 @@ class VulkanFrame final : public RenderFrame {
   void draw_rounded_rect(const RoundedRectDraw& rect) override {
     append_draw(rounded_rects_, rect, RendererPrimitiveKind::rounded_rect);
   }
+  void draw_box_shadow(const BoxShadowDraw& shadow) override {
+    append_draw(box_shadows_, shadow, RendererPrimitiveKind::box_shadow);
+  }
   void draw_text(const TextDraw& text) override {
     append_draw(text_draws_, text, RendererPrimitiveKind::text);
   }
@@ -54,6 +57,7 @@ class VulkanFrame final : public RenderFrame {
   Color clear_color_{.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F};
   std::vector<SolidRect> rects_;
   std::vector<RoundedRectDraw> rounded_rects_;
+  std::vector<BoxShadowDraw> box_shadows_;
   std::vector<TextDraw> text_draws_;
   std::vector<TextSelectionDraw> text_selections_;
   std::vector<TextCaretDraw> text_carets_;
@@ -147,6 +151,7 @@ Result<void> VulkanFrame::present() {
       draw_order_,
       rects_,
       rounded_rects_,
+      box_shadows_,
       text_draws_,
       text_selections_,
       text_carets_,

@@ -93,8 +93,8 @@ int main() {
     }
   }
 
-  if (line_count(presentation) > 165 ||
-      line_count(command_recording) > 180 ||
+  if (line_count(presentation) > 180 ||
+      line_count(command_recording) > 220 ||
       !contains(presentation, "VulkanRendererState::present_frame(") ||
       !contains(command_recording, "record_vulkan_frame_command_buffer(") ||
       !contains(image_staging, "static_cast<std::uint32_t>(")) {

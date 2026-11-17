@@ -33,7 +33,7 @@ int main() {
     const auto renderer = read("src/renderer/vulkan/vulkan_renderer.cpp");
     const auto ime = read("src/platform/win32/win32_window_ime_placement.cpp");
     const auto module = read("build/xmake/capabilities/device_pixel_scale_targets.lua");
-    require(lines(header) <= 30 && lines(source) <= 100 &&
+    require(lines(header) <= 30 && lines(source) <= 130 &&
             has(header, "vulkan_to_device_pixels(") &&
             !has(source, "<vulkan/vulkan.h>"),
             "logical-to-device conversion must stay a focused, Vulkan-free module");

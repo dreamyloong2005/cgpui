@@ -46,6 +46,7 @@ struct RendererDrawCounts {
   std::size_t text_selection_count = 0;
   std::size_t text_caret_count = 0;
   std::size_t image_count = 0;
+  std::size_t box_shadow_count = 0;
   std::size_t total_count = 0;
   bool saturated = false;
 };

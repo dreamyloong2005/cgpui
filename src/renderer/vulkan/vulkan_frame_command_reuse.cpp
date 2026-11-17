@@ -78,12 +78,17 @@ bool same_signature(
          stored.text_pipeline == current.text_pipeline &&
          stored.image_pipeline_layout == current.image_pipeline_layout &&
          stored.image_pipeline == current.image_pipeline &&
+         stored.box_shadow_pipeline == current.box_shadow_pipeline &&
          stored.solid_vertex_buffer == current.solid_vertex_buffer &&
          stored.solid_index_buffer == current.solid_index_buffer &&
          stored.rounded_vertex_buffer == current.rounded_vertex_buffer &&
          stored.rounded_index_buffer == current.rounded_index_buffer &&
          stored.text_vertex_buffer == current.text_vertex_buffer &&
          stored.image_vertex_buffer == current.image_vertex_buffer &&
+         stored.box_shadow_vertex_buffer == current.box_shadow_vertex_buffer &&
+         stored.box_shadow_index_buffer == current.box_shadow_index_buffer &&
+         same_records(stored.box_shadow_draws, current.box_shadow_draws,
+                      same_draw_range) &&
          same_records(stored.solid_draws, current.solid_draws, same_draw_range) &&
          same_records(
              stored.rounded_draws, current.rounded_draws, same_draw_range) &&
@@ -114,12 +119,17 @@ void copy_signature(
   destination.text_pipeline = source.text_pipeline;
   destination.image_pipeline_layout = source.image_pipeline_layout;
   destination.image_pipeline = source.image_pipeline;
+  destination.box_shadow_pipeline = source.box_shadow_pipeline;
   destination.solid_vertex_buffer = source.solid_vertex_buffer;
   destination.solid_index_buffer = source.solid_index_buffer;
   destination.rounded_vertex_buffer = source.rounded_vertex_buffer;
   destination.rounded_index_buffer = source.rounded_index_buffer;
   destination.text_vertex_buffer = source.text_vertex_buffer;
   destination.image_vertex_buffer = source.image_vertex_buffer;
+  destination.box_shadow_vertex_buffer = source.box_shadow_vertex_buffer;
+  destination.box_shadow_index_buffer = source.box_shadow_index_buffer;
+  destination.box_shadow_draws.assign(
+      source.box_shadow_draws.begin(), source.box_shadow_draws.end());
   destination.solid_draws.assign(
       source.solid_draws.begin(), source.solid_draws.end());
   destination.rounded_draws.assign(

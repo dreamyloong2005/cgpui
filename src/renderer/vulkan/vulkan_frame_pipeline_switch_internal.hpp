@@ -10,6 +10,7 @@ enum class VulkanFramePipelineKind {
   rounded_rect,
   text,
   image,
+  box_shadow,
 };
 
 struct VulkanFramePipelineSwitchPlan {

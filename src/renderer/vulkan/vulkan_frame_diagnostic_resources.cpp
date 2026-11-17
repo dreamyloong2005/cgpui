@@ -46,7 +46,8 @@ VulkanFrameDiagnosticResources vulkan_build_frame_diagnostic_resources(
     std::span<const VulkanRoundedRectDrawRange> rounded_draws,
     std::span<const VulkanGlyphAtlasDrawBinding> text_bindings,
     std::span<const ImageDraw> image_draws,
-    std::span<const RendererCommandBatch> command_batches) {
+    std::span<const RendererCommandBatch> command_batches,
+    std::span<const VulkanRoundedRectDrawRange> box_shadow_draws) {
   VulkanFrameDiagnosticResources result;
   result.planned_resources.reserve(draw_order.size());
   result.submitted_resources.reserve(draw_order.size());
@@ -82,6 +83,8 @@ VulkanFrameDiagnosticResources vulkan_build_frame_diagnostic_resources(
          has_draw_range(solid_draws, entry.command_index)) ||
         (entry.primitive_kind == RendererPrimitiveKind::rounded_rect &&
          has_draw_range(rounded_draws, entry.command_index)) ||
+        (entry.primitive_kind == RendererPrimitiveKind::box_shadow &&
+         has_draw_range(box_shadow_draws, entry.command_index)) ||
         (entry.primitive_kind == RendererPrimitiveKind::image &&
          entry.command_index < image_draws.size());
     if (submitted) {
@@ -99,6 +102,7 @@ VulkanFrameDiagnosticResources vulkan_build_frame_diagnostic_resources(
       RendererPrimitiveKind::rounded_rect,
       RendererPrimitiveKind::text,
       RendererPrimitiveKind::image,
+      RendererPrimitiveKind::box_shadow,
   };
   result.dropped_resources = classify_renderer_dropped_resources(
       result.planned_resources, result.submitted_resources, supported);

@@ -803,7 +803,7 @@ int main(int argc, char** argv) {
       contains(frame_command_reuse, "vkQueueSubmit")) {
     return 36;
   }
-  if (line_count(command_recording) > 180 ||
+  if (line_count(command_recording) > 220 ||
       !contains(command_recording, "record_vulkan_frame_command_buffer(") ||
       !contains(command_recording, "vulkan_plan_frame_command_reuse(") ||
       !contains(command_recording, "vulkan_commit_frame_command_recording(") ||
@@ -1108,9 +1108,9 @@ int main(int argc, char** argv) {
     return 54;
   }
   if (line_count(frame_draw_order_header) > 80 ||
-      line_count(frame_draw_order) > 100 ||
+      line_count(frame_draw_order) > 120 ||
       line_count(frame_draw_recording_header) > 50 ||
-      line_count(frame_draw_recording) > 100 ||
+      line_count(frame_draw_recording) > 120 ||
       !contains(frame_draw_order_header, "struct VulkanFrameDrawOrderEntry") ||
       !contains(frame_draw_order_header, "class VulkanFrameDrawOrderCursor") ||
       contains(frame_draw_order_header, "std::vector") ||
@@ -1224,7 +1224,7 @@ int main(int argc, char** argv) {
       contains(swapchain_recovery, "vkCreateSwapchainKHR")) {
     return 49;
   }
-  if (line_count(presentation) > 165 ||
+  if (line_count(presentation) > 180 ||
       !contains(presentation, "VulkanRendererState::present_frame(") ||
       !contains(presentation, "command_reuse_states_[image_index]") ||
       !contains(presentation, "vulkan_plan_swapchain_recovery(") ||

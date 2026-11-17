@@ -11,6 +11,20 @@ void submit_paint_command_to_frame(
     record_composition_stack_statistics(*statistics, command);
   }
   if (command.kind == PaintCommandKind::box_shadow) {
+    const BoxShadowPaint& shadow = command.box_shadow;
+    frame.draw_box_shadow(BoxShadowDraw{
+        .rect = shadow.bounds,
+        .radius = shadow.radius,
+        .shadow = shadow.shadow,
+        .clip_rect = command.clip_rect,
+        .clip_stack = command.clip_stack,
+        .composition_stack = command.composition_stack,
+        .metadata = command.metadata,
+    });
+    if (statistics != nullptr) {
+      statistics->submitted_command_count += 1;
+      statistics->box_shadow_command_count += 1;
+    }
     return;
   }
   if (command.kind == PaintCommandKind::image) {

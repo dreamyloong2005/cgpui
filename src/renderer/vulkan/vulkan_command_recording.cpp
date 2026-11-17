@@ -24,7 +24,8 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
     const VulkanImageTextureResources& image_texture_resources,
     const VulkanImageTextureUploadResources& image_texture_uploads,
     const VulkanFramePixelCaptureCommand& pixel_capture,
-    VulkanFrameCommandReuseState& command_reuse_state) {
+    VulkanFrameCommandReuseState& command_reuse_state,
+    const VulkanBoxShadowDrawResources& box_shadow) {
   if (auto result = vulkan_validate_glyph_atlas_draw_bindings(
           glyph_atlas_draw_bindings,
           glyph_atlas_draw_quads,
@@ -58,6 +59,18 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
       !result) {
     return std::unexpected(result.error());
   }
+  const VulkanRoundedRectBufferResources no_box_shadows;
+  const VulkanRoundedRectPipelineResources no_box_shadow_pipeline;
+  const auto& box_shadow_buffers =
+      box_shadow.buffers != nullptr ? *box_shadow.buffers : no_box_shadows;
+  const auto& box_shadow_pipeline = box_shadow.pipeline != nullptr
+                                        ? *box_shadow.pipeline
+                                        : no_box_shadow_pipeline;
+  if (auto result = vulkan_validate_rounded_rect_draw_resources(
+          box_shadow_pipeline, box_shadow_buffers);
+      !result) {
+    return std::unexpected(result.error());
+  }
 
   const bool has_pending_uploads = !glyph_atlas_uploads.uploads.empty() ||
                                    !image_texture_uploads.uploads.empty();
@@ -72,16 +85,20 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
       .text_pipeline = text_pipeline_resources.pipeline,
       .image_pipeline_layout = image_pipeline_resources.layout,
       .image_pipeline = image_pipeline_resources.pipeline,
+      .box_shadow_pipeline = box_shadow_pipeline.pipeline,
       .solid_vertex_buffer = solid_rect_buffers.vertices.buffer,
       .solid_index_buffer = solid_rect_buffers.indices.buffer,
       .rounded_vertex_buffer = rounded_rect_buffers.vertices.buffer,
       .rounded_index_buffer = rounded_rect_buffers.indices.buffer,
       .text_vertex_buffer = text_vertex_buffer.vertices.buffer,
       .image_vertex_buffer = image_vertex_buffer.vertices.buffer,
+      .box_shadow_vertex_buffer = box_shadow_buffers.vertices.buffer,
+      .box_shadow_index_buffer = box_shadow_buffers.indices.buffer,
       .solid_draws = solid_rect_buffers.draws,
       .rounded_draws = rounded_rect_buffers.draws,
       .text_commands = *text_draw_commands,
       .image_commands = *image_draw_commands,
+      .box_shadow_draws = box_shadow_buffers.draws,
       .draw_order = draw_order,
   };
   const VulkanFrameCommandReusePlan reuse_plan =
@@ -159,7 +176,8 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
       image_pipeline_resources,
       image_vertex_buffer,
       *image_draw_commands,
-      draw_order);
+      draw_order,
+      box_shadow);
   vkCmdEndRenderPass(command_buffer);
   vulkan_record_frame_pixel_capture(command_buffer, pixel_capture);
   if (auto result = require_vk_success(

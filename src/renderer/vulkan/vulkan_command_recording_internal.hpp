@@ -32,6 +32,7 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
     const VulkanImageTextureResources& image_texture_resources,
     const VulkanImageTextureUploadResources& image_texture_uploads,
     const VulkanFramePixelCaptureCommand& pixel_capture,
-    VulkanFrameCommandReuseState& command_reuse_state);
+    VulkanFrameCommandReuseState& command_reuse_state,
+    const VulkanBoxShadowDrawResources& box_shadow = {});
 
 } // namespace cgpui

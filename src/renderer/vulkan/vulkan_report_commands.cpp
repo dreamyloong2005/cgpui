@@ -31,7 +31,8 @@ bool vulkan_is_supported_renderer_primitive(
          primitive_kind == RendererPrimitiveKind::text ||
          primitive_kind == RendererPrimitiveKind::text_selection ||
          primitive_kind == RendererPrimitiveKind::text_caret ||
-         primitive_kind == RendererPrimitiveKind::image;
+         primitive_kind == RendererPrimitiveKind::image ||
+         primitive_kind == RendererPrimitiveKind::box_shadow;
 }
 
 RendererUnsupportedCommandDiagnostic

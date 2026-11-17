@@ -25,7 +25,8 @@ vulkan_build_frame_diagnostic_resources(
     std::span<const VulkanRoundedRectDrawRange> rounded_draws,
     std::span<const VulkanGlyphAtlasDrawBinding> text_bindings,
     std::span<const ImageDraw> image_draws,
-    std::span<const RendererCommandBatch> command_batches);
+    std::span<const RendererCommandBatch> command_batches,
+    std::span<const VulkanRoundedRectDrawRange> box_shadow_draws = {});
 
 [[nodiscard]] RendererFrameDiagnosticSnapshot
 vulkan_build_frame_diagnostic_snapshot(

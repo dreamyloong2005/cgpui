@@ -35,16 +35,20 @@ struct VulkanFrameCommandSignatureView {
   VkPipeline text_pipeline = VK_NULL_HANDLE;
   VkPipelineLayout image_pipeline_layout = VK_NULL_HANDLE;
   VkPipeline image_pipeline = VK_NULL_HANDLE;
+  VkPipeline box_shadow_pipeline = VK_NULL_HANDLE;
   VkBuffer solid_vertex_buffer = VK_NULL_HANDLE;
   VkBuffer solid_index_buffer = VK_NULL_HANDLE;
   VkBuffer rounded_vertex_buffer = VK_NULL_HANDLE;
   VkBuffer rounded_index_buffer = VK_NULL_HANDLE;
   VkBuffer text_vertex_buffer = VK_NULL_HANDLE;
   VkBuffer image_vertex_buffer = VK_NULL_HANDLE;
+  VkBuffer box_shadow_vertex_buffer = VK_NULL_HANDLE;
+  VkBuffer box_shadow_index_buffer = VK_NULL_HANDLE;
   std::span<const VulkanRoundedRectDrawRange> solid_draws;
   std::span<const VulkanRoundedRectDrawRange> rounded_draws;
   std::span<const VulkanTextDrawCommand> text_commands;
   std::span<const VulkanImageDrawCommand> image_commands;
+  std::span<const VulkanRoundedRectDrawRange> box_shadow_draws;
   std::span<const VulkanFrameDrawOrderEntry> draw_order;
 };
 
@@ -59,16 +63,20 @@ struct VulkanFrameCommandSignature {
   VkPipeline text_pipeline = VK_NULL_HANDLE;
   VkPipelineLayout image_pipeline_layout = VK_NULL_HANDLE;
   VkPipeline image_pipeline = VK_NULL_HANDLE;
+  VkPipeline box_shadow_pipeline = VK_NULL_HANDLE;
   VkBuffer solid_vertex_buffer = VK_NULL_HANDLE;
   VkBuffer solid_index_buffer = VK_NULL_HANDLE;
   VkBuffer rounded_vertex_buffer = VK_NULL_HANDLE;
   VkBuffer rounded_index_buffer = VK_NULL_HANDLE;
   VkBuffer text_vertex_buffer = VK_NULL_HANDLE;
   VkBuffer image_vertex_buffer = VK_NULL_HANDLE;
+  VkBuffer box_shadow_vertex_buffer = VK_NULL_HANDLE;
+  VkBuffer box_shadow_index_buffer = VK_NULL_HANDLE;
   std::vector<VulkanRoundedRectDrawRange> solid_draws;
   std::vector<VulkanRoundedRectDrawRange> rounded_draws;
   std::vector<VulkanTextDrawCommand> text_commands;
   std::vector<VulkanImageDrawCommand> image_commands;
+  std::vector<VulkanRoundedRectDrawRange> box_shadow_draws;
   std::vector<VulkanFrameDrawOrderEntry> draw_order;
 };
 

@@ -13,6 +13,8 @@ VulkanFramePipelineKind pipeline_kind_for_resource(
       return VulkanFramePipelineKind::text;
     case VulkanFrameDrawResourceKind::image:
       return VulkanFramePipelineKind::image;
+    case VulkanFrameDrawResourceKind::box_shadow:
+      return VulkanFramePipelineKind::box_shadow;
   }
   return VulkanFramePipelineKind::rounded_rect;
 }

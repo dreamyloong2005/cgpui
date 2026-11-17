@@ -39,6 +39,7 @@ class VulkanRendererState final {
       std::span<const VulkanFrameDrawOrderEntry> draw_order,
       std::span<const SolidRect> rects,
       std::span<const RoundedRectDraw> rounded_rects,
+      std::span<const BoxShadowDraw> box_shadows,
       std::span<const TextDraw> text_draws,
       std::span<const TextSelectionDraw> text_selections,
       std::span<const TextCaretDraw> text_carets,
@@ -70,6 +71,8 @@ class VulkanRendererState final {
       std::span<const SolidRect> rects);
   Result<void> prepare_rounded_rect_frame(
       std::span<const RoundedRectDraw> rounded_rects);
+  Result<void> prepare_box_shadow_frame(
+      std::span<const BoxShadowDraw> box_shadows);
   Result<void> prepare_image_texture_frame(
       std::span<const ImageDraw> image_draws,
       std::span<const ImageUploadBatch> image_uploads,
@@ -130,6 +133,7 @@ class VulkanRendererState final {
   VulkanImagePipelineResources image_pipeline_resources_;
   VulkanTextPipelineResources text_pipeline_resources_;
   VulkanRoundedRectPipelineResources rounded_rect_pipeline_resources_;
+  VulkanRoundedRectPipelineResources box_shadow_pipeline_resources_;
   std::vector<VkFramebuffer> framebuffers_;
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
   std::vector<VkCommandBuffer> command_buffers_;
@@ -150,6 +154,7 @@ class VulkanRendererState final {
   VulkanTextVertexBufferResources text_vertex_buffer_;
   VulkanRoundedRectBufferResources solid_rect_buffers_;
   VulkanRoundedRectBufferResources rounded_rect_buffers_;
+  VulkanRoundedRectBufferResources box_shadow_buffers_;
   std::vector<RendererCommandBatch> last_command_batches_;
   RendererUploadByteCounts pending_frame_upload_bytes_;
   RendererFrameDiagnosticSnapshot last_frame_diagnostic_snapshot_;

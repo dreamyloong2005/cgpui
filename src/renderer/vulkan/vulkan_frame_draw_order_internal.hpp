@@ -23,6 +23,7 @@ enum class VulkanFrameDrawResourceKind {
   rounded_rect,
   text,
   image,
+  box_shadow,
 };
 
 struct VulkanResolvedFrameDraw {
@@ -42,7 +43,8 @@ class VulkanFrameDrawOrderCursor {
       std::span<const VulkanRoundedRectDrawRange> solid_draws,
       std::span<const VulkanRoundedRectDrawRange> rounded_draws,
       std::span<const VulkanTextDrawCommand> text_commands,
-      std::span<const VulkanImageDrawCommand> image_commands = {});
+      std::span<const VulkanImageDrawCommand> image_commands = {},
+      std::span<const VulkanRoundedRectDrawRange> box_shadow_draws = {});
 
   [[nodiscard]] std::optional<VulkanResolvedFrameDraw> next();
 
@@ -52,11 +54,13 @@ class VulkanFrameDrawOrderCursor {
   std::span<const VulkanRoundedRectDrawRange> rounded_draws_;
   std::span<const VulkanTextDrawCommand> text_commands_;
   std::span<const VulkanImageDrawCommand> image_commands_;
+  std::span<const VulkanRoundedRectDrawRange> box_shadow_draws_;
   std::size_t order_index_ = 0;
   std::size_t solid_index_ = 0;
   std::size_t rounded_index_ = 0;
   std::size_t text_index_ = 0;
   std::size_t image_index_ = 0;
+  std::size_t box_shadow_index_ = 0;
 };
 
 } // namespace cgpui

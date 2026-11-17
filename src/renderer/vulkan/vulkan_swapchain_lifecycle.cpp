@@ -62,6 +62,9 @@ void VulkanRendererState::destroy_swapchain() {
       .command_buffers = std::move(command_buffers_),
   };
   command_reuse_states_.clear();
+  // Created lazily on the first frame that needs it.
+  vulkan_destroy_rounded_rect_pipeline_resources(
+      device_, box_shadow_pipeline_resources_);
   swapchain_ = VK_NULL_HANDLE;
   swapchain_format_ = VK_FORMAT_UNDEFINED;
   swapchain_extent_ = VkExtent2D{};

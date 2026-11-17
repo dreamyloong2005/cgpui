@@ -9,6 +9,7 @@ Result<void> VulkanRendererState::present_frame(
     std::span<const VulkanFrameDrawOrderEntry> draw_order,
     std::span<const SolidRect> rects,
     std::span<const RoundedRectDraw> rounded_rects,
+    std::span<const BoxShadowDraw> box_shadows,
     std::span<const TextDraw> text_draws,
     std::span<const TextSelectionDraw> text_selections,
     std::span<const TextCaretDraw> text_carets,
@@ -33,6 +34,9 @@ Result<void> VulkanRendererState::present_frame(
     return result;
   }
   if (auto result = prepare_rounded_rect_frame(rounded_rects); !result) {
+    return result;
+  }
+  if (auto result = prepare_box_shadow_frame(box_shadows); !result) {
     return result;
   }
   if (auto result = prepare_image_texture_frame(
@@ -98,7 +102,11 @@ Result<void> VulkanRendererState::present_frame(
           glyph_atlas_uploads_,
           image_texture_resources_, image_texture_uploads_,
           *pixel_capture,
-          command_reuse_states_[image_index]);
+          command_reuse_states_[image_index],
+          VulkanBoxShadowDrawResources{
+              .pipeline = &box_shadow_pipeline_resources_,
+              .buffers = &box_shadow_buffers_,
+          });
       !result) {
     return recover_after_failed_record(result.error().message);
   }
@@ -106,7 +114,8 @@ Result<void> VulkanRendererState::present_frame(
   VulkanFrameDiagnosticResources diagnostic_resources =
       vulkan_build_frame_diagnostic_resources(
           draw_order, solid_rect_buffers_.draws, rounded_rect_buffers_.draws,
-          glyph_atlas_draw_bindings_, image_draws, last_command_batches_);
+          glyph_atlas_draw_bindings_, image_draws, last_command_batches_,
+          box_shadow_buffers_.draws);
 
   VkCommandBuffer command_buffer = command_buffers_[image_index];
   if (auto result = submit_frame(command_buffer); !result) {

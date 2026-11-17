@@ -10,6 +10,11 @@ bool scales(DpiScale scale) {
   return std::isfinite(scale.value) && scale.value > 0.0F && scale.value != 1.0F;
 }
 
+BorderRadii scaled(BorderRadii radii, float s) {
+  return BorderRadii::corners(radii.top_left * s, radii.top_right * s,
+                              radii.bottom_right * s, radii.bottom_left * s);
+}
+
 Rect scaled(Rect rect, float s) {
   return Rect{
       .origin = {.x = rect.origin.x * s, .y = rect.origin.y * s},
@@ -51,10 +56,7 @@ RoundedRectDraw vulkan_to_device_pixels(RoundedRectDraw draw, DpiScale scale) {
   if (!scales(scale)) return draw;
   const float s = scale.value;
   draw.rect = scaled(draw.rect, s);
-  draw.radius.top_left *= s;
-  draw.radius.top_right *= s;
-  draw.radius.bottom_right *= s;
-  draw.radius.bottom_left *= s;
+  draw.radius = scaled(draw.radius, s);
   draw.border_width *= s;
   scale_common(draw, s);
   return draw;
@@ -87,6 +89,20 @@ ImageDraw vulkan_to_device_pixels(ImageDraw draw, DpiScale scale) {
   if (!scales(scale)) return draw;
   draw.bounds = scaled(draw.bounds, scale.value);
   scale_common(draw, scale.value);
+  return draw;
+}
+
+// Offset, blur and spread are lengths, so they scale with the rect.
+BoxShadowDraw vulkan_to_device_pixels(BoxShadowDraw draw, DpiScale scale) {
+  if (!scales(scale)) return draw;
+  const float s = scale.value;
+  draw.rect = scaled(draw.rect, s);
+  draw.radius = scaled(draw.radius, s);
+  draw.shadow.offset = {.x = draw.shadow.offset.x * s,
+                        .y = draw.shadow.offset.y * s};
+  draw.shadow.blur_radius *= s;
+  draw.shadow.spread_radius *= s;
+  scale_common(draw, s);
   return draw;
 }
 
