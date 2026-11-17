@@ -30,6 +30,11 @@ class RegisteredWaylandWindow final : public PlatformWindow {
       WindowBackdrop backdrop, bool transparent_surface) override;
   [[nodiscard]] PlatformWindowBackdropState window_backdrop_state()
       const override;
+  void set_window_control_regions(
+      std::vector<WindowControlRegion> regions) override;
+  [[nodiscard]] PlatformWindowFrameMetrics frame_metrics() const override;
+  PlatformWindowActionResult perform_window_action(
+      PlatformWindowActionRequest request) override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
   [[nodiscard]] WaylandWindow& wayland_window() const;

@@ -55,6 +55,8 @@ int main() {
         read("src/platform/linux/wayland_protocol_xdg_toplevel_interactive.cpp");
     const auto protocol_header =
         read("src/platform/linux/wayland_protocol_xdg_toplevel_interactive_internal.hpp");
+    const auto registered =
+        read("src/platform/linux/wayland_window_registered_title_bar.cpp");
     const auto module = read("build/xmake/capabilities/client_title_bar_targets.lua");
     require(lines(core_leaf) <= 45 && has(core_leaf, "enum class WindowTitleBarMode") &&
             has(core_leaf, "enum class WindowControlArea") &&
@@ -88,7 +90,8 @@ int main() {
             lines(wayland) <= 140 && lines(protocol) <= 40 &&
             lines(protocol_header) <= 30 && has(wayland, "xdg_toplevel_move(") &&
             has(wayland, "xdg_toplevel_resize(") &&
-            has(wayland, "xdg_toplevel_show_window_menu("),
+            has(wayland, "xdg_toplevel_show_window_menu(") && lines(registered) <= 25 &&
+            has(registered, "RegisteredWaylandWindow::frame_metrics("),
             "Wayland client title bar and its protocol requests are focused modules");
     require(has(module, "tests/platform/win32_client_title_bar_test.cpp") &&
             has(module, "tests/platform/wayland_client_title_bar_test.cpp") &&
