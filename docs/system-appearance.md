@@ -124,6 +124,27 @@ the fix the window rect is 1372x911 and the client area is 1350x900
 physical (900x600 logical), measured with `GetWindowRect` /
 `GetClientRect` on `example_client_title_bar`.
 
+Rendering scale: views paint in logical pixels, and the runtime hands
+`RenderFrame` logical-pixel draws together with the surface `DpiScale`
+(`Renderer::resize`). The Vulkan frame converts every recorded draw to
+device pixels once, in `vulkan_to_device_pixels`
+(`src/renderer/vulkan/vulkan_device_pixels.cpp`): rects, radii, border
+widths, clip rects and clip stacks, and the translation of paint and
+composition transforms (a uniform scale commutes with the linear part).
+Text glyph `device_*` positions are already device pixels and are kept.
+Before this, the swapchain drew logical coordinates 1:1, so at 150% the
+example's full-width caption row covered 878 of 1350 physical pixels and
+was 32 px tall. Measured after (144 DPI): caption row 1350 x 48 physical
+(row 20: client columns 0..1349 are rgb(99,102,108) at this stage;
+rows 0..47 caption, row 48 body; the top corners are rounded by DWM), command box x 495..854 (240 logical
+centred, 360 physical). This is the same Vulkan path on Wayland, where
+`framebuffer_size` is also logical size x scale, so fractional and
+integer Wayland scales get the same fix (not observed on a real
+compositor). IME placement rects are logical; Win32 multiplies them by
+`WindowState::scale` before `ImmSetCompositionWindow` /
+`ImmSetCandidateWindow`. Pointer input and `WM_NCHITTEST` regions were
+already converted to logical pixels.
+
 ## Wayland sources
 
 The Wayland application reads `org.freedesktop.portal.Settings` from

@@ -12,15 +12,17 @@
 
 namespace cgpui_test {
 
+// Draws are logical pixels; the captured framebuffer is device pixels.
 template <typename Paint>
-std::optional<cgpui::RendererFramePixels> capture_pixels(
+std::optional<cgpui::RendererFramePixels> capture_pixels_at_scale(
     VulkanPixelTestWindow& window,
+    cgpui::DpiScale scale,
     cgpui::Color clear,
     Paint&& paint) {
   auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = window.framebuffer_size(),
-      .scale = cgpui::DpiScale{1.0F},
+      .scale = scale,
   });
   if (!renderer) {
     return std::nullopt;
@@ -36,6 +38,15 @@ std::optional<cgpui::RendererFramePixels> capture_pixels(
   }
   const cgpui::RendererFramePixels* pixels = (*renderer)->last_frame_pixels();
   return pixels != nullptr ? std::optional{*pixels} : std::nullopt;
+}
+
+template <typename Paint>
+std::optional<cgpui::RendererFramePixels> capture_pixels(
+    VulkanPixelTestWindow& window,
+    cgpui::Color clear,
+    Paint&& paint) {
+  return capture_pixels_at_scale(
+      window, cgpui::DpiScale{1.0F}, clear, std::forward<Paint>(paint));
 }
 
 inline std::uint8_t encoded_channel(

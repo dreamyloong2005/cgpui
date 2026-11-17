@@ -2,6 +2,8 @@
 
 namespace cgpui {
 
+DpiScale VulkanRendererState::scale() const { return descriptor_.scale; }
+
 Result<void> VulkanRendererState::resize(
     Size framebuffer_size,
     DpiScale scale) {

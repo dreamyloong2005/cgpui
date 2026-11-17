@@ -49,3 +49,20 @@ or WSL. Until it runs on a Mac, each row stays "planned".
   conversion in one place, as on Windows.
 - The Phase H evidence (380/380) is tied to a specific macOS and Xcode
   version. Record the version used for this work separately.
+
+## Findings from the Windows rendering fixes (2026-11-17, code reading only)
+
+- Device pixel scale: `macos_window.mm` reports the backing-store size
+  (`convertRectToBacking`) as `framebuffer_size`, and the runtime paints the
+  view at `framebuffer_size / backingScaleFactor`. `metal_geometry.mm` and
+  `metal_image.mm` pass `state.framebuffer_size` as the viewport and use
+  draw rects unchanged, and `metal_clip_transform.mm` clamps clips against
+  the same size. On a Retina display Metal therefore has the bug fixed for
+  Vulkan in `vulkan_device_pixels.cpp`: logical rects, clips and transform
+  translations are drawn 1:1 in device pixels (half size at 2x), while
+  text glyphs (already device pixels) are right. Fix by converting each
+  recorded draw with `state.scale` in one place, matching
+  `vulkan_to_device_pixels`. Not changed and not observed.
+- Color encoding: Metal already uses `MTLPixelFormatBGRA8Unorm` for the layer
+  and pipelines and `RGBA8Unorm` / `R8Unorm` textures, so it does not have
+  the double sRGB encoding that the Vulkan `B8G8R8A8_SRGB` swapchain had.

@@ -1,5 +1,7 @@
 #include "win32_window_internal.hpp"
 
+#include <cmath>
+
 namespace cgpui {
 
 void Win32Window::apply_ime_text_input_placement() {
@@ -11,19 +13,24 @@ void Win32Window::apply_ime_text_input_placement() {
   const Rect& candidate_rect = placement.candidate_rect.has_value()
       ? *placement.candidate_rect
       : placement.rect;
+  // Placement rects are logical pixels; IMM32 wants physical client pixels.
+  const float scale = state_.scale.value > 0.0F ? state_.scale.value : 1.0F;
+  const auto physical = [scale](float logical) {
+    return static_cast<LONG>(std::lround(logical * scale));
+  };
   const POINT composition_point{
-      .x = static_cast<LONG>(placement.rect.origin.x),
-      .y = static_cast<LONG>(placement.rect.origin.y),
+      .x = physical(placement.rect.origin.x),
+      .y = physical(placement.rect.origin.y),
   };
   const POINT candidate_point{
-      .x = static_cast<LONG>(candidate_rect.origin.x),
-      .y = static_cast<LONG>(candidate_rect.origin.y),
+      .x = physical(candidate_rect.origin.x),
+      .y = physical(candidate_rect.origin.y),
   };
-  const auto candidate_height = static_cast<LONG>(candidate_rect.size.height);
+  const LONG candidate_height = physical(candidate_rect.size.height);
   const RECT candidate_area{
       .left = candidate_point.x,
       .top = candidate_point.y,
-      .right = candidate_point.x + static_cast<LONG>(candidate_rect.size.width),
+      .right = candidate_point.x + physical(candidate_rect.size.width),
       .bottom = candidate_point.y + candidate_height,
   };
 

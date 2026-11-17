@@ -26,6 +26,8 @@ class VulkanRendererState final {
       RenderSurfaceDescriptor descriptor);
 
   Result<void> resize(Size framebuffer_size, DpiScale scale);
+  // Device pixels per logical pixel for the current surface.
+  [[nodiscard]] DpiScale scale() const;
   [[nodiscard]] const RendererFrameDiagnosticSnapshot*
   last_frame_diagnostic_snapshot() const;
   Result<void> request_pixel_capture() const;
