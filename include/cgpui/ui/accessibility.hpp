@@ -17,6 +17,11 @@ struct AccessibilityPatternState {
   bool value_settable = false;
   std::optional<bool> toggled;
   std::optional<AccessibilityRangeValue> range;
+  // Tree items and submenus; selection for tabs and tree items; 1-based
+  // nesting level for tree items.
+  std::optional<bool> expanded;
+  std::optional<bool> selected;
+  std::optional<int> level;
 };
 
 } // namespace cgpui

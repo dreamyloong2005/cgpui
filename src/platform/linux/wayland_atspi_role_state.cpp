@@ -76,6 +76,13 @@ WaylandAtspiRole wayland_atspi_role_for(PlatformAccessibilityRole role) {
     case PlatformAccessibilityRole::slider: return {51, "slider"};
     case PlatformAccessibilityRole::list_item: return {32, "list item"};
     case PlatformAccessibilityRole::menu_item: return {35, "menu item"};
+    case PlatformAccessibilityRole::tab_list: return {38, "page tab list"};
+    case PlatformAccessibilityRole::tab: return {37, "page tab"};
+    case PlatformAccessibilityRole::tree: return {65, "tree"};
+    case PlatformAccessibilityRole::tree_item: return {91, "tree item"};
+    case PlatformAccessibilityRole::menu: return {33, "menu"};
+    case PlatformAccessibilityRole::separator: return {50, "separator"};
+    case PlatformAccessibilityRole::tooltip: return {64, "tool tip"};
     case PlatformAccessibilityRole::generic: return {67, "unknown"};
   }
   return {67, "unknown"};
@@ -98,6 +105,14 @@ std::array<std::uint32_t, 2> wayland_atspi_states_for(
   if (object.patterns.toggled.has_value()) {
     set_state(words, 41); // checkable
     if (*object.patterns.toggled) set_state(words, 4);
+  }
+  if (object.patterns.expanded.has_value()) {
+    set_state(words, 9); // expandable
+    set_state(words, *object.patterns.expanded ? 10 : 5); // expanded/collapsed
+  }
+  if (object.patterns.selected.has_value()) {
+    set_state(words, 22); // selectable
+    if (*object.patterns.selected) set_state(words, 23); // selected
   }
   if (object.patterns.value_settable ||
       object.role == PlatformAccessibilityRole::text_input) {

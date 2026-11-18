@@ -35,6 +35,20 @@ inline PlatformAccessibilityRole platform_accessibility_role(
       return PlatformAccessibilityRole::list_item;
     case AccessibilityRole::menu_item:
       return PlatformAccessibilityRole::menu_item;
+    case AccessibilityRole::tab_list:
+      return PlatformAccessibilityRole::tab_list;
+    case AccessibilityRole::tab:
+      return PlatformAccessibilityRole::tab;
+    case AccessibilityRole::tree:
+      return PlatformAccessibilityRole::tree;
+    case AccessibilityRole::tree_item:
+      return PlatformAccessibilityRole::tree_item;
+    case AccessibilityRole::menu:
+      return PlatformAccessibilityRole::menu;
+    case AccessibilityRole::separator:
+      return PlatformAccessibilityRole::separator;
+    case AccessibilityRole::tooltip:
+      return PlatformAccessibilityRole::tooltip;
     case AccessibilityRole::generic:
       return PlatformAccessibilityRole::generic;
   }
@@ -77,6 +91,9 @@ inline PlatformAccessibilityTreeUpdate platform_accessibility_update_from(
                           .large_change = node.patterns.range->large_change,
                       }}
                 : std::nullopt,
+            .expanded = node.patterns.expanded,
+            .selected = node.patterns.selected,
+            .level = node.patterns.level,
         },
         .enabled = node.enabled,
         .focusable = node.focusable,

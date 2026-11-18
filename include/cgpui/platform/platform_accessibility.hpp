@@ -23,6 +23,9 @@ struct PlatformAccessibilityPatternState {
   bool value_settable = false;
   std::optional<bool> toggled;
   std::optional<PlatformAccessibilityRangeValue> range;
+  std::optional<bool> expanded;
+  std::optional<bool> selected;
+  std::optional<int> level;
 };
 
 enum class PlatformAccessibilityRole {
@@ -38,6 +41,13 @@ enum class PlatformAccessibilityRole {
   slider,
   list_item,
   menu_item,
+  tab_list,
+  tab,
+  tree,
+  tree_item,
+  menu,
+  separator,
+  tooltip,
 };
 
 struct PlatformAccessibilityNodeUpdate {

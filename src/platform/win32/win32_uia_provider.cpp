@@ -1,6 +1,7 @@
 #include "win32_internal.hpp"
 #include "win32_uia_pattern_properties_internal.hpp"
 #include "win32_uia_provider_object_internal.hpp"
+#include "win32_uia_control_type_internal.hpp"
 
 #include <UIAutomationClient.h>
 #include <UIAutomationCoreApi.h>
@@ -10,35 +11,6 @@
 #include <utility>
 namespace cgpui {
 namespace {
-
-CONTROLTYPEID control_type_for(PlatformAccessibilityRole role) {
-  switch (role) {
-    case PlatformAccessibilityRole::label:
-    case PlatformAccessibilityRole::text:
-      return UIA_TextControlTypeId;
-    case PlatformAccessibilityRole::button:
-      return UIA_ButtonControlTypeId;
-    case PlatformAccessibilityRole::text_input:
-      return UIA_EditControlTypeId;
-    case PlatformAccessibilityRole::image:
-      return UIA_ImageControlTypeId;
-    case PlatformAccessibilityRole::checkbox:
-      return UIA_CheckBoxControlTypeId;
-    case PlatformAccessibilityRole::radio:
-      return UIA_RadioButtonControlTypeId;
-    case PlatformAccessibilityRole::switch_control:
-      return UIA_ButtonControlTypeId;
-    case PlatformAccessibilityRole::slider:
-      return UIA_SliderControlTypeId;
-    case PlatformAccessibilityRole::list_item:
-      return UIA_ListItemControlTypeId;
-    case PlatformAccessibilityRole::menu_item:
-      return UIA_MenuItemControlTypeId;
-    case PlatformAccessibilityRole::generic:
-      return UIA_PaneControlTypeId;
-  }
-  return UIA_PaneControlTypeId;
-}
 
 HRESULT set_bstr(VARIANT* value, const std::wstring& text) {
   value->vt = VT_BSTR;
@@ -168,6 +140,9 @@ HRESULT STDMETHODCALLTYPE Win32UiaProvider::GetPropertyValue(
   } else if (property == UIA_HasKeyboardFocusPropertyId) {
     value->vt = VT_BOOL;
     value->boolVal = node.focused ? VARIANT_TRUE : VARIANT_FALSE;
+  } else if (property == UIA_LevelPropertyId && node.patterns.level) {
+    value->vt = VT_I4;
+    value->lVal = *node.patterns.level;
   } else if (property == UIA_BoundingRectanglePropertyId) {
     return set_bounding_rect(
         value, win32_uia_provider_tree_hwnd(tree_), node.bounds);

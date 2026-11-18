@@ -36,6 +36,13 @@ enum class AccessibilityRole {
   slider,
   list_item,
   menu_item,
+  tab_list,
+  tab,
+  tree,
+  tree_item,
+  menu,
+  separator,
+  tooltip,
 };
 
 struct AccessibilitySnapshotOptions {
