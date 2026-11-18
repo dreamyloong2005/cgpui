@@ -59,6 +59,14 @@
             },
             version = "2.14.1"
         },
+        ["freetype#fd44226e"] = {
+            repo = {
+                branch = "master",
+                commit = "b9256335e0b6e70808e23dfe71627d8a4dcc0abf",
+                url = "https://github.com/xmake-io/xmake-repo.git"
+            },
+            version = "2.14.1"
+        },
         ["gperf#f56260b5"] = {
             repo = {
                 branch = "master",
@@ -66,6 +74,14 @@
                 url = "https://github.com/xmake-io/xmake-repo.git"
             },
             version = "3.2.1"
+        },
+        ["harfbuzz#fd44226e"] = {
+            repo = {
+                branch = "master",
+                commit = "b9256335e0b6e70808e23dfe71627d8a4dcc0abf",
+                url = "https://github.com/xmake-io/xmake-repo.git"
+            },
+            version = "13.1.1"
         },
         ["libffi#0b3b0fcf"] = {
             repo = {

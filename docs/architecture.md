@@ -15,8 +15,9 @@
 Aggregate headers remain thin. Public non-template bodies live in focused
 `.cpp` files; template and constexpr bodies stay in focused public leaves.
 
-[Native text rasterization](native-text-rasterization.md) documents the focused
-DirectWrite coverage modules, standard Vulkan glyph-atlas path, and support limits.
+[Native text](native-text.md) documents native shaping (DirectWrite on
+Windows, HarfBuzz + FreeType + fontconfig on Linux), font fallback, metrics,
+the shape cache, glyph-id rasterization into the Vulkan atlas, and support limits.
 
 ## Public Authoring Boundary
 

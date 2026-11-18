@@ -440,6 +440,10 @@ int test_link_activation_uses_primary_single_release_hits() {
 } // namespace
 
 int main() {
+  // Asserts fixed deterministic advances; native shaping is covered by
+  // native_text_shaping_test.
+  cgpui::set_default_text_shaping_backend(
+      cgpui::TextShapingBackend::deterministic_fallback);
   if (const int result = test_plain_text_builds_single_default_run();
       result != 0) {
     return result;

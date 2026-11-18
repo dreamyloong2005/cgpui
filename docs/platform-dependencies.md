@@ -26,12 +26,21 @@ entrypoint.
 
 Required development/runtime components are a C++ compiler, Vulkan loader and
 driver, Wayland client development files, DBus, libxkbcommon, Meson, Ninja,
-and Python virtual-environment support. Fontconfig is used when available.
+and Python virtual-environment support. Native text shaping requires
+HarfBuzz, FreeType and fontconfig (resolved as xmake system packages) and at
+least one installed font; CJK text needs a CJK font.
+
+Arch (the WSL2 `archlinux` gate) installs:
+
+```bash
+pacman -S --needed harfbuzz freetype2 fontconfig ttf-dejavu wqy-zenhei
+```
 
 Ubuntu CI installs:
 
 ```bash
-sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev \
+sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libfreetype-dev \
+  libharfbuzz-dev libvulkan-dev fonts-dejavu-core fonts-wqy-zenhei \
   libwayland-dev mesa-vulkan-drivers meson ninja-build python3-venv weston
 ```
 
