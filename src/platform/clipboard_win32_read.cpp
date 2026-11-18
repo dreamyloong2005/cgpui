@@ -7,7 +7,7 @@ namespace cgpui {
 
 std::optional<std::string> Win32Clipboard::read_text() const {
   if (IsClipboardFormatAvailable(CF_UNICODETEXT) == FALSE ||
-      OpenClipboard(nullptr) == FALSE) {
+      !open_win32_clipboard()) {
     return std::nullopt;
   }
 

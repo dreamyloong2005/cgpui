@@ -44,9 +44,10 @@ storage, syntax highlighting rules, agent protocol) stays in the consumer.
   on Windows and commit again. Install system packages with `pacman` only if
   an xmake package is not suitable, and record them in
   `docs/platform-dependencies.md`.
-- Known environment flakes, not regressions: `x11_input_test` fails intermittently
-  (most often under the parallel run; re-run it standalone up to three times); `win32_clipboard_unicode_test`
-  fails when another process holds the clipboard. Re-run them standalone.
+- Former flakes, now fixed: `x11_input_test` (waited for no Expose before
+  grabbing; `829821ea`) and `win32_clipboard_unicode_test` (clipboard
+  listeners hold the clipboard after each change; the Win32 clipboard and the
+  test now retry `OpenClipboard`). Treat any failure as real.
 - Record anything only observable in a real window (visual material, title
   bar color, IME candidate placement) as "not visually verified" in the
   capability doc until observed.

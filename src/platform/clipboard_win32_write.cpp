@@ -25,7 +25,7 @@ bool Win32Clipboard::write_text(std::string_view text) {
   std::memcpy(locked, wide_text->c_str(), byte_size);
   GlobalUnlock(handle);
 
-  if (OpenClipboard(nullptr) == FALSE) {
+  if (!open_win32_clipboard()) {
     GlobalFree(handle);
     return false;
   }

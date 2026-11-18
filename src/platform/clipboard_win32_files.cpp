@@ -13,7 +13,7 @@ namespace cgpui {
 
 std::optional<std::vector<std::string>> Win32Clipboard::read_files() const {
   if (IsClipboardFormatAvailable(CF_HDROP) == FALSE ||
-      OpenClipboard(nullptr) == FALSE) {
+      !open_win32_clipboard()) {
     return std::nullopt;
   }
   const HANDLE handle = GetClipboardData(CF_HDROP);
@@ -97,7 +97,7 @@ bool Win32Clipboard::write_files(std::span<const std::string> paths) {
   *cursor = L'\0';
   GlobalUnlock(handle);
 
-  if (OpenClipboard(nullptr) == FALSE) {
+  if (!open_win32_clipboard()) {
     GlobalFree(handle);
     return false;
   }
