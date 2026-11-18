@@ -52,6 +52,10 @@ const std::vector<std::pair<std::string, std::size_t>> limits{
     {"src/ui/text_font_defaults.cpp", 70},
     {"src/ui/text_measurement_grapheme.cpp", 210},
     {"src/ui/text_line_metrics.cpp", 90},
+    {"src/ui/text_shaping_harfbuzz.cpp", 270},
+    {"src/ui/text_fontconfig_linux_internal.hpp", 50},
+    {"src/ui/text_fontconfig_faces_linux.cpp", 210},
+    {"src/ui/text_glyph_id_raster_freetype.cpp", 110},
     {"src/renderer/vulkan/vulkan_text_glyph_placement.cpp", 80},
     {"src/renderer/vulkan/vulkan_text_glyph_placement.hpp", 40},
 };
@@ -94,6 +98,18 @@ int main() {
     require(has(raster, "CreateGlyphRunAnalysis(") && has(raster, "DWRITE_GLYPH_RUN") &&
                 !has(raster, "CreateTextLayout"),
             "glyph-id rasterization must not re-lay out source text");
+    const std::string harfbuzz = read("src/ui/text_shaping_harfbuzz.cpp");
+    const std::string fontconfig = read("src/ui/text_fontconfig_faces_linux.cpp");
+    const std::string freetype = read("src/ui/text_glyph_id_raster_freetype.cpp");
+    require(has(harfbuzz, "hb_shape(") && has(harfbuzz, "fontconfig_fallback_faces(") &&
+                has(harfbuzz, "NativeShapeBuilder") && !has(harfbuzz, "FcFontSort"),
+            "HarfBuzz shaping must use the fontconfig module and the shared builder");
+    require(has(fontconfig, "FcFontSort(") && has(fontconfig, "FcCharSetHasChar(") &&
+                has(fontconfig, "FT_New_Face(") && !has(fontconfig, "hb_shape"),
+            "fontconfig matching, coverage and FreeType faces belong to one module");
+    require(has(freetype, "FT_Load_Glyph(") && has(freetype, "FT_Render_Glyph(") &&
+                !has(freetype, "hb_shape"),
+            "FreeType rasterizes by glyph id without reshaping");
     const std::string dispatch = read("src/ui/text_shaping_dispatch.cpp");
     require(has(dispatch, "find_cached_text_shape(") && has(dispatch, "store_cached_text_shape(") &&
                 has(dispatch, "unsupported_font_source"),
