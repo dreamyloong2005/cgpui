@@ -1,5 +1,8 @@
 #include "cgpui/ui/text_glyphs.hpp"
 
+#include "cgpui/ui/text_measurement.hpp"
+#include "text_glyph_paint_internal.hpp"
+
 #include <algorithm>
 #include <utility>
 
@@ -71,38 +74,62 @@ RasterizedGlyph rasterize_fallback_glyph(
   };
 }
 
+TextGlyphPaint text_glyph_paint_for(
+    const TextShapeRun& run,
+    std::size_t index,
+    float pen_x,
+    Point line_origin,
+    float baseline) {
+  const TextGlyphRun& glyph = run.glyphs[index];
+  const float scale = normalized_scale(run.scale);
+  const Point logical_origin{
+      .x = pen_x + glyph.offset.x,
+      .y = line_origin.y + glyph.offset.y,
+  };
+  TextGlyphPaint paint{
+      .key =
+          GlyphAtlasKey{
+              .font_family = run.font.family,
+              .font_size = run.font_size,
+              .scale = scale,
+              .device_font_size = run.device_font_size,
+              .glyph_index = index,
+              .glyph_id = glyph.glyph_id,
+              .byte_offset = glyph.byte_offset,
+              .byte_length = glyph.byte_length,
+              .text = run.text.substr(glyph.byte_offset, glyph.byte_length),
+              .shaping_backend = run.used_backend,
+          },
+      .origin = logical_origin,
+      .advance = glyph.advance,
+      .device_origin = to_device_pixels(logical_origin, run.scale),
+      .device_advance = glyph.advance * scale,
+  };
+  const bool native =
+      run.used_backend != TextShapingBackend::deterministic_fallback;
+  if (native && glyph.font_fallback_face_index < run.font_fallback_faces.size()) {
+    const FontFaceDescriptor& face =
+        run.font_fallback_faces[glyph.font_fallback_face_index];
+    paint.key.font_family = face.font.family;
+    paint.key.font_face_path = face.path;
+    paint.key.font_face_index = face.face_index;
+    paint.key.synthetic_bold = face.synthetic_bold;
+    paint.key.synthetic_oblique = face.synthetic_oblique;
+    paint.device_baseline = baseline * scale;
+  }
+  return paint;
+}
+
 std::vector<TextGlyphPaint> text_glyph_paint_metadata(
     const TextShapeRun& run,
     Point origin) {
   std::vector<TextGlyphPaint> glyphs;
   glyphs.reserve(run.glyphs.size());
+  const float baseline = text_line_metrics_for_shape_run(run).baseline;
   float x = origin.x;
   for (std::size_t index = 0; index < run.glyphs.size(); ++index) {
-    const TextGlyphRun& glyph = run.glyphs[index];
-    const Point logical_origin{
-        .x = x + glyph.offset.x,
-        .y = origin.y + glyph.offset.y,
-    };
-    glyphs.push_back(TextGlyphPaint{
-        .key =
-            GlyphAtlasKey{
-                .font_family = run.font.family,
-                .font_size = run.font_size,
-                .scale = normalized_scale(run.scale),
-                .device_font_size = run.device_font_size,
-                .glyph_index = index,
-                .glyph_id = glyph.glyph_id,
-                .byte_offset = glyph.byte_offset,
-                .byte_length = glyph.byte_length,
-                .text = run.text.substr(glyph.byte_offset, glyph.byte_length),
-                .shaping_backend = run.used_backend,
-            },
-        .origin = logical_origin,
-        .advance = glyph.advance,
-        .device_origin = to_device_pixels(logical_origin, run.scale),
-        .device_advance = glyph.advance * normalized_scale(run.scale),
-    });
-    x += glyph.advance;
+    glyphs.push_back(text_glyph_paint_for(run, index, x, origin, baseline));
+    x += run.glyphs[index].advance;
   }
   return glyphs;
 }

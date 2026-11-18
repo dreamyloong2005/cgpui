@@ -3,6 +3,7 @@
 #if defined(_WIN32)
 #include "text_glyph_raster_win32_internal.hpp"
 #endif
+#include "text_glyph_id_raster_internal.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -27,6 +28,16 @@ Result<RasterizedGlyph> rasterize_text_glyph(
         .message = "glyph rasterization requires finite, bounded dimensions and UTF-8 input",
     });
   }
+  const TextShapingBackend backend = glyph.key.shaping_backend;
+#if defined(_WIN32)
+  if (backend == TextShapingBackend::directwrite) {
+    return rasterize_native_glyph_id(glyph);
+  }
+#elif defined(CGPUI_HAS_FREETYPE_GLYPH_RASTERIZER)
+  if (backend == TextShapingBackend::harfbuzz) {
+    return rasterize_native_glyph_id(glyph);
+  }
+#endif
   if (utf8.empty()) {
     const auto width = rasterized_glyph_dimension(glyph.device_advance);
     const auto height = rasterized_glyph_dimension(glyph.key.device_font_size);
@@ -40,10 +51,10 @@ Result<RasterizedGlyph> rasterize_text_glyph(
     };
   }
 #if defined(_WIN32)
-  if (glyph.key.shaping_backend != TextShapingBackend::deterministic_fallback) {
+  if (backend != TextShapingBackend::deterministic_fallback) {
     return std::unexpected(Error{
         .code = ErrorCode::unsupported_platform,
-        .message = "DirectWrite source-cluster rasterization does not support native HarfBuzz glyph runs",
+        .message = "DirectWrite rasterizes DirectWrite glyph ids or deterministic clusters, not HarfBuzz glyph runs",
     });
   }
   return rasterize_win32_text_glyph(glyph, utf8);

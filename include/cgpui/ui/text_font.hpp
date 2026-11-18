@@ -3,6 +3,7 @@
 #include "cgpui/ui/style.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <span>
 #include <string>
 #include <string_view>
@@ -29,6 +30,12 @@ struct FontFaceDescriptor {
   FontSource source = FontSource::platform;
   std::string path;
   std::vector<FontUnicodeRange> coverage;
+  // Native face identity: index inside a font collection file and
+  // synthesized styling applied by the platform.
+  std::uint32_t face_index = 0;
+  bool synthetic_bold = false;
+  bool synthetic_oblique = false;
+  bool monospaced = false;
 
   friend bool operator==(
       const FontFaceDescriptor&,

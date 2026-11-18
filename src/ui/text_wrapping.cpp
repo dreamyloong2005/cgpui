@@ -1,5 +1,7 @@
 #include "cgpui/ui/text_wrapping.hpp"
 
+#include "text_glyph_paint_internal.hpp"
+
 #include <algorithm>
 
 namespace cgpui {
@@ -272,34 +274,15 @@ std::vector<TextGlyphPaint> text_glyph_paint_metadata(
   glyphs.reserve(run.glyphs.size());
   for (const TextWrapLine& line : lines) {
     float x = origin.x + line.origin.x;
-    const float y = origin.y + line.origin.y;
+    const Point line_origin{
+        .x = x,
+        .y = origin.y + line.origin.y,
+    };
     const std::size_t glyph_end = std::min(line.glyph_end, run.glyphs.size());
     for (std::size_t index = line.glyph_start; index < glyph_end; ++index) {
-      const TextGlyphRun& glyph = run.glyphs[index];
-      const Point logical_origin{
-          .x = x + glyph.offset.x,
-          .y = y + glyph.offset.y,
-      };
-      glyphs.push_back(TextGlyphPaint{
-          .key =
-              GlyphAtlasKey{
-                  .font_family = run.font.family,
-                  .font_size = run.font_size,
-                  .scale = normalized_scale(run.scale),
-                  .device_font_size = run.device_font_size,
-                  .glyph_index = index,
-                  .glyph_id = glyph.glyph_id,
-                  .byte_offset = glyph.byte_offset,
-                  .byte_length = glyph.byte_length,
-                  .text = run.text.substr(glyph.byte_offset, glyph.byte_length),
-                  .shaping_backend = run.used_backend,
-              },
-          .origin = logical_origin,
-          .advance = glyph.advance,
-          .device_origin = to_device_pixels(logical_origin, run.scale),
-          .device_advance = glyph.advance * normalized_scale(run.scale),
-      });
-      x += glyph.advance;
+      glyphs.push_back(text_glyph_paint_for(
+          run, index, x, line_origin, line.metrics.baseline));
+      x += run.glyphs[index].advance;
     }
   }
   return glyphs;

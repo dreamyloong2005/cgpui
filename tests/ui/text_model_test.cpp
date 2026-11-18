@@ -1535,8 +1535,14 @@ int test_shape_text_records_color_glyph_plans() {
 }
 
 int test_shape_text_records_backend_selection_and_fallback_reason() {
-  const cgpui::TextShapeRun default_run =
-      cgpui::shape_text("ffi", cgpui::FontDescriptor{.family = "Inter"});
+  // `native` is the default request; this asserts HarfBuzz selection.
+  const cgpui::TextShapeRun default_run = cgpui::shape_text(
+      "ffi",
+      cgpui::FontDescriptor{.family = "Inter"},
+      16.0F,
+      {},
+      cgpui::TextShapingOptions{
+          .preferred_backend = cgpui::TextShapingBackend::harfbuzz});
   if (default_run.requested_backend != cgpui::TextShapingBackend::harfbuzz) {
     return 92;
   }
@@ -2231,6 +2237,10 @@ int test_fallback_glyph_rasterizer_produces_deterministic_bitmap() {
 } // namespace
 
 int main() {
+  // Asserts fixed deterministic advances; native shaping is covered by
+  // native_text_shaping_test.
+  cgpui::set_default_text_shaping_backend(
+      cgpui::TextShapingBackend::deterministic_fallback);
   if (const int result = test_text_model_defaults_to_empty_buffer();
       result != 0) {
     return result;

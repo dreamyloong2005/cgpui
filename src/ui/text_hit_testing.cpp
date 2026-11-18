@@ -41,6 +41,27 @@ TextHitTestResult hit_test_text_position(
     };
   }
 
+  // Grapheme columns carry shaped advances, with ligatures divided between
+  // the graphemes they cover, so the caret lands on a grapheme boundary.
+  if (!measurement.grapheme_columns.empty()) {
+    float column_x = 0.0F;
+    for (const TextGraphemeColumn& column : measurement.grapheme_columns) {
+      if (local_x <= column_x + (column.advance * 0.5F)) {
+        return TextHitTestResult{
+            .byte_offset = column.byte_start,
+            .local_position = {.x = local_x, .y = local_y},
+            .inside_bounds = inside,
+        };
+      }
+      column_x += column.advance;
+    }
+    return TextHitTestResult{
+        .byte_offset = run.byte_length,
+        .local_position = {.x = local_x, .y = local_y},
+        .inside_bounds = inside,
+    };
+  }
+
   float glyph_x = 0.0F;
   for (const TextGlyphRun& glyph : run.glyphs) {
     const float midpoint = glyph_x + (glyph.advance * 0.5F);

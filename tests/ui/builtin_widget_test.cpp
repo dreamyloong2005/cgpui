@@ -597,6 +597,10 @@ int test_text_input_widget_builder_keeps_text_model_boundary() {
 }
 
 int main() {
+  // Asserts fixed deterministic advances; native shaping is covered by
+  // native_text_shaping_test.
+  cgpui::set_default_text_shaping_backend(
+      cgpui::TextShapingBackend::deterministic_fallback);
   if (const int result = test_label_widget_builder_builds_accessible_text();
       result != 0) {
     return result;

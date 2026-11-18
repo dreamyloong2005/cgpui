@@ -12,6 +12,25 @@
 
 namespace cgpui {
 
+// Font metrics in logical pixels at the shaped font size. Ascent and
+// descent are positive distances from the baseline; underline_position is
+// the distance below the baseline.
+struct TextFontMetrics {
+  float ascent = 0.0F;
+  float descent = 0.0F;
+  float line_gap = 0.0F;
+  float cap_height = 0.0F;
+  float x_height = 0.0F;
+  float underline_position = 0.0F;
+  float underline_thickness = 0.0F;
+
+  friend bool operator==(const TextFontMetrics&, const TextFontMetrics&) =
+      default;
+};
+
+// Glyphs are in logical order. Native glyph ids belong to the face at
+// `font_fallback_face_index`; all glyphs of one cluster share its UTF-8 byte
+// range. `offset` is y-down.
 struct TextGlyphRun {
   std::uint32_t glyph_id = 0;
   std::size_t byte_offset = 0;
@@ -57,6 +76,7 @@ struct TextScriptRun {
 
 struct TextFontFallbackRun {
   std::size_t font_fallback_face_index = 0;
+  TextFontMetrics metrics;
   std::size_t glyph_start = 0;
   std::size_t glyph_end = 0;
   std::size_t byte_start = 0;
@@ -73,6 +93,8 @@ struct TextShapeRun {
   std::vector<TextScriptRun> script_runs;
   std::vector<TextMissingGlyphDiagnostic> missing_glyphs;
   std::vector<TextColorGlyphPlan> color_glyphs;
+  // Metrics of the primary face; zero for the deterministic fallback.
+  TextFontMetrics font_metrics;
   float font_size = 16.0F;
   DpiScale scale;
   std::vector<TextGlyphRun> glyphs;
@@ -82,7 +104,7 @@ struct TextShapeRun {
   float device_font_size = 16.0F;
   float device_total_advance = 0.0F;
   float device_line_height = 16.0F;
-  TextShapingBackend requested_backend = TextShapingBackend::harfbuzz;
+  TextShapingBackend requested_backend = TextShapingBackend::native;
   TextShapingBackend used_backend = TextShapingBackend::deterministic_fallback;
   TextShapingFallbackReason fallback_reason =
       TextShapingFallbackReason::backend_unavailable;

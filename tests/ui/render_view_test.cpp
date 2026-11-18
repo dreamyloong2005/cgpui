@@ -582,6 +582,10 @@ int test_runtime_theme_slots_inherit_and_switch_with_invalidation() {
 } // namespace
 
 int main() {
+  // Asserts fixed deterministic advances; native shaping is covered by
+  // native_text_shaping_test.
+  cgpui::set_default_text_shaping_backend(
+      cgpui::TextShapingBackend::deterministic_fallback);
   {
     EmptyFrameRenderer renderer;
     EmptyView view;

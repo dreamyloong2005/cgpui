@@ -1384,6 +1384,10 @@ int test_renderer_frame_report_summarizes_frame_snapshot() {
 } // namespace
 
 int main() {
+  // Asserts fixed deterministic advances; native shaping is covered by
+  // native_text_shaping_test.
+  cgpui::set_default_text_shaping_backend(
+      cgpui::TextShapingBackend::deterministic_fallback);
   if (const int result = test_glyph_cache_records_lookup_miss_and_hit();
       result != 0) {
     return result;

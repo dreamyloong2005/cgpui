@@ -1,96 +1,24 @@
 #include "text_measurement_internal.hpp"
 
+#include "text_shaping_native_internal.hpp"
+
 #include <algorithm>
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 namespace cgpui {
 namespace {
 
-struct DecodedMeasurementCodepoint {
-  std::uint32_t value = 0;
+constexpr std::size_t unset_glyph = std::numeric_limits<std::size_t>::max();
+
+struct ShapedCluster {
   std::size_t byte_start = 0;
   std::size_t byte_end = 0;
+  std::size_t glyph_start = 0;
+  std::size_t glyph_end = 0;
+  float advance = 0.0F;
 };
-
-bool is_text_measurement_utf8_continuation(char value) {
-  return (static_cast<unsigned char>(value) & 0xC0U) == 0x80U;
-}
-
-DecodedMeasurementCodepoint decode_measurement_codepoint(
-    const TextShapeRun& run,
-    std::size_t glyph_index) {
-  if (glyph_index >= run.glyphs.size()) {
-    return {};
-  }
-  const TextGlyphRun& glyph = run.glyphs[glyph_index];
-  if (glyph.byte_offset >= run.text.size()) {
-    return DecodedMeasurementCodepoint{
-        .byte_start = run.text.size(),
-        .byte_end = run.text.size(),
-    };
-  }
-
-  std::size_t byte_end =
-      std::min(glyph.byte_offset + glyph.byte_length, run.text.size());
-  while (byte_end < run.text.size() &&
-         is_text_measurement_utf8_continuation(run.text[byte_end])) {
-    byte_end += 1;
-  }
-
-  const auto first = static_cast<unsigned char>(run.text[glyph.byte_offset]);
-  if (first < 0x80U) {
-    return DecodedMeasurementCodepoint{
-        .value = first,
-        .byte_start = glyph.byte_offset,
-        .byte_end = glyph.byte_offset + 1,
-    };
-  }
-  if (byte_end - glyph.byte_offset == 2) {
-    const auto second =
-        static_cast<unsigned char>(run.text[glyph.byte_offset + 1]);
-    return DecodedMeasurementCodepoint{
-        .value = ((static_cast<std::uint32_t>(first) & 0x1FU) << 6U) |
-            (static_cast<std::uint32_t>(second) & 0x3FU),
-        .byte_start = glyph.byte_offset,
-        .byte_end = byte_end,
-    };
-  }
-  if (byte_end - glyph.byte_offset == 3) {
-    const auto second =
-        static_cast<unsigned char>(run.text[glyph.byte_offset + 1]);
-    const auto third =
-        static_cast<unsigned char>(run.text[glyph.byte_offset + 2]);
-    return DecodedMeasurementCodepoint{
-        .value = ((static_cast<std::uint32_t>(first) & 0x0FU) << 12U) |
-            ((static_cast<std::uint32_t>(second) & 0x3FU) << 6U) |
-            (static_cast<std::uint32_t>(third) & 0x3FU),
-        .byte_start = glyph.byte_offset,
-        .byte_end = byte_end,
-    };
-  }
-  if (byte_end - glyph.byte_offset == 4) {
-    const auto second =
-        static_cast<unsigned char>(run.text[glyph.byte_offset + 1]);
-    const auto third =
-        static_cast<unsigned char>(run.text[glyph.byte_offset + 2]);
-    const auto fourth =
-        static_cast<unsigned char>(run.text[glyph.byte_offset + 3]);
-    return DecodedMeasurementCodepoint{
-        .value = ((static_cast<std::uint32_t>(first) & 0x07U) << 18U) |
-            ((static_cast<std::uint32_t>(second) & 0x3FU) << 12U) |
-            ((static_cast<std::uint32_t>(third) & 0x3FU) << 6U) |
-            (static_cast<std::uint32_t>(fourth) & 0x3FU),
-        .byte_start = glyph.byte_offset,
-        .byte_end = byte_end,
-    };
-  }
-  return DecodedMeasurementCodepoint{
-      .value = first,
-      .byte_start = glyph.byte_offset,
-      .byte_end = byte_end,
-  };
-}
 
 bool is_text_measurement_combining_mark(std::uint32_t value) {
   return (value >= 0x0300U && value <= 0x036FU) ||
@@ -113,19 +41,8 @@ bool is_text_measurement_zero_width_joiner(std::uint32_t value) {
   return value == 0x200DU;
 }
 
-bool text_measurement_is_crlf_pair(
-    const TextShapeRun& run,
-    std::size_t first_glyph_index,
-    std::size_t second_glyph_index) {
-  if (second_glyph_index >= run.glyphs.size()) {
-    return false;
-  }
-  const DecodedMeasurementCodepoint first =
-      decode_measurement_codepoint(run, first_glyph_index);
-  const DecodedMeasurementCodepoint second =
-      decode_measurement_codepoint(run, second_glyph_index);
-  return first.value == '\r' && second.value == '\n' &&
-      first.byte_end == second.byte_start;
+bool text_measurement_is_crlf_pair(char32_t previous, char32_t current) {
+  return previous == U'\r' && current == U'\n';
 }
 
 bool text_grapheme_column_includes_codepoint(
@@ -134,84 +51,135 @@ bool text_grapheme_column_includes_codepoint(
     std::size_t regional_indicator_count) {
   return is_text_measurement_combining_mark(codepoint) ||
       is_text_measurement_variation_selector(codepoint) ||
+      is_text_measurement_zero_width_joiner(codepoint) ||
       follows_zero_width_joiner ||
       (regional_indicator_count == 1U &&
        is_text_measurement_regional_indicator(codepoint));
 }
 
-void append_text_grapheme_column_glyph(
-    TextGraphemeColumn& column,
-    const TextShapeRun& run,
-    std::size_t glyph_index) {
-  const TextGlyphRun& glyph = run.glyphs[glyph_index];
-  column.glyph_end = glyph_index + 1U;
-  column.byte_end =
-      std::min(glyph.byte_offset + glyph.byte_length, run.text.size());
-  column.advance += glyph.advance;
-  column.device_advance += glyph.advance * normalized_scale(run.scale);
+// Extended grapheme clusters for the subset CGPUI recognizes: CRLF,
+// combining marks, variation selectors, ZWJ sequences, flag pairs.
+std::vector<TextGraphemeColumn> segment_graphemes(const std::string& text) {
+  std::vector<TextGraphemeColumn> columns;
+  columns.reserve(text.size());
+  std::size_t offset = 0;
+  char32_t previous = U'\0';
+  bool follows_joiner = false;
+  std::size_t regional_count = 0;
+  while (offset < text.size()) {
+    std::size_t length = 0;
+    const char32_t codepoint = text_shaping_decode_utf8(text, offset, &length);
+    const bool extends = !columns.empty() &&
+        (text_measurement_is_crlf_pair(previous, codepoint) ||
+         text_grapheme_column_includes_codepoint(
+             codepoint, follows_joiner, regional_count));
+    if (extends) {
+      columns.back().byte_end = offset + length;
+    } else {
+      columns.push_back(TextGraphemeColumn{
+          .column_start = columns.size(),
+          .column_end = columns.size() + 1U,
+          .byte_start = offset,
+          .byte_end = offset + length,
+          .glyph_start = unset_glyph,
+          .glyph_end = unset_glyph,
+      });
+      regional_count = 0;
+    }
+    follows_joiner = is_text_measurement_zero_width_joiner(codepoint);
+    if (is_text_measurement_regional_indicator(codepoint)) {
+      regional_count += 1U;
+    }
+    previous = codepoint;
+    offset += length;
+  }
+  return columns;
+}
+
+std::vector<ShapedCluster> shaped_clusters(const TextShapeRun& run) {
+  std::vector<ShapedCluster> clusters;
+  clusters.reserve(run.glyphs.size());
+  for (std::size_t index = 0; index < run.glyphs.size(); ++index) {
+    const TextGlyphRun& glyph = run.glyphs[index];
+    const std::size_t end =
+        std::min(glyph.byte_offset + glyph.byte_length, run.text.size());
+    if (!clusters.empty() && clusters.back().byte_start == glyph.byte_offset) {
+      clusters.back().glyph_end = index + 1U;
+      clusters.back().byte_end = std::max(clusters.back().byte_end, end);
+      clusters.back().advance += glyph.advance;
+      continue;
+    }
+    clusters.push_back(ShapedCluster{
+        .byte_start = glyph.byte_offset,
+        .byte_end = end,
+        .glyph_start = index,
+        .glyph_end = index + 1U,
+        .advance = glyph.advance,
+    });
+  }
+  return clusters;
+}
+
+void assign_cluster(
+    std::vector<TextGraphemeColumn>& columns,
+    std::size_t first,
+    std::size_t last,
+    const ShapedCluster& cluster,
+    float scale) {
+  // A ligature covering several graphemes divides its advance evenly so
+  // carets and hit tests can land inside it. The first grapheme owns the
+  // glyphs; the rest get an empty range after them.
+  const float share = cluster.advance / static_cast<float>(last - first);
+  for (std::size_t index = first; index < last; ++index) {
+    TextGraphemeColumn& column = columns[index];
+    column.advance += share;
+    column.device_advance += share * scale;
+    if (index == first) {
+      if (column.glyph_start == unset_glyph) {
+        column.glyph_start = cluster.glyph_start;
+      }
+      column.glyph_end = cluster.glyph_end;
+    } else if (column.glyph_start == unset_glyph) {
+      column.glyph_start = cluster.glyph_end;
+      column.glyph_end = cluster.glyph_end;
+    }
+  }
 }
 
 } // namespace
 
 std::vector<TextGraphemeColumn> build_text_grapheme_columns(
     const TextShapeRun& run) {
-  std::vector<TextGraphemeColumn> columns;
-  columns.reserve(run.glyphs.size());
-
-  std::size_t glyph_index = 0;
-  while (glyph_index < run.glyphs.size()) {
-    const DecodedMeasurementCodepoint first =
-        decode_measurement_codepoint(run, glyph_index);
-    TextGraphemeColumn column{
-        .column_start = columns.size(),
-        .column_end = columns.size() + 1U,
-        .byte_start = first.byte_start,
-        .byte_end = first.byte_end,
-        .glyph_start = glyph_index,
-        .glyph_end = glyph_index,
-    };
-
-    std::size_t regional_indicator_count =
-        is_text_measurement_regional_indicator(first.value) ? 1U : 0U;
-    bool follows_zero_width_joiner = false;
-    append_text_grapheme_column_glyph(column, run, glyph_index);
-    glyph_index += 1;
-    if (text_measurement_is_crlf_pair(
-            run,
-            column.glyph_start,
-            glyph_index)) {
-      append_text_grapheme_column_glyph(column, run, glyph_index);
-      glyph_index += 1;
-      columns.push_back(column);
-      continue;
+  std::vector<TextGraphemeColumn> columns = segment_graphemes(run.text);
+  if (columns.empty()) {
+    return columns;
+  }
+  const float scale = normalized_scale(run.scale);
+  std::size_t cursor = 0;
+  for (const ShapedCluster& cluster : shaped_clusters(run)) {
+    while (cursor < columns.size() &&
+           columns[cursor].byte_end <= cluster.byte_start) {
+      cursor += 1U;
     }
-
-    while (glyph_index < run.glyphs.size()) {
-      const DecodedMeasurementCodepoint current =
-          decode_measurement_codepoint(run, glyph_index);
-      if (is_text_measurement_zero_width_joiner(current.value)) {
-        append_text_grapheme_column_glyph(column, run, glyph_index);
-        glyph_index += 1;
-        follows_zero_width_joiner = true;
-        continue;
-      }
-
-      if (!text_grapheme_column_includes_codepoint(
-              current.value,
-              follows_zero_width_joiner,
-              regional_indicator_count)) {
-        break;
-      }
-
-      append_text_grapheme_column_glyph(column, run, glyph_index);
-      glyph_index += 1;
-      follows_zero_width_joiner = false;
-      if (is_text_measurement_regional_indicator(current.value)) {
-        regional_indicator_count += 1U;
-      }
+    std::size_t first = std::min(cursor, columns.size() - 1U);
+    std::size_t last = first;
+    while (last < columns.size() &&
+           columns[last].byte_start < std::max(cluster.byte_end,
+                                               cluster.byte_start + 1U)) {
+      last += 1U;
     }
-
-    columns.push_back(column);
+    if (last == first) {
+      last = first + 1U;
+    }
+    assign_cluster(columns, first, last, cluster, scale);
+  }
+  std::size_t previous_end = 0;
+  for (TextGraphemeColumn& column : columns) {
+    if (column.glyph_start == unset_glyph) {
+      column.glyph_start = previous_end;
+      column.glyph_end = previous_end;
+    }
+    previous_end = column.glyph_end;
   }
   return columns;
 }

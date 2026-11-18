@@ -48,6 +48,12 @@ class BackdropView final : public cgpui::View {
         cgpui::rgba(255, 255, 255, 0.6F), 1.0F);
     paint_list.fill_text(Rect{{272, 200}, {360, 40}}, cgpui::rgb(10, 10, 10),
                          "Floating panel", {}, 28.0F);
+    // Chinese "floating panel" + "Chinese" (U+6D6E U+52A8 U+9762 U+677F,
+    // U+4E2D U+6587): CJK through DirectWrite / fontconfig font fallback.
+    paint_list.fill_text(Rect{{272, 250}, {360, 40}}, cgpui::rgb(10, 10, 10),
+                         "\xE6\xB5\xAE\xE5\x8A\xA8\xE9\x9D\xA2\xE6\x9D\xBF "
+                         "\xE4\xB8\xAD\xE6\x96\x87",
+                         {}, 28.0F);
   }
 };
 

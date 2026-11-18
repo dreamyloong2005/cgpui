@@ -1,5 +1,6 @@
 #include "vulkan_report_internal.hpp"
 #include "cgpui/ui/text_glyph_rasterizer.hpp"
+#include "vulkan_text_glyph_placement.hpp"
 
 #include <cstddef>
 
@@ -43,23 +44,12 @@ std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
   quads.reserve(text.glyphs.size());
 
   for (const TextGlyphPaint& glyph : text.glyphs) {
-    TextGlyphPaint raster_glyph = glyph;
-    raster_glyph.key.raster_advance = glyph.device_advance;
-    if (glyph.key.byte_offset < text.content.size() &&
-        glyph.key.byte_length <= text.content.size() - glyph.key.byte_offset) {
-      raster_glyph.key.text = text.content.substr(
-          glyph.key.byte_offset, glyph.key.byte_length);
-    }
-    // Reuse a real cluster at any position. Offsets stay on the draw metadata;
-    // they must not multiply atlas allocations or alias a different string.
-    if (!raster_glyph.key.text.empty()) {
-      raster_glyph.key.glyph_index = 0;
-      if (raster_glyph.key.shaping_backend == TextShapingBackend::deterministic_fallback) {
-        raster_glyph.key.glyph_id = 0;
-      }
-      raster_glyph.key.byte_offset = 0;
-      raster_glyph.key.byte_length = raster_glyph.key.text.size();
-    }
+    const bool native =
+        glyph.key.shaping_backend != TextShapingBackend::deterministic_fallback;
+    const GlyphPlacement placement = native
+        ? native_glyph_placement(glyph)
+        : cell_glyph_placement(glyph, text.content);
+    const TextGlyphPaint& raster_glyph = placement.raster;
     const GlyphCacheLookup lookup = glyph_cache.lookup(raster_glyph.key);
     GlyphAtlasEntry entry;
     if (lookup.hit && lookup.entry.has_value()) {
@@ -87,8 +77,8 @@ std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
         .page_index = entry.page_index,
         .device_bounds =
             Rect{
-                .origin = {glyph.device_origin.x + entry.left_bearing,
-                           glyph.device_origin.y + entry.top_bearing},
+                .origin = {placement.device_pen.x + entry.left_bearing,
+                           placement.device_pen.y + entry.top_bearing},
                 .size = entry.atlas_bounds.size,
             },
         .atlas_bounds = entry.atlas_bounds,

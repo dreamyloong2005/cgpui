@@ -58,6 +58,7 @@ TextShapeRun shape_text(
       .direction = resolve_text_shaping_direction(options.direction),
       .script = resolve_text_shaping_script(options.script),
       .language = std::move(options.language),
+      .tab_width_in_spaces = options.tab_width_in_spaces,
   });
 }
 
@@ -86,6 +87,7 @@ TextShapeRun shape_text(
       .direction = resolve_text_shaping_direction(options.direction),
       .script = resolve_text_shaping_script(options.script),
       .language = std::move(options.language),
+      .tab_width_in_spaces = options.tab_width_in_spaces,
   });
 }
 

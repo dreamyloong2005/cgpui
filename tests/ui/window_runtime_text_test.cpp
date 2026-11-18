@@ -1636,6 +1636,10 @@ int test_runtime_routes_ime_delete_surrounding_to_focused_text_model() {
 } // namespace
 
 int main() {
+  // Asserts fixed deterministic advances; native shaping is covered by
+  // native_text_shaping_test.
+  cgpui::set_default_text_shaping_backend(
+      cgpui::TextShapingBackend::deterministic_fallback);
   if (const int result = test_runtime_dispatches_key_binding_actions(); result != 0) {
     return result;
   }

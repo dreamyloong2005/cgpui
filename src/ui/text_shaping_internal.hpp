@@ -18,12 +18,16 @@ struct TextShapingRequest {
   TextShapingDirection direction = TextShapingDirection::left_to_right;
   TextShapingScript script = TextShapingScript::common;
   std::string language;
+  float tab_width_in_spaces = 4.0F;
 };
 
 [[nodiscard]] TextShapeRun shape_text_with_selected_backend(
     TextShapingRequest request);
 
 [[nodiscard]] TextShapeRun shape_text_with_harfbuzz(
+    TextShapingRequest request);
+
+[[nodiscard]] TextShapeRun shape_text_with_directwrite(
     TextShapingRequest request);
 
 [[nodiscard]] TextShapeRun shape_text_with_deterministic_fallback(

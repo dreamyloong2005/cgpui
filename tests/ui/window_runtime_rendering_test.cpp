@@ -860,6 +860,10 @@ RuntimeFixture* key_binding_fixture = nullptr;
 } // namespace
 
 int main() {
+  // Asserts fixed deterministic advances; native shaping is covered by
+  // native_text_shaping_test.
+  cgpui::set_default_text_shaping_backend(
+      cgpui::TextShapingBackend::deterministic_fallback);
   if (const int result = test_redraw_paints_initial_viewport(); result != 0) {
     return result;
   }

@@ -168,6 +168,10 @@ void verify_input_validation() {
 } // namespace
 
 int main() {
+  // Asserts fixed deterministic advances; native shaping is covered by
+  // native_text_shaping_test.
+  cgpui::set_default_text_shaping_backend(
+      cgpui::TextShapingBackend::deterministic_fallback);
   try {
     verify_native_masks();
     verify_atlas_and_metadata();

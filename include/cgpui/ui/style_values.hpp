@@ -1,11 +1,13 @@
 #pragma once
 
 #include "cgpui/core/geometry.hpp"
+#include "cgpui/ui/style_font.hpp"
 
 #include <algorithm>
 #include <cmath>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace cgpui {
 
@@ -229,8 +231,14 @@ struct BackdropBlur {
   std::optional<Color> tint;
 };
 
+// An empty family or a generic name ("sans-serif", "system-ui",
+// "monospace") resolves to the platform default. Monospaced faces disable
+// `liga` and `calt` unless `features` enables them explicitly.
 struct FontDescriptor {
   std::string family;
+  std::uint16_t weight = font_weight_normal;
+  FontStyle style = FontStyle::normal;
+  std::vector<FontFeature> features;
 
   friend bool operator==(
       const FontDescriptor&,
