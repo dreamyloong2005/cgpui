@@ -106,3 +106,17 @@ target("text_font_defaults_header_cleanliness")
     add_files(path.join(os.projectdir(), "tests/header_cleanliness/text_font_defaults_header_cleanliness.cpp"))
     add_includedirs(path.join(os.projectdir(), public_includedirs))
     add_tests("default")
+
+if is_plat("windows") then
+    -- Regression for the clipped last glyph: rendered ink vs bitmap ink.
+    target("vulkan_text_ink_extent_pixel_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/renderer/vulkan_text_ink_extent_pixel_test.cpp"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui",
+                 "cgpui_renderer_vulkan")
+        add_packages("vulkansdk")
+        add_includedirs(path.join(os.projectdir(), public_includedirs),
+                        path.join(os.projectdir(), "tests/renderer"))
+        add_syslinks("user32")
+        add_tests("default")
+end

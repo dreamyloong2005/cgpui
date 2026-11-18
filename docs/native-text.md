@@ -185,9 +185,14 @@ testing inside the `ffi` ligature, monospace columns and tab stops, caret and
 hit-test round trips, selection across fallback runs, wrapping widths, DPI 1.0 /
 1.5 and the shape cache. `native_text_glyph_spacing_test` measures ink gaps
 through the production Vulkan quad builder at scale 1 and 1.5 with a 0.2 em
-limit.
+limit. `vulkan_text_ink_extent_pixel_test` (Windows) renders "blur", "f",
+"W", "j" and italics at 48 px, scale 1 and 1.5, and requires the rendered ink
+extent to match the glyph bitmaps on both sides (no clip at the last pen
+position or at a negative left bearing).
 
 Real window: `example_backdrop_blur` captured on Windows at 1350 x 900 shows
 "CGPUI backdrop blur" and "Floating panel" with natural proportional spacing
 (no gaps after l, i, r) and the Chinese line in Microsoft YaHei UI at full
-width. The Linux Wayland window was not captured.
+width. The final "r" of the title looks cut at 150 % because its arm ends at
+logical x 484, over the black stripe at 480..486; drawing the title in green
+shows the arm's ink continuing over the stripe (2026-11-18). The Linux Wayland window was not captured.
