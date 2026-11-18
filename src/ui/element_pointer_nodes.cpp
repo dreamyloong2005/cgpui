@@ -20,7 +20,7 @@ const Element* ClickElement::child() const {
 LayoutOutput ClickElement::layout(LayoutInput input) const {
   if (child_) {
     const LayoutOutput output = child_->layout(input);
-    child_->set_layout_bounds(Rect{
+    child_->place_layout(Rect{
         .origin = output.origin,
         .size = output.size,
     });
@@ -85,7 +85,7 @@ const Element* PointerElement::child() const {
 LayoutOutput PointerElement::layout(LayoutInput input) const {
   if (child_) {
     const LayoutOutput output = child_->layout(input);
-    child_->set_layout_bounds(Rect{
+    child_->place_layout(Rect{
         .origin = output.origin,
         .size = output.size,
     });

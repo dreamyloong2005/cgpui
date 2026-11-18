@@ -174,7 +174,7 @@ LayoutOutput StyledElement::layout(LayoutInput input) const {
         child_y += base_style.gap;
       }
       const LayoutOutput child_output = child.layout(input);
-      child.set_layout_bounds(Rect{
+      child.place_layout(Rect{
           .origin =
               {
                   .x = base_style.margin.left + base_style.padding.left,
@@ -222,7 +222,7 @@ LayoutOutput StyledElement::layout(LayoutInput input) const {
     }
     child.inherit_text_style(child_text_style);
     const LayoutOutput child_output = child.layout(input);
-    child.set_layout_bounds(Rect{
+    child.place_layout(Rect{
         .origin = absolute_origin(output.size, child.inset()),
         .size = child_output.size,
     });

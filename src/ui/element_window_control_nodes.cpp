@@ -26,7 +26,7 @@ LayoutOutput WindowControlAreaElement::layout(LayoutInput input) const {
   if (!child_) return Element::layout(input);
   const LayoutOutput output = child_->layout(input);
   const Rect bounds{.origin = output.origin, .size = output.size};
-  child_->set_layout_bounds(bounds);
+  child_->place_layout(bounds);
   set_layout_bounds(bounds);
   return output;
 }

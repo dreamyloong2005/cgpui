@@ -53,10 +53,9 @@ void WidgetTreeBuilder::request_focus(const ElementId* id) {
 std::unique_ptr<ElementTree> WidgetTreeBuilder::finish() {
   cursors_.clear();
   auto tree = std::make_unique<ElementTree>();
-  auto root = std::make_unique<WidgetRootElement>(viewport_);
-  WidgetRootElement* root_element = root.get();
-  const ElementId root_id = tree->set_root(std::move(root));
-  root_element->attach(tree.get());
+  const ElementId root_id = tree->set_root(std::make_unique<WidgetNodeElement>(
+      WidgetNode{.bounds = Rect{.size = viewport_}, .hit_testable = true},
+      Point{}));
 
   // Handle h (1-based) maps to ids[h]; ids[0] is the root.
   std::vector<ElementId> ids(pending_.size() + 1);
@@ -65,9 +64,12 @@ std::unique_ptr<ElementTree> WidgetTreeBuilder::finish() {
     Pending& entry = pending_[index];
     const ElementId parent = ids[entry.parent];
     if (parent.value == 0) return false;
+    const Point parent_origin = entry.parent == 0
+        ? Point{}
+        : pending_[entry.parent - 1].node.bounds.origin;
     const std::optional<CursorShape> cursor = entry.node.cursor;
     ids[index + 1] = tree->append_child(
-        parent, std::make_unique<WidgetNodeElement>(std::move(entry.node)));
+        parent, std::make_unique<WidgetNodeElement>(entry.node, parent_origin));
     if (entry.id_out != nullptr) *entry.id_out = ids[index + 1];
     if (cursor.has_value()) cursors_.emplace_back(ids[index + 1], *cursor);
     return true;
@@ -80,6 +82,7 @@ std::unique_ptr<ElementTree> WidgetTreeBuilder::finish() {
     if (ids[index + 1].value == 0) (void)append(index);
   }
   pending_.clear();
+  (void)tree->layout_root(LayoutInput{.constraints = {.max_size = viewport_}});
   return tree;
 }
 

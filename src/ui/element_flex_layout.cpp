@@ -129,7 +129,7 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
       cross_offset = std::max(0.0F, output_cross - child_cross);
     }
 
-    children_[index]->set_layout_bounds(Rect{
+    children_[index]->place_layout(Rect{
         .origin =
             row ? Point{.x = cursor, .y = cross_offset}
                 : Point{.x = cross_offset, .y = cursor},
@@ -145,7 +145,7 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
     if (!is_positioned_out_of_flow(children_[index]->position())) {
       continue;
     }
-    children_[index]->set_layout_bounds(Rect{
+    children_[index]->place_layout(Rect{
         .origin = absolute_origin(output.size, children_[index]->inset()),
         .size = child_sizes[index],
     });

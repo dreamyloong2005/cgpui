@@ -47,7 +47,7 @@ class ScrollElement : public Element {
     LayoutInput child_input = input;
     child_input.constraints = {};
     const LayoutOutput child_output = child_->layout(child_input);
-    child_->set_layout_bounds(Rect{
+    child_->place_layout(Rect{
         .origin = child_output.origin,
         .size = child_output.size,
     });
@@ -82,6 +82,9 @@ class ScrollElement : public Element {
                ? EventResult::unhandled()
                : child_->handle_event(event, context);
   }
+
+ protected:
+  void offset_layout_children(Point delta) const override;
 
  private:
   ScrollState* state_ = nullptr;
@@ -149,6 +152,9 @@ class ScrollableListElement : public Element {
   [[nodiscard]] int layer() const override {
     return style_.layer;
   }
+
+ protected:
+  void offset_layout_children(Point delta) const override;
 
  private:
   ScrollState* state_ = nullptr;

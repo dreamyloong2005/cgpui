@@ -34,6 +34,9 @@ class FocusableElement : public Element {
       const PlatformEvent& event,
       const ElementEventContext& context) override;
 
+ protected:
+  void offset_layout_children(Point delta) const override;
+
  private:
   std::unique_ptr<Element> child_;
 };
@@ -51,6 +54,9 @@ class KeyElement : public Element {
   [[nodiscard]] EventResult handle_event(
       const PlatformEvent& event,
       const ElementEventContext& context) override;
+
+ protected:
+  void offset_layout_children(Point delta) const override;
 
  private:
   std::unique_ptr<Element> child_;

@@ -67,7 +67,6 @@ const std::vector<std::pair<std::string, std::size_t>> source_limits{
     {"src/ui/workbench/tree_view_model.cpp", 250},
     {"src/ui/workbench/tree_view_paint.cpp", 120},
     {"src/ui/workbench/widget_node_element.cpp", 70},
-    {"src/ui/workbench/widget_root_element.cpp", 70},
     {"src/ui/workbench/widget_tree_builder.cpp", 120},
     {"src/ui/workbench/workbench_internal.hpp", 70},
     {"src/ui/workbench/workbench_theme.cpp", 140},

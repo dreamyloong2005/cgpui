@@ -46,7 +46,7 @@ bool FocusableElement::focusable() const {
 LayoutOutput FocusableElement::layout(LayoutInput input) const {
   if (child_) {
     const LayoutOutput output = child_->layout(input);
-    child_->set_layout_bounds(Rect{
+    child_->place_layout(Rect{
         .origin = output.origin,
         .size = output.size,
     });
@@ -99,7 +99,7 @@ const Element* KeyElement::child() const {
 LayoutOutput KeyElement::layout(LayoutInput input) const {
   if (child_) {
     const LayoutOutput output = child_->layout(input);
-    child_->set_layout_bounds(Rect{
+    child_->place_layout(Rect{
         .origin = output.origin,
         .size = output.size,
     });

@@ -46,12 +46,17 @@ void refresh_selection_flags(
   return std::nullopt;
 }
 
-[[nodiscard]] Point content_point(Point point, const ScrollState* state) {
-  if (state == nullptr) {
-    return point;
-  }
-  const Point offset = state->offset();
-  return Point{.x = point.x + offset.x, .y = point.y + offset.y};
+// Snapshot item bounds are list-local; `origin` is the list's window origin.
+[[nodiscard]] Point content_point(
+    Point point,
+    std::optional<Rect> bounds,
+    const ScrollState* state) {
+  const Point origin = bounds.has_value() ? bounds->origin : Point{};
+  const Point offset = state == nullptr ? Point{} : state->offset();
+  return Point{
+      .x = point.x - origin.x + offset.x,
+      .y = point.y - origin.y + offset.y,
+  };
 }
 
 } // namespace
@@ -69,7 +74,7 @@ EventResult ScrollableListElement::handle_event(
     const std::optional<UniformListSelection> selection =
         select_uniform_list_item_at_point(
             layout_snapshot_.items,
-            content_point(pointer->position, state_),
+            content_point(pointer->position, layout_bounds(), state_),
             UniformListSelectionSource::pointer);
     if (selection.has_value()) {
       selection_.set(*selection);

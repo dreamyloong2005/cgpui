@@ -52,6 +52,9 @@ class ToggleControlElement : public Element {
   [[nodiscard]] int z_index() const override;
   [[nodiscard]] int layer() const override;
 
+ protected:
+  void offset_layout_children(Point delta) const override;
+
  private:
   ToggleControlKind kind_;
   std::string action_name_;

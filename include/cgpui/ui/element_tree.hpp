@@ -93,6 +93,8 @@ class ElementTree {
       const AccessibilitySnapshotOptions& options,
       std::vector<AccessibilityNode>& nodes) const;
   void paint_subtree(ElementId id, PaintList& paint_list) const;
+  void layout_children(ElementId id, LayoutInput input) const;
+  [[nodiscard]] ElementId hit_test_subtree(ElementId id, Point point) const;
 
   std::vector<Node> nodes_;
   ElementId root_id_;

@@ -46,7 +46,7 @@ LayoutOutput VerticalStackElement::layout(LayoutInput input) const {
     if (relative_child_index > 0) {
       content_size.height += gap_;
     }
-    child->set_layout_bounds(Rect{
+    child->place_layout(Rect{
         .origin = {.x = 0.0F, .y = content_size.height},
         .size = child_output.size,
     });
@@ -70,7 +70,7 @@ LayoutOutput VerticalStackElement::layout(LayoutInput input) const {
     LayoutInput child_input = input;
     child_input.constraints = {};
     const LayoutOutput child_output = child->layout(child_input);
-    child->set_layout_bounds(Rect{
+    child->place_layout(Rect{
         .origin = absolute_origin(output.size, child->inset()),
         .size = child_output.size,
     });

@@ -1,12 +1,15 @@
 #include "cgpui/ui/widget_tree.hpp"
 
+#include <optional>
 #include <utility>
 
 namespace cgpui {
 
-WidgetNodeElement::WidgetNodeElement(WidgetNode node) : node_(std::move(node)) {
+WidgetNodeElement::WidgetNodeElement(WidgetNode node, Point parent_origin)
+    : node_(std::move(node)),
+      offset_{.x = node_.bounds.origin.x - parent_origin.x,
+              .y = node_.bounds.origin.y - parent_origin.y} {
   set_enabled(node_.enabled);
-  set_layout_bounds(node_.bounds);
 }
 
 const WidgetNode& WidgetNodeElement::node() const {
@@ -15,12 +18,15 @@ const WidgetNode& WidgetNodeElement::node() const {
 
 LayoutOutput WidgetNodeElement::layout(LayoutInput input) const {
   (void)input;
-  set_layout_bounds(node_.bounds);
-  return LayoutOutput{.origin = node_.bounds.origin, .size = node_.bounds.size};
+  set_layout_bounds(Rect{.origin = offset_, .size = node_.bounds.size});
+  return LayoutOutput{.origin = offset_, .size = node_.bounds.size};
 }
 
 ElementId WidgetNodeElement::hit_test(Point point) const {
-  return node_.hit_testable && contains(node_.bounds, point) ? id() : ElementId{};
+  const std::optional<Rect> bounds = layout_bounds();
+  return node_.hit_testable && bounds.has_value() && contains(*bounds, point)
+             ? id()
+             : ElementId{};
 }
 
 bool WidgetNodeElement::focusable() const {

@@ -25,8 +25,11 @@ hit-testable, z order, cursor). `install(context)` sets it with
 node cursors and a pending focus request. Nodes marked *stable* get their ids
 first, so a container keeps its id when rows, tabs or menu items change;
 keyboard focus, pointer capture and cursors key on those ids.
-`WidgetRootElement` hit-tests the tree: children before parents, higher
-z order first, later siblings first.
+Widgets give node bounds in window coordinates; the builder stores each
+node's offset from its parent node and the element layer places it back
+(`ElementTree::layout_root` accumulates parent origins, as GPUI's layout
+bounds are absolute). `ElementTree::hit_test_root` routes the hit: tree
+children before parents, higher z order first, later siblings first.
 
 Widget nodes never consume events, so every event reaches the view. The app
 forwards in this order: popover menu (modal while open), tooltip, its own
@@ -221,8 +224,8 @@ is not visible to UIA clients yet.
 
 ## Allocation
 
-Steady state: widget layout, hit testing (`WidgetRootElement` walks z levels
-without sorting), input and paint do not allocate; text is measured when it
+Steady state: widget layout, hit testing (`ElementTree::hit_test_root` walks z
+levels without sorting), input and paint do not allocate; text is measured when it
 changes. Each render builds a new element tree (`WidgetTreeBuilder`
 allocates nodes and accessibility strings), which is the framework render
 model. `PaintList::fill_text` copies the string per paint command.

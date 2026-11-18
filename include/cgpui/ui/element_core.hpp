@@ -293,12 +293,25 @@ class Element {
     layout_bounds_ = bounds;
   }
 
+  // Layout bounds are window coordinates at every depth (GPUI model). An
+  // element lays its children out around its own bounds as set by layout();
+  // the parent then places it, which moves the element and every
+  // descendant by the same offset.
+  void place_layout(Rect bounds) const;
+  void offset_layout(Point delta) const;
+
   void assign_id(ElementId id) {
     id_ = id;
   }
 
   void set_key(std::optional<ElementKey> key) {
     key_ = std::move(key);
+  }
+
+ protected:
+  // Containers forward to offset_layout() of each child they own.
+  virtual void offset_layout_children(Point delta) const {
+    (void)delta;
   }
 
  private:

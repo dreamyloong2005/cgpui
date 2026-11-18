@@ -11,7 +11,7 @@ LayoutOutput ToggleControlElement::layout(LayoutInput input) const {
         merge_inherited_text_style(inherited_text_style_, style_state_.base));
     const LayoutOutput child_output = child_->layout(input);
     content_size = child_output.size;
-    child_->set_layout_bounds(Rect{
+    child_->place_layout(Rect{
         .origin =
             {
                 .x = style_state_.base.margin.left +

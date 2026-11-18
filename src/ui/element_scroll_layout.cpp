@@ -107,22 +107,18 @@ LayoutOutput ScrollableListElement::layout(LayoutInput input) const {
     item.selected = selection_.selected(item.key);
   }
 
-  content_.set_layout_bounds(Rect{
+  // Snapshot bounds above stay list-local; placing the content moves every
+  // item and its descendants by the scroll offset.
+  content_.place_layout(Rect{
       .origin = {.x = -offset.x, .y = -offset.y},
       .size = content_output.size,
   });
-  for (const auto& child : children) {
-    if (const std::optional<Rect> bounds = child->layout_bounds();
-        bounds.has_value()) {
-      child->set_layout_bounds(Rect{
-          .origin = {.x = bounds->origin.x - offset.x,
-                     .y = bounds->origin.y - offset.y},
-          .size = bounds->size,
-      });
-    }
-  }
 
   return output;
+}
+
+void ScrollableListElement::offset_layout_children(Point delta) const {
+  content_.offset_layout(delta);
 }
 
 } // namespace cgpui

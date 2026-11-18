@@ -113,6 +113,9 @@ class AnimationElement final : public Element {
   [[nodiscard]] int z_index() const override;
   [[nodiscard]] int layer() const override;
 
+ protected:
+  void offset_layout_children(Point delta) const override;
+
  private:
   ElementKey animation_key_;
   AnimationOptions options_;

@@ -48,6 +48,9 @@ class StyledElement : public Element {
   [[nodiscard]] int z_index() const override;
   [[nodiscard]] int layer() const override;
 
+ protected:
+  void offset_layout_children(Point delta) const override;
+
  private:
   StyleState style_state_;
   StyleClasses style_classes_;

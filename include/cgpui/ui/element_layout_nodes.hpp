@@ -28,6 +28,10 @@ class VerticalStackElement : public Element {
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
   void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
+  void paint(PaintList& paint_list) const override;
+
+ protected:
+  void offset_layout_children(Point delta) const override;
 
  private:
   float gap_ = 0.0F;
@@ -56,6 +60,10 @@ class FlexElement : public Element {
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
   void inherit_text_style(const Style& style) override;
   [[nodiscard]] ElementId hit_test(Point point) const override;
+  void paint(PaintList& paint_list) const override;
+
+ protected:
+  void offset_layout_children(Point delta) const override;
 
  private:
   FlexDirection direction_;

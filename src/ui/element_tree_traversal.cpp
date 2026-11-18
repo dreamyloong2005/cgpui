@@ -1,5 +1,7 @@
 #include "cgpui/ui/element_tree.hpp"
 
+#include <limits>
+
 namespace cgpui {
 
 ElementId ElementTree::root_id() const {
@@ -26,12 +28,70 @@ LayoutOutput ElementTree::layout_root(LayoutInput input) const {
         .size = constrain_size({}, input.constraints),
     };
   }
-  return root->layout(input);
+  const LayoutOutput output = root->layout(input);
+  root->place_layout(Rect{.origin = output.origin, .size = output.size});
+  layout_children(root_id_, input);
+  return output;
+}
+
+// Tree children are laid out after their parent and placed at the parent's
+// window origin plus their own layout origin, so bounds stay window
+// coordinates at every depth.
+void ElementTree::layout_children(ElementId id, LayoutInput input) const {
+  const Node* node = find_node(id);
+  if (node == nullptr) {
+    return;
+  }
+  const std::optional<Rect> parent_bounds = node->element->layout_bounds();
+  const Point origin = parent_bounds.has_value() ? parent_bounds->origin : Point{};
+  LayoutInput child_input = input;
+  child_input.constraints = {};
+  for (const ElementId child_id : node->children) {
+    const Node* child = find_node(child_id);
+    if (child == nullptr) {
+      continue;
+    }
+    const LayoutOutput output = child->element->layout(child_input);
+    child->element->place_layout(Rect{
+        .origin = {.x = origin.x + output.origin.x,
+                   .y = origin.y + output.origin.y},
+        .size = output.size,
+    });
+    layout_children(child_id, input);
+  }
 }
 
 ElementId ElementTree::hit_test_root(Point point) const {
-  const Element* root = get(root_id_);
-  return root == nullptr ? ElementId{} : root->hit_test(point);
+  return hit_test_subtree(root_id_, point);
+}
+
+// Topmost first: tree children before their parent, higher z order first,
+// later siblings first within one z order. Walks distinct z levels instead
+// of sorting so hit tests do not allocate.
+ElementId ElementTree::hit_test_subtree(ElementId id, Point point) const {
+  const Node* node = find_node(id);
+  if (node == nullptr) {
+    return {};
+  }
+  const std::span<const ElementId> children = node->children;
+  long long upper = std::numeric_limits<long long>::max();
+  while (!children.empty()) {
+    long long level = std::numeric_limits<long long>::min();
+    for (const ElementId child : children) {
+      const Element* element = get(child);
+      const long long z = element == nullptr ? level : element->z_order();
+      if (z < upper && z > level) level = z;
+    }
+    if (level == std::numeric_limits<long long>::min()) break;
+    for (std::size_t index = children.size(); index-- > 0;) {
+      const Element* element = get(children[index]);
+      if (element == nullptr || element->z_order() != level) continue;
+      const ElementId hit = hit_test_subtree(children[index], point);
+      if (hit.value != 0) return hit;
+    }
+    upper = level;
+  }
+  return node->element->hit_test(point);
 }
 
 std::vector<ElementId> ElementTree::preorder_ids() const {

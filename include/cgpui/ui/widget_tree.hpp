@@ -30,9 +30,12 @@ struct WidgetNode {
   std::optional<CursorShape> cursor;
 };
 
+// Element of one widget node. The builder stores the node's offset from its
+// parent node; ElementTree::layout_root places it back in window
+// coordinates, and ElementTree::hit_test_root routes to it.
 class WidgetNodeElement final : public Element {
  public:
-  explicit WidgetNodeElement(WidgetNode node);
+  WidgetNodeElement(WidgetNode node, Point parent_origin);
 
   [[nodiscard]] const WidgetNode& node() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
@@ -47,23 +50,7 @@ class WidgetNodeElement final : public Element {
 
  private:
   WidgetNode node_;
-};
-
-// Root of a widget tree: hit-tests the tree's nodes (children before
-// parents, higher z_order first, later siblings first).
-class WidgetRootElement final : public Element {
- public:
-  explicit WidgetRootElement(Size viewport);
-
-  void attach(const ElementTree* tree);
-  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
-  [[nodiscard]] ElementId hit_test(Point point) const override;
-
- private:
-  [[nodiscard]] ElementId hit_test_children(ElementId id, Point point) const;
-
-  Size viewport_;
-  const ElementTree* tree_ = nullptr;
+  Point offset_;
 };
 
 // Builds the window element tree for workbench widgets. Nodes marked

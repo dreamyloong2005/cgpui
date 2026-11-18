@@ -64,7 +64,7 @@ LayoutOutput AnimationElement::layout(LayoutInput input) const {
     callback_(*child_, snapshot);
   }
   const LayoutOutput output = child_->layout(input);
-  child_->set_layout_bounds(Rect{
+  child_->place_layout(Rect{
       .origin = output.origin,
       .size = output.size,
   });
