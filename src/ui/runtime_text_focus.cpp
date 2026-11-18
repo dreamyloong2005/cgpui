@@ -53,6 +53,7 @@ std::optional<ImeCandidateRect> WindowRuntime::focused_text_ime_rect() const {
       .element_id = *keyboard_focus_element_owner_,
       .rect = *rect,
       .byte_offset = byte_offset,
+      .composition_rect = text_element->composition_start_rect(scale_),
   };
 }
 

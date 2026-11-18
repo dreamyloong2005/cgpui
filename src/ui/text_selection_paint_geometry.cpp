@@ -77,6 +77,34 @@ Rect text_line_rect_for_range(
 
 } // namespace
 
+std::vector<TextRangeLineRect> text_range_line_rects(
+    Rect bounds,
+    std::string_view text,
+    const FontDescriptor& font,
+    float font_size,
+    DpiScale scale,
+    std::size_t start,
+    std::size_t end) {
+  TextMeasurement measurement;
+  const TextWrapLayout wrap_layout = text_selection_wrap_layout(
+      text, font, font_size, scale, bounds.size.width, measurement);
+  std::vector<TextRangeLineRect> rects;
+  for (const TextWrapLine& line : wrap_layout.lines) {
+    const std::size_t line_start = std::max(start, line.byte_start);
+    const std::size_t line_end = std::min(end, line.byte_end);
+    if (line_start >= line_end) {
+      continue;
+    }
+    rects.push_back(TextRangeLineRect{
+        .rect = text_line_rect_for_range(
+            bounds, measurement, line, line_start, line_end),
+        .baseline = bounds.origin.y + line.origin.y + line.metrics.baseline,
+        .font_metrics = measurement.shape_run.font_metrics,
+    });
+  }
+  return rects;
+}
+
 void paint_text_selection_ranges(
     PaintList& paint_list,
     Rect bounds,

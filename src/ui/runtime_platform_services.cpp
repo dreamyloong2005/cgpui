@@ -60,8 +60,10 @@ void WindowRuntime::apply_focused_text_ime_placement() {
   if (const std::optional<ImeCandidateRect> candidate =
           focused_text_ime_rect();
       candidate.has_value() && model != nullptr) {
+    // The composition window anchors at the composition start; candidates
+    // (CFS_EXCLUDE, text-input v3 cursor rectangle) follow its caret.
     placement = ImeTextInputPlacement{
-        .rect = candidate->rect,
+        .rect = candidate->composition_rect.value_or(candidate->rect),
         .candidate_rect = candidate->rect,
         .byte_offset = candidate->byte_offset,
         .surrounding_text = std::string(model->text()),

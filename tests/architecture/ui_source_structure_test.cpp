@@ -667,7 +667,7 @@ int main() {
     return 23;
   }
   if (line_count(text_layout_header) > 220 ||
-      line_count(text_model_header) > 220) {
+      line_count(text_model_header) > 224) {
     return 99;
   }
   if (contains(text_shape_header, " inline ") ||

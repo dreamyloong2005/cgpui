@@ -1089,7 +1089,8 @@ int main(int argc, char** argv) {
       !contains(win32_window_ime, "ImmGetCompositionStringW") ||
       !contains(win32_window_ime, "GCS_COMPSTR") ||
       !contains(win32_window_ime, "GCS_RESULTSTR") ||
-      !contains(win32_window_ime, "ImeCompositionPhase::update") ||
+      // The update event is built by the pure IMM32 conversion (C8).
+      !contains(win32_window_ime, "win32_ime_composition_update(") ||
       !contains(win32_window_ime, "ImeCompositionPhase::commit") ||
       !contains(win32_window_ime, "ImeCompositionPhase::cancel") ||
       contains(win32_window_ime, "ImmSetCandidateWindow") ||

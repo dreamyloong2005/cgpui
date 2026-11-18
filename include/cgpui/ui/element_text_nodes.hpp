@@ -51,7 +51,14 @@ class TextElement : public Element {
     return shape_text(text(), font(), font_size());
   }
 
+  // While composing, caret_rect is the composition caret and
+  // composition_start_rect the caret before the composition text.
+  // The model text, with the IME composition in place of the selection
+  // while composing.
+  [[nodiscard]] std::string display_text() const;
   [[nodiscard]] std::optional<Rect> caret_rect(DpiScale scale) const;
+  [[nodiscard]] std::optional<Rect> composition_start_rect(
+      DpiScale scale) const;
   [[nodiscard]] bool scroll_caret_into_view(
       ScrollState& state,
       DpiScale scale) const;
@@ -69,8 +76,9 @@ class TextElement : public Element {
   }
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
+    // Measures the composition too, so it does not wrap while composing.
     const TextMeasurement measurement =
-        measure_text(text(), font(), font_size(), input.scale);
+        measure_text(display_text(), font(), font_size(), input.scale);
     const TextWrapLayout wrap_layout =
         wrap_text_measurement(measurement, input.constraints.max_size.width);
     const Size preferred = wrap_layout.logical_size;

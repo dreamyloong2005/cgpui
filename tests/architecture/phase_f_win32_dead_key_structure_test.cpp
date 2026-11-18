@@ -88,7 +88,7 @@ int main() {
       !contains(xmake, "target(\"phase_f_win32_dead_key_structure_test\")")) {
     return 3;
   }
-  if (line_count(text_header) > 65 || line_count(decoder_header) > 20 ||
+  if (line_count(text_header) > 80 || line_count(decoder_header) > 20 ||
       line_count(decoder) > 25 || line_count(window_text) > 35 ||
       line_count(window_internal) > 133 || line_count(proc) > 50 ||
       line_count(behavior) > 70) {

@@ -52,7 +52,10 @@ inline bool ime_text_input_placement_equal(
          lhs->content_hint == rhs->content_hint &&
          lhs->content_purpose == rhs->content_purpose &&
          lhs->surrounding_text == rhs->surrounding_text &&
-         rect_equal(lhs->rect, rhs->rect);
+         rect_equal(lhs->rect, rhs->rect) &&
+         lhs->candidate_rect.has_value() == rhs->candidate_rect.has_value() &&
+         (!lhs->candidate_rect.has_value() ||
+          rect_equal(*lhs->candidate_rect, *rhs->candidate_rect));
 }
 
 } // namespace

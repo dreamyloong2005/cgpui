@@ -55,6 +55,9 @@ int main() {
   std::uint32_t ime_preedit_style_length = 0;
   cgpui::ImePreeditStyleKind ime_preedit_style_kind =
       cgpui::ImePreeditStyleKind::highlight;
+  // text-input v3 has no clause attributes: one input clause (C8).
+  cgpui::ImeClauseStyle ime_preedit_clause =
+      cgpui::ImeClauseStyle::selected_converted;
   auto window = (*app)->create_window(
       cgpui::WindowDescriptor{
           .title = "CGPUI Wayland Keyboard Test",
@@ -96,6 +99,7 @@ int main() {
               ime_preedit_style_length =
                   composition->preedit_styles[0].byte_length;
               ime_preedit_style_kind = composition->preedit_styles[0].kind;
+              ime_preedit_clause = composition->preedit_styles[0].clause;
             }
           }
           if (composition->phase == cgpui::ImeCompositionPhase::commit &&
@@ -312,6 +316,9 @@ int main() {
   }
   if (ime_preedit_style_kind != cgpui::ImePreeditStyleKind::underline) {
     return 35;
+  }
+  if (ime_preedit_clause != cgpui::ImeClauseStyle::input) {
+    return 38;
   }
   if (!ime_delete_surrounding_received) {
     return 26;

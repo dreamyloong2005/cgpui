@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgpui/ui/text_composition.hpp"
 #include "cgpui/ui/text_edit_actions.hpp"
 #include "cgpui/ui/text_hit_testing.hpp"
 
@@ -73,6 +74,7 @@ class TextModel {
   [[nodiscard]] std::size_t selection_head() const;
   [[nodiscard]] bool has_composition() const;
   [[nodiscard]] std::string_view composition_text() const;
+  [[nodiscard]] const TextComposition& composition() const;
   [[nodiscard]] TextSelectionRange selection() const;
   [[nodiscard]] std::string selected_text() const;
   [[nodiscard]] std::size_t line_count() const;
@@ -87,6 +89,7 @@ class TextModel {
   void set_selection(std::size_t anchor, std::size_t head);
   void clear_selection();
   void set_composition_text(std::string_view text);
+  void set_composition(TextComposition composition);
   void commit_composition();
   void cancel_composition();
   void insert_text(std::string_view text);
@@ -196,7 +199,7 @@ class TextModel {
   [[nodiscard]] std::size_t next_word_boundary(std::size_t offset) const;
 
   std::string text_;
-  std::string composition_text_;
+  TextComposition composition_;
   std::optional<TextHistorySnapshot> composition_history_before_;
   std::size_t cursor_ = 0;
   std::size_t selection_anchor_ = 0;

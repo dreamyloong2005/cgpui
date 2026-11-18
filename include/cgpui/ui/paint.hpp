@@ -102,10 +102,13 @@ struct ImagePaint {
   ImageSamplingMode sampling = ImageSamplingMode::linear;
 };
 
+// `rect` is the caret (the composition caret while composing);
+// `composition_rect` the caret before the composition text, if composing.
 struct ImeCandidateRect {
   ElementId element_id;
   Rect rect;
   std::size_t byte_offset = 0;
+  std::optional<Rect> composition_rect;
 };
 
 struct PaintCommand {

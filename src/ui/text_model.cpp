@@ -31,13 +31,21 @@ bool TextModel::has_composition() const {
 }
 
 std::string_view TextModel::composition_text() const {
-  return composition_text_;
+  return composition_.text;
+}
+
+const TextComposition& TextModel::composition() const {
+  return composition_;
 }
 
 void TextModel::set_composition_text(std::string_view text) {
+  set_composition(text_composition_from_text(std::string(text)));
+}
+
+void TextModel::set_composition(TextComposition composition) {
   clear_edit_history_grouping();
   begin_composition_history_group();
-  composition_text_ = std::string(text);
+  composition_ = std::move(composition);
   has_composition_ = true;
 }
 
@@ -48,7 +56,7 @@ void TextModel::commit_composition() {
   const TextHistorySnapshot before = composition_history_before_.has_value()
       ? *composition_history_before_
       : history_snapshot();
-  std::string committed = std::move(composition_text_);
+  std::string committed = std::move(composition_.text);
   clear_composition();
   clear_preferred_line_column();
   (void)erase_selection_if_needed();
@@ -210,7 +218,7 @@ bool TextModel::apply_edit_action(TextEditAction action) {
 }
 
 void TextModel::clear_composition() {
-  composition_text_.clear();
+  composition_ = {};
   has_composition_ = false;
 }
 

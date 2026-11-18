@@ -23,7 +23,7 @@ void WindowRuntime::apply_text_input_for_event(const PlatformEvent& event) {
     bool cancelled = false;
     switch (composition->phase) {
       case ImeCompositionPhase::update:
-        model->set_composition_text(composition->text);
+        model->set_composition(text_composition_from_ime(*composition));
         break;
       case ImeCompositionPhase::commit:
         operation = "composition-commit";
