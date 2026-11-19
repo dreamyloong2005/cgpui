@@ -14,6 +14,7 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
   ActionDispatchResult dispatch{
       .name = std::move(name),
       .result = EventResult::unhandled()};
+  const ActionDispatchTarget target = action_dispatch_target();
 
   const auto try_handler =
       [&](ActionScope scope,
@@ -29,7 +30,7 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
           return false;
         }
 
-        const EventResult result = handler(context());
+        const EventResult result = handler(target.context());
         if (!action_result_stops_bubbling(result)) {
           return false;
         }
@@ -43,23 +44,23 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
         return true;
       };
 
-  if (keyboard_focus_element_owner_.has_value()) {
+  if (target.focus_owner.has_value()) {
     const auto owner = focused_element_action_handlers_.find(
-        keyboard_focus_element_owner_->value);
+        target.focus_owner->value);
     if (owner != focused_element_action_handlers_.end()) {
       const auto handler = owner->second.find(dispatch.name);
       if (handler != owner->second.end() &&
           try_handler(
               ActionScope::focused_element,
               std::nullopt,
-              keyboard_focus_element_owner_,
+              target.focus_owner,
               handler->second)) {
         return dispatch;
       }
     }
   }
 
-  if (const std::optional<ViewId> view_id = action_dispatch_view_id();
+  if (const std::optional<ViewId> view_id = target.view_id;
       view_id.has_value()) {
     const auto owner = view_action_handlers_.find(view_id->value);
     if (owner != view_action_handlers_.end()) {

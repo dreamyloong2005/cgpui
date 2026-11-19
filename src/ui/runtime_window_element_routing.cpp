@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include "runtime_gesture_synthesis.hpp"
 
 namespace cgpui {
 namespace {
@@ -17,31 +18,6 @@ namespace {
 }
 
 } // namespace
-
-void WindowRuntime::update_record_hover_cursor(
-    WindowRuntimeRecord& record,
-    const PlatformEvent& event,
-    std::optional<ElementId> hit) {
-  const bool exited = std::holds_alternative<PointerExited>(event);
-  if (!exited && !std::holds_alternative<PointerMoved>(event)) {
-    return;
-  }
-  CursorShape cursor = CursorShape::default_arrow;
-  record.input.hovered_element_id = exited ? std::nullopt : hit;
-  const ElementTree* tree = element_tree_for_record(record);
-  if (!exited && hit.has_value() && tree != nullptr) {
-    const Element* element = tree->get(*hit);
-    const WindowElementHost& host = window_element_hosts_[record.runtime_id.value];
-    if (const auto found = host.cursors.find(hit->value);
-        found != host.cursors.end() && (element == nullptr || element->enabled())) {
-      cursor = found->second;
-    }
-  }
-  if (record.input.cursor_shape != cursor && record.window != nullptr) {
-    record.window->set_cursor(cursor);
-  }
-  record.input.cursor_shape = cursor;
-}
 
 // Hit test, cursor, target (focus owner for keys, capture owner while
 // captured, else the hit element), focus on a left press, then the element
@@ -82,6 +58,15 @@ EventResult WindowRuntime::dispatch_record_event_through_elements(
         target->focus(ElementFocusContext{.element_id = *route.target_element_id});
       }
     }
+    std::optional<ElementId> enabled_target;
+    if (route.target_element_id.has_value()) {
+      const Element* target = tree->get(*route.target_element_id);
+      if (target != nullptr && target->enabled()) {
+        enabled_target = route.target_element_id;
+      }
+    }
+    synthesize_pointer_gesture_state(record.input, event, enabled_target);
+    // dispatch_action runs in this window (action_window_runtime_id_).
     const ElementEventContext element_context{
         .target_element_id = route.target_element_id.value_or(ElementId{}),
         .dispatch_action =
@@ -93,6 +78,14 @@ EventResult WindowRuntime::dispatch_record_event_through_elements(
       Element* element = tree->get(element_id);
       if (element == nullptr || !element->enabled()) continue;
       const EventResult result = element->handle_event(event, element_context);
+      if (result.consumed || result.cancelled) return result;
+    }
+    // Clicks and keyboard activation, as in the root window.
+    if (should_dispatch_synthesized_click_event(record.input, event, route) ||
+        should_dispatch_synthesized_keyboard_activation_event(event, route)) {
+      const EventResult result = dispatch_synthesized_click_event(
+          event, route, element_context,
+          [tree](ElementId element_id) { return tree->get(element_id); });
       if (result.consumed || result.cancelled) return result;
     }
   }

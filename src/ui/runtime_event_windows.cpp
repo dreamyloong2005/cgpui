@@ -28,6 +28,8 @@ void WindowRuntime::handle_native_additional_window_event(
   if (record == nullptr || !record->active) {
     return;
   }
+  // Actions fired while this event is handled run in this window.
+  const ActionWindowScope action_window{action_window_runtime_id_, runtime_id};
   if (handle_accessibility_action_event(event, record->root_view_id, record)) {
     return;
   }
