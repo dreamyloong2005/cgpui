@@ -80,8 +80,19 @@ std::string narrow_for_test(std::wstring_view text) {
   return result;
 }
 
+// Clipboard listeners (clipboard history, sync tools) open the clipboard
+// briefly after every change, so a direct OpenClipboard can fail right after
+// a write. Retry for up to one second, as clipboard clients are expected to.
+bool open_clipboard_with_retry() {
+  for (int attempt = 0; attempt < 100; ++attempt) {
+    if (OpenClipboard(nullptr) != FALSE) return true;
+    Sleep(10);
+  }
+  return false;
+}
+
 std::optional<std::string> read_system_clipboard_text_for_test() {
-  if (OpenClipboard(nullptr) == FALSE) {
+  if (!open_clipboard_with_retry()) {
     return std::nullopt;
   }
 
@@ -121,7 +132,7 @@ bool write_system_clipboard_text_for_test(std::string_view text) {
   std::memcpy(locked, wide_text.c_str(), byte_size);
   GlobalUnlock(handle);
 
-  if (OpenClipboard(nullptr) == FALSE) {
+  if (!open_clipboard_with_retry()) {
     GlobalFree(handle);
     return false;
   }
@@ -149,7 +160,7 @@ class SystemClipboardRestore {
   ~SystemClipboardRestore() {
     if (original_.has_value()) {
       (void)write_system_clipboard_text_for_test(*original_);
-    } else if (OpenClipboard(nullptr) != FALSE) {
+    } else if (open_clipboard_with_retry()) {
       (void)EmptyClipboard();
       CloseClipboard();
     }
