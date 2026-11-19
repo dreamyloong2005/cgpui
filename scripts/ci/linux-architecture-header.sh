@@ -36,10 +36,6 @@ fi
 
 source "$repo_root/scripts/ci/linux-dependencies.sh"
 cgpui_configure_linux_dependency_environment
-export XMAKE_CONFIGDIR="$output_root/config"
-if [[ -d "$output_root/python-tools/bin" ]]; then
-  export PATH="$output_root/python-tools/bin:$PATH"
-fi
 export TMPDIR="$output_root/tmp"
 mkdir -p "$TMPDIR"
 
@@ -59,10 +55,15 @@ if [[ "${#targets[@]}" -eq 0 ]]; then
 fi
 
 cd "$repo_root"
-for target in "${targets[@]}"; do
-  xmake build -P "$repo_root" -y -j 1 "$target"
-done
-filters=()
-for target in "${targets[@]}"; do filters+=("$target/*"); done
-xmake test -P "$repo_root" -j 1 -v "${filters[@]}"
+# The matrix names every test program of the two suites (mcpp test names are
+# file stems); a program missing from either side fails here.
+listed="$("$MCPP" test --list "${profile_args[@]}" -p tests/architecture \
+  -p tests/header_cleanliness | grep -E '^[a-z0-9_]+$' | sort)"
+expected="$(printf '%s\n' "${targets[@]}" | sort)"
+if [[ "$listed" != "$expected" ]]; then
+  diff <(printf '%s\n' "$expected") <(printf '%s\n' "$listed") >&2 || true
+  echo "architecture/header matrix differs from the suites" >&2
+  exit 3
+fi
+"$MCPP" test "${profile_args[@]}" -p tests/architecture -p tests/header_cleanliness
 printf '%s\n' "Linux architecture/header matrix passed (${#targets[@]} targets)"

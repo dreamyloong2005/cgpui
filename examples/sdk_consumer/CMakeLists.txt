@@ -2,6 +2,7 @@
 #   cmake -S . -B build -Dcgpui_DIR=<sdk>/lib/cmake/cgpui
 #   cmake --build build --config <Debug|Release>
 # using the debug package for Debug and the release package for Release.
+# Both use the /MD CRT; cgpuiConfig.cmake sets CMAKE_MSVC_RUNTIME_LIBRARY.
 cmake_minimum_required(VERSION 3.21)
 project(cgpui_sdk_consumer LANGUAGES CXX)
 

@@ -42,53 +42,25 @@ esac
 mkdir -p "$output_root"
 output_root="$(cd "$output_root" && pwd -P)"
 
-xmake_version="$(xmake --version | sed -n '1p')"
-if [[ "$xmake_version" != *"xmake v3.0.9"* ]]; then
-  echo "macos-debug.sh requires xmake v3.0.9: $xmake_version" >&2
+# Not run since the mcpp migration (no Mac available).
+mcpp="${MCPP:-mcpp}"
+mcpp_version="$("$mcpp" --version | sed -n '1p')"
+if [[ "$mcpp_version" != "mcpp 2026."* ]]; then
+  echo "macos-debug.sh requires mcpp 2026.11.18.1 or later: $mcpp_version" >&2
   exit 3
 fi
 
 printf 'macOS %s (%s)\n' "$(sw_vers -productVersion)" \
   "$(sw_vers -buildVersion)"
 xcodebuild -version
-printf '%s\n' "$xmake_version"
+printf '%s\n' "$mcpp_version"
 
-export XMAKE_CONFIGDIR="$output_root/config"
-export XMAKE_GLOBALDIR="$output_root/global"
-export XMAKE_PKG_CACHEDIR="$output_root/pkg-cache"
-export XMAKE_PKG_INSTALLDIR="$output_root/pkg-install"
 export TMPDIR="$output_root/tmp"
-mkdir -p "$XMAKE_CONFIGDIR" "$XMAKE_GLOBALDIR/.xmake/repositories" \
-  "$XMAKE_PKG_CACHEDIR" "$XMAKE_PKG_INSTALLDIR" "$TMPDIR"
-
-repository="$XMAKE_GLOBALDIR/.xmake/repositories/xmake-repo"
-repository_commit="b9256335e0b6e70808e23dfe71627d8a4dcc0abf"
-if [[ -d "$repository/.git" ]] &&
-   [[ "$(git -C "$repository" config --get remote.origin.promisor || true)" == "true" ]]; then
-  rm -rf -- "$repository"
-fi
-if [[ ! -d "$repository/.git" ]]; then
-  git clone --no-checkout \
-    https://github.com/xmake-io/xmake-repo.git "$repository"
-fi
-git -C "$repository" fetch --depth 1 origin "$repository_commit"
-git -C "$repository" checkout --detach "$repository_commit"
-touch "$repository/updated"
-
-locked_repository="$XMAKE_CONFIGDIR/repositories/efa340bf3b6f6de54c5f0ab8c98fba7d.lock"
-if [[ -d "$locked_repository/.git" ]] &&
-   ! git -C "$locked_repository" cat-file -e "$repository_commit^{commit}"; then
-  rm -rf -- "$locked_repository"
-fi
-if [[ ! -d "$locked_repository/.git" ]]; then
-  mkdir -p "$(dirname "$locked_repository")"
-  git clone --shared "$repository" "$locked_repository"
-fi
-git -C "$locked_repository" checkout --detach "$repository_commit"
+mkdir -p "$TMPDIR"
 
 cd "$repo_root"
-xmake f -y -c -m debug -P "$repo_root"
-xmake test -y -P "$repo_root"
+"$mcpp" build
+"$mcpp" test
 git diff --check
 
 printf '%s\n' "macOS Debug verification passed"

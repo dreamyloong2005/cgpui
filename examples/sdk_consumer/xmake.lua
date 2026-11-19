@@ -1,4 +1,5 @@
--- CGPUI SDK consumer sample: build with
+-- CGPUI SDK consumer sample (a consumer may build with xmake; cgpui itself
+-- builds with mcpp): build with
 --   CGPUI_SDK=<sdk> xmake f -m <debug|release> && xmake
 -- The include directory, libraries in link order and system libraries come
 -- from the package's manifest.json.
@@ -9,9 +10,6 @@ add_rules("mode.debug", "mode.release")
 target("sdk_consumer")
     set_kind("binary")
     add_files("main.cpp")
-    if is_plat("windows") then
-        set_runtimes(is_mode("debug") and "MDd" or "MD")
-    end
     on_load(function (target)
         import("core.base.json")
         local sdk = os.getenv("CGPUI_SDK")
@@ -26,6 +24,8 @@ target("sdk_consumer")
             target:add("syslinks", name)
         end
         if manifest.platform == "windows" then
+            -- The package's CRT (/MD in both packages: mcpp has no debug CRT).
+            target:set("runtimes", manifest.msvc_runtime)
             target:add("linkdirs", path.join(os.getenv("VULKAN_SDK"), "Lib"))
         end
     end)

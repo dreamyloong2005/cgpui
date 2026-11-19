@@ -13,9 +13,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: xmake-io/xmake-action@v1
-        with:
-          xmake-version: '3.0.9'
+      # mcpp has no macOS row in .github/actions/setup-mcpp yet; these
+      # jobs need an mcpp on PATH (not run since the mcpp migration).
       - name: Run complete macOS Debug verification
         run: bash ./scripts/ci/macos-debug.sh
 
@@ -23,8 +22,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: xmake-io/xmake-action@v1
-        with:
-          xmake-version: '3.0.9'
+      # mcpp has no macOS row in .github/actions/setup-mcpp yet; these
+      # jobs need an mcpp on PATH (not run since the mcpp migration).
       - name: Build and run macOS examples and smoke tests
         run: bash ./scripts/ci/macos-example-smoke.sh

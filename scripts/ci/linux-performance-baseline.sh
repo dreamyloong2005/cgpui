@@ -11,8 +11,11 @@ output_dir=${CGPUI_PERFORMANCE_OUTPUT_DIR:-artifacts/phase-j-performance}
 iterations=${CGPUI_PERFORMANCE_ITERATIONS:-64}
 mkdir -p "$root/$output_dir"
 cd "$root"
-xmake build -j 1 phase_j_performance_runner
-xmake run phase_j_performance_runner \
+source scripts/ci/linux-dependencies.sh
+cgpui_configure_linux_dependency_environment
+# The runner is the test program of tests/performance; mcpp test passes the
+# arguments after -- to it and runs it in this directory.
+"$MCPP" test "${profile_args[@]}" -p tests/performance -- \
   --platform "$backend" --output "$output_dir/$backend.json" \
   --iterations "$iterations"
 python tools/gpui_parity/validate_performance_baseline.py \

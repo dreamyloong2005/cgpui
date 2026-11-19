@@ -4,4 +4,5 @@
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/mcpp-env.sh"
 cd "$REPO_ROOT"
+export MCPP_COMPILE_COMMANDS="${MCPP_COMPILE_COMMANDS:-compile_commands.json}"
 exec "$MCPP" build "${profile_args[@]}" "$@"

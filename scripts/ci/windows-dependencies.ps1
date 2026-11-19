@@ -1,7 +1,11 @@
 function Set-CgpuiWindowsDependencyEnvironment {
+  # The mcpp environment of the CI scripts (scripts/dev/mcpp-env.ps1):
+  # MCPP_HOME, VSLANG=1033 and the mcpp executable, which it returns.
+  # Dependencies are the MSVC toolset (msvc@system), the LunarG Vulkan SDK
+  # (VULKAN_SDK) and the vendored third_party/ libraries; mcpp downloads
+  # nothing for them.
   [CmdletBinding()]
   param(
-    [string]$DependencyRoot = "",
     [switch]$ExportGitHubEnvironment
   )
 
@@ -11,37 +15,9 @@ function Set-CgpuiWindowsDependencyEnvironment {
   if ($env:OS -ne "Windows_NT") {
     throw "windows-dependencies.ps1 requires Windows"
   }
-
-  $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
-  if ([string]::IsNullOrWhiteSpace($DependencyRoot)) {
-    $DependencyRoot = Join-Path $repoRoot `
-      "build\phase-g-ci\dependencies\windows"
-  } elseif (-not [System.IO.Path]::IsPathRooted($DependencyRoot)) {
-    $DependencyRoot = Join-Path $repoRoot $DependencyRoot
-  }
-  $resolvedRoot = [System.IO.Path]::GetFullPath($DependencyRoot)
-  $repoPrefix = $repoRoot.TrimEnd('\', '/') +
-    [System.IO.Path]::DirectorySeparatorChar
-  if ($resolvedRoot -eq $repoRoot -or
-      -not $resolvedRoot.StartsWith(
-        $repoPrefix,
-        [System.StringComparison]::OrdinalIgnoreCase
-      )) {
-    throw "dependency root must stay inside the repository: $resolvedRoot"
-  }
-
-  $values = [ordered]@{
-    XMAKE_GLOBALDIR = Join-Path $resolvedRoot "global"
-    XMAKE_PKG_CACHEDIR = Join-Path $resolvedRoot "pkg-cache"
-    XMAKE_PKG_INSTALLDIR = Join-Path $resolvedRoot "pkg-install"
-  }
-  New-Item -ItemType Directory -Force -Path @($values.Values) | Out-Null
-  foreach ($entry in $values.GetEnumerator()) {
-    [System.Environment]::SetEnvironmentVariable(
-      $entry.Key,
-      $entry.Value,
-      [System.EnvironmentVariableTarget]::Process
-    )
+  . (Join-Path $PSScriptRoot "..\dev\mcpp-env.ps1")
+  if ([string]::IsNullOrWhiteSpace($env:VULKAN_SDK)) {
+    throw "VULKAN_SDK is not set; install the LunarG Vulkan SDK"
   }
 
   if ($ExportGitHubEnvironment) {
@@ -49,12 +25,14 @@ function Set-CgpuiWindowsDependencyEnvironment {
       throw "GITHUB_ENV is required when exporting dependency variables"
     }
     $utf8 = [System.Text.UTF8Encoding]::new($false)
-    foreach ($entry in $values.GetEnumerator()) {
+    foreach ($name in @("MCPP_HOME", "VSLANG")) {
       [System.IO.File]::AppendAllText(
         $env:GITHUB_ENV,
-        "$($entry.Key)=$($entry.Value)`n",
+        "$name=$([System.Environment]::GetEnvironmentVariable($name))`n",
         $utf8
       )
     }
+    [System.IO.File]::AppendAllText($env:GITHUB_ENV, "MCPP=$Mcpp`n", $utf8)
   }
+  return $Mcpp
 }

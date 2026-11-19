@@ -41,8 +41,7 @@ if (-not (Test-Path -LiteralPath $manifest -PathType Leaf)) {
   throw "prepared Windows package manifest is missing: $manifest"
 }
 . (Join-Path $PSScriptRoot "windows-dependencies.ps1")
-Set-CgpuiWindowsDependencyEnvironment
-$env:XMAKE_CONFIGDIR = Join-Path $outputRoot "config"
+$mcpp = Set-CgpuiWindowsDependencyEnvironment
 
 $matrix = Join-Path $PSScriptRoot "architecture-header-targets.txt"
 $targets = @()
@@ -58,14 +57,16 @@ if ($targets.Count -eq 0) { throw "architecture/header target matrix is empty" }
 
 Push-Location $repoRoot
 try {
-  foreach ($target in $targets) {
-    & xmake build -P $repoRoot -y -j 1 $target
-    if ($LASTEXITCODE -ne 0) {
-      throw "xmake build $target failed with exit code $LASTEXITCODE"
-    }
+  # The matrix names every test program of the two suites (mcpp test names
+  # are file stems); a program missing from either side fails here.
+  $listed = @(& $mcpp test --list -p tests/architecture -p tests/header_cleanliness |
+    Where-Object { $_ -match '^[a-z0-9_]+$' })
+  if ($LASTEXITCODE -ne 0) { throw "mcpp test --list failed with exit code $LASTEXITCODE" }
+  $difference = @(Compare-Object ($targets | Sort-Object) ($listed | Sort-Object))
+  if ($difference.Count -ne 0) {
+    throw "architecture/header matrix differs from the suites: $($difference | Out-String)"
   }
-  $filters = @($targets | ForEach-Object { "$_/*" })
-  & xmake test -P $repoRoot -j 1 -v @filters
+  & $mcpp test -p tests/architecture -p tests/header_cleanliness
   if ($LASTEXITCODE -ne 0) {
     throw "Windows architecture/header tests failed with exit code $LASTEXITCODE"
   }

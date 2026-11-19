@@ -8,7 +8,7 @@ param(
 )
 
 # CGPUI SDK package (docs/sdk-packaging.md): builds windows-package.ps1
-# with the /MD runtime in a temporary git worktree of HEAD, so only
+# (mcpp) with the /MD runtime in a temporary git worktree of HEAD, so only
 # committed sources are packaged, then adds the SDK parts with
 # sdk-package.py and archives with create-release-artifact.py.
 $ErrorActionPreference = "Stop"
@@ -28,7 +28,8 @@ function Invoke-Checked {
 
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $modeName = $Mode.ToLowerInvariant()
-$runtime = if ($modeName -eq "debug") { "MDd" } else { "MD" }
+# mcpp has no debug CRT: both packages use the release DLL CRT.
+$runtime = "MD"
 if (-not [System.IO.Path]::IsPathRooted($OutputRoot)) {
   $OutputRoot = Join-Path $repoRoot $OutputRoot
 }
@@ -67,28 +68,22 @@ try {
   $packageScript = Join-Path $worktree "scripts\ci\windows-package.ps1"
   & $packageScript -Mode $Mode -OutputRoot "build\sdk-package" `
     -Runtimes $runtime | Out-Host
-  $buildOutput = Join-Path $worktree "build\sdk-package"
-  $binaryRoot = Join-Path $buildOutput "build-root\windows\x64\$modeName"
-  $linkLog = Join-Path $buildOutput "example_workbench-link.log"
-  # The verbose example_workbench link line gives the consumer link order.
-  # Run inside the worktree: the configured build directory is relative.
-  Push-Location $worktree
-  try {
-    & xmake build -P $worktree -v example_workbench 2>&1 |
-      Out-File -LiteralPath $linkLog -Encoding utf8
-  } finally {
-    Pop-Location
-  }
   if ($LASTEXITCODE -ne 0) {
-    Get-Content -LiteralPath $linkLog -Tail 20 | Out-Host
-    throw "xmake build example_workbench failed with exit code $LASTEXITCODE"
+    throw "windows-package.ps1 failed with exit code $LASTEXITCODE"
   }
+  $buildOutput = Join-Path $worktree "build\sdk-package"
+  $buildDir = (Get-Content -LiteralPath (Join-Path $buildOutput "build-dir.txt")).Trim()
+  $profileName = if ($modeName -eq "debug") { "dev" } else { "release" }
+  . (Join-Path $PSScriptRoot "windows-dependencies.ps1")
+  $mcpp = Set-CgpuiWindowsDependencyEnvironment
   $workPackage = Join-Path $buildOutput "package"
   Invoke-Checked "sdk-package.py finalize" {
     & python $packer finalize --platform windows --mode $modeName `
-      --runtime $runtime --repo-root $worktree --binary-root $binaryRoot `
-      --link-log $linkLog --package-root $workPackage `
-      --executable hello_window --executable example_workbench
+      --profile $profileName --runtime $runtime --repo-root $worktree `
+      --workspace (Join-Path $buildOutput "workspace") --build-dir $buildDir `
+      --mcpp $mcpp --package-root $workPackage `
+      --executable hello-window/hello_window `
+      --executable example-workbench/example_workbench
   }
   if (Test-Path -LiteralPath $finalPackage) {
     Remove-Item -LiteralPath $finalPackage -Recurse -Force

@@ -1,55 +1,34 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# The mcpp environment of the CI scripts (scripts/dev/mcpp-env.sh): MCPP_HOME
+# and the mcpp executable ($MCPP). Dependencies are the system GCC (toolchain
+# path /usr) and system libraries found through pkg-config (see
+# docs/platform-dependencies.md); mcpp downloads no toolchain for them.
 cgpui_configure_linux_dependency_environment() {
   if [[ "$(uname -s)" != "Linux" ]]; then
     echo "linux-dependencies.sh requires Linux" >&2
     return 2
   fi
-
-  local repo_root dependency_input dependency_candidate dependency_root
-  local export_github=""
+  local repo_root
   repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+  # shellcheck source=../dev/mcpp-env.sh
+  source "$repo_root/scripts/dev/mcpp-env.sh"
+  export MCPP
+  local module
+  for module in wayland-client wayland-cursor wayland-server dbus-1 xkbcommon \
+      xkbcommon-x11 xcb xcb-xkb xcb-cursor harfbuzz freetype2 fontconfig vulkan; do
+    if ! pkg-config --exists "$module"; then
+      echo "missing system library (pkg-config): $module" >&2
+      return 3
+    fi
+  done
   if [[ "${1:-}" == "--github-env" ]]; then
-    dependency_input="$repo_root/build/phase-g-ci/dependencies/linux"
-    export_github=1
-  else
-    dependency_input="${1:-$repo_root/build/phase-g-ci/dependencies/linux}"
-    [[ "${2:-}" == "--github-env" ]] && export_github=1
-  fi
-  if [[ "$dependency_input" == /* ]]; then
-    dependency_candidate="$dependency_input"
-  else
-    dependency_candidate="$repo_root/$dependency_input"
-  fi
-  dependency_root="$(realpath -m "$dependency_candidate")"
-  if [[ "$dependency_root" == "$repo_root" ]]; then
-    echo "dependency root must not be the repository root" >&2
-    return 2
-  fi
-  case "$dependency_root/" in
-    "$repo_root/"*) ;;
-    *)
-      echo "dependency root must stay inside the repository: $dependency_root" >&2
-      return 2
-      ;;
-  esac
-
-  export XMAKE_GLOBALDIR="$dependency_root/global"
-  export XMAKE_PKG_CACHEDIR="$dependency_root/pkg-cache"
-  export XMAKE_PKG_INSTALLDIR="$dependency_root/pkg-install"
-  mkdir -p "$XMAKE_GLOBALDIR" "$XMAKE_PKG_CACHEDIR" \
-    "$XMAKE_PKG_INSTALLDIR"
-
-  if [[ -n "$export_github" ]]; then
     if [[ -z "${GITHUB_ENV:-}" ]]; then
       echo "GITHUB_ENV is required when exporting dependency variables" >&2
       return 2
     fi
-    printf '%s\n' \
-      "XMAKE_GLOBALDIR=$XMAKE_GLOBALDIR" \
-      "XMAKE_PKG_CACHEDIR=$XMAKE_PKG_CACHEDIR" \
-      "XMAKE_PKG_INSTALLDIR=$XMAKE_PKG_INSTALLDIR" >> "$GITHUB_ENV"
+    printf '%s\n' "MCPP_HOME=$MCPP_HOME" "MCPP=$MCPP" >> "$GITHUB_ENV"
   fi
 }
 

@@ -7,7 +7,7 @@
 # debug information for ~560 test programs once filled the WSL disk. Builds
 # and tests use the same profile so they share one build directory.
 export MCPP_HOME="${MCPP_HOME:-$HOME/.mcpp}"
-export MCPP_COMPILE_COMMANDS="${MCPP_COMPILE_COMMANDS:-compile_commands.json}"
+
 if [ -z "${MCPP:-}" ]; then
   MCPP=$(command -v mcpp || ls -d "$MCPP_HOME"/mcpp-*/bin/mcpp 2>/dev/null | sort | tail -1)
 fi

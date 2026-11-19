@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # CGPUI SDK package (docs/sdk-packaging.md): refuses a checkout that is not
-# clean, builds linux-package.sh in place, adds the SDK parts with
+# clean, builds linux-package.sh (mcpp) in place, adds the SDK parts with
 # sdk-package.py, archives with create-release-artifact.py and removes the
 # intermediate build output (keep it with CGPUI_SDK_KEEP_BUILD=1).
 set -euo pipefail
@@ -30,31 +30,20 @@ archive="$output_root/$package_name.tar.gz"
 python3 "$script_dir/sdk-package.py" check-clean --repo-root "$repo_root"
 "$script_dir/linux-package.sh" "$mode" "$work_relative"
 
-# Same environment as linux-package.sh, for the verbose example_workbench
-# link line that gives the consumer link order.
 source "$script_dir/linux-dependencies.sh"
 cgpui_configure_linux_dependency_environment
-export XMAKE_CONFIGDIR="$work_root/config"
-if [[ -d "$work_root/python-tools/bin" ]]; then
-  export PATH="$work_root/python-tools/bin:$PATH"
-fi
-link_log="$work_root/example_workbench-link.log"
-if ! xmake build -P "$repo_root" -v example_workbench >"$link_log" 2>&1; then
-  tail -20 "$link_log" >&2
-  exit 3
-fi
-
+profile=dev
+[[ "$mode" == release ]] && profile=release
 python3 "$script_dir/sdk-package.py" finalize --platform linux \
-  --mode "$mode" --repo-root "$repo_root" \
-  --binary-root "$work_root/build-root/linux/x86_64/$mode" \
-  --link-log "$link_log" --package-root "$work_root/package" \
-  --executable hello_window --executable example_workbench
+  --mode "$mode" --profile "$profile" --repo-root "$repo_root" \
+  --workspace "$work_root/workspace" \
+  --build-dir "$(cat "$work_root/build-dir.txt")" --mcpp "$MCPP" \
+  --package-root "$work_root/package" \
+  --executable hello-window/hello_window \
+  --executable example-workbench/example_workbench
 rm -rf -- "$final_package"
 cp -R "$work_root/package" "$final_package"
 
-# xmake may rewrite the lock file while resolving packages; the package
-# manifest records it, and the committed file is restored.
-git -C "$repo_root" checkout -q -- xmake-requires.lock
 if [[ "${CGPUI_SDK_KEEP_BUILD:-}" != "1" ]]; then
   rm -rf -- "$work_root"
 fi

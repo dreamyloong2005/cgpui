@@ -36,70 +36,55 @@ case "$output_root/" in
 esac
 
 rm -rf -- "$output_root"
-build_root="$output_root/build-root"
-config_root="$output_root/config"
-cleanup_tmp_root=""
-if [[ -n "${CGPUI_CI_TMPDIR:-}" ]]; then
-  tmp_parent="$(realpath -m "$CGPUI_CI_TMPDIR")"
-  mkdir -p "$tmp_parent"
-  tmp_root="$(mktemp -d "$tmp_parent/cgpui-linux-$mode.XXXXXX")"
-  cleanup_tmp_root="$tmp_root"
-else
-  tmp_root="$output_root/tmp"
-fi
-cleanup() {
-  if [[ -n "$cleanup_tmp_root" ]]; then
-    rm -rf -- "$cleanup_tmp_root"
-  fi
-}
-trap cleanup EXIT
+workspace_root="$output_root/workspace"
 package_root="$output_root/package"
 lib_root="$package_root/lib"
 bin_root="$package_root/bin"
 include_root="$package_root/include"
-mkdir -p "$build_root" "$config_root" "$tmp_root" "$lib_root" \
-  "$bin_root" "$include_root"
-
-if ! command -v meson >/dev/null || ! command -v ninja >/dev/null; then
-  tool_root="$output_root/python-tools"
-  python3 -m venv "$tool_root"
-  "$tool_root/bin/python" -m ensurepip --upgrade
-  "$tool_root/bin/python" -m pip install --disable-pip-version-check \
-    "meson==1.11.1" "ninja==1.13.0"
-  export PATH="$tool_root/bin:$PATH"
-fi
+mkdir -p "$workspace_root" "$lib_root" "$bin_root" "$include_root"
 
 source "$repo_root/scripts/ci/linux-dependencies.sh"
 cgpui_configure_linux_dependency_environment
-export XMAKE_CONFIGDIR="$config_root"
-export TMPDIR="$tmp_root"
+profile=dev
+[[ "$mode" == release ]] && profile=release
+# The system libstdc++ (host-coupled), as consumers of the SDK link it.
+python3 "$repo_root/scripts/ci/sdk-package.py" workspace \
+  --repo-root "$repo_root" --output "$workspace_root" --cxx-runtime host-coupled
+(cd "$workspace_root" && "$MCPP" build --profile "$profile" -p cgpui.app \
+  -p cgpui.hello-window -p cgpui.example-workbench)
 
-xmake f -P "$repo_root" -y -c -m "$mode" --ccache=n -o "$build_root"
-xmake build -P "$repo_root" -j 1 cgpui_app
-xmake build -P "$repo_root" -j 1 hello_window
-
-binary_root="$build_root/linux/x86_64/$mode"
+build_dirs=()
+for candidate in "$workspace_root"/target/x86_64-linux-gnu/*/; do
+  [[ -f "$candidate/build.ninja" ]] && build_dirs+=("${candidate%/}")
+done
+if [[ "${#build_dirs[@]}" -ne 1 ]]; then
+  echo "expected one mcpp build directory under $workspace_root/target" >&2
+  exit 3
+fi
+binary_root="${build_dirs[0]}/bin"
+printf '%s\n' "${build_dirs[0]}" > "$output_root/build-dir.txt"
 libraries=(
-  "libcgpui_core.a"
-  "libcgpui_platform.a"
-  "libcgpui_platform_linux_wayland.a"
-  "libcgpui_platform_linux_x11.a"
-  "libcgpui_platform_linux_atspi.a"
-  "libcgpui_renderer.a"
-  "libcgpui_renderer_vulkan.a"
-  "libcgpui_ui.a"
-  "libcgpui_app.a"
+  "core/libcgpui_core.a"
+  "platform/libcgpui_platform.a"
+  "platform-linux-wayland/libcgpui_platform_linux_wayland.a"
+  "platform-linux-x11/libcgpui_platform_linux_x11.a"
+  "platform-linux-atspi/libcgpui_platform_linux_atspi.a"
+  "renderer/libcgpui_renderer.a"
+  "renderer-vulkan/libcgpui_renderer_vulkan.a"
+  "ui/libcgpui_ui.a"
+  "app/libcgpui_app.a"
 )
-for library in "${libraries[@]}"; do
-  source_path="$binary_root/$library"
+for entry in "${libraries[@]}"; do
+  source_path="$binary_root/$entry"
   if [[ ! -f "$source_path" ]]; then
     echo "missing Linux $mode library: $source_path" >&2
     exit 3
   fi
-  install -m 0644 "$source_path" "$lib_root/$library"
+  install -m 0644 "$source_path" "$lib_root/${entry#*/}"
 done
+libraries=("${libraries[@]#*/}")
 
-demo="$binary_root/hello_window"
+demo="$binary_root/hello-window/hello_window"
 if [[ ! -f "$demo" ]]; then
   echo "missing Linux $mode demo: $demo" >&2
   exit 3

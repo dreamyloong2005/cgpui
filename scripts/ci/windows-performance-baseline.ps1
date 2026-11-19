@@ -9,9 +9,11 @@ $output = Join-Path $root "$OutputDir/windows.json"
 New-Item -ItemType Directory -Force (Split-Path $output) | Out-Null
 Push-Location $root
 try {
-  & xmake build -j 1 phase_j_performance_runner
-  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-  & xmake run phase_j_performance_runner --platform windows --output $output --iterations $Iterations
+  . (Join-Path $PSScriptRoot "windows-dependencies.ps1")
+  $mcpp = Set-CgpuiWindowsDependencyEnvironment
+  # The runner is the test program of tests/performance; mcpp test passes
+  # the arguments after -- to it.
+  & $mcpp test -p tests/performance -- --platform windows --output $output --iterations $Iterations
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
   & python tools/gpui_parity/validate_performance_baseline.py `
       --policy docs/gpui-performance-baseline-policy.json --report $output

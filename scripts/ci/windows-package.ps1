@@ -4,12 +4,15 @@ param(
   [ValidateSet("Debug", "Release")]
   [string]$Mode,
   [string]$OutputRoot = "",
-  # MSVC runtime passed to xmake (MD, MDd, MT, MTd); empty keeps the
-  # toolchain default.
-  [ValidateSet("", "MD", "MDd", "MT", "MTd")]
+  # MSVC runtime: MT (static CRT, the default, as dev builds) or MD (the DLL
+  # CRT, for the SDK). mcpp has no debug CRT (MTd / MDd).
+  [ValidateSet("", "MD", "MT")]
   [string]$Runtimes = ""
 )
 
+# Builds cgpui_app and hello_window with mcpp in a packaging workspace under
+# the output root (sdk-package.py workspace: the repository's library and
+# example members, with this package's CRT) and lays out the package.
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
@@ -21,6 +24,8 @@ $repoRoot = [System.IO.Path]::GetFullPath(
   (Join-Path $PSScriptRoot "..\..")
 )
 $modeName = $Mode.ToLowerInvariant()
+$profileName = if ($modeName -eq "debug") { "dev" } else { "release" }
+$cxxRuntime = if ($Runtimes -eq "MD") { "toolchain-coupled" } else { "self-contained" }
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
   $OutputRoot = Join-Path $repoRoot "build\phase-g-ci\windows-$modeName"
 } elseif (-not [System.IO.Path]::IsPathRooted($OutputRoot)) {
@@ -40,63 +45,64 @@ if ($outputRoot -eq $repoRoot -or
 if (Test-Path -LiteralPath $outputRoot) {
   Remove-Item -LiteralPath $outputRoot -Recurse -Force
 }
-$buildRoot = Join-Path $outputRoot "build-root"
-$configRoot = Join-Path $outputRoot "config"
+$workspaceRoot = Join-Path $outputRoot "workspace"
 $packageRoot = Join-Path $outputRoot "package"
 $libRoot = Join-Path $packageRoot "lib"
 $binRoot = Join-Path $packageRoot "bin"
 $includeRoot = Join-Path $packageRoot "include"
 New-Item -ItemType Directory -Force -Path @(
-  $buildRoot, $configRoot, $packageRoot, $libRoot, $binRoot, $includeRoot
+  $workspaceRoot, $packageRoot, $libRoot, $binRoot, $includeRoot
 ) | Out-Null
 
 . (Join-Path $PSScriptRoot "windows-dependencies.ps1")
-Set-CgpuiWindowsDependencyEnvironment
-$env:XMAKE_CONFIGDIR = $configRoot
+$mcpp = Set-CgpuiWindowsDependencyEnvironment
 
-Push-Location $repoRoot
+& python (Join-Path $PSScriptRoot "sdk-package.py") workspace `
+  --repo-root $repoRoot --output $workspaceRoot --cxx-runtime $cxxRuntime
+if ($LASTEXITCODE -ne 0) {
+  throw "sdk-package.py workspace failed with exit code $LASTEXITCODE"
+}
+Push-Location $workspaceRoot
 try {
-  $configArgs = @()
-  if (-not [string]::IsNullOrWhiteSpace($Runtimes)) {
-    $configArgs += "--runtimes=$Runtimes"
-  }
-  # Explicit platform: from a Git Bash / MSYS shell xmake would pick mingw.
-  & xmake f -P $repoRoot -y -c -p windows -a x64 -m $modeName --ccache=n `
-    -o $buildRoot @configArgs
+  & $mcpp build --profile $profileName -p cgpui.app -p cgpui.hello-window `
+    -p cgpui.example-workbench
   if ($LASTEXITCODE -ne 0) {
-    throw "xmake f failed with exit code $LASTEXITCODE"
-  }
-  & xmake build -P $repoRoot -j 1 cgpui_app
-  if ($LASTEXITCODE -ne 0) {
-    throw "xmake build cgpui_app failed with exit code $LASTEXITCODE"
-  }
-  & xmake build -P $repoRoot -j 1 hello_window
-  if ($LASTEXITCODE -ne 0) {
-    throw "xmake build hello_window failed with exit code $LASTEXITCODE"
+    throw "mcpp build failed with exit code $LASTEXITCODE"
   }
 } finally {
   Pop-Location
 }
 
-$binaryRoot = Join-Path $buildRoot "windows\x64\$modeName"
-$libraries = @(
-  "cgpui_core.lib",
-  "cgpui_platform.lib",
-  "cgpui_platform_win32.lib",
-  "cgpui_renderer.lib",
-  "cgpui_renderer_vulkan.lib",
-  "cgpui_ui.lib",
-  "cgpui_app.lib"
+# The configuration directory mcpp built (target/<triple>/<fingerprint>).
+$buildDir = @(
+  Get-ChildItem -LiteralPath (Join-Path $workspaceRoot "target\x86_64-windows-msvc") `
+    -Directory | Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName "build.ninja") }
 )
-foreach ($library in $libraries) {
-  $source = Join-Path $binaryRoot $library
+if ($buildDir.Count -ne 1) {
+  throw "expected one mcpp build directory under $workspaceRoot\target"
+}
+$binaryRoot = Join-Path $buildDir[0].FullName "bin"
+Set-Content -LiteralPath (Join-Path $outputRoot "build-dir.txt") `
+  -Value $buildDir[0].FullName -Encoding ascii
+
+$libraries = [ordered]@{
+  "cgpui_core.lib" = "core"
+  "cgpui_platform.lib" = "platform"
+  "cgpui_platform_win32.lib" = "platform-win32"
+  "cgpui_renderer.lib" = "renderer"
+  "cgpui_renderer_vulkan.lib" = "renderer-vulkan"
+  "cgpui_ui.lib" = "ui"
+  "cgpui_app.lib" = "app"
+}
+foreach ($library in $libraries.Keys) {
+  $source = Join-Path (Join-Path $binaryRoot $libraries[$library]) $library
   if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
     throw "missing Windows $Mode library: $source"
   }
   Copy-Item -LiteralPath $source -Destination $libRoot
 }
 
-$demo = Join-Path $binaryRoot "hello_window.exe"
+$demo = Join-Path $binaryRoot "hello-window\hello_window.exe"
 if (-not (Test-Path -LiteralPath $demo -PathType Leaf)) {
   throw "missing Windows $Mode demo: $demo"
 }
@@ -113,7 +119,7 @@ $manifest = [ordered]@{
   architecture = "x64"
   mode = $modeName
   header_root = "include/cgpui"
-  libraries = @($libraries | ForEach-Object { "lib/$_" })
+  libraries = @($libraries.Keys | ForEach-Object { "lib/$_" })
   executables = @("bin/hello_window.exe")
   documents = @("README.md")
 }
@@ -138,7 +144,7 @@ $requiredPackagePaths = @(
   "bin/hello_window.exe",
   "README.md",
   "manifest.json"
-) + @($libraries | ForEach-Object { "lib/$_" })
+) + @($libraries.Keys | ForEach-Object { "lib/$_" })
 foreach ($relativePath in $requiredPackagePaths) {
   $path = Join-Path $packageRoot ($relativePath -replace '/', '\')
   if (-not (Test-Path -LiteralPath $path)) {

@@ -40,12 +40,11 @@ $manifestPath = Join-Path $outputRoot "package\manifest.json"
 if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
   throw "prepared Windows package manifest is missing: $manifestPath"
 }
-$buildRoot = Join-Path $outputRoot "build-root"
+$buildRoot = Join-Path $outputRoot "workspace"
 . (Join-Path $PSScriptRoot "windows-dependencies.ps1")
-Set-CgpuiWindowsDependencyEnvironment
-$env:XMAKE_CONFIGDIR = Join-Path $outputRoot "config"
+$mcpp = Set-CgpuiWindowsDependencyEnvironment
 if (-not (Test-Path -LiteralPath $buildRoot -PathType Container)) {
-  throw "prepared Windows build root is missing: $buildRoot"
+  throw "prepared Windows packaging workspace is missing: $buildRoot"
 }
 
 $targetsPath = Join-Path $PSScriptRoot "example-targets.txt"
@@ -62,36 +61,32 @@ try {
     if ($target -notmatch '^api_parity_[a-z0-9_]+$') {
       throw "invalid example target: $target"
     }
-    & xmake build -P $repoRoot -y -j 1 $target
-    if ($LASTEXITCODE -ne 0) {
-      throw "xmake build $target failed with exit code $LASTEXITCODE"
-    }
     if ($target -eq "api_parity_hello_world") {
       $env:CGPUI_EXIT_AFTER_FIRST_FRAME = "1"
     }
     try {
-      & xmake run -P $repoRoot $target
+      # mcpp run builds the program first.
+      & $mcpp run -p examples/api_parity $target
       if ($LASTEXITCODE -ne 0) {
-        throw "xmake run $target failed with exit code $LASTEXITCODE"
+        throw "mcpp run $target failed with exit code $LASTEXITCODE"
       }
     } finally {
       Remove-Item Env:CGPUI_EXIT_AFTER_FIRST_FRAME -ErrorAction SilentlyContinue
     }
   }
-
+  # The four examples that are also test programs (public_*_example/main).
   $registrationSmokes = @(
-    "api_parity_public_animation_example",
-    "api_parity_public_opacity_example",
-    "api_parity_public_image_example",
-    "api_parity_public_gif_viewer_example"
+    "public_animation_example",
+    "public_opacity_example",
+    "public_image_example",
+    "public_gif_viewer_example"
   )
-  foreach ($target in $registrationSmokes) {
-    & xmake test -P $repoRoot -j 1 -v "$target/*"
+  foreach ($test in $registrationSmokes) {
+    & $mcpp test -p examples/api_parity $test
     if ($LASTEXITCODE -ne 0) {
-      throw "xmake test $target failed with exit code $LASTEXITCODE"
+      throw "mcpp test $test failed with exit code $LASTEXITCODE"
     }
   }
-
   $demoSmokes = @(
     "windows_first_frame",
     "windows_resize_after_first_frame",
@@ -99,9 +94,9 @@ try {
     "windows_demo_smoke_flow"
   )
   foreach ($test in $demoSmokes) {
-    & xmake test -P $repoRoot -j 1 -v "hello_window/$test"
+    & $mcpp test -p examples/hello_window $test
     if ($LASTEXITCODE -ne 0) {
-      throw "hello_window/$test failed with exit code $LASTEXITCODE"
+      throw "hello_window $test failed with exit code $LASTEXITCODE"
     }
   }
 } finally {

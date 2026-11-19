@@ -27,9 +27,8 @@ case "$output_root/" in
 esac
 
 if [[ "${CGPUI_CI_USE_CURRENT_BUILD:-}" == "1" ]]; then
-  : "${XMAKE_GLOBALDIR:?current-build mode requires XMAKE_GLOBALDIR}"
-  : "${XMAKE_PKG_CACHEDIR:?current-build mode requires XMAKE_PKG_CACHEDIR}"
-  : "${XMAKE_PKG_INSTALLDIR:?current-build mode requires XMAKE_PKG_INSTALLDIR}"
+  source "$repo_root/scripts/ci/linux-dependencies.sh"
+  cgpui_configure_linux_dependency_environment
   export TMPDIR="${TMPDIR:-/dev/shm/cgpui}"
   mkdir -p "$output_root" "$TMPDIR"
 else
@@ -37,7 +36,7 @@ else
     bash "$repo_root/scripts/ci/linux-package.sh" debug "$output_root"
   fi
   manifest="$output_root/package/manifest.json"
-  build_root="$output_root/build-root"
+  build_root="$output_root/workspace"
   if [[ ! -f "$manifest" || ! -d "$build_root" ]]; then
     echo "prepared Linux package/build root is missing under $output_root" >&2
     exit 3
@@ -45,10 +44,6 @@ else
 
   source "$repo_root/scripts/ci/linux-dependencies.sh"
   cgpui_configure_linux_dependency_environment
-  export XMAKE_CONFIGDIR="$output_root/config"
-  if [[ -d "$output_root/python-tools/bin" ]]; then
-    export PATH="$output_root/python-tools/bin:$PATH"
-  fi
   export TMPDIR="$output_root/tmp"
   mkdir -p "$TMPDIR"
 fi
@@ -121,11 +116,11 @@ for target in "${targets[@]}"; do
       "$binary"
     fi
   else
-    xmake build -P "$repo_root" -y -j 1 "$target"
+    # mcpp run builds the program first.
     if [[ "$target" == "api_parity_hello_world" ]]; then
-      CGPUI_EXIT_AFTER_FIRST_FRAME=1 xmake run -P "$repo_root" "$target"
+      CGPUI_EXIT_AFTER_FIRST_FRAME=1 "$MCPP" run "${profile_args[@]}" -p examples/api_parity "$target"
     else
-      xmake run -P "$repo_root" "$target"
+      "$MCPP" run "${profile_args[@]}" -p examples/api_parity "$target"
     fi
   fi
 done
@@ -140,7 +135,7 @@ for target in "${registration_smokes[@]}"; do
   if [[ "${CGPUI_CI_SKIP_BUILD:-}" == "1" ]]; then
     "$CGPUI_CI_BINARY_ROOT/$target"
   else
-    xmake test -P "$repo_root" -j 1 -v "$target/*"
+    "$MCPP" test "${profile_args[@]}" -p examples/api_parity "${target#api_parity_}"
   fi
 done
 
@@ -153,7 +148,7 @@ if [[ "${CGPUI_CI_SKIP_BUILD:-}" == "1" ]]; then
 else
   for test_name in linux_first_frame linux_resize_after_first_frame \
     linux_close_after_first_frame linux_demo_smoke_flow; do
-    xmake test -P "$repo_root" -j 1 -v "hello_window/$test_name"
+    "$MCPP" test "${profile_args[@]}" -p examples/hello_window "$test_name"
   done
 fi
 

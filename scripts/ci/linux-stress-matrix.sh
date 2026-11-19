@@ -7,8 +7,10 @@ output_dir=${CGPUI_STRESS_OUTPUT_DIR:-artifacts/phase-j-stress}
 scale=${CGPUI_STRESS_SCALE:-1}
 mkdir -p "$root/$output_dir"
 cd "$root"
-xmake build -j 1 phase_j_stress_runner
-xmake run phase_j_stress_runner --platform "$backend" \
+source scripts/ci/linux-dependencies.sh
+cgpui_configure_linux_dependency_environment
+# The runner is the test program of tests/stress (arguments after --).
+"$MCPP" test "${profile_args[@]}" -p tests/stress -- --platform "$backend" \
   --output "$output_dir/$backend.json" --scale "$scale"
 python tools/gpui_parity/validate_stress_report.py \
   --profile docs/gpui-stress-profile.json --report "$output_dir/$backend.json"
