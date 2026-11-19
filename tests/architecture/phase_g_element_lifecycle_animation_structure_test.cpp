@@ -46,6 +46,9 @@ int main() {
   const std::string scroll_header =
       read_source("include/cgpui/ui/element_scroll_nodes.hpp");
   const std::string scroll = read_source("src/ui/element_scroll_layout.cpp");
+  // ScrollElement::layout moved out of the header into its own source.
+  const std::string scroll_element =
+      read_source("src/ui/element_scroll_element.cpp");
   const std::string behavior =
       read_source("tests/animation/element_lifecycle_animation_test.cpp");
   const std::string ui_structure =
@@ -69,7 +72,7 @@ int main() {
   const std::string* required[]{
       &public_header, &aggregate, &store, &element, &forwarding, &runtime,
       &runtime_state, &runtime_internal, &flex, &stack, &scroll_header,
-      &scroll, &behavior, &ui_structure, &header_cleanliness, &previous,
+      &scroll, &scroll_element, &behavior, &ui_structure, &header_cleanliness, &previous,
       &xmake, &vocabulary, &core_parity, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
@@ -99,7 +102,7 @@ int main() {
       !contains(runtime_internal, "runtime_animation_state_internal.hpp")) {
     return 5;
   }
-  const std::string* propagation[]{&flex, &stack, &scroll_header, &scroll};
+  const std::string* propagation[]{&flex, &stack, &scroll_element, &scroll};
   for (const auto* source : propagation) {
     if (!contains(*source, "LayoutInput") ||
         !contains(*source, "= input;") ||

@@ -34,46 +34,16 @@ class ScrollElement : public Element {
     return child_.get();
   }
 
-  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    if (child_ == nullptr) {
-      const LayoutOutput output = Element::layout(input);
-      if (state_ != nullptr) {
-        state_->set_viewport_size(output.size);
-        state_->set_content_size(output.size);
-      }
-      return output;
-    }
-
-    LayoutInput child_input = input;
-    child_input.constraints = {};
-    const LayoutOutput child_output = child_->layout(child_input);
-    child_->place_layout(Rect{
-        .origin = child_output.origin,
-        .size = child_output.size,
-    });
-    const LayoutOutput output{
-        .size = constrain_size(child_output.size, input.constraints),
-    };
-    set_layout_bounds(Rect{
-        .origin = output.origin,
-        .size = output.size,
-    });
-    if (state_ != nullptr) {
-      state_->set_viewport_size(output.size);
-      state_->set_content_size(child_output.size);
-    }
-    return output;
-  }
+  // Lays out the child at its natural size and places it at the scroll
+  // origin minus the (re-clamped) scroll offset.
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
 
   [[nodiscard]] ElementId hit_test(Point point) const override {
     return Element::hit_test(point);
   }
 
-  void paint(PaintList& paint_list) const override {
-    if (child_) {
-      child_->paint(paint_list);
-    }
-  }
+  // Paints the child clipped to the scroll viewport.
+  void paint(PaintList& paint_list) const override;
 
   [[nodiscard]] EventResult handle_event(
       const PlatformEvent& event,
