@@ -1,5 +1,5 @@
-# Platform-neutral platform layer. src/ui/text_font.cpp is also compiled by
-# packages/renderer, as it was under xmake.
+# Platform-neutral platform layer, and src/ui/text_font.cpp (font database)
+# for this package and packages/renderer (see there).
 [package]
 namespace = "cgpui"
 name = "platform"

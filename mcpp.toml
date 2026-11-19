@@ -19,6 +19,11 @@ members = [
     "packages/renderer-vulkan",
     "packages/ui",
     "packages/app",
+    "examples/hello_window",
+    "examples/backdrop_blur",
+    "examples/client_title_bar",
+    "examples/workbench",
+    "examples/api_parity",
 ]
 
 [workspace.package]
@@ -29,5 +34,17 @@ standard = "c++23"
 windows = "msvc@system"
 linux = { path = "/usr" }
 
+# Builds and tests use the static C++ runtime: /MT on Windows, and mcpp's
+# default -static-libstdc++ on Linux. `mcpp test` has no --static and the CRT
+# is one setting for the whole graph, so it is stated here;
+# scripts/ci/sdk-package.py builds the Windows SDK with the dynamic CRT (/MD).
+[workspace.build]
+cxx_runtime = "self-contained"
+
 [workspace.target.'cfg(os = "windows")'.build]
 cxxflags = ["/Zc:__cplusplus"]
+
+# Linux test builds: line tables only (-g1). Full -g debug information for
+# ~560 test programs once filled the WSL disk; scripts/dev/*.sh use this.
+[workspace.profile.dev-lines]
+debug = "lines"

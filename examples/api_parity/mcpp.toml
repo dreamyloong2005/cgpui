@@ -1,0 +1,112 @@
+# The API parity examples: one program per directory, console subsystem.
+# Four of them are also test programs (they check their own output and exit
+# non-zero on a mismatch); scripts/ci/*-example-smoke.* run all of them.
+[package]
+namespace = "cgpui"
+name = "api-parity-examples"
+version = "0.1.0"
+
+[dependencies]
+cgpui.core = { path = "../../packages/core" }
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.renderer = { path = "../../packages/renderer" }
+cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
+cgpui.ui = { path = "../../packages/ui" }
+cgpui.app = { path = "../../packages/app" }
+
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.platform-win32 = { path = "../../packages/platform-win32" }
+
+[target.'cfg(os = "linux")'.dependencies]
+cgpui.platform-linux-wayland = { path = "../../packages/platform-linux-wayland" }
+
+[build]
+sources = []
+
+[test]
+# One glob, so the names keep their directory (public_image_example/main).
+discover = ["public_{animation,gif_viewer,image,opacity}_example/main.cpp"]
+
+[targets.api_parity_hello_world]
+kind = "bin"
+main = "hello_world/main.cpp"
+
+[targets.api_parity_public_animation_example]
+kind = "bin"
+main = "public_animation_example/main.cpp"
+
+[targets.api_parity_public_api_compatibility]
+kind = "bin"
+main = "public_api_compatibility/main.cpp"
+
+[targets.api_parity_public_async_test_workflow]
+kind = "bin"
+main = "public_async_test_workflow/main.cpp"
+
+[targets.api_parity_public_authoring_workflow]
+kind = "bin"
+main = "public_authoring_workflow/main.cpp"
+
+[targets.api_parity_public_context_capabilities]
+kind = "bin"
+main = "public_context_capabilities/main.cpp"
+
+[targets.api_parity_public_gif_viewer_example]
+kind = "bin"
+main = "public_gif_viewer_example/main.cpp"
+
+[targets.api_parity_public_image_example]
+kind = "bin"
+main = "public_image_example/main.cpp"
+
+[targets.api_parity_public_opacity_example]
+kind = "bin"
+main = "public_opacity_example/main.cpp"
+
+[targets.api_parity_public_phase_b_surface_closure]
+kind = "bin"
+main = "public_phase_b_surface_closure/main.cpp"
+
+[targets.api_parity_public_rich_text_examples]
+kind = "bin"
+main = "public_rich_text_examples/main.cpp"
+
+[targets.api_parity_public_svg_image_sources]
+kind = "bin"
+main = "public_svg_image_sources/main.cpp"
+
+[targets.api_parity_public_svg_raster_upload]
+kind = "bin"
+main = "public_svg_raster_upload/main.cpp"
+
+[targets.api_parity_public_text_input_examples]
+kind = "bin"
+main = "public_text_input_examples/main.cpp"
+
+[targets.api_parity_public_text_input_workflow]
+kind = "bin"
+main = "public_text_input_workflow/main.cpp"
+
+[targets.api_parity_public_text_wrapper_examples]
+kind = "bin"
+main = "public_text_wrapper_examples/main.cpp"
+
+[targets.api_parity_public_window_examples]
+kind = "bin"
+main = "public_window_examples/main.cpp"
+
+[targets.api_parity_public_window_examples_interaction_states]
+kind = "bin"
+main = "public_window_examples_interaction_states/main.cpp"
+
+[targets.api_parity_public_window_examples_service_matrix]
+kind = "bin"
+main = "public_window_examples_service_matrix/main.cpp"
+
+[targets.api_parity_public_window_examples_widget_catalog]
+kind = "bin"
+main = "public_window_examples_widget_catalog/main.cpp"
+
+[targets.api_parity_public_window_examples_workflow]
+kind = "bin"
+main = "public_window_examples_workflow/main.cpp"

@@ -1,6 +1,9 @@
 # Renderer-neutral drawing, SVG (lunasvg) and the text pipeline: shaping,
 # measurement, layout and glyph rasterization (the text sources live in
-# src/ui; packages/ui leaves them out).
+# src/ui; packages/ui leaves them out). src/ui/text_font.cpp, which xmake
+# compiled into both cgpui_platform and cgpui_renderer, is compiled once, by
+# packages/platform: mcpp links a dependency's objects (not its archive)
+# into each program, so a second copy is a duplicate definition.
 [package]
 namespace = "cgpui"
 name = "renderer"
@@ -11,6 +14,7 @@ kind = "lib"
 
 [dependencies]
 cgpui.core = { path = "../core" }
+cgpui.platform = { path = "../platform" }
 vendor.lunasvg = { path = "../../third_party/lunasvg" }
 
 [build]
@@ -19,7 +23,6 @@ private_include_dirs = ["../../third_party/stb"]
 sources = [
     "../../src/renderer/*.cpp",
     "!../../src/renderer/renderer_unimplemented.cpp",
-    "../../src/ui/text_font.cpp",
     "../../src/ui/text_shaping_backend.cpp",
     "../../src/ui/text_shaping_dispatch.cpp",
     "../../src/ui/text_shaping_harfbuzz.cpp",

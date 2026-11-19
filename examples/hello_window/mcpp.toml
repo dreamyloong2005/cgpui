@@ -1,0 +1,50 @@
+# hello_window, and its smoke tests: each program in tests/ sets the
+# environment variables one xmake test case set and runs main.cpp
+# (included with main renamed), so the cases need no run-time environment.
+[package]
+namespace = "cgpui"
+name = "hello-window"
+version = "0.1.0"
+
+[dependencies]
+cgpui.core = { path = "../../packages/core" }
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.renderer = { path = "../../packages/renderer" }
+cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
+cgpui.ui = { path = "../../packages/ui" }
+
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.platform-win32 = { path = "../../packages/platform-win32" }
+
+[target.'cfg(os = "linux")'.dependencies]
+cgpui.platform-linux-wayland = { path = "../../packages/platform-linux-wayland" }
+
+[build]
+sources = []
+
+[targets.hello_window]
+kind = "bin"
+main = "main.cpp"
+
+[test]
+discover = []
+
+[target.'cfg(os = "windows")'.test]
+discover = [
+    "tests/windows_first_frame.cpp",
+    "tests/windows_resize_after_first_frame.cpp",
+    "tests/windows_close_after_first_frame.cpp",
+    "tests/windows_demo_smoke_flow.cpp",
+]
+
+[target.'cfg(os = "linux")'.test]
+discover = [
+    "tests/linux_first_frame.cpp",
+    "tests/linux_resize_after_first_frame.cpp",
+    "tests/linux_close_after_first_frame.cpp",
+    "tests/linux_demo_smoke_flow.cpp",
+    "tests/x11_first_frame.cpp",
+    "tests/x11_resize_after_first_frame.cpp",
+    "tests/x11_close_after_first_frame.cpp",
+    "tests/x11_demo_smoke_flow.cpp",
+]

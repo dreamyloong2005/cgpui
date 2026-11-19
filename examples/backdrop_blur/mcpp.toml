@@ -1,0 +1,25 @@
+[package]
+namespace = "cgpui"
+name = "example-backdrop-blur"
+version = "0.1.0"
+
+[dependencies]
+cgpui.core = { path = "../../packages/core" }
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.renderer = { path = "../../packages/renderer" }
+cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
+cgpui.ui = { path = "../../packages/ui" }
+cgpui.app = { path = "../../packages/app" }
+
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.platform-win32 = { path = "../../packages/platform-win32" }
+
+[target.'cfg(os = "linux")'.dependencies]
+cgpui.platform-linux-wayland = { path = "../../packages/platform-linux-wayland" }
+
+[build]
+sources = []
+
+[targets.example_backdrop_blur]
+kind = "bin"
+main = "main.cpp"
