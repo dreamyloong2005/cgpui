@@ -28,7 +28,7 @@ void light_defaults(WorkbenchTheme& theme) {
   theme.indent_guide = rgba(0, 0, 0, 0.12F);
   theme.tooltip = rgb(255, 255, 255);
   theme.tooltip_text = rgb(31, 31, 31);
-  theme.menu = rgba(252, 252, 252, 0.97F);
+  theme.menu = rgb(252, 252, 252);
   theme.menu_border = rgba(0, 0, 0, 0.12F);
   theme.shadow = rgba(0, 0, 0, 0.22F);
 }
@@ -48,7 +48,7 @@ void dark_defaults(WorkbenchTheme& theme) {
   theme.indent_guide = rgba(255, 255, 255, 0.12F);
   theme.tooltip = rgb(44, 46, 52);
   theme.tooltip_text = rgb(226, 228, 232);
-  theme.menu = rgba(40, 42, 47, 0.96F);
+  theme.menu = rgb(40, 42, 47);
   theme.menu_border = rgba(255, 255, 255, 0.10F);
   theme.shadow = rgba(0, 0, 0, 0.50F);
 }

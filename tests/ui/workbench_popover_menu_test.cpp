@@ -232,12 +232,39 @@ int test_accessibility() {
 
 } // namespace
 
+// Without backdrop blur the surface is opaque, so content under the menu
+// does not show through (even with a translucent theme override).
+int test_surface_is_opaque_without_blur() {
+  for (const float override_alpha : {1.0F, 0.5F}) {
+    Fixture f;
+    f.theme.menu.a = override_alpha == 1.0F ? f.theme.menu.a : override_alpha;
+    f.open_at({100, 100});
+    cgpui::PaintList paint_list;
+    f.menu.paint(paint_list, f.theme);
+    const cgpui::Rect bounds = f.menu.level_bounds(0);
+    bool found = false;
+    for (const cgpui::PaintCommand& command : paint_list.commands()) {
+      if (command.kind != cgpui::PaintCommandKind::rounded_rect) continue;
+      const cgpui::Rect rect = command.rounded_rect.rect;
+      if (rect.origin.x != bounds.origin.x || rect.origin.y != bounds.origin.y ||
+          rect.size.width != bounds.size.width) {
+        continue;
+      }
+      found = true;
+      if (command.rounded_rect.color.a != 1.0F) return 80;
+    }
+    if (!found) return 81;
+  }
+  return 0;
+}
+
 int main() {
   for (const auto test : {test_open_focus_and_escape_restore,
                           test_flips_and_shifts_at_edges, test_outside_click_dismisses,
                           test_keyboard_navigation_and_submenu,
                           test_pointer_hover_and_activation,
-                          test_accelerator_column_uses_text_metrics, test_accessibility}) {
+                          test_accelerator_column_uses_text_metrics, test_accessibility,
+                          test_surface_is_opaque_without_blur}) {
     if (const int result = test(); result != 0) {
       std::cerr << "workbench_popover_menu_test failed: " << result << '\n';
       return result;

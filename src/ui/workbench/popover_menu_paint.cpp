@@ -85,10 +85,13 @@ void PopoverMenu::paint(PaintList& paint_list, const WorkbenchTheme& theme) cons
         bounds,
         BoxShadow{.color = theme.shadow, .offset = {0, 8}, .blur_radius = 24.0F},
         radius);
+    // Opaque unless a backdrop blur is requested: content under the menu
+    // must not show through a plain surface.
     Color surface = theme.menu;
+    surface.a = 1.0F;
     if (options_.backdrop_blur) {
       paint_list.draw_backdrop_blur(bounds, radius, options_.blur_radius);
-      surface.a = std::min(surface.a, 0.78F);  // let the blur show through
+      surface.a = std::min(theme.menu.a, 0.78F);  // let the blur show through
     }
     paint_list.fill_stroked_rounded_rect(bounds, surface, radius,
                                          theme.menu_border, hairline);

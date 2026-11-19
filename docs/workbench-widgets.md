@@ -185,6 +185,8 @@ void on_close(PopoverCloseHandler handler);     // activated / escape / outside_
   accelerators are right-aligned in it.
 - Surface: C5 `draw_box_shadow` (24 px blur, 8 px offset, radius 8) and
   optional C6 `draw_backdrop_blur` (`PopoverMenuOptions::backdrop_blur`).
+  Without blur the surface is opaque (alpha forced to 1, also for a
+  translucent `workbench.menu` override); with blur it uses at most 0.78.
 - Accessibility: `menu` (focusable) with `menu_item` children (`enabled`,
   value = accelerator, `selected` = highlighted, `expanded` on submenu items)
   and `separator`; an open submenu is a `menu` child of its item.
@@ -267,6 +269,9 @@ Captured with `D:\Dev\shots\shot.ps1` and `shot_workbench.ps1` (real
   context menu at the pointer: soft shadow below and right, rounded surface,
   separators, a disabled "Delete", right-aligned accelerators
   (Ctrl+N, Shift+Alt+R, Shift+Alt+C, F2, Del) in one column, a submenu arrow.
+  The first capture showed editor text faintly through the menu (theme menu
+  alpha 0.96); `c9_workbench_menu_opaque.jpg` (re-captured after the fix)
+  shows an opaque surface.
 - `c9_workbench_tooltip_light.jpg` (light, forced): hovering the title-bar
   panel button shows "Toggle agent panel (Ctrl+Alt+B)" below the pointer,
   shifted left to stay inside the window; light theme colors throughout.
