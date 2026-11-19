@@ -35,6 +35,15 @@ inline void warning(std::string_view text) {
   directive("warning", text);
 }
 
+// mcpp re-runs a build program when its build.mcpp changes; this header is
+// an input too.
+struct RerunIfHeaderChanged {
+  RerunIfHeaderChanged() {
+    directive("rerun-if-changed", std::filesystem::path{__FILE__}.lexically_normal().generic_string());
+  }
+};
+inline const RerunIfHeaderChanged rerun_if_header_changed{};
+
 // Defines CGPUI_SOURCE_ROOT as the repository root, `levels` directories
 // above the package's manifest, as a string literal with forward slashes.
 // Tests that read repository files use it instead of a run-time variable.
