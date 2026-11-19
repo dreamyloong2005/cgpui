@@ -394,7 +394,7 @@ int test_hidpi_scale_flows_to_layout_text_and_renderer_resize() {
       root_bounds.size.height != 20.0F) {
     return 408;
   }
-  if (fixture.frame.text_draw_count != 2 ||
+  if (fixture.frame.text_draw_count != 4 ||
       !equal(fixture.frame.last_text.scale, cgpui::DpiScale{2.0F}) ||
       fixture.frame.last_text.font_size != 20.0F ||
       fixture.frame.last_text.device_font_size != 40.0F ||

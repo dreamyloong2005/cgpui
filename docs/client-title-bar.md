@@ -79,13 +79,11 @@ wins. A point outside every region is ordinary client area.
 
 Each frame the runtime sends the list to the window
 (`runtime_publish_window_control_regions`, src/ui/runtime_window_title_bar.cpp):
-first the regions `View::paint` declared, then, if the window reports
-`frame_metrics().client_title_bar`, the regions of the laid-out element tree.
-The runtime frame does not paint element trees into the renderer, so the
-element regions come from one extra paint of the tree into a scratch
-`PaintList`. That pass runs only in client mode and only for the root
-window's dynamic element tree; secondary windows (`WindowRuntimeRecord`
-frames) and static element trees publish the `View::paint` regions only.
+the regions the frame painted. `render_view` paints `View::paint` first and
+then the laid-out element tree the view returned from `render()` (root and
+secondary windows), so view regions come first, then element regions, in
+both title bar modes. Static element trees carry no paint data and add no
+regions.
 
 Caption buttons need no click handler: the platform minimizes, toggles
 maximize or closes when the left button is released over the button region
@@ -266,9 +264,9 @@ the minimize button sends `set_minimized`; the close button produces
 
 `window_control_region_test`: region bounds follow the transform and clip;
 element regions equal the painted box bounds and stay logical at scale 1.5;
-`render_view` returns the `View::paint` regions; the runtime publishes view
-regions then element regions in client mode and only view regions in system
-mode; the base window reports unsupported actions with a reason.
+`render_view` returns the `View::paint` regions, and with an element tree
+the view regions then the element regions, which the runtime publishes as
+painted; the base window reports unsupported actions with a reason.
 
 ## Not verified
 

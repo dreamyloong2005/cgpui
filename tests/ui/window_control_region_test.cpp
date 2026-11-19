@@ -145,21 +145,20 @@ int main() {
     return fail(4, "render_view must report the painted regions");
   }
 
-  // The runtime publishes view regions first, then the element tree's.
+  // render_view paints the element tree after View::paint, so the tree's
+  // regions follow the view's; the runtime publishes them as painted.
+  std::vector<WindowControlRegion> tree_frame_regions;
+  if (!cgpui::render_view(renderer, view, {400, 300}, cgpui::DpiScale{1.5F}, nullptr,
+                          cgpui::Color{}, &tree_frame_regions, &tree, nullptr)) {
+    return fail(5, "render_view with an element tree must succeed");
+  }
   RegionWindow window;
-  cgpui::runtime_publish_window_control_regions(
-      &window, &tree, cgpui::DpiScale{1.5F}, frame_regions);
+  cgpui::runtime_publish_window_control_regions(&window, tree_frame_regions);
   if (window.regions.size() != 3 ||
       window.regions[0].area != WindowControlArea::close_button ||
       window.regions[1].area != WindowControlArea::caption ||
       window.regions[2].area != WindowControlArea::client) {
-    return fail(5, "client mode must publish view and element regions");
-  }
-  window.client_mode = false;
-  cgpui::runtime_publish_window_control_regions(
-      &window, &tree, cgpui::DpiScale{1.5F}, {});
-  if (window.publish_count != 2 || !window.regions.empty()) {
-    return fail(6, "system mode skips the element pass");
+    return fail(6, "view regions first, then element regions");
   }
 
   // The base PlatformWindow keeps working for backends without support.

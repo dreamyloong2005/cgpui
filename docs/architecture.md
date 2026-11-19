@@ -43,7 +43,14 @@ heap allocation, broad type erasure, or avoidable virtual dispatch.
 1. A platform application creates a native window and surface handle.
 2. The renderer backend binds the surface and owns frame resources.
 3. `WindowRuntime` routes platform events into the root View and element tree.
-4. Layout and paint produce platform-neutral renderer commands.
+4. Layout and paint produce platform-neutral renderer commands. Each frame
+   the runtime calls `View::render`, lays out the returned element tree in
+   window coordinates, then `render_view` paints `View::paint` first and the
+   element tree on top of it, in the root and every additional window.
+   `View::paint` is the view's own canvas beneath its elements. Static
+   element trees (`render_static`) hold structure, bounds and text without
+   paint style; they drive hit testing and accessibility, and such views
+   draw in `View::paint`.
 5. Tasks, timers, animations, and cross-thread entity work wake the owning
    runtime and drain on its thread.
 

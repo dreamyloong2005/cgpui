@@ -42,6 +42,19 @@ Result<void> render_view(
     Color clear_color,
     std::vector<WindowControlRegion>* window_control_regions,
     FrameStatistics* statistics);
+// element_tree: the laid-out tree the view returned from render(). It is
+// painted after View::paint, so View::paint draws beneath the elements.
+// Its window control regions follow the View::paint ones.
+Result<void> render_view(
+    Renderer& renderer,
+    View& view,
+    Size viewport_size,
+    DpiScale scale,
+    TextMeasurementCache* text_measurement_cache,
+    Color clear_color,
+    std::vector<WindowControlRegion>* window_control_regions,
+    const ElementTree* element_tree,
+    FrameStatistics* statistics);
 [[nodiscard]] int run_app(
     PlatformApplication& application,
     View& view,

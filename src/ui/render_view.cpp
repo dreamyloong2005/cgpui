@@ -6,58 +6,11 @@ Result<void> render_view(
     Renderer& renderer,
     View& view,
     Size viewport_size,
-    FrameStatistics* statistics) {
-  return render_view(renderer, view, viewport_size, DpiScale{}, statistics);
-}
-
-Result<void> render_view(
-    Renderer& renderer,
-    View& view,
-    Size viewport_size,
-    DpiScale scale,
-    FrameStatistics* statistics) {
-  return render_view(
-      renderer,
-      view,
-      viewport_size,
-      scale,
-      nullptr,
-      statistics);
-}
-
-Result<void> render_view(
-    Renderer& renderer,
-    View& view,
-    Size viewport_size,
-    DpiScale scale,
-    TextMeasurementCache* text_measurement_cache,
-    FrameStatistics* statistics) {
-  return render_view(
-      renderer, view, viewport_size, scale, text_measurement_cache,
-      runtime_default_clear_color, statistics);
-}
-
-Result<void> render_view(
-    Renderer& renderer,
-    View& view,
-    Size viewport_size,
-    DpiScale scale,
-    TextMeasurementCache* text_measurement_cache,
-    Color clear_color,
-    FrameStatistics* statistics) {
-  return render_view(
-      renderer, view, viewport_size, scale, text_measurement_cache,
-      clear_color, nullptr, statistics);
-}
-
-Result<void> render_view(
-    Renderer& renderer,
-    View& view,
-    Size viewport_size,
     DpiScale scale,
     TextMeasurementCache* text_measurement_cache,
     Color clear_color,
     std::vector<WindowControlRegion>* window_control_regions,
+    const ElementTree* element_tree,
     FrameStatistics* statistics) {
   if (statistics != nullptr) {
     statistics->begin_frame_count += 1;
@@ -82,6 +35,9 @@ Result<void> render_view(
   paint_list.set_scale(scale);
   paint_list.set_text_measurement_cache(text_measurement_cache);
   view.paint(paint_list, viewport_size);
+  if (element_tree != nullptr) {
+    element_tree->paint(paint_list);
+  }
   if (window_control_regions != nullptr) {
     const auto regions = paint_list.window_control_regions();
     window_control_regions->assign(regions.begin(), regions.end());

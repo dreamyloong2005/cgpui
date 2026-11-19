@@ -62,13 +62,14 @@ Result<void> WindowRuntime::try_draw_frame() {
       nullptr,
       runtime_window_clear_color(window_),
       &window_control_regions,
+      element_tree(),
       &frame_statistics);
   if (!result) {
     abort_frame_scheduling();
     return std::unexpected(result.error());
   }
   runtime_publish_window_control_regions(
-      window_, element_tree(), scale_, std::move(window_control_regions));
+      window_, std::move(window_control_regions));
   last_renderer_frame_diagnostics_ =
       runtime_renderer_frame_diagnostic_snapshot(*renderer_);
 
@@ -147,13 +148,13 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
       nullptr,
       runtime_window_clear_color(record.window),
       &window_control_regions,
+      element_tree_for_record(record),
       &frame_statistics);
   if (!result) {
     return std::unexpected(result.error());
   }
   runtime_publish_window_control_regions(
-      record.window, element_tree_for_record(record), record.scale,
-      std::move(window_control_regions));
+      record.window, std::move(window_control_regions));
   last_renderer_frame_diagnostics_ =
       runtime_renderer_frame_diagnostic_snapshot(*record.renderer);
 
