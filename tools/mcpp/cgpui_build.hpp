@@ -96,13 +96,20 @@ inline void pkg_config(const std::vector<std::string>& modules, bool link = true
   }
   directive("rerun-if-env-changed", "PKG_CONFIG_PATH");
   bool ok = false;
-  const std::string cflags = capture("pkg-config --cflags" + names, ok);
+  // System include directories are kept (PKG_CONFIG_ALLOW_SYSTEM_CFLAGS):
+  // mcpp compiles against its own C library sysroot, so /usr/include is not
+  // searched unless a package names it. It is searched after the sysroot
+  // (include-dir-after) so the sysroot's C library headers stay first.
+  const std::string cflags = capture(
+      "PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 pkg-config --cflags" + names, ok);
   if (!ok) {
     warning("pkg-config could not find" + names);
     return;
   }
   for (const std::string& word : split_words(cflags)) {
-    if (word.starts_with("-I")) {
+    if (word == "-I/usr/include") {
+      directive("include-dir-after", word.substr(2));
+    } else if (word.starts_with("-I")) {
       directive("include-dir", word.substr(2));
     } else {
       directive("cxxflag", word);
