@@ -103,6 +103,7 @@ Shaders are compiled to SPIR-V at development time and embedded in
 | `msvc_runtime`, `vulkan_sdk_version` | Windows only |
 | `system_packages` | Linux only: `pacman -Q` versions of harfbuzz, freetype2, fontconfig, wayland, libxkbcommon, dbus, vulkan-icd-loader, libxml2 |
 | `libraries`, `link_names`, `library_origins` | packaged libraries in link order and where each came from (`cgpui` or `xmake package <name> <version>`) |
+| `xmake_dependencies` | from `xmake-requires.lock` as committed at HEAD (`git show HEAD:xmake-requires.lock`, never the working copy or the effective git / xmake configuration, so a package mirror cannot leak in): `lock_sha256`, `lock_section` and, per package pinned for the platform, name, version, `lock_key`, `package_hash`, `repo_url`, `repo_branch`, `repo_commit`, `bundled` (copied into `lib/`) |
 | `system_libraries` | libraries the consumer links from the system, in order |
 | `private_headers` | `src/ui` headers shipped because public headers include them |
 | `executables`, `cmake_config`, `consumer_sample`, `shaders`, `documents` | package contents |
@@ -191,3 +192,8 @@ packages above instead.
   dzn, a non-conformant Vulkan driver); a native Wayland compositor is not
   tested.
 - No signing; integrity is the per-file and archive SHA-256.
+- Package resolution clones xmake-repo and (on Windows) build-artifacts in
+  a fresh xmake global directory each run. On a connection that drops long
+  transfers, point xmake at local mirrors with `XMAKE_MAIN_REPO` /
+  `XMAKE_BINARY_REPO`. The manifest still records the URLs and commits
+  from the committed lock, so they match a package built without mirrors.

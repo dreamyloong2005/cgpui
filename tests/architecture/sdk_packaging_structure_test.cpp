@@ -43,6 +43,8 @@ int main() {
   const std::string linux_script =
       read_source("scripts/ci/linux-sdk-package.sh");
   const std::string packer = read_source("scripts/ci/sdk-package.py");
+  const std::string lock_reader =
+      read_source("scripts/ci/sdk_package_lock.py");
   const std::string archiver =
       read_source("scripts/ci/create-release-artifact.py");
   const std::string base = read_source("scripts/ci/windows-package.ps1");
@@ -79,6 +81,17 @@ int main() {
       !has(packer, "copy_private_headers(")) {
     return fail(4, "the manifest records source, toolchain, links and hashes");
   }
+  // Provenance comes from the committed lock only, so a package mirror in
+  // the effective git or xmake configuration cannot leak in.
+  if (!has(packer, "\"xmake_dependencies\": lock_provenance(") ||
+      !has(lock_reader, "\"git\", \"-C\", str(repo), \"show\", f\"HEAD:{LOCK_FILE}\"") ||
+      !has(lock_reader, "\"lock_sha256\"") ||
+      !has(lock_reader, "\"package_hash\"") ||
+      !has(lock_reader, "\"repo_url\"") ||
+      !has(lock_reader, "\"repo_commit\"") ||
+      has(lock_reader, "XMAKE_MAIN_REPO") || has(lock_reader, "config --get")) {
+    return fail(8, "dependency provenance comes from the committed lock");
+  }
   if (!has(packer, "cgpuiConfig.cmake") ||
       !has(packer, "cgpuiConfigVersion.cmake") ||
       !has(packer, "add_library(cgpui::cgpui INTERFACE IMPORTED)") ||
@@ -88,7 +101,7 @@ int main() {
     return fail(5, "consumers link through CMake and xmake");
   }
   // Tripwires: split the modules before raising these.
-  if (line_count(packer) > 540 || line_count(windows) > 140 ||
+  if (line_count(packer) > 540 || line_count(lock_reader) > 80 || line_count(windows) > 140 ||
       line_count(linux_script) > 80) {
     return fail(6, "SDK packaging scripts exceed their line limits");
   }

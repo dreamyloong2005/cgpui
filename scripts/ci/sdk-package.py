@@ -20,6 +20,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from sdk_package_lock import lock_provenance
+
 LOCK_FILE = "xmake-requires.lock"
 LINUX_SYSTEM_PACKAGES = (
     "harfbuzz", "freetype2", "fontconfig", "wayland", "libxkbcommon",
@@ -452,6 +454,10 @@ def finalize(args) -> None:
         "library_origins": {library["name"]: library["origin"]
                             for library in parsed["libraries"]},
         "system_libraries": parsed["system"],
+        "xmake_dependencies": lock_provenance(
+            repo, args.platform,
+            {library["name"] for library in parsed["libraries"]
+             if library["origin"] != "cgpui"}),
         "link_order_source": "example_workbench link line (xmake build -v)",
         "executables": executables,
         "cmake_config": "lib/cmake/cgpui/cgpuiConfig.cmake",
