@@ -31,5 +31,11 @@ sources = [
     "../../src/platform/linux/x11/x11_data_transfer.cpp",
 ]
 
+[target.'cfg(os = "macos")'.build]
+sources = ["../../src/platform/macos/macos_clipboard.mm"]
+
+[target.'cfg(os = "macos")'.runtime]
+frameworks = ["AppKit"]
+
 [build-dependencies]
 cgpui.build-support = { path = "../../tools/mcpp" }

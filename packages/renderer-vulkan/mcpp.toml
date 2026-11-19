@@ -13,7 +13,13 @@ cgpui.renderer = { path = "../renderer" }
 
 [build]
 include_dirs = ["../../include"]
+sources = []
+
+[target.'cfg(any(os = "windows", os = "linux"))'.build]
 sources = ["../../src/renderer/vulkan/*.cpp"]
+
+[target.'cfg(not(any(os = "windows", os = "linux")))'.build]
+sources = ["../../tools/mcpp/empty_library.cpp"]
 
 [build-dependencies]
 cgpui.build-support = { path = "../../tools/mcpp" }

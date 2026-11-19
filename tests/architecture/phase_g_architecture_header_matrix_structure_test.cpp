@@ -8,7 +8,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  const char* root = std::getenv("CGPUI_SOURCE_ROOT");
+  const char* root = CGPUI_SOURCE_ROOT;
   std::ifstream source((root == nullptr ? std::string{"."} : root) + "/" + path);
   if (!source) source.open(path);
   return source ? std::string{std::istreambuf_iterator<char>(source), {}}
@@ -29,7 +29,7 @@ std::size_t line_count(const std::string& text) {
 
 int main() {
   namespace fs = std::filesystem;
-  const char* root_value = std::getenv("CGPUI_SOURCE_ROOT");
+  const char* root_value = CGPUI_SOURCE_ROOT;
   const fs::path root = root_value == nullptr ? fs::path{"."} : root_value;
   const std::string matrix =
       read_source("scripts/ci/architecture-header-targets.txt");

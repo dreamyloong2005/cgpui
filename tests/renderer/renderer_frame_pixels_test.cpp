@@ -27,7 +27,7 @@ class DefaultRenderer final : public cgpui::Renderer {
 };
 
 std::string source_root() {
-  if (const char* root = std::getenv("CGPUI_SOURCE_ROOT"); root != nullptr) {
+  if (const char* root = CGPUI_SOURCE_ROOT; root != nullptr) {
     return root;
   }
   return ".";

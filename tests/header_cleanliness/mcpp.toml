@@ -1,0 +1,56 @@
+# tests/header_cleanliness: Each program includes one public header and nothing else.
+# Every test program is named in [test] discover (registration is explicit,
+# as it was with xmake targets; structure tests check these entries).
+# build.mcpp defines CGPUI_SOURCE_ROOT for tests that read repository files.
+[package]
+namespace = "cgpui"
+name = "tests-header-cleanliness"
+version = "0.1.0"
+
+[dependencies]
+cgpui.core = { path = "../../packages/core" }
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.renderer = { path = "../../packages/renderer" }
+cgpui.ui = { path = "../../packages/ui" }
+cgpui.app = { path = "../../packages/app" }
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }
+
+[build]
+sources = []
+
+[test]
+discover = [
+    "action_macros_header_cleanliness.cpp",
+    "app_header_cleanliness.cpp",
+    "async_asset_loading_header_cleanliness.cpp",
+    "core_header_cleanliness.cpp",
+    "core_window_backdrop_header_cleanliness.cpp",
+    "core_window_title_bar_header_cleanliness.cpp",
+    "platform_appearance_header_cleanliness.cpp",
+    "platform_dpi_awareness_header_cleanliness.cpp",
+    "platform_window_backdrop_header_cleanliness.cpp",
+    "platform_window_title_bar_header_cleanliness.cpp",
+    "prelude_header_cleanliness.cpp",
+    "renderer_effect_draws_header_cleanliness.cpp",
+    "renderer_surface_composition_header_cleanliness.cpp",
+    "style_font_header_cleanliness.cpp",
+    "test_app_header_cleanliness.cpp",
+    "test_runner_header_cleanliness.cpp",
+    "text_composition_header_cleanliness.cpp",
+    "text_font_defaults_header_cleanliness.cpp",
+    "text_glyph_rasterizer_header_cleanliness.cpp",
+    "text_shape_cache_header_cleanliness.cpp",
+    "ui_anchored_header_cleanliness.cpp",
+    "ui_element_window_control_nodes_header_cleanliness.cpp",
+    "ui_header_cleanliness.cpp",
+    "ui_popover_menu_header_cleanliness.cpp",
+    "ui_splitter_header_cleanliness.cpp",
+    "ui_tab_strip_header_cleanliness.cpp",
+    "ui_tooltip_header_cleanliness.cpp",
+    "ui_tree_view_header_cleanliness.cpp",
+    "ui_widget_tree_header_cleanliness.cpp",
+    "ui_workbench_theme_header_cleanliness.cpp",
+    "ui_workbench_widgets_header_cleanliness.cpp",
+]

@@ -1,0 +1,131 @@
+# tests/ui: Elements, layout, text, widgets and the window runtime.
+# Every test program is named in [test] discover (registration is explicit,
+# as it was with xmake targets; structure tests check these entries).
+# build.mcpp defines CGPUI_SOURCE_ROOT for tests that read repository files.
+[package]
+namespace = "cgpui"
+name = "tests-ui"
+version = "0.1.0"
+
+[targets.cgpui_tests_ui_support]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../../packages/core" }
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.renderer = { path = "../../packages/renderer" }
+cgpui.ui = { path = "../../packages/ui" }
+cgpui.app = { path = "../../packages/app" }
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }
+
+[build]
+sources = [
+    "native_text_shaping_reference.cpp",
+]
+include_dirs = [
+    "../../src/ui",
+    ".",
+]
+
+[target.'cfg(os = "linux")'.build]
+defines = [
+    "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND",
+]
+
+[test]
+discover = [
+    "accessibility_pattern_action_test.cpp",
+    "accessibility_pattern_runtime_test.cpp",
+    "action_bubbling_test.cpp",
+    "action_enablement_metadata_test.cpp",
+    "action_scope_metadata_test.cpp",
+    "app_runner_test.cpp",
+    "backdrop_blur_submission_test.cpp",
+    "box_shadow_submission_test.cpp",
+    "builtin_widget_test.cpp",
+    "command_palette_key_integration_test.cpp",
+    "element_nested_coordinates_test.cpp",
+    "element_test.cpp",
+    "flex_grow_relayout_test.cpp",
+    "key_binding_disabled_scope_test.cpp",
+    "key_binding_grammar_test.cpp",
+    "key_binding_partial_match_test.cpp",
+    "key_binding_platform_modifier_test.cpp",
+    "keymap_context_test.cpp",
+    "layout_test.cpp",
+    "leaf_element_box_style_test.cpp",
+    "native_menu_action_dispatch_test.cpp",
+    "native_menu_dispatch_diagnostics_test.cpp",
+    "native_text_shaping_test.cpp",
+    "render_view_image_asset_updates_test.cpp",
+    "render_view_test.cpp",
+    "rich_text_run_test.cpp",
+    "runtime_renderer_diagnostics_test.cpp",
+    "scroll_element_offset_test.cpp",
+    "scroll_test.cpp",
+    "stack_builder_style_test.cpp",
+    "static_element_tree_test.cpp",
+    "static_render_runtime_test.cpp",
+    "style_test.cpp",
+    "test_app_async_control_test.cpp",
+    "test_app_platform_services_test.cpp",
+    "test_app_rendering_control_test.cpp",
+    "test_app_simulated_input_test.cpp",
+    "test_app_timer_control_test.cpp",
+    "test_app_window_setup_test.cpp",
+    "test_context_clipboard_test.cpp",
+    "test_context_focus_activation_test.cpp",
+    "test_context_frame_pump_test.cpp",
+    "test_context_keystroke_simulation_test.cpp",
+    "test_context_pointer_simulation_test.cpp",
+    "test_context_time_async_test.cpp",
+    "test_runner_macro_test.cpp",
+    "test_runner_invalid_environment_test.cpp",
+    "test_runner_test.cpp",
+    "text_composition_paint_test.cpp",
+    "text_model_test.cpp",
+    "typed_action_command_metadata_test.cpp",
+    "typed_action_dispatch_test.cpp",
+    "view_element_tree_paint_test.cpp",
+    "window_control_region_test.cpp",
+    "window_record_action_dispatch_test.cpp",
+    "window_record_element_tree_test.cpp",
+    "window_runtime_actions_test.cpp",
+    "window_runtime_backdrop_test.cpp",
+    "window_runtime_child_ownership_test.cpp",
+    "window_runtime_drag_drop_cancellation_diagnostics_test.cpp",
+    "window_runtime_event_loop_ownership_test.cpp",
+    "window_runtime_focus_test.cpp",
+    "window_runtime_frame_scheduling_test.cpp",
+    "window_runtime_ime_diagnostics_test.cpp",
+    "window_runtime_input_test.cpp",
+    "window_runtime_multi_window_accessibility_test.cpp",
+    "window_runtime_multi_window_churn_test.cpp",
+    "window_runtime_multi_window_event_routing_test.cpp",
+    "window_runtime_multi_window_geometry_test.cpp",
+    "window_runtime_multi_window_input_test.cpp",
+    "window_runtime_multi_window_theme_test.cpp",
+    "window_runtime_multiwindow_test.cpp",
+    "window_runtime_observation_closure_test.cpp",
+    "window_runtime_observation_diagnostics_test.cpp",
+    "window_runtime_pointer_capture_platform_test.cpp",
+    "window_runtime_pointer_exit_test.cpp",
+    "window_runtime_rendering_test.cpp",
+    "window_runtime_scale_diagnostics_test.cpp",
+    "window_runtime_scheduling_test.cpp",
+    "window_runtime_system_appearance_test.cpp",
+    "window_runtime_task_wakeup_diagnostics_test.cpp",
+    "window_runtime_test.cpp",
+    "window_runtime_text_test.cpp",
+    "window_runtime_theme_test.cpp",
+    "window_runtime_timer_wakeup_diagnostics_test.cpp",
+    "window_runtime_view_handle_token_test.cpp",
+    "workbench_accessibility_actions_test.cpp",
+    "workbench_popover_menu_test.cpp",
+    "workbench_splitter_test.cpp",
+    "workbench_tab_strip_test.cpp",
+    "workbench_tooltip_test.cpp",
+    "workbench_tree_view_test.cpp",
+]

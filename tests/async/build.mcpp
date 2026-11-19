@@ -1,0 +1,6 @@
+// Configures this test suite; see tools/mcpp/cgpui_build.hpp.
+#include <cgpui_build.hpp>
+
+int main() {
+  cgpui_build::source_root_define(2);
+}

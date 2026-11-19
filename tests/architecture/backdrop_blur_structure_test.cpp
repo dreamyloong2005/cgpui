@@ -13,7 +13,7 @@
 // direct swapchain pass and never create offscreen resources.
 namespace {
 std::string read(const char* path) {
-  const auto root = std::getenv("CGPUI_SOURCE_ROOT");
+  const auto root = CGPUI_SOURCE_ROOT;
   std::ifstream stream(std::filesystem::path(root ? root : ".") / path);
   if (!stream) throw std::runtime_error(std::string("missing focused module: ") + path);
   return {std::istreambuf_iterator<char>(stream), {}};

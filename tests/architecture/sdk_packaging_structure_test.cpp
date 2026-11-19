@@ -12,7 +12,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  const char* root = std::getenv("CGPUI_SOURCE_ROOT");
+  const char* root = CGPUI_SOURCE_ROOT;
   std::ifstream source((root == nullptr ? std::string{"."} : root) + "/" +
                        path);
   return source ? std::string{std::istreambuf_iterator<char>(source), {}}

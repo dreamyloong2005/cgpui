@@ -1,4 +1,5 @@
 #include "cgpui/ui/test_runner.hpp"
+#include "test_environment.hpp"
 
 #include <array>
 #include <cstdlib>
@@ -47,19 +48,11 @@ void record_failure(const cgpui::TestRunFailure& failure) {
 } // namespace
 
 int main() {
-  if (std::getenv("CGPUI_EXPECT_INVALID_ENV") != nullptr) {
-    const cgpui::TestRunSummary invalid_environment = cgpui::run_test(
-        "invalid_environment",
-        &record_environment_seed,
-        cgpui::TestRunOptions{});
-    return invalid_environment.status ==
-            cgpui::TestRunStatus::invalid_configuration &&
-        invalid_environment.attempt_count == 0 &&
-        invalid_environment.failure.has_value() &&
-        invalid_environment.failure->message ==
-            std::string_view{"ITERATIONS must be an unsigned integer"}
-        ? 0
-        : 4;
+  // The environment the xmake test case "default" set; the invalid case is
+  // test_runner_invalid_environment_test.
+  if (!set_test_environment("SEED", "50") ||
+      !set_test_environment("ITERATIONS", "2")) {
+    return 90;
   }
 
   const cgpui::TestRunSummary retry_summary = cgpui::run_test(

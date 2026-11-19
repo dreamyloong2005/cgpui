@@ -1,0 +1,35 @@
+# tests/assets: Asset loading tests.
+# Every test program is named in [test] discover (registration is explicit,
+# as it was with xmake targets; structure tests check these entries).
+# build.mcpp defines CGPUI_SOURCE_ROOT for tests that read repository files.
+[package]
+namespace = "cgpui"
+name = "tests-assets"
+version = "0.1.0"
+
+[dependencies]
+cgpui.core = { path = "../../packages/core" }
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.renderer = { path = "../../packages/renderer" }
+cgpui.ui = { path = "../../packages/ui" }
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }
+
+[build]
+sources = []
+include_dirs = [
+    "../../tests/ui",
+]
+
+[test]
+discover = [
+    "asset_cache_key_test.cpp",
+    "asset_reload_test.cpp",
+    "async_asset_loading_outcome_test.cpp",
+    "async_asset_loading_test.cpp",
+    "file_asset_source_test.cpp",
+    "gif_decode_test.cpp",
+    "image_decode_test.cpp",
+    "svg_asset_decode_test.cpp",
+]

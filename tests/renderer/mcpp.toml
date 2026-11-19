@@ -1,0 +1,140 @@
+# tests/renderer: Renderer, text pipeline and Vulkan backend.
+# Every test program is named in [test] discover (registration is explicit,
+# as it was with xmake targets; structure tests check these entries).
+# build.mcpp defines CGPUI_SOURCE_ROOT for tests that read repository files.
+[package]
+namespace = "cgpui"
+name = "tests-renderer"
+version = "0.1.0"
+
+[dependencies]
+cgpui.core = { path = "../../packages/core" }
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.renderer = { path = "../../packages/renderer" }
+cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
+cgpui.ui = { path = "../../packages/ui" }
+
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.platform-win32 = { path = "../../packages/platform-win32" }
+
+[target.'cfg(os = "linux")'.dependencies]
+cgpui.platform-linux-wayland = { path = "../../packages/platform-linux-wayland" }
+
+[target.'cfg(os = "macos")'.dependencies]
+cgpui.platform-macos = { path = "../../packages/platform-macos" }
+cgpui.renderer-metal = { path = "../../packages/renderer-metal" }
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }
+
+[build]
+sources = []
+include_dirs = [
+    "../../src/renderer/vulkan",
+    "../../src/ui",
+    ".",
+]
+
+# macOS (planned only; not run since the mcpp migration).
+[target.'cfg(os = "macos")'.build]
+include_dirs = ["../../src/renderer/metal", "metal"]
+
+[test]
+discover = [
+    "native_text_glyph_spacing_test.cpp",
+    "renderer_draw_count_diagnostics_test.cpp",
+    "renderer_dropped_resource_diagnostics_test.cpp",
+    "renderer_frame_diagnostics_test.cpp",
+    "renderer_frame_pixels_test.cpp",
+    "renderer_frame_timing_diagnostics_test.cpp",
+    "renderer_upload_byte_diagnostics_test.cpp",
+    "svg_image_upload_integration_test.cpp",
+    "svg_lunasvg_rasterization_test.cpp",
+    "svg_raster_cache_test.cpp",
+    "svg_rasterization_plan_test.cpp",
+    "svg_recolor_tint_test.cpp",
+    "svg_viewport_scaling_test.cpp",
+    "vulkan_backdrop_blur_plan_test.cpp",
+    "vulkan_box_shadow_geometry_test.cpp",
+    "vulkan_clip_stack_recording_test.cpp",
+    "vulkan_composed_transform_test.cpp",
+    "vulkan_device_pixels_test.cpp",
+    "vulkan_device_preference_test.cpp",
+    "vulkan_frame_command_reuse_test.cpp",
+    "vulkan_frame_diagnostic_snapshot_test.cpp",
+    "vulkan_frame_geometry_buffer_test.cpp",
+    "vulkan_glyph_atlas_descriptor_test.cpp",
+    "vulkan_glyph_atlas_draw_binding_test.cpp",
+    "vulkan_glyph_atlas_draw_data_test.cpp",
+    "vulkan_glyph_atlas_frame_lifecycle_test.cpp",
+    "vulkan_glyph_atlas_multi_page_test.cpp",
+    "vulkan_glyph_atlas_upload_test.cpp",
+    "vulkan_image_draw_recording_test.cpp",
+    "vulkan_image_texture_cache_test.cpp",
+    "vulkan_image_texture_descriptor_test.cpp",
+    "vulkan_image_texture_invalidation_test.cpp",
+    "vulkan_image_texture_resources_test.cpp",
+    "vulkan_image_texture_upload_test.cpp",
+    "vulkan_image_tint_opacity_test.cpp",
+    "vulkan_layer_ordering_test.cpp",
+    "vulkan_nested_opacity_test.cpp",
+    "vulkan_pipeline_switch_batching_test.cpp",
+    "vulkan_present_pacing_test.cpp",
+    "vulkan_rounded_rect_antialiasing_test.cpp",
+    "vulkan_rounded_rect_buffer_test.cpp",
+    "vulkan_rounded_rect_draw_recording_test.cpp",
+    "vulkan_rounded_rect_fill_variants_test.cpp",
+    "vulkan_rounded_rect_geometry_test.cpp",
+    "vulkan_rounded_rect_pipeline_test.cpp",
+    "vulkan_rounded_rect_radii_test.cpp",
+    "vulkan_rounded_rect_stroke_test.cpp",
+    "vulkan_semaphore_validation_test.cpp",
+    "vulkan_solid_rect_geometry_test.cpp",
+    "vulkan_stable_draw_order_test.cpp",
+    "vulkan_surface_composition_test.cpp",
+    "vulkan_surface_format_test.cpp",
+    "vulkan_swapchain_recovery_test.cpp",
+    "vulkan_text_coverage_test.cpp",
+    "vulkan_text_draw_recording_test.cpp",
+    "vulkan_text_pipeline_resources_test.cpp",
+    "vulkan_text_pipeline_state_test.cpp",
+    "vulkan_text_positioning_test.cpp",
+    "vulkan_text_shader_module_test.cpp",
+    "vulkan_text_vertex_buffer_test.cpp",
+    "vulkan_transform_clip_interaction_test.cpp",
+    "vulkan_transparent_composite_alpha_test.cpp",
+    "vulkan_upload_barrier_batching_test.cpp",
+]
+
+[target.'cfg(os = "windows")'.test]
+discover = [
+    "native_text_rasterization_test.cpp",
+    "vulkan_backdrop_blur_pixel_test.cpp",
+    "vulkan_box_shadow_pixel_test.cpp",
+    "vulkan_clip_pixel_test.cpp",
+    "vulkan_color_encoding_pixel_test.cpp",
+    "vulkan_frame_lifetime_test.cpp",
+    "vulkan_frame_pixel_capture_test.cpp",
+    "vulkan_image_pixel_test.cpp",
+    "vulkan_opacity_pixel_test.cpp",
+    "vulkan_resize_pixel_test.cpp",
+    "vulkan_resize_test.cpp",
+    "vulkan_rounded_rect_pixel_test.cpp",
+    "vulkan_scale_pixel_test.cpp",
+    "vulkan_solid_rect_test.cpp",
+    "vulkan_surface_validation_test.cpp",
+    "vulkan_text_ink_extent_pixel_test.cpp",
+    "vulkan_text_pixel_test.cpp",
+    "vulkan_transform_pixel_test.cpp",
+    "win32_vulkan_surface_test.cpp",
+]
+
+[target.'cfg(os = "linux")'.test]
+discover = [
+    "wayland_frame_pixel_capture_test.cpp",
+    "wayland_vulkan_surface_test.cpp",
+    "x11_vulkan_surface_test.cpp",
+]
+
+[target.'cfg(os = "macos")'.test]
+discover = ["metal/metal_*.mm"]

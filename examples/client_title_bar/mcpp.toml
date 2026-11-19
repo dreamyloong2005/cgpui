@@ -7,15 +7,20 @@ version = "0.1.0"
 cgpui.core = { path = "../../packages/core" }
 cgpui.platform = { path = "../../packages/platform" }
 cgpui.renderer = { path = "../../packages/renderer" }
-cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
 cgpui.ui = { path = "../../packages/ui" }
 cgpui.app = { path = "../../packages/app" }
 
 [target.'cfg(os = "windows")'.dependencies]
 cgpui.platform-win32 = { path = "../../packages/platform-win32" }
+cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
 
 [target.'cfg(os = "linux")'.dependencies]
 cgpui.platform-linux-wayland = { path = "../../packages/platform-linux-wayland" }
+cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
+
+[target.'cfg(os = "macos")'.dependencies]
+cgpui.platform-macos = { path = "../../packages/platform-macos" }
+cgpui.renderer-metal = { path = "../../packages/renderer-metal" }
 
 [build]
 sources = []

@@ -1,0 +1,190 @@
+# tests/platform: Platform services and the Win32 / Wayland / X11 backends.
+# Every test program is named in [test] discover (registration is explicit,
+# as it was with xmake targets; structure tests check these entries).
+# build.mcpp defines CGPUI_SOURCE_ROOT for tests that read repository files.
+[package]
+namespace = "cgpui"
+name = "tests-platform"
+version = "0.1.0"
+
+[targets.cgpui_tests_platform_support]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../../packages/core" }
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.renderer = { path = "../../packages/renderer" }
+cgpui.ui = { path = "../../packages/ui" }
+
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.platform-win32 = { path = "../../packages/platform-win32" }
+cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
+cgpui.app = { path = "../../packages/app" }
+
+[target.'cfg(os = "linux")'.dependencies]
+cgpui.platform-linux-wayland = { path = "../../packages/platform-linux-wayland" }
+
+[target.'cfg(os = "macos")'.dependencies]
+cgpui.platform-macos = { path = "../../packages/platform-macos" }
+cgpui.renderer-metal = { path = "../../packages/renderer-metal" }
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }
+
+[build]
+sources = []
+include_dirs = [
+    "../../src/platform/linux",
+    "../../tests/ui",
+]
+
+[target.'cfg(os = "windows")'.build]
+sources = [
+    "../../src/platform/linux/linux_backend_selection.cpp",
+]
+include_dirs = [
+    "../../src/platform/win32",
+]
+# win32_clipboard_contention_test raises the timer resolution (timeBeginPeriod).
+ldflags = ["winmm.lib"]
+
+[target.'cfg(os = "linux")'.build]
+sources = [
+    "wayland_test_compositor.cpp",
+    "wayland_fake_portal.cpp",
+    "wayland_private_session_bus.cpp",
+    "wayland_test_background_effect.cpp",
+]
+include_dirs = [
+    "../../src/platform/linux/x11",
+    ".",
+]
+
+# macOS (planned only; not run since the mcpp migration).
+[target.'cfg(os = "macos")'.build]
+include_dirs = ["../../src/platform/macos"]
+
+[test]
+discover = [
+    "clipboard_test.cpp",
+    "linux_backend_selection_test.cpp",
+    "platform_font_discovery_test.cpp",
+    "platform_reopen_lifecycle_test.cpp",
+]
+
+[target.'cfg(os = "windows")'.test]
+discover = [
+    "win32_backdrop_erase_test.cpp",
+    "win32_child_window_ownership_test.cpp",
+    "win32_client_title_bar_test.cpp",
+    "win32_clipboard_contention_test.cpp",
+    "win32_clipboard_files_test.cpp",
+    "win32_clipboard_unicode_test.cpp",
+    "win32_cursor_production_test.cpp",
+    "win32_dead_key_test.cpp",
+    "win32_directory_dialog_plan_test.cpp",
+    "win32_dpi_awareness_test.cpp",
+    "win32_dpi_scale_test.cpp",
+    "win32_file_open_dialog_plan_test.cpp",
+    "win32_file_save_dialog_plan_test.cpp",
+    "win32_focus_event_test.cpp",
+    "win32_font_discovery_test.cpp",
+    "win32_ime_composition_detail_test.cpp",
+    "win32_ime_placement_scale_test.cpp",
+    "win32_input_dpi_test.cpp",
+    "win32_input_event_test.cpp",
+    "win32_keyboard_key_test.cpp",
+    "win32_logical_window_size_test.cpp",
+    "win32_message_dialog_plan_test.cpp",
+    "win32_native_menu_accelerator_display_test.cpp",
+    "win32_native_menu_accelerator_registration_test.cpp",
+    "win32_native_menu_command_test.cpp",
+    "win32_native_menu_tree_test.cpp",
+    "win32_native_menu_update_test.cpp",
+    "win32_ole_drop_source_test.cpp",
+    "win32_ole_drop_target_test.cpp",
+    "win32_ole_file_data_object_test.cpp",
+    "win32_ole_text_data_object_test.cpp",
+    "win32_open_url_plan_test.cpp",
+    "win32_pointer_button_test.cpp",
+    "win32_pointer_capture_test.cpp",
+    "win32_pointer_scroll_test.cpp",
+    "win32_system_appearance_test.cpp",
+    "win32_text_input_production_test.cpp",
+    "win32_text_input_test.cpp",
+    "win32_timer_wakeup_test.cpp",
+    "win32_uia_get_object_message_test.cpp",
+    "win32_uia_item_pattern_test.cpp",
+    "win32_uia_lifecycle_stress_test.cpp",
+    "win32_uia_live_event_test.cpp",
+    "win32_uia_pattern_provider_test.cpp",
+    "win32_uia_provider_lifetime_test.cpp",
+    "win32_uia_provider_object_test.cpp",
+    "win32_uia_runtime_change_integration_test.cpp",
+    "win32_uia_tree_navigation_test.cpp",
+    "win32_vulkan_backdrop_test.cpp",
+    "win32_window_activation_focus_state_test.cpp",
+    "win32_window_backdrop_test.cpp",
+    "win32_window_chrome_test.cpp",
+    "win32_window_close_policy_test.cpp",
+    "win32_window_display_state_test.cpp",
+    "win32_window_lifecycle_state_test.cpp",
+    "win32_window_position_test.cpp",
+    "win32_window_resize_scale_state_test.cpp",
+]
+
+[target.'cfg(os = "linux")'.test]
+discover = [
+    "wayland_atspi_bus_connection_test.cpp",
+    "wayland_atspi_bus_reconnect_test.cpp",
+    "wayland_atspi_dbus_object_test.cpp",
+    "wayland_atspi_focus_event_test.cpp",
+    "wayland_atspi_role_state_test.cpp",
+    "wayland_atspi_text_value_event_test.cpp",
+    "wayland_atspi_tree_navigation_test.cpp",
+    "wayland_child_window_ownership_test.cpp",
+    "wayland_client_title_bar_test.cpp",
+    "wayland_clipboard_diagnostics_test.cpp",
+    "wayland_clipboard_failure_test.cpp",
+    "wayland_clipboard_incremental_transfer_test.cpp",
+    "wayland_clipboard_mime_negotiation_test.cpp",
+    "wayland_clipboard_ownership_test.cpp",
+    "wayland_clipboard_read_lifecycle_test.cpp",
+    "wayland_compositor_close_test.cpp",
+    "wayland_compositor_resize_test.cpp",
+    "wayland_configure_lifecycle_test.cpp",
+    "wayland_cursor_theme_test.cpp",
+    "wayland_dpi_awareness_test.cpp",
+    "wayland_drag_cancel_test.cpp",
+    "wayland_event_loop_wakeup_test.cpp",
+    "wayland_font_discovery_test.cpp",
+    "wayland_fractional_scale_test.cpp",
+    "wayland_keyboard_layout_test.cpp",
+    "wayland_keyboard_test.cpp",
+    "wayland_pointer_axis_frame_test.cpp",
+    "wayland_pointer_button_test.cpp",
+    "wayland_pointer_motion_test.cpp",
+    "wayland_pointer_scroll_test.cpp",
+    "wayland_portal_appearance_monitor_test.cpp",
+    "wayland_portal_settings_test.cpp",
+    "wayland_seat_capability_test.cpp",
+    "wayland_timer_wakeup_test.cpp",
+    "wayland_uri_list_test.cpp",
+    "wayland_window_activation_focus_state_test.cpp",
+    "wayland_window_backdrop_test.cpp",
+    "wayland_window_chrome_test.cpp",
+    "wayland_window_close_policy_test.cpp",
+    "wayland_window_display_state_test.cpp",
+    "wayland_window_lifecycle_state_test.cpp",
+    "wayland_window_position_test.cpp",
+    "wayland_window_resize_scale_state_test.cpp",
+    "x11_clipboard_test.cpp",
+    "x11_drag_drop_test.cpp",
+    "x11_input_test.cpp",
+    "x11_platform_services_test.cpp",
+    "x11_scale_test.cpp",
+    "x11_window_lifecycle_test.cpp",
+]
+
+[target.'cfg(os = "macos")'.test]
+discover = ["macos/macos_*.mm"]

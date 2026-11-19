@@ -1,0 +1,31 @@
+# Metal renderer (macOS; planned only, not built or verified on a Mac since
+# the mcpp migration). build.mcpp embeds src/renderer/metal/shaders.metal as
+# metal_shaders_source.hpp, as the xmake rule did.
+[package]
+namespace = "cgpui"
+name = "renderer-metal"
+version = "0.1.0"
+
+[targets.cgpui_renderer_metal]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+cgpui.platform = { path = "../platform" }
+cgpui.renderer = { path = "../renderer" }
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }
+
+[build]
+include_dirs = ["../../include"]
+sources = []
+
+[target.'cfg(os = "macos")'.build]
+sources = ["../../src/renderer/metal/*.mm"]
+
+[target.'cfg(not(os = "macos"))'.build]
+sources = ["../../tools/mcpp/empty_library.cpp"]
+
+[target.'cfg(os = "macos")'.runtime]
+frameworks = ["Metal", "QuartzCore"]

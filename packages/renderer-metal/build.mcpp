@@ -1,0 +1,36 @@
+// macOS: embed src/renderer/metal/shaders.metal as a raw string header and
+// compile it with xcrun (a check that the shaders build; the library itself
+// is not shipped), as the xmake before_build rule did.
+#include <cgpui_build.hpp>
+
+#include <fstream>
+#include <iterator>
+
+int main() {
+  if (!cgpui_build::target_is("macos")) {
+    return 0;
+  }
+  const std::filesystem::path root =
+      std::filesystem::path{cgpui_build::env("MCPP_MANIFEST_DIR")} / ".." / "..";
+  const std::filesystem::path source = (root / "src/renderer/metal/shaders.metal").lexically_normal();
+  const std::filesystem::path out{cgpui_build::env("MCPP_OUT_DIR")};
+  std::ifstream input{source};
+  const std::string shader{std::istreambuf_iterator<char>{input}, {}};
+  std::filesystem::create_directories(out);
+  const std::string header =
+      "#pragma once\n\ninline constexpr char kCgpuiMetalShaderSource[] = R\"CGPUI_METAL(\n" +
+      shader + "\n)CGPUI_METAL\";\n";
+  std::ofstream{out / "metal_shaders_source.hpp", std::ios::binary} << header;
+  cgpui_build::directive("rerun-if-changed", source.generic_string());
+  cgpui_build::directive("include-dir", out.generic_string());
+  const std::string air = (out / "shaders.air").string();
+  const std::string library = (out / "shaders.metallib").string();
+  bool ok = false;
+  cgpui_build::capture("xcrun -sdk macosx metal -c '" + source.string() + "' -o '" + air + "'", ok);
+  if (ok) {
+    cgpui_build::capture("xcrun -sdk macosx metallib '" + air + "' -o '" + library + "'", ok);
+  }
+  if (!ok) {
+    cgpui_build::warning("xcrun could not compile src/renderer/metal/shaders.metal");
+  }
+}

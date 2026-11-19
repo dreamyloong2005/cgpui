@@ -1,0 +1,34 @@
+# tests/async: Async runtime tests.
+# Every test program is named in [test] discover (registration is explicit,
+# as it was with xmake targets; structure tests check these entries).
+# build.mcpp defines CGPUI_SOURCE_ROOT for tests that read repository files.
+[package]
+namespace = "cgpui"
+name = "tests-async"
+version = "0.1.0"
+
+[dependencies]
+cgpui.core = { path = "../../packages/core" }
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.renderer = { path = "../../packages/renderer" }
+cgpui.ui = { path = "../../packages/ui" }
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }
+
+[build]
+sources = []
+include_dirs = [
+    "../../tests/ui",
+]
+
+[test]
+discover = [
+    "runtime_async_io_hook_test.cpp",
+    "runtime_async_timer_integration_test.cpp",
+    "runtime_cross_thread_entity_access_test.cpp",
+    "runtime_task_cancellation_propagation_test.cpp",
+    "runtime_task_group_test.cpp",
+    "runtime_task_pool_test.cpp",
+    "runtime_task_priority_test.cpp",
+]

@@ -1,0 +1,125 @@
+# tests/api_parity: GPUI API parity, phase audits and closeout tests.
+# Every test program is named in [test] discover (registration is explicit,
+# as it was with xmake targets; structure tests check these entries).
+# build.mcpp defines CGPUI_SOURCE_ROOT for tests that read repository files.
+[package]
+namespace = "cgpui"
+name = "tests-api-parity"
+version = "0.1.0"
+
+[dependencies]
+cgpui.core = { path = "../../packages/core" }
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.renderer = { path = "../../packages/renderer" }
+cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
+cgpui.ui = { path = "../../packages/ui" }
+cgpui.app = { path = "../../packages/app" }
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }
+
+[build]
+sources = []
+
+[test]
+discover = [
+    "action_macro_surface_test.cpp",
+    "app_context_capability_test.cpp",
+    "app_window_context_test.cpp",
+    "application_facade_test.cpp",
+    "async_context_capability_test.cpp",
+    "async_spawn_result_conventions_test.cpp",
+    "context_capabilities_test.cpp",
+    "context_render_spelling_test.cpp",
+    "element_context_capability_test.cpp",
+    "entity_deletion_test.cpp",
+    "entity_invalidation_test.cpp",
+    "entity_lifecycle_creation_test.cpp",
+    "entity_observation_test.cpp",
+    "entity_to_entity_observation_test.cpp",
+    "entity_transaction_test.cpp",
+    "entity_weak_handle_semantics_test.cpp",
+    "gpui_parity_ledger_test.cpp",
+    "phase_c_final_ledger_audit_test.cpp",
+    "phase_c_focusable_interactable_audit_test.cpp",
+    "phase_c_style_cascade_depth_audit_test.cpp",
+    "phase_c_svg_image_asset_registration_test.cpp",
+    "phase_c_svg_image_closeout_test.cpp",
+    "phase_c_svg_image_front_end_test.cpp",
+    "phase_c_svg_image_public_examples_test.cpp",
+    "phase_c_uniform_list_audit_test.cpp",
+    "phase_c_widget_family_structure_test.cpp",
+    "phase_c_window_examples_closeout_test.cpp",
+    "phase_c_window_examples_interaction_states_test.cpp",
+    "phase_c_window_examples_public_api_test.cpp",
+    "phase_c_window_examples_service_matrix_test.cpp",
+    "phase_c_window_examples_widget_catalog_test.cpp",
+    "phase_c_window_examples_workflow_test.cpp",
+    "phase_d_edit_history_audit_test.cpp",
+    "phase_d_fallback_splitting_audit_test.cpp",
+    "phase_d_final_closeout_test.cpp",
+    "phase_d_font_fallback_audit_test.cpp",
+    "phase_d_harfbuzz_backend_audit_test.cpp",
+    "phase_d_ime_platform_audit_test.cpp",
+    "phase_d_rich_text_audit_test.cpp",
+    "phase_d_rich_text_public_examples_test.cpp",
+    "phase_d_selection_caret_audit_test.cpp",
+    "phase_d_text_examples_closeout_test.cpp",
+    "phase_d_text_input_public_examples_test.cpp",
+    "phase_d_text_input_workflow_examples_test.cpp",
+    "phase_d_text_measurement_wrapping_audit_test.cpp",
+    "phase_d_text_shaping_audit_test.cpp",
+    "phase_d_text_wrapper_public_examples_test.cpp",
+    "phase_e_batching_scheduling_integration_closeout_test.cpp",
+    "phase_e_clip_composition_integration_closeout_test.cpp",
+    "phase_e_final_closeout_test.cpp",
+    "phase_e_glyph_atlas_integration_closeout_test.cpp",
+    "phase_e_glyph_atlas_production_test.cpp",
+    "phase_e_image_integration_closeout_test.cpp",
+    "phase_e_pixel_output_integration_closeout_test.cpp",
+    "phase_e_renderer_diagnostics_integration_closeout_test.cpp",
+    "phase_e_svg_integration_closeout_test.cpp",
+    "phase_e_svg_public_example_test.cpp",
+    "phase_e_text_pipeline_integration_closeout_test.cpp",
+    "phase_f_final_closeout_test.cpp",
+    "phase_f_platform_service_result_policy_test.cpp",
+    "phase_f_window_lifecycle_state_test.cpp",
+    "phase_g_async_runtime_closeout_test.cpp",
+    "phase_g_candidate_ledger_closeout_test.cpp",
+    "phase_g_final_closeout_test.cpp",
+    "phase_g_official_animation_examples_test.cpp",
+    "phase_g_official_image_gif_examples_test.cpp",
+    "phase_g_test_support_closeout_test.cpp",
+    "phase_g_wayland_atspi_closeout_test.cpp",
+    "phase_g_win32_uia_closeout_test.cpp",
+    "phase_h_final_closeout_test.cpp",
+    "phase_i_final_closeout_test.cpp",
+    "phase_j_documentation_audit_test.cpp",
+    "phase_j_final_closeout_test.cpp",
+    "phase_j_official_example_audit_test.cpp",
+    "phase_j_performance_baseline_audit_test.cpp",
+    "phase_j_release_audit_test.cpp",
+    "phase_j_stress_audit_test.cpp",
+    "phase_j_upstream_audit_test.cpp",
+    "platform_service_result_conventions_test.cpp",
+    "pre_phase_d_entry_gate_test.cpp",
+    "public_api_compatibility_examples_test.cpp",
+    "public_api_example_expansion_test.cpp",
+    "public_async_test_workflow_example_test.cpp",
+    "public_authoring_surface_test.cpp",
+    "public_authoring_vocabulary_freeze_test.cpp",
+    "public_context_capability_example_test.cpp",
+    "public_phase_b_completion_audit_test.cpp",
+    "public_phase_b_surface_closure_example_test.cpp",
+    "public_result_conventions_test.cpp",
+    "renderer_frame_result_conventions_test.cpp",
+    "renderer_resize_result_conventions_test.cpp",
+    "renderer_result_conventions_test.cpp",
+    "subscription_lifetime_test.cpp",
+    "test_context_capability_test.cpp",
+    "typed_action_surface_test.cpp",
+    "view_context_capability_test.cpp",
+    "view_handle_spelling_test.cpp",
+    "window_context_capability_test.cpp",
+    "window_view_observation_test.cpp",
+]

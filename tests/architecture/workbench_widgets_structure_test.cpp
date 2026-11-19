@@ -17,7 +17,7 @@
 namespace {
 
 std::string read(const std::string& path) {
-  const char* root = std::getenv("CGPUI_SOURCE_ROOT");
+  const char* root = CGPUI_SOURCE_ROOT;
   std::ifstream stream(std::filesystem::path(root ? root : ".") / path);
   if (!stream) throw std::runtime_error("missing focused module: " + path);
   return {std::istreambuf_iterator<char>(stream), {}};

@@ -1,0 +1,29 @@
+# Cocoa backend (macOS; planned only, not built or verified on a Mac since
+# the mcpp migration). The clipboard source is part of packages/platform.
+[package]
+namespace = "cgpui"
+name = "platform-macos"
+version = "0.1.0"
+
+[targets.cgpui_platform_macos]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+cgpui.platform = { path = "../platform" }
+
+[build]
+include_dirs = ["../../include"]
+sources = []
+
+[target.'cfg(os = "macos")'.build]
+sources = [
+    "../../src/platform/macos/*.mm",
+    "!../../src/platform/macos/macos_clipboard.mm",
+]
+
+[target.'cfg(not(os = "macos"))'.build]
+sources = ["../../tools/mcpp/empty_library.cpp"]
+
+[target.'cfg(os = "macos")'.runtime]
+frameworks = ["AppKit", "CoreText", "UniformTypeIdentifiers", "QuartzCore"]

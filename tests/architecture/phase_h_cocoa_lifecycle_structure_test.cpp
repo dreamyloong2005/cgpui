@@ -6,7 +6,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  const char* root = std::getenv("CGPUI_SOURCE_ROOT");
+  const char* root = CGPUI_SOURCE_ROOT;
   std::ifstream source((root == nullptr ? std::string{"."} : root) + "/" + path);
   if (!source) source.open(path);
   return source ? std::string{std::istreambuf_iterator<char>(source), {}}
@@ -32,9 +32,9 @@ std::size_t line_count(const std::string& text) {
 }  // namespace
 
 int main() {
-  const std::string root = std::getenv("CGPUI_SOURCE_ROOT") == nullptr
+  const std::string root = CGPUI_SOURCE_ROOT == nullptr
       ? "."
-      : std::getenv("CGPUI_SOURCE_ROOT");
+      : CGPUI_SOURCE_ROOT;
   const std::string application = read_source("src/platform/macos/macos_application.mm");
   if (application.empty() || line_count(application) > 120 ||
       contains(application, "[window retain]") ||

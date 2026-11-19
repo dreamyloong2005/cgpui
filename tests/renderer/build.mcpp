@@ -1,0 +1,11 @@
+// Configures this test suite; see tools/mcpp/cgpui_build.hpp.
+#include <cgpui_build.hpp>
+
+int main() {
+  cgpui_build::source_root_define(2);
+  if (cgpui_build::target_is("windows")) {
+    cgpui_build::vulkan_sdk(false);
+  } else if (cgpui_build::target_is("linux")) {
+    cgpui_build::pkg_config({"vulkan", "xcb", "wayland-client"}, false);
+  }
+}

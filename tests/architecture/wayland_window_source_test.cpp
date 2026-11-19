@@ -66,7 +66,7 @@ std::string read_source_from_nearest_match(
 
 std::string read_source(const char* path) {
   const std::filesystem::path relative_path(path);
-  if (const char* source_root = std::getenv("CGPUI_SOURCE_ROOT");
+  if (const char* source_root = CGPUI_SOURCE_ROOT;
       source_root != nullptr) {
     const std::string text = read_file(
         std::filesystem::path(source_root) / relative_path);

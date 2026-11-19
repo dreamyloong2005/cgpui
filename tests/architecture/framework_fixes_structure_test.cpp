@@ -16,7 +16,7 @@
 namespace {
 
 std::string read(const std::string& path) {
-  const char* root = std::getenv("CGPUI_SOURCE_ROOT");
+  const char* root = CGPUI_SOURCE_ROOT;
   std::ifstream stream(std::filesystem::path(root ? root : ".") / path);
   if (!stream) throw std::runtime_error("missing focused module: " + path);
   return {std::istreambuf_iterator<char>(stream), {}};
@@ -63,8 +63,8 @@ int main() {
     require(has(read("src/ui/element_tree_traversal.cpp"), "hit_test_subtree("),
             "ElementTree hit-tests its tree children");
     require(!std::filesystem::exists(
-                std::filesystem::path(std::getenv("CGPUI_SOURCE_ROOT")
-                                          ? std::getenv("CGPUI_SOURCE_ROOT")
+                std::filesystem::path(CGPUI_SOURCE_ROOT
+                                          ? CGPUI_SOURCE_ROOT
                                           : ".") /
                 "src/ui/workbench/widget_root_element.cpp") &&
                 !has(read("include/cgpui/ui/widget_tree.hpp"), "WidgetRootElement"),

@@ -19,7 +19,10 @@ cgpui.platform-win32 = { path = "../platform-win32" }
 [target.'cfg(os = "linux")'.dependencies]
 cgpui.platform-linux-wayland = { path = "../platform-linux-wayland" }
 
-[target.'cfg(not(any(os = "windows", os = "linux")))'.dependencies]
+[target.'cfg(os = "macos")'.dependencies]
+cgpui.platform-macos = { path = "../platform-macos" }
+
+[target.'cfg(not(any(os = "windows", os = "linux", os = "macos")))'.dependencies]
 cgpui.platform-fallback = { path = "../platform-fallback" }
 
 [build]
