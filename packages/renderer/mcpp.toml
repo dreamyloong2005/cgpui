@@ -60,3 +60,6 @@ defines = [
     "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND",
     "CGPUI_HAS_FREETYPE_GLYPH_RASTERIZER",
 ]
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }

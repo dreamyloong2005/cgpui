@@ -2,8 +2,11 @@
 //
 // A build.mcpp is compiled and run by mcpp before its package is built; it
 // configures the package by printing mcpp: directives (docs: build.mcpp).
-// Each package's build.mcpp includes this header and calls the helpers it
-// needs, so the system-dependency logic lives in one place.
+// Each package's build.mcpp includes this header (#include <cgpui_build.hpp>)
+// and calls the helpers it needs, so the system-dependency logic lives in one
+// place. The package names tools/mcpp in [build-dependencies]: mcpp does not
+// recompile a build program when a header it reaches by a relative path
+// changes, but it does when a path package of its graph changes.
 #pragma once
 
 #include <array>
@@ -35,14 +38,6 @@ inline void warning(std::string_view text) {
   directive("warning", text);
 }
 
-// mcpp re-runs a build program when its build.mcpp changes; this header is
-// an input too.
-struct RerunIfHeaderChanged {
-  RerunIfHeaderChanged() {
-    directive("rerun-if-changed", std::filesystem::path{__FILE__}.lexically_normal().generic_string());
-  }
-};
-inline const RerunIfHeaderChanged rerun_if_header_changed{};
 
 // Defines CGPUI_SOURCE_ROOT as the repository root, `levels` directories
 // above the package's manifest, as a string literal with forward slashes.

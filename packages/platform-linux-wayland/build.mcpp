@@ -1,4 +1,4 @@
-#include "../../tools/mcpp/cgpui_build.hpp"
+#include <cgpui_build.hpp>
 
 int main() {
   if (cgpui_build::target_is("linux")) {

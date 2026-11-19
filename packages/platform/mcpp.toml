@@ -30,3 +30,6 @@ sources = [
     "../../src/platform/linux/x11/x11_clipboard_events.cpp",
     "../../src/platform/linux/x11/x11_data_transfer.cpp",
 ]
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }

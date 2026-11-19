@@ -1,0 +1,15 @@
+# Header-only library of the workspace's build.mcpp programs, named in their
+# [build-dependencies]. Being a package (rather than a header included by a
+# relative path) makes its content part of every build program's identity,
+# so editing it recompiles and reruns them; see cgpui_build.hpp.
+[package]
+namespace = "cgpui"
+name = "build-support"
+version = "0.1.0"
+
+[targets.cgpui_build_support]
+kind = "lib"
+
+[build]
+sources = []
+include_dirs = ["."]

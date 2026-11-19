@@ -1,6 +1,6 @@
 // Vulkan headers and loader: the LunarG SDK (VULKAN_SDK) on Windows, the
 // system vulkan, xcb and wayland-client (surface creation) on Linux.
-#include "../../tools/mcpp/cgpui_build.hpp"
+#include <cgpui_build.hpp>
 
 int main() {
   if (cgpui_build::target_is("windows")) {

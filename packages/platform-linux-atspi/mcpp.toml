@@ -24,3 +24,6 @@ sources = [
 
 [target.'cfg(not(os = "linux"))'.build]
 sources = ["../../tools/mcpp/empty_library.cpp"]
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }
