@@ -74,7 +74,7 @@ int main() {
       !contains(x11, "CGPUI_CI_SKIP_BUILD") ||
       !contains(x11, "CGPUI_LINUX_BACKEND=x11") ||
       !contains(x11, "x11_demo_smoke_flow") ||
-      !contains(x11, "hello_window/$test_name") ||
+      !contains(x11, "-p examples/hello_window \"$test_name\"") ||
       !contains(xvfb, "unshare --mount") || !contains(xvfb, "Xvfb") ||
       !contains(xvfb, "linux-x11-example-smoke.sh") ||
       !contains(auditor, "--matrix") || !contains(auditor, "--snapshot") ||

@@ -34,15 +34,22 @@ storage, syntax highlighting rules, agent protocol) stays in the consumer.
   old and new limit in the commit message.
 - Unsupported native services return typed results with `supported = false`
   and a reason; never fabricate success.
-- Windows gate: from `D:\Dev\Projects\cgpui`, `xmake build -y -a` and
-  `xmake test -y` fully green, `git diff --check` clean.
-- Linux gate (WSL2 `archlinux`, running as root, `XMAKE_ROOT=y`): commit on
-  Windows first, then in WSL
-  `cd ~/cgpui-linux && git fetch -q origin && git checkout -q --detach origin/master`
-  followed by `xmake build -y -a` and `xmake test -y`. `~/cgpui-linux` is a
-  clone of the Windows repository; never edit it directly. Fix Linux failures
-  on Windows and commit again. Install system packages with `pacman` only if
-  an xmake package is not suitable, and record them in
+- Build system: mcpp (`mcpp.toml` workspace; xmake was removed on the
+  `mcpp-migration` branch, see `docs/migration/`). Builds and tests run in
+  parallel. Register a new test by adding its file to its suite's
+  `[test] discover` (`tests/<suite>/mcpp.toml`), a new library source by
+  the member that compiles it (`packages/<name>/mcpp.toml`).
+- Windows gate: from `D:\Dev\Projects\cgpui`, `scripts/dev/build.ps1` and
+  `scripts/dev/test.ps1` fully green (they set `MCPP_HOME` and
+  `VSLANG=1033`; never let mcpp download a toolchain), `git diff --check`
+  clean.
+- Linux gate (WSL2 `archlinux`, running as root): commit on Windows first,
+  then in WSL `GATE_REF=<branch> bash /mnt/d/WSL/gate-mcpp.sh` (it checks
+  out `origin/<branch>` in `~/cgpui-linux` and runs `scripts/dev/build.sh`
+  and `scripts/dev/test.sh`, `dev-lines` profile). `~/cgpui-linux` is a
+  clone of the Windows repository; never edit it directly. Fix Linux
+  failures on Windows and commit again. System libraries come from
+  `pacman` and pkg-config; record new ones in
   `docs/platform-dependencies.md`.
 - Former flakes, now fixed: `x11_input_test` (waited for no Expose before
   grabbing; `829821ea`) and `win32_clipboard_unicode_test` (clipboard

@@ -63,5 +63,5 @@ only the surface extension required by the selected native handle.
 ## Structure Enforcement
 
 Architecture tests guard leaf ownership, aggregate-header cleanliness, source
-line budgets, Xmake target modules, and public/private include boundaries. A
+line budgets, mcpp manifest registrations, and public/private include boundaries. A
 behavior change is incomplete if these structure tests regress.

@@ -46,7 +46,7 @@ int main() {
       !contains(runner, "cgpui::ImeComposition") ||
       !contains(runner, "cgpui::AssetReloadState")) return 3;
   if (!contains(validator, "min_operation_count") ||
-      !contains(windows, "phase_j_stress_runner") ||
+      !contains(windows, "test -p tests/stress") ||
       !contains(linux, "CGPUI_LINUX_BACKEND")) return 4;
   if (!contains(roadmap, "- [x] Steps 817-822: Add stress tests") ||
       !contains(ledger, "\"phase_j_steps_817_822_status\": \"complete\"")) {

@@ -18,7 +18,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--snapshot", type=Path, required=True)
     parser.add_argument("--matrix", type=Path, required=True)
     parser.add_argument("--targets", type=Path, required=True)
-    parser.add_argument("--xmake", type=Path, required=True)
+    # The mcpp manifests that declare the example programs
+    # (examples/api_parity/mcpp.toml, examples/hello_window/mcpp.toml).
+    parser.add_argument("--manifest", type=Path, action="append", required=True)
     parser.add_argument("--output", type=Path, required=True)
     return parser.parse_args()
 
@@ -35,7 +37,7 @@ def main() -> int:
         for line in args.targets.read_text(encoding="utf-8").splitlines()
         if line.strip() and not line.lstrip().startswith("#")
     }
-    xmake = args.xmake.read_text(encoding="utf-8")
+    manifests = "".join(path.read_text(encoding="utf-8") for path in args.manifest)
 
     issues: list[str] = []
     if matrix.get("upstream_revision") != snapshot.get("upstream_revision"):
@@ -63,8 +65,8 @@ def main() -> int:
         if not equivalents or any(target not in allowed_targets for target in equivalents):
             issues.append(f"{name}: equivalent target is absent from the canonical inventory")
         for target in equivalents:
-            if f'target("{target}")' not in xmake:
-                issues.append(f"{name}: {target} has no Xmake target")
+            if f"[targets.{target}]" not in manifests:
+                issues.append(f"{name}: {target} has no mcpp target")
         if not verification.get("smoke_tests"):
             issues.append(f"{name}: smoke evidence is empty")
         pixel_evidence += len(verification.get("pixel_tests", []))

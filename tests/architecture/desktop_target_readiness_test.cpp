@@ -110,21 +110,21 @@ int main() {
   if (manifests_text.empty()) {
     return 13;
   }
-  const std::string macos_xmake_text =
+  const std::string macos_manifest_text =
       read_source("packages/platform-macos/mcpp.toml");
   if (!contains(manifests_text, "\"packages/platform-macos\",") ||
-      !contains(macos_xmake_text, "[targets.cgpui_platform_macos]") ||
-      !contains(macos_xmake_text, "\"../../src/platform/macos/*.mm\"") ||
-      !contains(macos_xmake_text,
+      !contains(macos_manifest_text, "[targets.cgpui_platform_macos]") ||
+      !contains(macos_manifest_text, "\"../../src/platform/macos/*.mm\"") ||
+      !contains(macos_manifest_text,
                 "\"AppKit\"")) {
     return 14;
   }
-  const std::string metal_xmake_text =
+  const std::string metal_manifest_text =
       read_source("packages/renderer-metal/mcpp.toml");
   if (!contains(manifests_text, "\"packages/renderer-metal\",") ||
-      !contains(metal_xmake_text, "[targets.cgpui_renderer_metal]") ||
-      !contains(metal_xmake_text, "\"../../src/renderer/metal/*.mm\"") ||
-      !contains(metal_xmake_text,
+      !contains(metal_manifest_text, "[targets.cgpui_renderer_metal]") ||
+      !contains(metal_manifest_text, "\"../../src/renderer/metal/*.mm\"") ||
+      !contains(metal_manifest_text,
                 "frameworks = [\"Metal\", \"QuartzCore\"]")) {
     return 15;
   }

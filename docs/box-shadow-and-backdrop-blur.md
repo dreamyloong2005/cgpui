@@ -171,8 +171,7 @@ does not implement them yet; see the macOS plan.
 
 ### Real window (Windows 11, 144 DPI)
 
-`example_backdrop_blur` (`examples/backdrop_blur`, registered in
-`build/xmake/capabilities/backdrop_blur_targets.lua`): 900 x 600 logical =
+`example_backdrop_blur` (`examples/backdrop_blur`, `examples/backdrop_blur/mcpp.toml`): 900 x 600 logical =
 1350 x 900 physical client; 6 px colored stripes and 48 px text behind a
 420 x 260 panel with radius 18, box shadow (offset 0,16, blur 48, black
 45%), backdrop blur 20 with a 35% white tint, 25% white fill, 1 px border.

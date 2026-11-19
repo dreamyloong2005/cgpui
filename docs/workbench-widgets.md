@@ -4,8 +4,8 @@ Splitter, tab strip, tree view, tooltip and popover / context menu for an
 IDE workbench. Headers: `include/cgpui/ui/{splitter,tab_strip,tree_view,
 tooltip,popover_menu,anchored,widget_tree,workbench_theme}.hpp`, aggregate
 `workbench_widgets.hpp`. Sources: `src/ui/workbench/` (model / layout /
-input / paint split per widget). Build module:
-`build/xmake/capabilities/workbench_widgets_targets.lua`.
+input / paint split per widget), compiled by `packages/ui`; tests in
+`tests/ui/mcpp.toml` and `tests/architecture/mcpp.toml`.
 
 ## Integration model
 

@@ -54,13 +54,13 @@ int main() {
     return 1;
   }
 
-  constexpr std::array xmake_fragments{
+  constexpr std::array manifest_fragments{
       "[targets.api_parity_public_svg_raster_upload]",
       "main = \"public_svg_raster_upload/main.cpp\"",
       "\"phase_e_svg_public_example_test.cpp\"",
   };
-  for (std::size_t index = 0; index < xmake_fragments.size(); ++index) {
-    if (!contains(manifests, xmake_fragments[index])) {
+  for (std::size_t index = 0; index < manifest_fragments.size(); ++index) {
+    if (!contains(manifests, manifest_fragments[index])) {
       return 10 + static_cast<int>(index);
     }
   }

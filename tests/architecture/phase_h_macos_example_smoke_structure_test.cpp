@@ -82,8 +82,7 @@ int main() {
   }
   if (!contains(workflow, "runs-on: macos-latest") ||
       !contains(workflow, "scripts/ci/macos-example-smoke.sh") ||
-      !contains(workflow, "an mcpp on PATH") ||
-      !contains(workflow, "3.0.9")) {
+      !contains(workflow, "an mcpp on PATH")) {
     return 6;
   }
   return 0;

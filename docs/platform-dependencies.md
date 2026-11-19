@@ -2,38 +2,56 @@
 
 ## Common
 
-- Xmake 3.x
+- [mcpp](https://github.com/mcpp-community/mcpp) 2026.11.18.1 or later
+  (`[workspace.package] mcpp` in `mcpp.toml`)
 - Git
 - A C++23 compiler
-- Python 3 for parity, package, performance, and stress validators
-- LunaSVG, resolved by Xmake
+- Python 3.11 or later for parity, package, performance, and stress
+  validators (the SDK scripts read TOML with `tomllib`)
+- LunaSVG v3.5.0 and plutovg v1.3.3, vendored under `third_party/`
+  (provenance in `third_party/VENDORED.md`)
 
-Repository CI commands keep Xmake build and test work serial with `-j 1`.
+mcpp builds and runs tests in parallel. It must not download a toolchain:
+the workspace uses the installed one (`[workspace.toolchain]`).
 
 ## Windows: Win32 + Vulkan
 
 - Windows 10 or later
 - Visual Studio 2022 Build Tools with the x64 C++ workload
 - PowerShell 7 for CI scripts
-- Vulkan SDK, resolved through Xmake's `vulkansdk` package
+- The LunarG Vulkan SDK (1.4.341.1 here) with `VULKAN_SDK` set;
+  `packages/renderer-vulkan/build.mcpp` takes the headers and `vulkan-1.lib`
+  from it
 - A Vulkan-capable driver
 
-`scripts/ci/windows-dependencies.ps1` keeps Xmake package state under the
-repository-local build root. `scripts/ci/windows-package.ps1` is the package
-entrypoint.
+The toolchain is `msvc@system` (the installed Build Tools). mcpp reads
+MSVC's `/showIncludes` notes to record header dependencies and needs them
+in English: run it with `VSLANG=1033` (the English language pack of Visual
+Studio must be installed). `scripts/dev/mcpp-env.ps1`, used by the dev
+wrappers and `scripts/ci/windows-dependencies.ps1`, sets `VSLANG` and
+`MCPP_HOME` for its own process only. `scripts/ci/windows-package.ps1` is
+the package entrypoint.
 
 ## Linux: Wayland + Vulkan
 
 Required development/runtime components are a C++ compiler, Vulkan loader and
-driver, Wayland client development files, DBus, libxkbcommon, Meson, Ninja,
-and Python virtual-environment support. Native text shaping requires
-HarfBuzz, FreeType and fontconfig (resolved as xmake system packages) and at
-least one installed font; CJK text needs a CJK font.
+driver, Wayland client/server/cursor development files, DBus, libxkbcommon
+and pkg-config. Native text shaping requires HarfBuzz, FreeType and
+fontconfig and at least one installed font; CJK text needs a CJK font. The
+toolchain is the system GCC (`[toolchain] linux = { path = "/usr" }`).
+Each library's `build.mcpp` asks pkg-config for the modules it uses
+(`wayland-client`, `wayland-cursor`, `wayland-server` (tests), `dbus-1`,
+`xkbcommon`, `xkbcommon-x11`, `xcb`, `xcb-xkb`, `xcb-cursor`, `harfbuzz`,
+`freetype2`, `fontconfig`, `vulkan`); `scripts/ci/linux-dependencies.sh`
+checks they are all present. xkbcommon is now the system library (xmake
+built it from source).
 
 Arch (the WSL2 `archlinux` gate) installs:
 
 ```bash
-pacman -S --needed harfbuzz freetype2 fontconfig ttf-dejavu wqy-zenhei
+pacman -S --needed gcc pkgconf wayland libxkbcommon libxkbcommon-x11 \
+  libxcb xcb-util-cursor dbus harfbuzz freetype2 fontconfig vulkan-icd-loader \
+  vulkan-headers ttf-dejavu wqy-zenhei
 ```
 
 Ubuntu CI installs:
@@ -41,7 +59,9 @@ Ubuntu CI installs:
 ```bash
 sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libfreetype-dev \
   libharfbuzz-dev libvulkan-dev fonts-dejavu-core fonts-wqy-zenhei \
-  libwayland-dev mesa-vulkan-drivers meson ninja-build python3-venv weston
+  libwayland-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb1-dev \
+  libxcb-xkb-dev libxcb-cursor-dev pkg-config mesa-vulkan-drivers \
+  meson ninja-build python3-venv weston
 ```
 
 Use a real Wayland session, WSLg, or Weston for native smoke and pixel tests.

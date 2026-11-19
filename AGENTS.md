@@ -17,3 +17,14 @@
 - A change is not complete if it passes behavior tests but regresses the module
   layout. Keep the structure green throughout development instead of doing a
   cleanup pass after the fact.
+
+## Build
+
+- The build system is mcpp: the root `mcpp.toml` is a workspace of
+  `packages/*` (libraries over `src/`), `examples/*`, `tests/*` (one member
+  per test directory) and `third_party/*`. Use `scripts/dev/build.*` and
+  `scripts/dev/test.*`; on Windows mcpp needs `VSLANG=1033`, which the
+  wrappers set. Do not add xmake files.
+- A new test file is registered in its suite's `[test] discover`; a new
+  source is picked up by the glob of the member that owns its directory, or
+  listed explicitly where the member lists files.

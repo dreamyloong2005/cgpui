@@ -3,11 +3,11 @@
 ## Canonical Targets
 
 `scripts/ci/example-targets.txt` is the build/run inventory for the 21 public
-C++ example targets. Build one target with:
+C++ example targets (`[targets.<name>]` in `examples/api_parity/mcpp.toml`).
+Build and run one with:
 
 ```bash
-xmake build -j 1 api_parity_hello_world
-xmake run api_parity_hello_world
+mcpp run -p examples/api_parity api_parity_hello_world
 ```
 
 All examples use public headers. Architecture guards reject private `src/`,

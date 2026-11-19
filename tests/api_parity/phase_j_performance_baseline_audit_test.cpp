@@ -52,8 +52,8 @@ int main() {
       !contains(runner, "cgpui::decode_image") ||
       !contains(runner, "start_animation")) return 3;
   if (!contains(validator, "max_mean_ns") ||
-      !contains(windows, "phase_j_performance_runner") ||
-      !contains(linux, "phase_j_performance_runner") ||
+      !contains(windows, "test -p tests/performance") ||
+      !contains(linux, "-p tests/performance") ||
       !contains(linux, "CGPUI_LINUX_BACKEND")) return 4;
   if (!contains(roadmap, "- [x] Steps 811-816: Add performance baselines") ||
       !contains(ledger, "\"phase_j_steps_811_816_status\": \"complete\"")) {

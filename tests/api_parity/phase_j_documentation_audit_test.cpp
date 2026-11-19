@@ -33,7 +33,7 @@ int main() {
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger = read_source("docs/gpui-complete-parity-ledger.json");
   if (readme.empty() || roadmap.empty() || ledger.empty()) return 2;
-  if (!contains(docs[0], "xmake build -j 1 hello_window") ||
+  if (!contains(docs[0], "scripts/dev/build.sh -p examples/hello_window") ||
       !contains(docs[0], "CGPUI_LINUX_BACKEND") ||
       !contains(docs[1], "## Static Fast Path") ||
       !contains(docs[1], "## Dynamic Escape Hatch") ||

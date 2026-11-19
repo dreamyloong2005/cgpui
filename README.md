@@ -17,17 +17,21 @@ macOS evidence remains recorded in the parity ledger.
 
 ## Quick Start
 
+CGPUI builds with [mcpp](https://github.com/mcpp-community/mcpp); the
+wrappers in `scripts/dev/` set its environment:
+
 ```bash
-xmake f -c -m debug
-xmake build -j 1 hello_window
-xmake run hello_window
+scripts/dev/build.sh -p examples/hello_window      # Windows: scripts/dev/build.ps1
+mcpp run -p examples/hello_window hello_window     # builds, then starts it
 ```
 
-On Linux, select a backend explicitly when both display environments exist:
+On Windows run `mcpp` with `VSLANG=1033` (see
+[Getting Started](docs/getting-started.md)). On
+Linux, select a backend explicitly when both display environments exist:
 
 ```bash
-CGPUI_LINUX_BACKEND=wayland xmake run hello_window
-CGPUI_LINUX_BACKEND=x11 xmake run hello_window
+CGPUI_LINUX_BACKEND=wayland mcpp run -p examples/hello_window hello_window
+CGPUI_LINUX_BACKEND=x11 mcpp run -p examples/hello_window hello_window
 ```
 
 See [Getting Started](docs/getting-started.md) for toolchain setup, smoke modes,
@@ -51,11 +55,11 @@ The machine-readable authority files are
 
 ## Verification
 
-Build and test commands are intentionally serial in this repository:
+Build every member and run every test program (in parallel):
 
 ```bash
-xmake build -j 1
-xmake test -j 1 -v
+scripts/dev/build.sh        # Windows: scripts/dev/build.ps1
+scripts/dev/test.sh         # Windows: scripts/dev/test.ps1
 ```
 
 Platform packaging, example smoke, performance, and stress entrypoints live in

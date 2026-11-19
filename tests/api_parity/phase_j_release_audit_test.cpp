@@ -45,9 +45,13 @@ int main() {
   if (!contains(windows, "Compare-Object") ||
       !contains(windows, "windows-package.ps1") ||
       !contains(linux, "cmp -s") || !contains(linux, "linux-package.sh")) return 4;
-  if (!contains(bootstrap, "xmake-version: 3.0.9") ||
-      !contains(bootstrap, "hashFiles('xmake.lua', 'xmake-requires.lock')") ||
-      !contains(bootstrap, "build/phase-j-ci/dependencies")) return 5;
+  // The release toolchain is pinned: the mcpp release (version and digest)
+  // and the vendored dependency trees.
+  if (!contains(bootstrap, "uses: ./.github/actions/setup-mcpp") ||
+      !contains(read_source(".github/actions/setup-mcpp/action.yml"),
+                "version=2026.11.18.1") ||
+      !contains(policy, "\"dependency_provenance\": \"third_party/VENDORED.md\"") ||
+      !contains(policy, "\"mcpp_version\": \"2026.11.18.1\"")) return 5;
   if (!contains(workflow, "windows-release") ||
       !contains(workflow, "linux-release") ||
       !contains(workflow, "windows-performance") ||

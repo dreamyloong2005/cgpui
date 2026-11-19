@@ -140,9 +140,10 @@ with `unsupported_platform`.
 ## Module ownership
 
 All shaping, metrics, cache and rasterization sources are linked by
-`cgpui_renderer` through `build/xmake/capabilities/native_text_shaping_targets.lua`
-and removed from the `cgpui_ui` wildcard. Windows links `dwrite`; Linux uses the
-system xmake packages `harfbuzz`, `freetype` and `fontconfig` and defines
+`cgpui_renderer` (`packages/renderer/mcpp.toml`) and removed from the
+`cgpui_ui` wildcard (`packages/ui/mcpp.toml`). Windows links `dwrite`; Linux
+takes `harfbuzz`, `freetype2` and `fontconfig` from pkg-config
+(`packages/renderer/build.mcpp`) and defines
 `CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND` and `CGPUI_HAS_FREETYPE_GLYPH_RASTERIZER`.
 Windows and HarfBuzz/FreeType/fontconfig types stay in `src/ui/*_internal.hpp`;
 `native_text_shaping_structure_test` guards line limits, header cleanliness and

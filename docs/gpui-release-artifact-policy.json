@@ -15,6 +15,6 @@
     "owner": 0,
     "group": 0
   },
-  "dependency_lock": "xmake-requires.lock",
-  "xmake_version": "3.0.9"
+  "dependency_provenance": "third_party/VENDORED.md",
+  "mcpp_version": "2026.11.18.1"
 }
