@@ -1231,7 +1231,7 @@ int main(int argc, char** argv) {
       !contains(presentation,
                 "recover_swapchain_after_surface_status()") ||
       !contains(presentation, "vkAcquireNextImageKHR") ||
-      !contains(presentation, "submit_frame(command_buffer)") ||
+      !contains(presentation, "submit_frame(command_buffer, render_finished)") ||
       !contains(presentation, "vkQueuePresentKHR") ||
       contains(presentation, "vkQueueSubmit") ||
       contains(presentation,

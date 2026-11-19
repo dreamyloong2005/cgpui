@@ -18,10 +18,7 @@ void VulkanRendererState::destroy_sync_objects() {
     vkDestroyFence(device_, in_flight_, nullptr);
     in_flight_ = VK_NULL_HANDLE;
   }
-  if (render_finished_ != VK_NULL_HANDLE) {
-    vkDestroySemaphore(device_, render_finished_, nullptr);
-    render_finished_ = VK_NULL_HANDLE;
-  }
+  destroy_render_finished_semaphores();
   if (image_available_ != VK_NULL_HANDLE) {
     vkDestroySemaphore(device_, image_available_, nullptr);
     image_available_ = VK_NULL_HANDLE;
@@ -45,10 +42,7 @@ Result<void> VulkanRendererState::create_sync_objects() {
     destroy_sync_objects();
     return result;
   }
-  if (auto result = require_vk_success(
-          vkCreateSemaphore(device_, &semaphore_info, nullptr, &render_finished_),
-          "vkCreateSemaphore failed");
-      !result) {
+  if (auto result = create_render_finished_semaphores(); !result) {
     destroy_sync_objects();
     return result;
   }
@@ -60,6 +54,34 @@ Result<void> VulkanRendererState::create_sync_objects() {
     return result;
   }
 
+  return {};
+}
+
+void VulkanRendererState::destroy_render_finished_semaphores() {
+  for (VkSemaphore semaphore : render_finished_) {
+    if (semaphore != VK_NULL_HANDLE) {
+      vkDestroySemaphore(device_, semaphore, nullptr);
+    }
+  }
+  render_finished_.clear();
+}
+
+// Recreated with the swapchain (callers hold the device idle).
+Result<void> VulkanRendererState::create_render_finished_semaphores() {
+  destroy_render_finished_semaphores();
+  const VkSemaphoreCreateInfo semaphore_info{
+      .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+  };
+  render_finished_.assign(swapchain_images_.size(), VK_NULL_HANDLE);
+  for (VkSemaphore& semaphore : render_finished_) {
+    if (auto result = require_vk_success(
+            vkCreateSemaphore(device_, &semaphore_info, nullptr, &semaphore),
+            "vkCreateSemaphore failed");
+        !result) {
+      destroy_render_finished_semaphores();
+      return result;
+    }
+  }
   return {};
 }
 

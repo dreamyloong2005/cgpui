@@ -32,6 +32,10 @@ Result<void> VulkanRendererState::resize(
 
   destroy_swapchain();
   install_swapchain(std::move(*resources));
+  if (auto result = create_render_finished_semaphores(); !result) {
+    presentation_blocked_ = true;
+    return result;
+  }
   presentation_blocked_ = false;
   return {};
 }

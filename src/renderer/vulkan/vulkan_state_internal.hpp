@@ -61,8 +61,12 @@ class VulkanRendererState final {
 
   Result<void> create_command_pool();
   Result<void> create_sync_objects();
+  Result<void> create_render_finished_semaphores();
+  void destroy_render_finished_semaphores();
   Result<void> wait_for_present_pacing();
-  Result<void> submit_frame(VkCommandBuffer command_buffer);
+  Result<void> submit_frame(
+      VkCommandBuffer command_buffer,
+      VkSemaphore render_finished);
   Result<VulkanFramePixelCaptureCommand> prepare_frame_pixel_capture(
       bool capture_requested,
       VkImage image);
@@ -145,8 +149,11 @@ class VulkanRendererState final {
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
   std::vector<VkCommandBuffer> command_buffers_;
   std::vector<VulkanFrameCommandReuseState> command_reuse_states_;
+  // One frame in flight (in_flight_): one image-available semaphore. The
+  // presentation engine holds a render-finished semaphore until its image
+  // is acquired again, so there is one per swapchain image.
   VkSemaphore image_available_ = VK_NULL_HANDLE;
-  VkSemaphore render_finished_ = VK_NULL_HANDLE;
+  std::vector<VkSemaphore> render_finished_;
   VkFence in_flight_ = VK_NULL_HANDLE;
   GlyphCache glyph_cache_;
   GlyphAtlasProductionResourceState glyph_atlas_plan_state_;

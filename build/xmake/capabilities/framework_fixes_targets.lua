@@ -22,3 +22,21 @@ target("window_record_element_tree_test")
     add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
     add_includedirs(path.join(os.projectdir(), public_includedirs))
     add_tests("default")
+
+if is_plat("windows", "linux") then
+    target("vulkan_semaphore_validation_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/renderer/vulkan_semaphore_validation_test.cpp"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_renderer_vulkan")
+        if is_plat("windows") then
+            add_deps("cgpui_platform_win32")
+            add_packages("vulkansdk")
+            add_syslinks("user32", "gdi32")
+        else
+            add_deps("cgpui_platform_linux_wayland")
+            add_packages("wayland")
+            add_syslinks("vulkan")
+        end
+        add_includedirs(path.join(os.projectdir(), public_includedirs))
+        add_tests("default")
+end

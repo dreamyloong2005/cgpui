@@ -76,7 +76,8 @@ Result<void> VulkanRendererState::present_frame(
 
   if (image_index >= command_buffers_.size() ||
       image_index >= command_reuse_states_.size() ||
-      image_index >= swapchain_images_.size()) {
+      image_index >= swapchain_images_.size() ||
+      image_index >= render_finished_.size()) {
     return recover_after_failed_record(
         "acquired swapchain image has no command recording state");
   }
@@ -115,7 +116,8 @@ Result<void> VulkanRendererState::present_frame(
           box_shadow_buffers_.draws, backdrop_blur_plan_.passes);
 
   VkCommandBuffer command_buffer = command_buffers_[image_index];
-  if (auto result = submit_frame(command_buffer); !result) {
+  VkSemaphore render_finished = render_finished_[image_index];
+  if (auto result = submit_frame(command_buffer, render_finished); !result) {
     return recover_after_failed_submit(result.error().message);
   }
   diagnostic_timer.finish_stage(RendererFrameTimingStage::queue_submission);
@@ -125,7 +127,7 @@ Result<void> VulkanRendererState::present_frame(
   const VkPresentInfoKHR present_info{
       .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
       .waitSemaphoreCount = 1,
-      .pWaitSemaphores = &render_finished_,
+      .pWaitSemaphores = &render_finished,
       .swapchainCount = 1,
       .pSwapchains = &swapchain_,
       .pImageIndices = &image_index,

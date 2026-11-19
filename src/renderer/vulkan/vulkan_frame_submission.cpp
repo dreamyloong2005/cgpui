@@ -2,7 +2,9 @@
 
 namespace cgpui {
 
-Result<void> VulkanRendererState::submit_frame(VkCommandBuffer command_buffer) {
+Result<void> VulkanRendererState::submit_frame(
+    VkCommandBuffer command_buffer,
+    VkSemaphore render_finished) {
   if (auto result = require_vk_success(
           vkResetFences(device_, 1, &in_flight_), "vkResetFences failed");
       !result) {
@@ -18,7 +20,7 @@ Result<void> VulkanRendererState::submit_frame(VkCommandBuffer command_buffer) {
       .commandBufferCount = 1,
       .pCommandBuffers = &command_buffer,
       .signalSemaphoreCount = 1,
-      .pSignalSemaphores = &render_finished_,
+      .pSignalSemaphores = &render_finished,
   };
   return require_vk_success(
       vkQueueSubmit(graphics_queue_, 1, &submit_info, in_flight_),

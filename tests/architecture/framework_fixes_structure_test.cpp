@@ -75,6 +75,15 @@ int main() {
                 !has(read("src/ui/workbench/widget_tree_builder.cpp"),
                      "root_window_runtime_id()"),
             "every window runtime routes through its own element tree");
+    // Item 3: one render-finished semaphore per swapchain image, recreated
+    // with the swapchain.
+    require(has(read("src/renderer/vulkan/vulkan_state_internal.hpp"),
+                "std::vector<VkSemaphore> render_finished_") &&
+                has(read("src/renderer/vulkan/vulkan_presentation.cpp"),
+                    "render_finished_[image_index]") &&
+                has(read("src/renderer/vulkan/vulkan_resize.cpp"),
+                    "create_render_finished_semaphores()"),
+            "render-finished semaphores are indexed by the acquired image");
     require(!has(read("xmake.lua"), "framework_fixes"),
             "framework fix targets stay out of the root xmake.lua");
   } catch (const std::exception& error) {

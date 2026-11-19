@@ -49,7 +49,7 @@ int test_acquired_command_buffer_recording_order() {
   const std::size_t record =
       presentation.find("record_vulkan_frame_command_buffer(");
   const std::size_t submit =
-      presentation.find("submit_frame(command_buffer)");
+      presentation.find("submit_frame(command_buffer, render_finished)");
   if (acquire == std::string::npos || record == std::string::npos ||
       submit == std::string::npos || !(acquire < record && record < submit)) {
     return 11;
