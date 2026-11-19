@@ -31,6 +31,13 @@ target("scroll_element_offset_test")
     add_includedirs(path.join(os.projectdir(), public_includedirs))
     add_tests("default")
 
+target("flex_grow_relayout_test")
+    set_kind("binary")
+    add_files(path.join(os.projectdir(), "tests/ui/flex_grow_relayout_test.cpp"))
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(path.join(os.projectdir(), public_includedirs))
+    add_tests("default")
+
 target("framework_fixes_structure_test")
     set_kind("binary")
     set_rundir(os.projectdir())

@@ -74,6 +74,7 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
   const float output_main = row ? box.content.width : box.content.height;
   const float output_cross = row ? box.content.height : box.content.width;
   const float content_main = row ? content_size.width : content_size.height;
+  const std::vector<Size> measured_sizes = child_sizes;
   const float positive_free_space = std::max(0.0F, output_main - content_main);
   const float overflow_space = std::max(0.0F, content_main - output_main);
   for (std::size_t index = 0; index < child_sizes.size(); ++index) {
@@ -134,6 +135,18 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
       cross_offset = std::max(0.0F, output_cross - child_cross);
     }
 
+    // A child resized by grow / shrink is laid out again at its final size
+    // so its descendants follow the new box.
+    const Size measured = measured_sizes[index];
+    if (child_size.width != measured.width ||
+        child_size.height != measured.height) {
+      LayoutInput final_input = input;
+      final_input.constraints = {
+          .min_size = child_size,
+          .max_size = child_size,
+      };
+      (void)children_[index]->layout(final_input);
+    }
     children_[index]->place_layout(Rect{
         .origin =
             row ? Point{.x = box.content_offset.x + cursor,
