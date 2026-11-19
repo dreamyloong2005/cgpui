@@ -3,3 +3,7 @@
 .build-wsl/
 build/
 __pycache__/
+
+# mcpp
+target/
+/compile_commands.json

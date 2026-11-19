@@ -1,0 +1,30 @@
+# X11 backend (Linux). The clipboard / connection sources it shares with the
+# platform layer are compiled by packages/platform.
+[package]
+namespace = "cgpui"
+name = "platform-linux-x11"
+version = "0.1.0"
+
+[targets.cgpui_platform_linux_x11]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+cgpui.platform = { path = "../platform" }
+cgpui.platform-linux-atspi = { path = "../platform-linux-atspi" }
+
+[build]
+include_dirs = ["../../include"]
+sources = []
+
+[target.'cfg(os = "linux")'.build]
+sources = [
+    "../../src/platform/linux/x11/*.cpp",
+    "!../../src/platform/linux/x11/x11_connection.cpp",
+    "!../../src/platform/linux/x11/x11_clipboard.cpp",
+    "!../../src/platform/linux/x11/x11_clipboard_events.cpp",
+    "!../../src/platform/linux/x11/x11_data_transfer.cpp",
+]
+
+[target.'cfg(not(os = "linux"))'.build]
+sources = ["../../tools/mcpp/empty_library.cpp"]

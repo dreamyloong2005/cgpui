@@ -1,0 +1,11 @@
+[package]
+namespace = "cgpui"
+name = "core"
+version = "0.1.0"
+
+[targets.cgpui_core]
+kind = "lib"
+
+[build]
+include_dirs = ["../../include"]
+sources = ["../../src/core/*.cpp"]

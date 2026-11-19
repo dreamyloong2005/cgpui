@@ -1,0 +1,25 @@
+# plutovg v1.3.3 (https://github.com/sammycage/plutovg, tag v1.3.3,
+# commit bbd91f0d06a71491691b36330f29dffa4af87ccf), MIT, vendored subset:
+# LICENSE, README.md, include/, source/. See third_party/VENDORED.md.
+[package]
+namespace = "vendor"
+name = "plutovg"
+version = "1.3.3"
+license = "MIT"
+
+[targets.plutovg]
+kind = "lib"
+
+[build]
+sources = ["source/*.c"]
+include_dirs = ["include", "source"]
+private_include_dirs = ["source"]
+defines = ["PLUTOVG_BUILD"]
+
+[target.'cfg(os = "linux")'.build]
+defines = ["HAVE_THREADS_H"]
+ldflags = ["-lm"]
+
+[features]
+default = ["static"]
+static = { defines = ["PLUTOVG_BUILD_STATIC"] }

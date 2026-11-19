@@ -1,0 +1,32 @@
+# Platform-neutral platform layer. src/ui/text_font.cpp is also compiled by
+# packages/renderer, as it was under xmake.
+[package]
+namespace = "cgpui"
+name = "platform"
+version = "0.1.0"
+
+[targets.cgpui_platform]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+
+[build]
+include_dirs = ["../../include"]
+sources = [
+    "../../src/platform/*.cpp",
+    "!../../src/platform/platform_unimplemented.cpp",
+    "../../src/ui/text_font.cpp",
+]
+
+[target.'cfg(os = "windows")'.build]
+ldflags = ["shell32.lib", "user32.lib"]
+
+[target.'cfg(os = "linux")'.build]
+sources = [
+    "../../src/platform/linux/linux_backend_selection.cpp",
+    "../../src/platform/linux/x11/x11_connection.cpp",
+    "../../src/platform/linux/x11/x11_clipboard.cpp",
+    "../../src/platform/linux/x11/x11_clipboard_events.cpp",
+    "../../src/platform/linux/x11/x11_data_transfer.cpp",
+]

@@ -1,0 +1,33 @@
+# cgpui workspace. Libraries live in packages/<name>/mcpp.toml and compile
+# the sources in src/ in place; examples in examples/*/mcpp.toml; tests in
+# tests/<suite>/mcpp.toml; vendored dependencies in third_party/*/mcpp.toml.
+# Build and test through scripts/dev/build.* and scripts/dev/test.* (they set
+# MCPP_HOME, VSLANG and the static CRT); see docs/getting-started.md.
+[workspace]
+members = [
+    "third_party/plutovg",
+    "third_party/lunasvg",
+    "packages/core",
+    "packages/platform",
+    "packages/platform-fallback",
+    "packages/platform-win32",
+    "packages/platform-linux-atspi",
+    "packages/platform-linux-x11",
+    "packages/platform-linux-wayland",
+    "packages/renderer",
+    "packages/renderer-fallback",
+    "packages/renderer-vulkan",
+    "packages/ui",
+    "packages/app",
+]
+
+[workspace.package]
+mcpp = ">=2026.11.18.1"
+standard = "c++23"
+
+[workspace.toolchain]
+windows = "msvc@system"
+linux = { path = "/usr" }
+
+[workspace.target.'cfg(os = "windows")'.build]
+cxxflags = ["/Zc:__cplusplus"]

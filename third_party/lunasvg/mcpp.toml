@@ -1,0 +1,25 @@
+# lunasvg v3.5.0 (https://github.com/sammycage/lunasvg, tag v3.5.0,
+# commit 83c58df8103dc7dca423dfd824992af94d49bed6), MIT, vendored subset:
+# LICENSE, README.md, include/, source/ (the bundled plutovg/ is not used;
+# the separate third_party/plutovg v1.3.3 is). See third_party/VENDORED.md.
+[package]
+namespace = "vendor"
+name = "lunasvg"
+version = "3.5.0"
+license = "MIT"
+
+[targets.lunasvg]
+kind = "lib"
+
+[build]
+sources = ["source/*.cpp"]
+include_dirs = ["include", "source"]
+private_include_dirs = ["source"]
+defines = ["LUNASVG_BUILD"]
+
+[dependencies]
+vendor.plutovg = { path = "../plutovg" }
+
+[features]
+default = ["static"]
+static = { defines = ["LUNASVG_BUILD_STATIC"] }

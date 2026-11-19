@@ -1,0 +1,17 @@
+# Unsupported-platform renderer stubs; linked by nothing on Windows or Linux.
+[package]
+namespace = "cgpui"
+name = "renderer-fallback"
+version = "0.1.0"
+
+[targets.cgpui_renderer_fallback]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+cgpui.platform = { path = "../platform" }
+cgpui.renderer = { path = "../renderer" }
+
+[build]
+include_dirs = ["../../include"]
+sources = ["../../src/renderer/renderer_unimplemented.cpp"]

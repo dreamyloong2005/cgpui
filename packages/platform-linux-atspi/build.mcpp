@@ -1,0 +1,7 @@
+#include "../../tools/mcpp/cgpui_build.hpp"
+
+int main() {
+  if (cgpui_build::target_is("linux")) {
+    cgpui_build::pkg_config({"dbus-1"});
+  }
+}

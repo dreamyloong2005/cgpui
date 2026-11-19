@@ -1,0 +1,27 @@
+# Application shell over the platform backend of the target OS.
+[package]
+namespace = "cgpui"
+name = "app"
+version = "0.1.0"
+
+[targets.cgpui_app]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+cgpui.platform = { path = "../platform" }
+cgpui.renderer = { path = "../renderer" }
+cgpui.ui = { path = "../ui" }
+
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.platform-win32 = { path = "../platform-win32" }
+
+[target.'cfg(os = "linux")'.dependencies]
+cgpui.platform-linux-wayland = { path = "../platform-linux-wayland" }
+
+[target.'cfg(not(any(os = "windows", os = "linux")))'.dependencies]
+cgpui.platform-fallback = { path = "../platform-fallback" }
+
+[build]
+include_dirs = ["../../include"]
+sources = ["../../src/app/*.cpp"]

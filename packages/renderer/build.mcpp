@@ -1,0 +1,8 @@
+// Linux: HarfBuzz shaping, FreeType rasterization, fontconfig faces.
+#include "../../tools/mcpp/cgpui_build.hpp"
+
+int main() {
+  if (cgpui_build::target_is("linux")) {
+    cgpui_build::pkg_config({"harfbuzz", "freetype2", "fontconfig"});
+  }
+}

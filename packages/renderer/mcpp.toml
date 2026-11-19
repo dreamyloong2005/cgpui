@@ -1,0 +1,62 @@
+# Renderer-neutral drawing, SVG (lunasvg) and the text pipeline: shaping,
+# measurement, layout and glyph rasterization (the text sources live in
+# src/ui; packages/ui leaves them out).
+[package]
+namespace = "cgpui"
+name = "renderer"
+version = "0.1.0"
+
+[targets.cgpui_renderer]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+vendor.lunasvg = { path = "../../third_party/lunasvg" }
+
+[build]
+include_dirs = ["../../include", "../../third_party/stb"]
+private_include_dirs = ["../../third_party/stb"]
+sources = [
+    "../../src/renderer/*.cpp",
+    "!../../src/renderer/renderer_unimplemented.cpp",
+    "../../src/ui/text_font.cpp",
+    "../../src/ui/text_shaping_backend.cpp",
+    "../../src/ui/text_shaping_dispatch.cpp",
+    "../../src/ui/text_shaping_harfbuzz.cpp",
+    "../../src/ui/text_shaping_fallback.cpp",
+    "../../src/ui/text_shape.cpp",
+    "../../src/ui/text_glyph_raster.cpp",
+    "../../src/ui/text_measurement.cpp",
+    "../../src/ui/text_line_metrics.cpp",
+    "../../src/ui/text_paragraph_layout.cpp",
+    "../../src/ui/text_measurement_grapheme.cpp",
+    "../../src/ui/text_measurement_bidi.cpp",
+    "../../src/ui/text_wrapping.cpp",
+    "../../src/ui/text_hit_testing.cpp",
+    "../../src/ui/text_shaping_native.cpp",
+    "../../src/ui/text_shaping_unicode.cpp",
+    "../../src/ui/text_shape_cache.cpp",
+    "../../src/ui/text_shaping_directwrite.cpp",
+    "../../src/ui/text_font_defaults.cpp",
+    "../../src/ui/text_glyph_rasterizer.cpp",
+]
+
+[target.'cfg(os = "windows")'.build]
+sources = [
+    "../../src/ui/text_dwrite_fonts_win32.cpp",
+    "../../src/ui/text_dwrite_analysis_win32.cpp",
+    "../../src/ui/text_glyph_id_raster_win32.cpp",
+    "../../src/ui/text_glyph_raster_win32.cpp",
+    "../../src/ui/text_glyph_coverage_win32.cpp",
+]
+ldflags = ["dwrite.lib"]
+
+[target.'cfg(os = "linux")'.build]
+sources = [
+    "../../src/ui/text_fontconfig_faces_linux.cpp",
+    "../../src/ui/text_glyph_id_raster_freetype.cpp",
+]
+defines = [
+    "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND",
+    "CGPUI_HAS_FREETYPE_GLYPH_RASTERIZER",
+]

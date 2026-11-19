@@ -1,0 +1,26 @@
+# AT-SPI accessibility over D-Bus (Linux).
+[package]
+namespace = "cgpui"
+name = "platform-linux-atspi"
+version = "0.1.0"
+
+[targets.cgpui_platform_linux_atspi]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+cgpui.platform = { path = "../platform" }
+
+[build]
+include_dirs = ["../../include"]
+sources = []
+
+[target.'cfg(os = "linux")'.build]
+sources = [
+    "../../src/platform/linux/linux_atspi_api.cpp",
+    "../../src/platform/linux/wayland_accessibility*.cpp",
+    "../../src/platform/linux/wayland_atspi*.cpp",
+]
+
+[target.'cfg(not(os = "linux"))'.build]
+sources = ["../../tools/mcpp/empty_library.cpp"]

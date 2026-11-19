@@ -1,0 +1,49 @@
+# Elements, layout, widgets, workbench widgets and the window runtime. The
+# text pipeline sources in src/ui belong to packages/renderer.
+[package]
+namespace = "cgpui"
+name = "ui"
+version = "0.1.0"
+
+[targets.cgpui_ui]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+cgpui.platform = { path = "../platform" }
+cgpui.renderer = { path = "../renderer" }
+
+[build]
+include_dirs = ["../../include"]
+sources = [
+    "../../src/ui/*.cpp",
+    "../../src/ui/widgets/*.cpp",
+    "../../src/ui/workbench/*.cpp",
+    "!../../src/ui/text_font.cpp",
+    "!../../src/ui/text_shaping_backend.cpp",
+    "!../../src/ui/text_shaping_dispatch.cpp",
+    "!../../src/ui/text_shaping_harfbuzz.cpp",
+    "!../../src/ui/text_shaping_fallback.cpp",
+    "!../../src/ui/text_shape.cpp",
+    "!../../src/ui/text_glyph_raster.cpp",
+    "!../../src/ui/text_measurement.cpp",
+    "!../../src/ui/text_line_metrics.cpp",
+    "!../../src/ui/text_paragraph_layout.cpp",
+    "!../../src/ui/text_measurement_grapheme.cpp",
+    "!../../src/ui/text_measurement_bidi.cpp",
+    "!../../src/ui/text_wrapping.cpp",
+    "!../../src/ui/text_hit_testing.cpp",
+    "!../../src/ui/text_shaping_native.cpp",
+    "!../../src/ui/text_shaping_unicode.cpp",
+    "!../../src/ui/text_shape_cache.cpp",
+    "!../../src/ui/text_shaping_directwrite.cpp",
+    "!../../src/ui/text_font_defaults.cpp",
+    "!../../src/ui/text_glyph_rasterizer.cpp",
+    "!../../src/ui/text_dwrite_fonts_win32.cpp",
+    "!../../src/ui/text_dwrite_analysis_win32.cpp",
+    "!../../src/ui/text_glyph_id_raster_win32.cpp",
+    "!../../src/ui/text_glyph_raster_win32.cpp",
+    "!../../src/ui/text_glyph_coverage_win32.cpp",
+    "!../../src/ui/text_fontconfig_faces_linux.cpp",
+    "!../../src/ui/text_glyph_id_raster_freetype.cpp",
+]

@@ -1,0 +1,16 @@
+[package]
+namespace = "cgpui"
+name = "renderer-vulkan"
+version = "0.1.0"
+
+[targets.cgpui_renderer_vulkan]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+cgpui.platform = { path = "../platform" }
+cgpui.renderer = { path = "../renderer" }
+
+[build]
+include_dirs = ["../../include"]
+sources = ["../../src/renderer/vulkan/*.cpp"]

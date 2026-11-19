@@ -1,0 +1,16 @@
+# Unsupported-platform stubs; linked by nothing on Windows or Linux.
+[package]
+namespace = "cgpui"
+name = "platform-fallback"
+version = "0.1.0"
+
+[targets.cgpui_platform_fallback]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+cgpui.platform = { path = "../platform" }
+
+[build]
+include_dirs = ["../../include"]
+sources = ["../../src/platform/platform_unimplemented.cpp"]

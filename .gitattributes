@@ -1,0 +1,3 @@
+# Vendored upstream sources are kept byte-for-byte (trailing whitespace too).
+third_party/lunasvg/** -whitespace
+third_party/plutovg/** -whitespace
