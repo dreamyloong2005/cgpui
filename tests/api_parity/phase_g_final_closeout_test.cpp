@@ -56,7 +56,8 @@ int main() {
       "tests/architecture/phase_g_final_dual_host_verification_structure_test.cpp");
   const std::string candidate =
       read_source("tests/api_parity/phase_g_candidate_ledger_closeout_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -66,39 +67,39 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&self,       &predecessor, &candidate,
-                                &xmake,      &roadmap,     &ledger_md,
+                                &manifests,      &roadmap,     &ledger_md,
                                 &ledger_json, &task_plan,   &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
-  if (!contains(xmake, "target(\"phase_g_final_closeout_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_g_final_closeout_test.cpp")) {
+  if (!contains(manifests, "\"phase_g_final_closeout_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_final_closeout_test.cpp\"")) {
     return 2;
   }
 
   constexpr std::array closeout_targets{
-      "phase_g_win32_uia_closeout_test",
-      "phase_g_wayland_atspi_closeout_test",
-      "phase_g_async_runtime_closeout_test",
-      "phase_g_animation_examples_structure_test",
-      "phase_g_image_gif_examples_structure_test",
-      "phase_g_test_support_closeout_test",
-      "phase_g_windows_debug_packaging_structure_test",
-      "phase_g_linux_debug_packaging_structure_test",
-      "phase_g_release_packaging_structure_test",
-      "phase_g_example_smoke_matrix_structure_test",
-      "phase_g_architecture_header_matrix_structure_test",
-      "phase_g_reproducible_dependencies_structure_test",
-      "phase_g_windows_full_debug_verification_structure_test",
-      "phase_g_wsl_full_debug_verification_structure_test",
-      "phase_g_action_macro_structure_test",
-      "phase_g_candidate_ledger_closeout_test",
-      "phase_g_final_dual_host_verification_structure_test",
+      "phase_g_win32_uia_closeout_test.cpp",
+      "phase_g_wayland_atspi_closeout_test.cpp",
+      "phase_g_async_runtime_closeout_test.cpp",
+      "phase_g_animation_examples_structure_test.cpp",
+      "phase_g_image_gif_examples_structure_test.cpp",
+      "phase_g_test_support_closeout_test.cpp",
+      "phase_g_windows_debug_packaging_structure_test.cpp",
+      "phase_g_linux_debug_packaging_structure_test.cpp",
+      "phase_g_release_packaging_structure_test.cpp",
+      "phase_g_example_smoke_matrix_structure_test.cpp",
+      "phase_g_architecture_header_matrix_structure_test.cpp",
+      "phase_g_reproducible_dependency_setup_structure_test.cpp",
+      "phase_g_windows_full_debug_verification_structure_test.cpp",
+      "phase_g_wsl_full_debug_verification_structure_test.cpp",
+      "phase_g_action_macro_structure_test.cpp",
+      "phase_g_candidate_ledger_closeout_test.cpp",
+      "phase_g_final_dual_host_verification_structure_test.cpp",
   };
   for (std::size_t index = 0; index < closeout_targets.size(); ++index) {
     const std::string registration =
-        "target(\"" + std::string{closeout_targets[index]} + "\")";
-    if (!contains(xmake, registration)) return 10 + static_cast<int>(index);
+        std::string{"\""} + std::string{closeout_targets[index]} + "\"";
+    if (!contains(manifests, registration)) return 10 + static_cast<int>(index);
   }
   if (!contains(predecessor,
                 "Phase G Step 677 completes final dual-host verification") ||
@@ -175,6 +176,6 @@ int main() {
                 "619-678")) {
     return 62;
   }
-  if (line_count(self) > 190 || line_count(xmake) > 4400) return 63;
+  if (line_count(self) > 190 || line_count(read_source("mcpp.toml")) > 100) return 63;
   return 0;
 }

@@ -35,7 +35,9 @@ int main() {
       "tests/header_cleanliness/action_macros_header_cleanliness.cpp");
   const std::string predecessor = read_source(
       "tests/architecture/phase_g_wsl_full_debug_verification_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/header_cleanliness/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string manifest =
       read_source("scripts/ci/architecture-header-targets.txt");
   const std::string vocabulary =
@@ -51,7 +53,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &action,      &macros,     &aggregate,  &behavior, &cleanliness,
-      &predecessor, &xmake,      &manifest,   &vocabulary,
+      &predecessor, &manifests,      &manifest,   &vocabulary,
       &core,        &roadmap,    &ledger_md,  &ledger_json,
       &task_plan,   &findings};
   for (const auto* item : required) if (item->empty()) return 1;
@@ -79,9 +81,9 @@ int main() {
       !contains(predecessor, "Step 675 action macro production behavior")) {
     return 4;
   }
-  if (!contains(xmake, "target(\"action_macro_surface_test\")") ||
-      !contains(xmake, "target(\"action_macros_header_cleanliness\")") ||
-      !contains(xmake, "target(\"phase_g_action_macro_structure_test\")") ||
+  if (!contains(manifests, "\"action_macro_surface_test.cpp\"") ||
+      !contains(manifests, "\"action_macros_header_cleanliness.cpp\"") ||
+      !contains(manifests, "\"phase_g_action_macro_structure_test.cpp\"") ||
       !contains(manifest,
                 "action_macros_header_cleanliness|tests/header_cleanliness/"
                 "action_macros_header_cleanliness.cpp") ||
@@ -91,7 +93,7 @@ int main() {
     return 5;
   }
   if (line_count(macros) > 150 || line_count(behavior) > 45 ||
-      line_count(cleanliness) > 20 || line_count(xmake) > 4350) {
+      line_count(cleanliness) > 20 || line_count(read_source("mcpp.toml")) > 100) {
     return 6;
   }
 

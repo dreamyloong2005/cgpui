@@ -39,9 +39,9 @@ int main() {
   const std::string canonical = read_source("scripts/ci/example-targets.txt");
   const std::string macos = read_source("scripts/ci/macos-example-targets.txt");
   const std::string script = read_source("scripts/ci/macos-example-smoke.sh");
-  const std::string xmake = read_source("xmake.lua");
-  const std::string module = read_source("build/xmake/phase_h_macos.lua");
-  const std::string targets = read_source("build/xmake/phase_h_structure_targets.lua");
+  const std::string manifests = read_source("examples/hello_window/mcpp.toml");
+  const std::string module = read_source("tests/platform/mcpp.toml");
+  const std::string targets = read_source("tests/architecture/mcpp.toml");
   const std::string workflow = read_source(".github/workflows/phase-h-macos.yml");
   const std::vector<std::string> expected = lines(canonical);
   const std::vector<std::string> actual = lines(macos);
@@ -49,9 +49,10 @@ int main() {
       std::set<std::string>(actual.begin(), actual.end()).size() != actual.size()) {
     return 1;
   }
+  const std::string api_parity = read_source("examples/api_parity/mcpp.toml");
   for (const std::string& example : actual) {
-    const std::string declaration = "target(\"" + example + "\")";
-    if (xmake.find(declaration) == std::string::npos) return 2;
+    const std::string declaration = "[targets." + example + "]";
+    if (api_parity.find(declaration) == std::string::npos) return 2;
   }
   if (!contains(script, "set -euo pipefail") ||
       !contains(script, "macos-example-targets.txt") ||
@@ -64,25 +65,20 @@ int main() {
       !contains(script, "hello_window/macos_close_after_first_frame")) {
     return 3;
   }
-  const std::size_t public_hello_begin =
-      xmake.find("target(\"api_parity_hello_world\")");
-  const std::size_t public_hello_end =
-      xmake.find("target(\"api_parity_public_api_compatibility\")");
-  const std::size_t hello_begin = xmake.find("target(\"hello_window\")");
-  const std::string public_hello =
-      xmake.substr(public_hello_begin, public_hello_end - public_hello_begin);
-  const std::string hello = xmake.substr(hello_begin);
-  if (!contains(xmake, "add_deps(\"cgpui_platform_macos\", \"cgpui_renderer_metal\")") ||
-      !contains(xmake, "add_frameworks(\"AppKit\", \"QuartzCore\", \"Metal\")") ||
-      contains(public_hello, "add_tests(\"macos_first_frame\"") ||
-      !contains(hello, "add_tests(\"macos_first_frame\"") ||
-      !contains(hello, "add_tests(\"macos_resize_after_first_frame\"") ||
-      !contains(hello, "add_tests(\"macos_demo_smoke_flow\"") ||
-      !contains(hello, "add_tests(\"macos_close_after_first_frame\"")) {
+  // hello_window's macOS smoke cases are its own test programs; the public
+  // hello_world example has none.
+  const std::string hello = manifests;
+  if (!contains(manifests, "cgpui.platform-macos") ||
+      !contains(manifests, "cgpui.renderer-metal") ||
+      contains(api_parity, "macos_first_frame") ||
+      !contains(hello, "\"tests/macos_first_frame.cpp\"") ||
+      !contains(hello, "\"tests/macos_resize_after_first_frame.cpp\"") ||
+      !contains(hello, "\"tests/macos_demo_smoke_flow.cpp\"") ||
+      !contains(hello, "\"tests/macos_close_after_first_frame.cpp\"")) {
     return 4;
   }
-  if (!contains(module, "target(\"macos_example_smoke_test\")") ||
-      !contains(targets, "target(\"phase_h_macos_example_smoke_structure_test\")")) {
+  if (!contains(module, "\"macos/macos_*.mm\"") ||
+      !contains(targets, "\"phase_h_macos_example_smoke_structure_test.cpp\"")) {
     return 5;
   }
   if (!contains(workflow, "runs-on: macos-latest") ||

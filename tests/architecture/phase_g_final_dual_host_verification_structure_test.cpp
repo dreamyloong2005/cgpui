@@ -36,7 +36,9 @@ int main() {
       "tests/architecture/phase_g_wsl_full_debug_verification_structure_test.cpp");
   const std::string dependency = read_source(
       "tests/architecture/phase_g_reproducible_dependency_setup_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/architecture/mcpp.toml") +
+      read_source("third_party/VENDORED.md") +
+      read_source("tests/renderer/mcpp.toml");
   const std::string manifest =
       read_source("scripts/ci/architecture-header-targets.txt");
   const std::string roadmap = read_source(
@@ -48,14 +50,14 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &self,       &candidate, &windows, &wsl,       &dependency, &xmake,
+      &self,       &candidate, &windows, &wsl,       &dependency, &manifests,
       &manifest,   &roadmap,   &ledger_md, &ledger_json, &task_plan,  &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
-  if (!contains(xmake,
-                "target(\"phase_g_final_dual_host_verification_structure_test\")") ||
-      !contains(xmake,
-                "tests/architecture/phase_g_final_dual_host_verification_structure_test.cpp") ||
+  if (!contains(manifests,
+                "\"phase_g_final_dual_host_verification_structure_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_final_dual_host_verification_structure_test.cpp\"") ||
       !contains(manifest,
                 "phase_g_final_dual_host_verification_structure_test|"
                 "tests/architecture/phase_g_final_dual_host_verification_structure_test.cpp")) {
@@ -68,10 +70,10 @@ int main() {
       !contains(wsl, "Phase G Step 674 completes WSL full-debug")) {
     return 3;
   }
-  if (!contains(xmake, "set_policy(\"package.requires_lock\", true)") ||
+  if (!contains(manifests, "Source archive SHA-256") ||
       !contains(dependency, "3.0.9") ||
-      !contains(xmake, "target(\"wayland_frame_pixel_capture_test\")") ||
-      !contains(xmake, "target(\"wayland_vulkan_surface_test\")")) {
+      !contains(manifests, "\"wayland_frame_pixel_capture_test.cpp\"") ||
+      !contains(manifests, "\"wayland_vulkan_surface_test.cpp\"")) {
     return 4;
   }
 
@@ -95,7 +97,7 @@ int main() {
                 "upstream extractor against the pinned revision\"")) {
     return 6;
   }
-  if (line_count(self) > 130 || line_count(xmake) > 4380) {
+  if (line_count(self) > 130 || line_count(read_source("mcpp.toml")) > 100) {
     return 7;
   }
   return 0;

@@ -39,7 +39,8 @@ int main() {
       read_source("tests/ui/test_app_platform_services_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_test_app_rendering_control_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -53,7 +54,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &services_header, &internal, &facade, &platform,
-      &platform_services, &services, &behavior, &previous, &xmake, &vocabulary,
+      &platform_services, &services, &behavior, &previous, &manifests, &vocabulary,
       &core, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -78,9 +79,9 @@ int main() {
       !contains(behavior, "std::nullopt") ||
       !contains(behavior, "platform_service_snapshot()")) return 5;
   if (!contains(previous, "Phase J Step 799 re-run upstream extractor against the pinned revision") ||
-      !contains(xmake, "target(\"phase_g_test_app_platform_services_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_test_app_platform_services_structure_test\")")) {
+      !contains(manifests, "\"test_app_platform_services_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_test_app_platform_services_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(header) > 125 || line_count(services_header) > 35 ||

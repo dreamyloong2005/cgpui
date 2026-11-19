@@ -32,7 +32,7 @@ int main() {
       read_source(".github/workflows/phase-g-windows-linux.yml");
   const std::string previous =
       read_source("tests/api_parity/phase_g_test_support_closeout_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -42,7 +42,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &wrapper, &core, &workflow, &previous, &xmake, &roadmap, &ledger_md,
+      &wrapper, &core, &workflow, &previous, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -76,15 +76,15 @@ int main() {
   }
 
   if (!contains(previous, "Step 667 Windows debug build and packaging coverage") ||
-      !contains(xmake,
-                "target(\"phase_g_windows_debug_packaging_structure_test\")") ||
+      !contains(manifests,
+                "\"phase_g_windows_debug_packaging_structure_test.cpp\"") ||
       !contains(roadmap,
                 "- [x] Phase G Step 667 adds a Windows Debug CI packaging")) {
     return 5;
   }
   if (line_count(wrapper) > 35 || line_count(core) > 190 ||
       line_count(workflow) > 150 ||
-      line_count(xmake) > 4350) return 6;
+      line_count(read_source("mcpp.toml")) > 100) return 6;
 
   constexpr const char* completion =
       "Phase G Step 667 adds a Windows Debug CI packaging path with "

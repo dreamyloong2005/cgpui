@@ -32,9 +32,10 @@ int main() {
       !contains(pointer, "MouseButton::back") ||
       !contains(cursor, "xcb_grab_pointer") ||
       !contains(cursor, "xcb_cursor_load_cursor")) return 2;
-  const std::string module = read_source("build/xmake/phase_i_linux_backends.lua");
-  if (!contains(module, "target(\"x11_input_test\")") ||
-      !contains(module, "xkbcommon-x11") || !contains(module, "xcb-cursor")) {
+  const std::string module = read_source("tests/platform/mcpp.toml") +
+      read_source("packages/platform-linux-x11/build.mcpp");
+  if (!contains(module, "\"x11_input_test.cpp\"") ||
+      !contains(module, "\"xkbcommon-x11\"") || !contains(module, "\"xcb-cursor\"")) {
     return 3;
   }
   return 0;

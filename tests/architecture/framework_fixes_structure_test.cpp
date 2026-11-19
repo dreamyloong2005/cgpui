@@ -94,8 +94,8 @@ int main() {
                 !has(read("src/platform/win32/win32_uia_provider_object_internal.hpp"),
                      "IExpandCollapseProvider"),
             "item patterns are a tear-off of the UIA provider");
-    require(!has(read("xmake.lua"), "framework_fixes"),
-            "framework fix targets stay out of the root xmake.lua");
+    require(!has(read("mcpp.toml"), "framework_fixes"),
+            "framework fix targets stay out of the root mcpp.toml");
   } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';
     return 1;

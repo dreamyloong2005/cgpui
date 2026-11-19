@@ -7,7 +7,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -47,11 +47,13 @@ struct WidgetFamilyBoundary {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
-  if (!contains(xmake, "add_files(\"src/ui/widgets/*.cpp\")") ||
-      !contains(xmake, "target(\"builtin_widget_test\")") ||
-      !contains(xmake, "target(\"element_test\")") ||
-      !contains(xmake, "target(\"widget_source_structure_test\")")) {
+  const std::string manifests = read_source("packages/ui/mcpp.toml") +
+      read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
+  if (!contains(manifests, "\"../../src/ui/widgets/*.cpp\"") ||
+      !contains(manifests, "\"builtin_widget_test.cpp\"") ||
+      !contains(manifests, "\"element_test.cpp\"") ||
+      !contains(manifests, "\"widget_source_structure_test.cpp\"")) {
     return 1;
   }
 

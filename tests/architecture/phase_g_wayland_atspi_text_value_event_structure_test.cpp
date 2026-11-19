@@ -42,7 +42,8 @@ int main() {
       "tests/platform/wayland_atspi_text_value_event_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_wayland_atspi_role_state_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source(
@@ -53,7 +54,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &event_header, &event_source, &adapter_header, &adapter_source,
-      &adapter_bus, &support, &behavior, &previous, &xmake, &roadmap,
+      &adapter_bus, &support, &behavior, &previous, &manifests, &roadmap,
       &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
@@ -102,11 +103,11 @@ int main() {
       !contains(behavior, "diagnostics.send_failure_count != 1")) {
     return 7;
   }
-  if (!contains(xmake,
-                "target(\"phase_g_wayland_atspi_text_value_event_test\")") ||
+  if (!contains(manifests,
+                "\"wayland_atspi_text_value_event_test.cpp\"") ||
       !contains(
-          xmake,
-          "target(\"phase_g_wayland_atspi_text_value_event_structure_test\")")) {
+          manifests,
+          "\"phase_g_wayland_atspi_text_value_event_structure_test.cpp\"")) {
     return 8;
   }
   if (line_count(event_header) > 50 || line_count(event_source) > 150 ||

@@ -32,7 +32,8 @@ int main() {
       read_source("tests/platform/wayland_clipboard_mime_negotiation_test.cpp");
   const std::string platform_structure =
       read_source("tests/architecture/platform_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -42,7 +43,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &internal, &mime, &read, &behavior, &platform_structure, &xmake,
+      &internal, &mime, &read, &behavior, &platform_structure, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* value : required) if (value->empty()) return 1;
   if (!contains(internal, "wayland_clipboard_text_mime_rank(") ||
@@ -59,10 +60,10 @@ int main() {
       !contains(behavior, "case folded plain")) return 4;
   if (!contains(platform_structure,
                 "\"src/platform/clipboard_wayland_mime.cpp\"") ||
-      !contains(xmake,
-                "target(\"wayland_clipboard_mime_negotiation_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_clipboard_mime_structure_test\")")) {
+      !contains(manifests,
+                "\"wayland_clipboard_mime_negotiation_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_clipboard_mime_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(internal) > 150 || line_count(mime) > 90 ||

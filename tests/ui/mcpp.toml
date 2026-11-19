@@ -58,7 +58,6 @@ discover = [
     "leaf_element_box_style_test.cpp",
     "native_menu_action_dispatch_test.cpp",
     "native_menu_dispatch_diagnostics_test.cpp",
-    "native_text_shaping_test.cpp",
     "render_view_image_asset_updates_test.cpp",
     "render_view_test.cpp",
     "rich_text_run_test.cpp",
@@ -128,4 +127,10 @@ discover = [
     "workbench_tab_strip_test.cpp",
     "workbench_tooltip_test.cpp",
     "workbench_tree_view_test.cpp",
+]
+
+# Windows and Linux only (Vulkan, or a backend macOS does not have).
+[target.'cfg(any(os = "windows", os = "linux"))'.test]
+discover = [
+    "native_text_shaping_test.cpp",
 ]

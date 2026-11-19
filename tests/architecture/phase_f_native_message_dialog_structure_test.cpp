@@ -30,7 +30,8 @@ int main() {
   const std::string win32_application = read_source("src/platform/win32/win32_application.cpp");
   const std::string behavior = read_source("tests/platform/win32_message_dialog_plan_test.cpp");
   const std::string previous = read_source("tests/architecture/phase_f_native_directory_picker_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
@@ -38,7 +39,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&public_header, &application, &empty, &wayland,
       &win32_header, &win32_source, &win32_application, &behavior, &previous,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(public_header, "enum class NativeMessageDialogKind") ||
       !contains(public_header, "enum class NativeMessageDialogButtons") ||
@@ -61,8 +62,8 @@ int main() {
       line_count(win32_source) > 75 || line_count(behavior) > 35 ||
       line_count(wayland) > 40 || line_count(win32_application) > 220) return 6;
   if (!contains(previous, "Phase F Step 589") ||
-      !contains(xmake, "target(\"win32_message_dialog_plan_test\")") ||
-      !contains(xmake, "target(\"phase_f_native_message_dialog_structure_test\")")) return 7;
+      !contains(manifests, "\"win32_message_dialog_plan_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_native_message_dialog_structure_test.cpp\"")) return 7;
   constexpr const char* completion =
       "Phase F Step 590 adds a public native message-dialog platform service, maps Win32 kinds/buttons/responses through a focused MessageBoxW leaf, and reports explicit unsupported results on Wayland and default backends. Step 591 native open-URL production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

@@ -50,7 +50,7 @@ std::string line_containing(const std::string& text, const char* anchor) {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger =
@@ -70,7 +70,7 @@ int main() {
   const std::string font_fallback_audit =
       read_source("tests/api_parity/phase_d_font_fallback_audit_test.cpp");
 
-  if (xmake.empty() || roadmap.empty() || ledger.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger.empty() ||
       task_plan.empty() || findings.empty() || text_shape_header.empty() ||
       fallback_source.empty() || structure_test.empty() ||
       text_model_test.empty() || text_shaping_audit.empty() ||
@@ -78,10 +78,10 @@ int main() {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"phase_d_fallback_splitting_audit_test\")") ||
+  if (!contains(manifests, "\"phase_d_fallback_splitting_audit_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_d_fallback_splitting_audit_test.cpp")) {
+          manifests,
+          "\"phase_d_fallback_splitting_audit_test.cpp\"")) {
     return 2;
   }
 

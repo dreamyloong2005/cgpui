@@ -60,7 +60,8 @@ int main() {
       read_source("scripts/ci/architecture-header-targets.txt");
   const std::string previous = read_source(
       "tests/architecture/phase_g_architecture_header_matrix_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("third_party/VENDORED.md") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -72,11 +73,11 @@ int main() {
   const std::string* required[]{
       &windows_dependencies, &linux_dependencies, &action, &lock,
       &windows_package, &linux_package, &windows_examples, &linux_examples,
-      &windows_matrix, &linux_matrix, &workflow, &manifest, &previous, &xmake,
+      &windows_matrix, &linux_matrix, &workflow, &manifest, &previous, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
-  if (!contains(xmake, "set_policy(\"package.requires_lock\", true)") ||
+  if (!contains(manifests, "Source archive SHA-256") ||
       !contains(lock, "__meta__") || !contains(lock, "version = \"1.0\"") ||
       !contains(lock, "[\"windows|x64\"]") ||
       !contains(lock, "[\"linux|x86_64\"]") ||
@@ -122,14 +123,14 @@ int main() {
 
   if (!contains(previous, "Phase G Step 671 adds Windows and Linux CI") ||
       !contains(manifest,
-          "phase_g_reproducible_dependencies_structure_test|") ||
-      !contains(xmake,
-          "target(\"phase_g_reproducible_dependencies_structure_test\")")) {
+          "phase_g_reproducible_dependency_setup_structure_test|") ||
+      !contains(manifests,
+          "\"phase_g_reproducible_dependency_setup_structure_test.cpp\"")) {
     return 8;
   }
   if (line_count(windows_dependencies) > 100 ||
       line_count(linux_dependencies) > 100 || line_count(action) > 80 ||
-      line_count(workflow) > 155 || line_count(xmake) > 4385) return 9;
+      line_count(workflow) > 155 || line_count(read_source("mcpp.toml")) > 100) return 9;
 
   constexpr const char* completion =
       "Phase G Step 672 pins Xmake 3.0.9, commits a dual-platform package "

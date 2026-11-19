@@ -46,7 +46,9 @@ int main() {
       "src/platform/win32/win32_application.cpp");
   const std::string behavior = read_source(
       "tests/platform/win32_uia_provider_object_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("packages/platform-win32/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -56,7 +58,7 @@ int main() {
   const std::string* required[]{
       &provider_header, &provider_object_header, &provider, &provider_state,
       &lifetime, &adapter_header, &adapter, &updates, &window,
-      &application, &behavior, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &application, &behavior, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -84,12 +86,12 @@ int main() {
   if (!contains(behavior, "IID_IRawElementProviderSimple") ||
       !contains(behavior, "UIA_EditControlTypeId") ||
       !contains(behavior, "get_HostRawElementProvider")) return 5;
-  if (!contains(xmake, "target(\"win32_uia_provider_object_test\")") ||
-      !contains(xmake, "tests/platform/win32_uia_provider_object_test.cpp") ||
-      !contains(xmake, "\"uiautomationcore\"") ||
-      !contains(xmake, "\"oleaut32\"") ||
-      !contains(xmake,
-                "tests/architecture/phase_g_win32_uia_provider_object_structure_test.cpp")) return 6;
+  if (!contains(manifests, "\"win32_uia_provider_object_test.cpp\"") ||
+      !contains(manifests, "\"win32_uia_provider_object_test.cpp\"") ||
+      !contains(manifests, "\"uiautomationcore.lib\"") ||
+      !contains(manifests, "\"oleaut32.lib\"") ||
+      !contains(manifests,
+                "\"phase_g_win32_uia_provider_object_structure_test.cpp\"")) return 6;
   if (line_count(provider_header) > 60 ||
       line_count(provider_object_header) > 90 ||
       line_count(provider) > 190 ||

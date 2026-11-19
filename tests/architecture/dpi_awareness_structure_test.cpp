@@ -37,7 +37,7 @@ int main() {
     const auto win32_application = read("src/platform/win32/win32_application.cpp");
     const auto system_application = read("src/platform/win32/win32_system_application.cpp");
     const auto factory = read("src/platform/win32/win32_window_factory.cpp");
-    const auto module = read("build/xmake/capabilities/dpi_awareness_targets.lua");
+    const auto module = read("tests/platform/mcpp.toml");
     require(lines(leaf) <= 30 && has(leaf, "per_monitor_aware_v2") &&
             has(leaf, "already_set_by_process") && !has(leaf, "<windows.h>"),
             "dpi awareness leaf must stay small and platform neutral");
@@ -63,8 +63,8 @@ int main() {
             !has(system_application, "SetProcessDpiAwarenessContext(") &&
             !has(factory, "SetProcessDpiAwarenessContext("),
             "the declaration must stay in its focused module");
-    require(has(module, "tests/platform/win32_dpi_awareness_test.cpp") &&
-            has(module, "is_plat(\"windows\")"),
+    require(has(module, "\"win32_dpi_awareness_test.cpp\"") &&
+            has(module, "[target.'cfg(os = \"windows\")'.test]"),
             "dpi awareness behavior test must be owned by its capability module");
     return 0;
   } catch (const std::exception& error) {

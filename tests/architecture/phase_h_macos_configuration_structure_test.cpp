@@ -31,45 +31,44 @@ std::size_t count(const std::string& text, const char* value) {
   return result;
 }
 
-std::string vulkan_test_matrix(const std::string& xmake) {
-  constexpr const char* guard = "if is_plat(\"windows\", \"linux\") then";
-  constexpr const char* first_target =
-      "target(\"vulkan_frame_geometry_buffer_test\")";
-  const auto first = xmake.find(first_target);
-  if (first == std::string::npos) return {};
-  const auto begin = xmake.rfind(guard, first);
-  const auto end = xmake.find("\nend\n", first);
-  if (begin == std::string::npos || end == std::string::npos) return {};
-  return xmake.substr(begin, end + 5 - begin);
+// The Windows / Linux test table of a suite manifest: the tests that are not
+// built on macOS (Vulkan).
+std::string vulkan_test_matrix(const std::string& manifest) {
+  constexpr const char* guard =
+      "[target.'cfg(any(os = \"windows\", os = \"linux\"))'.test]";
+  const auto begin = manifest.find(guard);
+  if (begin == std::string::npos) return {};
+  const auto end = manifest.find("\n]\n", begin);
+  if (end == std::string::npos) return {};
+  return manifest.substr(begin, end + 3 - begin);
 }
 
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
-  if (xmake.empty()) return 1;
+  const std::string manifests = read_source("mcpp.toml");
+  const std::string api_parity = read_source("tests/api_parity/mcpp.toml");
+  if (manifests.empty() || api_parity.empty()) return 1;
 
   constexpr const char* production_target =
-      "target(\"phase_e_glyph_atlas_production_test\")";
-  if (count(xmake, production_target) != 1) return 2;
+      "\"phase_e_glyph_atlas_production_test.cpp\"";
+  if (count(api_parity, production_target) != 1) return 2;
 
-  const std::string matrix = vulkan_test_matrix(xmake);
+  const std::string matrix = vulkan_test_matrix(api_parity);
   if (matrix.empty() || !contains(matrix, production_target)) return 3;
-  if (!contains(matrix,
-                "add_files(\"tests/api_parity/phase_e_glyph_atlas_production_test.cpp\")") ||
-      !contains(matrix,
-                "add_deps(\"cgpui_core\", \"cgpui_renderer\", \"cgpui_renderer_vulkan\")")) {
+  if (!contains(api_parity,
+                "cgpui.renderer-vulkan = { path = \"../../packages/renderer-vulkan\" }")) {
     return 4;
   }
 
   constexpr const char* structure_target =
-      "target(\"phase_h_macos_configuration_structure_test\")";
-  const std::string module = read_source("build/xmake/phase_h_structure_targets.lua");
-  if (!contains(xmake, "includes(\"build/xmake/phase_h_structure_targets.lua\")") ||
+      "\"phase_h_macos_configuration_structure_test.cpp\"";
+  const std::string module = read_source("tests/architecture/mcpp.toml");
+  if (!contains(manifests, "\"tests/architecture\",") ||
       module.empty() || !contains(module, structure_target) ||
       count(module, structure_target) != 1 ||
       !contains(module,
-                "add_files(path.join(os.projectdir(), \"tests/architecture/phase_h_macos_configuration_structure_test.cpp\"))")) {
+                "\"phase_h_macos_configuration_structure_test.cpp\"")) {
     return 6;
   }
   return 0;

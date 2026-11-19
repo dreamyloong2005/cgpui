@@ -34,7 +34,8 @@ int main() {
       read_source("tests/platform/wayland_test_compositor.cpp");
   const std::string behavior =
       read_source("tests/platform/wayland_clipboard_ownership_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -45,7 +46,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &internal, &source, &dispatch, &helper, &compositor, &behavior,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* value : required) if (value->empty()) return 1;
   if (!contains(internal, "wl_data_source* owned_source_") ||
       !contains(internal, "owned_selection_mutex_") ||
@@ -76,9 +77,9 @@ int main() {
                 "clipboard_client_selection_replacement_was_continuous")) {
     return 6;
   }
-  if (!contains(xmake, "target(\"wayland_clipboard_ownership_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_clipboard_ownership_structure_test\")")) {
+  if (!contains(manifests, "\"wayland_clipboard_ownership_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_clipboard_ownership_structure_test.cpp\"")) {
     return 7;
   }
   if (line_count(internal) > 150 || line_count(source) > 100 ||

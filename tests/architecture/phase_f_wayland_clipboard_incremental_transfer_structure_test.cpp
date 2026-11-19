@@ -42,7 +42,8 @@ int main() {
       "tests/platform/wayland_clipboard_incremental_transfer_test.cpp");
   const std::string platform_structure =
       read_source("tests/architecture/platform_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -53,7 +54,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &internal, &transfer, &source_io, &read_payload, &helper, &source_state,
-      &compositor, &compositor_header, &behavior, &platform_structure, &xmake,
+      &compositor, &compositor_header, &behavior, &platform_structure, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* value : required) if (value->empty()) return 1;
   if (!contains(internal, "wayland_clipboard_write_payload_incrementally(") ||
@@ -80,10 +81,10 @@ int main() {
                 "request_clipboard_client_selection_nonblocking(")) return 5;
   if (!contains(platform_structure,
                 "\"src/platform/clipboard_wayland_transfer.cpp\"") ||
-      !contains(xmake,
-                "target(\"wayland_clipboard_incremental_transfer_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_clipboard_incremental_transfer_structure_test\")")) {
+      !contains(manifests,
+                "\"wayland_clipboard_incremental_transfer_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_clipboard_incremental_transfer_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(internal) > 150 || line_count(transfer) > 80 ||

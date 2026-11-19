@@ -32,7 +32,8 @@ int main() {
     const auto source = read("src/renderer/vulkan/vulkan_device_pixels.cpp");
     const auto renderer = read("src/renderer/vulkan/vulkan_renderer.cpp");
     const auto ime = read("src/platform/win32/win32_window_ime_placement.cpp");
-    const auto module = read("build/xmake/capabilities/device_pixel_scale_targets.lua");
+    const auto module = read("tests/renderer/mcpp.toml") +
+      read("tests/platform/mcpp.toml");
     require(lines(header) <= 30 && lines(source) <= 130 &&
             has(header, "vulkan_to_device_pixels(") &&
             !has(source, "<vulkan/vulkan.h>"),
@@ -41,9 +42,9 @@ int main() {
             "every recorded frame draw must be converted to device pixels");
     require(has(ime, "state_.scale.value"),
             "IME placement must convert logical rects to physical pixels");
-    require(has(module, "tests/renderer/vulkan_scale_pixel_test.cpp") &&
-            has(module, "tests/renderer/vulkan_device_pixels_test.cpp") &&
-            has(module, "tests/platform/win32_ime_placement_scale_test.cpp"),
+    require(has(module, "\"vulkan_scale_pixel_test.cpp\"") &&
+            has(module, "\"vulkan_device_pixels_test.cpp\"") &&
+            has(module, "\"win32_ime_placement_scale_test.cpp\""),
             "the behavior tests must be owned by the capability module");
     return 0;
   } catch (const std::exception& error) {

@@ -40,7 +40,9 @@ int main() {
       read_source("tests/header_cleanliness/prelude_header_cleanliness.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_asset_reload_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/assets/mcpp.toml") +
+      read_source("tests/header_cleanliness/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -54,7 +56,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &source, &behavior, &outcomes, &cleanliness, &prelude,
-      &prelude_cleanliness, &previous, &xmake, &vocabulary, &core, &roadmap,
+      &prelude_cleanliness, &previous, &manifests, &vocabulary, &core, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -87,13 +89,13 @@ int main() {
       !contains(cleanliness, "AsyncAssetLoadResult result") ||
       !contains(previous, "Step 657 async asset ") ||
       !contains(previous, "loading production behavior is next.") ||
-      !contains(xmake, "target(\"phase_g_async_asset_loading_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_async_asset_loading_outcome_test\")") ||
-      !contains(xmake,
-                "target(\"async_asset_loading_header_cleanliness\")") ||
-      !contains(xmake,
-                "target(\"phase_g_async_asset_loading_structure_test\")")) {
+      !contains(manifests, "\"async_asset_loading_test.cpp\"") ||
+      !contains(manifests,
+                "\"async_asset_loading_outcome_test.cpp\"") ||
+      !contains(manifests,
+                "\"async_asset_loading_header_cleanliness.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_async_asset_loading_structure_test.cpp\"")) {
     return 5;
   }
   if (!contains(prelude, "cgpui/ui/async_asset_loading.hpp") ||

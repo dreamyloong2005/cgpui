@@ -28,7 +28,8 @@ int main() {
       read_source("tests/ui/window_runtime_ime_diagnostics_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_f_drag_drop_cancellation_diagnostics_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -38,7 +39,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&public_header, &runtime, &behavior, &previous,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(public_header, "bool cancelled = false;")) return 2;
   const char* operations[]{"composition-update", "composition-commit",
@@ -57,9 +58,9 @@ int main() {
       !contains(previous, "Phase F Step 605")) return 5;
   if (line_count(public_header) > 45 || line_count(runtime) > 90 ||
       line_count(behavior) > 135) return 6;
-  if (!contains(xmake, "target(\"window_runtime_ime_diagnostics_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_ime_diagnostics_structure_test\")")) return 7;
+  if (!contains(manifests, "\"window_runtime_ime_diagnostics_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_ime_diagnostics_structure_test.cpp\"")) return 7;
   constexpr const char* completion =
       "Phase F Step 606 records runtime IME update, commit, cancel, and delete-surrounding diagnostics, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 607 scale-change diagnostics and stress production behavior is next.";
   const std::string* documents[]{

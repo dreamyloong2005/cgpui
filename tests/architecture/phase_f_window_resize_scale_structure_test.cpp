@@ -66,7 +66,8 @@ int main() {
       "tests/platform/win32_window_resize_scale_state_test.cpp");
   const std::string wayland_test = read_source(
       "tests/platform/wayland_window_resize_scale_state_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -79,7 +80,7 @@ int main() {
       application_registry.empty() || application_creation.empty() ||
       window_internal.empty() || scale_internal.empty() ||
       scale_source.empty() || configure.empty() || win32_size.empty() ||
-      win32_test.empty() || wayland_test.empty() || xmake.empty() ||
+      win32_test.empty() || wayland_test.empty() || manifests.empty() ||
       roadmap.empty() || ledger_md.empty() || ledger_json.empty() ||
       task_plan.empty() || findings.empty()) {
     return 1;
@@ -126,10 +127,10 @@ int main() {
       !contains(wayland_test, "last_surface_buffer_scale() != 2")) {
     return 7;
   }
-  if (!contains(xmake, "target(\"win32_window_resize_scale_state_test\")") ||
-      !contains(xmake, "target(\"wayland_window_resize_scale_state_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_window_resize_scale_structure_test\")")) {
+  if (!contains(manifests, "\"win32_window_resize_scale_state_test.cpp\"") ||
+      !contains(manifests, "\"wayland_window_resize_scale_state_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_window_resize_scale_structure_test.cpp\"")) {
     return 8;
   }
   if (line_count(output_header) > 70 || line_count(output_source) > 130 ||

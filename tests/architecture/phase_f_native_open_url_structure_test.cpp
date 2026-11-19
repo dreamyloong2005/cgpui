@@ -30,14 +30,15 @@ int main() {
   const std::string win32_application = read_source("src/platform/win32/win32_application.cpp");
   const std::string behavior = read_source("tests/platform/win32_open_url_plan_test.cpp");
   const std::string previous = read_source("tests/architecture/phase_f_native_message_dialog_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&public_header, &application, &empty, &wayland,
-      &header, &source, &win32_application, &behavior, &previous, &xmake,
+      &header, &source, &win32_application, &behavior, &previous, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(public_header, "struct PlatformOpenUrlResult") ||
@@ -58,8 +59,8 @@ int main() {
       line_count(source) > 55 || line_count(behavior) > 25 ||
       line_count(wayland) > 50 || line_count(win32_application) > 220) return 6;
   if (!contains(previous, "Phase F Step 590") ||
-      !contains(xmake, "target(\"win32_open_url_plan_test\")") ||
-      !contains(xmake, "target(\"phase_f_native_open_url_structure_test\")")) return 7;
+      !contains(manifests, "\"win32_open_url_plan_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_native_open_url_structure_test.cpp\"")) return 7;
   constexpr const char* completion =
       "Phase F Step 591 adds a result-bearing native open-URL platform service, launches valid Win32 URLs through focused ShellExecuteW handling, rejects empty/NUL URLs, classifies native return codes, and preserves explicit unsupported Wayland/default results. Step 592 quit/reopen lifecycle production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

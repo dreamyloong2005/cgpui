@@ -46,24 +46,25 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("examples/api_parity/mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml");
 
   if (example.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty() ||
-      xmake.empty()) {
+      manifests.empty()) {
     return 1;
   }
 
-  if (!contains(xmake,
-                "target(\"api_parity_public_text_wrapper_examples\")") ||
+  if (!contains(manifests,
+                "[targets.api_parity_public_text_wrapper_examples]") ||
       !contains(
-          xmake,
-          "examples/api_parity/public_text_wrapper_examples/main.cpp") ||
-      !contains(xmake,
-                "target(\"phase_d_text_wrapper_public_examples_test\")") ||
+          manifests,
+          "main = \"public_text_wrapper_examples/main.cpp\"") ||
+      !contains(manifests,
+                "\"phase_d_text_wrapper_public_examples_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_d_text_wrapper_public_examples_test.cpp")) {
+          manifests,
+          "\"phase_d_text_wrapper_public_examples_test.cpp\"")) {
     return 2;
   }
 

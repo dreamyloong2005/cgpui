@@ -69,7 +69,9 @@ int main() {
       "tests/header_cleanliness/core_header_cleanliness.cpp");
   const std::string ui_headers = read_source(
       "tests/header_cleanliness/ui_header_cleanliness.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -84,7 +86,7 @@ int main() {
       &pattern_properties,
       &slider_accessibility, &text_accessibility, &element_behavior,
       &runtime_behavior, &provider_behavior, &core_headers, &ui_headers,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(event, "enum class AccessibilityActionKind") ||
@@ -130,10 +132,10 @@ int main() {
       !contains(provider_behavior, "UIA_RangeValuePatternId")) return 5;
   if (!contains(core_headers, "event_accessibility.hpp") ||
       !contains(ui_headers, "cgpui/ui/accessibility.hpp") ||
-      !contains(xmake, "target(\"accessibility_pattern_runtime_test\")") ||
-      !contains(xmake, "target(\"win32_uia_pattern_provider_test\")") ||
-      !contains(xmake,
-                "phase_g_win32_uia_pattern_provider_structure_test.cpp")) {
+      !contains(manifests, "\"accessibility_pattern_runtime_test.cpp\"") ||
+      !contains(manifests, "\"win32_uia_pattern_provider_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_win32_uia_pattern_provider_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(event) > 35 || line_count(patterns) > 35 ||

@@ -44,7 +44,8 @@ int main() {
       read_source("tests/platform/wayland_fractional_scale_test.cpp");
   const std::string compositor =
       read_source("tests/platform/wayland_test_compositor.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -56,7 +57,7 @@ int main() {
   const std::string* required[]{
       &protocol_header, &fractional_interfaces, &fractional_requests,
       &viewporter_interfaces, &viewporter_requests, &registry, &window, &scale,
-      &fractional, &behavior, &compositor, &xmake, &roadmap, &ledger_md,
+      &fractional, &behavior, &compositor, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(protocol_header, "wp_fractional_scale_v1_listener") ||
@@ -79,9 +80,9 @@ int main() {
       !contains(behavior, "last_surface_buffer_scale() != 2") ||
       !contains(compositor, "wp_fractional_scale_manager_v1_interface") ||
       !contains(compositor, "set_viewport_destination(") ||
-      !contains(xmake, "target(\"wayland_fractional_scale_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_fractional_scale_structure_test\")")) {
+      !contains(manifests, "\"wayland_fractional_scale_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_fractional_scale_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(protocol_header) > 50 || line_count(fractional) > 60 ||

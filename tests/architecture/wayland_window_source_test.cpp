@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -219,10 +220,6 @@ std::string read_wayland_source() {
   return text;
 }
 
-std::string read_xmake_source() {
-  return read_source("xmake.lua");
-}
-
 bool contains(const std::string& text, const char* value) {
   return text.find(value) != std::string::npos;
 }
@@ -232,66 +229,20 @@ std::size_t line_count(const std::string& text) {
       std::count(text.begin(), text.end(), '\n'));
 }
 
-std::string linux_target_block(const std::string& xmake_text, const char* target_name) {
-  const std::string target_marker =
-      std::string("target(\"") + target_name + "\")";
-  const auto target_position = xmake_text.find(target_marker);
-  if (target_position == std::string::npos) {
+std::string toml_table(const std::string& manifest, const char* header) {
+  // The text of one TOML table: from its header to the next table header.
+  const auto begin = manifest.find(header);
+  if (begin == std::string::npos) {
     return {};
   }
-
-  const auto next_target_position = xmake_text.find("\ntarget(\"", target_position + 1);
-  const auto next_platform_position =
-      xmake_text.find("\nif is_plat(\"macosx\")", target_position + 1);
-  auto end_position = std::string::npos;
-  if (next_target_position != std::string::npos &&
-      next_platform_position != std::string::npos) {
-    end_position = std::min(next_target_position, next_platform_position);
-  } else if (next_target_position != std::string::npos) {
-    end_position = next_target_position;
-  } else if (next_platform_position != std::string::npos) {
-    end_position = next_platform_position;
-  }
-
-  return xmake_text.substr(
-      target_position,
-      end_position == std::string::npos
-          ? std::string::npos
-          : end_position - target_position);
+  const auto end = manifest.find("\n[", begin + 1);
+  return manifest.substr(
+      begin, end == std::string::npos ? std::string::npos : end - begin);
 }
 
-std::string platform_branch(const std::string& target_text, const char* platform_name) {
-  const std::string if_marker =
-      std::string("if is_plat(\"") + platform_name + "\") then";
-  const std::string elseif_marker =
-      std::string("elseif is_plat(\"") + platform_name + "\") then";
-
-  auto branch_position = target_text.find(if_marker);
-  if (branch_position == std::string::npos) {
-    branch_position = target_text.find(elseif_marker);
-  }
-  if (branch_position == std::string::npos) {
-    return {};
-  }
-
-  auto end_position = target_text.find("\n    elseif is_plat(", branch_position + 1);
-  const auto else_position = target_text.find("\n    else", branch_position + 1);
-  const auto end_marker_position = target_text.find("\n    end", branch_position + 1);
-  if (end_position == std::string::npos ||
-      (else_position != std::string::npos && else_position < end_position)) {
-    end_position = else_position;
-  }
-  if (end_position == std::string::npos ||
-      (end_marker_position != std::string::npos && end_marker_position < end_position)) {
-    end_position = end_marker_position;
-  }
-
-  return target_text.substr(
-      branch_position,
-      end_position == std::string::npos
-          ? std::string::npos
-          : end_position - branch_position);
-}
+constexpr const char* linux_test_table = "[target.'cfg(os = \"linux\")'.test]";
+constexpr const char* linux_dependencies =
+    "[target.'cfg(os = \"linux\")'.dependencies]";
 
 } // namespace
 
@@ -1189,186 +1140,105 @@ int main(int argc, char** argv) {
     return 111;
   }
 
-  const std::string xmake_text = read_xmake_source();
-  if (xmake_text.empty()) {
+  const std::string platform_tests = read_source("tests/platform/mcpp.toml");
+  const std::string platform_build = read_source("tests/platform/build.mcpp");
+  const std::string renderer_tests = read_source("tests/renderer/mcpp.toml");
+  const std::string hello_manifest = read_source("examples/hello_window/mcpp.toml");
+  if (platform_tests.empty() || platform_build.empty() ||
+      renderer_tests.empty() || hello_manifest.empty()) {
     return 5;
   }
 
-  const std::string close_target_text =
-      linux_target_block(xmake_text, "wayland_compositor_close_test");
-  if (close_target_text.empty()) {
-    return 6;
-  }
-  if (!contains(close_target_text, "tests/platform/wayland_compositor_close_test.cpp")) {
-    return 7;
-  }
-  if (!contains(close_target_text, "wayland-server")) {
-    return 8;
-  }
-  if (!contains(close_target_text, "add_tests(\"default\")")) {
-    return 9;
-  }
-  if (!contains(close_target_text, "tests/platform/wayland_test_compositor.cpp")) {
+  // The Wayland platform tests are Linux programs of tests/platform; on
+  // Linux the suite links the test compositor (a support source of the
+  // suite) and wayland-server.
+  const std::string linux_platform_tests =
+      toml_table(platform_tests, linux_test_table);
+  const std::string linux_platform_build =
+      toml_table(platform_tests, "[target.'cfg(os = \"linux\")'.build]");
+  if (!contains(linux_platform_build, "\"wayland_test_compositor.cpp\"")) {
     return 10;
   }
-
-  const std::string resize_target_text =
-      linux_target_block(xmake_text, "wayland_compositor_resize_test");
-  if (resize_target_text.empty()) {
+  if (!contains(platform_build, "\"wayland-server\"")) {
+    return 8;
+  }
+  if (!contains(linux_platform_tests, "\"wayland_compositor_close_test.cpp\"")) {
+    return 6;
+  }
+  if (!contains(linux_platform_tests, "\"wayland_compositor_resize_test.cpp\"")) {
     return 11;
   }
-  if (!contains(resize_target_text, "tests/platform/wayland_compositor_resize_test.cpp")) {
-    return 12;
-  }
-  if (!contains(resize_target_text, "tests/platform/wayland_test_compositor.cpp")) {
-    return 13;
-  }
-  if (!contains(resize_target_text, "wayland-server")) {
-    return 14;
-  }
-  if (!contains(resize_target_text, "add_tests(\"default\")")) {
-    return 15;
-  }
-
-  const std::string pointer_target_text =
-      linux_target_block(xmake_text, "wayland_pointer_button_test");
-  if (pointer_target_text.empty()) {
+  if (!contains(linux_platform_tests, "\"wayland_pointer_button_test.cpp\"")) {
     return 37;
   }
-  if (!contains(pointer_target_text, "tests/platform/wayland_pointer_button_test.cpp")) {
-    return 38;
-  }
-  if (!contains(pointer_target_text, "tests/platform/wayland_test_compositor.cpp")) {
-    return 39;
-  }
-  if (!contains(pointer_target_text, "wayland-server")) {
-    return 40;
-  }
-  if (!contains(pointer_target_text, "add_tests(\"default\")")) {
-    return 41;
-  }
-
-  const std::string scroll_target_text =
-      linux_target_block(xmake_text, "wayland_pointer_scroll_test");
-  if (scroll_target_text.empty()) {
+  if (!contains(linux_platform_tests, "\"wayland_pointer_scroll_test.cpp\"")) {
     return 47;
   }
-  if (!contains(scroll_target_text, "tests/platform/wayland_pointer_scroll_test.cpp")) {
-    return 48;
-  }
-  if (!contains(scroll_target_text, "tests/platform/wayland_test_compositor.cpp")) {
-    return 49;
-  }
-  if (!contains(scroll_target_text, "wayland-server")) {
-    return 50;
-  }
-  if (!contains(scroll_target_text, "add_tests(\"default\")")) {
-    return 51;
-  }
-
-  const std::string keyboard_target_text =
-      linux_target_block(xmake_text, "wayland_keyboard_test");
-  if (keyboard_target_text.empty()) {
+  if (!contains(linux_platform_tests, "\"wayland_keyboard_test.cpp\"")) {
     return 42;
   }
-  if (!contains(keyboard_target_text, "tests/platform/wayland_keyboard_test.cpp")) {
-    return 43;
-  }
-  if (!contains(keyboard_target_text, "tests/platform/wayland_test_compositor.cpp")) {
-    return 44;
-  }
-  if (!contains(keyboard_target_text, "wayland-server")) {
-    return 45;
-  }
-  if (!contains(keyboard_target_text, "add_tests(\"default\")")) {
-    return 46;
-  }
-  if (!contains(xmake_text, "libxkbcommon")) {
+  if (!contains(read_source("packages/platform-linux-wayland/build.mcpp"),
+                "\"xkbcommon\"")) {
     return 62;
   }
 
-  const std::string vulkan_target_text =
-      linux_target_block(xmake_text, "wayland_vulkan_surface_test");
-  if (vulkan_target_text.empty()) {
+  if (!contains(toml_table(renderer_tests, linux_test_table),
+                "\"wayland_vulkan_surface_test.cpp\"")) {
     return 16;
   }
-  if (!contains(vulkan_target_text, "tests/renderer/wayland_vulkan_surface_test.cpp")) {
-    return 17;
-  }
-  if (!contains(vulkan_target_text, "cgpui_platform_linux_wayland")) {
+  if (!contains(toml_table(renderer_tests, linux_dependencies),
+                "cgpui.platform-linux-wayland")) {
     return 18;
   }
-  if (!contains(vulkan_target_text, "cgpui_renderer_vulkan")) {
+  if (!contains(renderer_tests, "cgpui.renderer-vulkan")) {
     return 19;
   }
-  if (!contains(vulkan_target_text, "\"vulkan\"")) {
+  if (!contains(read_source("tests/renderer/build.mcpp"), "\"vulkan\"")) {
     return 20;
   }
-  if (!contains(vulkan_target_text, "add_tests(\"default\")")) {
-    return 21;
-  }
 
-  const std::string hello_window_target_text =
-      linux_target_block(xmake_text, "hello_window");
-  if (hello_window_target_text.empty()) {
+  if (!contains(hello_manifest, "[targets.hello_window]")) {
     return 22;
   }
-  if (!contains(hello_window_target_text, "cgpui_platform_linux_wayland")) {
+  const std::string linux_hello_dependencies =
+      toml_table(hello_manifest, linux_dependencies);
+  if (!contains(linux_hello_dependencies, "cgpui.platform-linux-wayland")) {
     return 23;
   }
-  if (!contains(hello_window_target_text, "cgpui_renderer_vulkan")) {
+  if (!contains(linux_hello_dependencies, "cgpui.renderer-vulkan")) {
     return 24;
   }
-  if (!contains(hello_window_target_text, "CGPUI_EXIT_AFTER_FIRST_FRAME")) {
-    return 25;
-  }
-  if (!contains(hello_window_target_text, "add_tests(\"linux_first_frame\"")) {
-    return 26;
-  }
-
-  const std::string linux_hello_window_branch =
-      platform_branch(hello_window_target_text, "linux");
-  if (linux_hello_window_branch.empty()) {
-    return 27;
-  }
-  if (!contains(linux_hello_window_branch, "CGPUI_RESIZE_AFTER_FIRST_FRAME")) {
-    return 28;
-  }
-  if (!contains(linux_hello_window_branch,
-                "add_tests(\"linux_resize_after_first_frame\"")) {
-    return 29;
-  }
-  if (!contains(linux_hello_window_branch, "CGPUI_CLOSE_AFTER_FIRST_FRAME")) {
-    return 52;
-  }
-  if (!contains(linux_hello_window_branch,
-                "add_tests(\"linux_close_after_first_frame\"")) {
-    return 53;
+  // Each smoke case is a program that sets the variables it runs under.
+  const std::string linux_smokes = toml_table(hello_manifest, linux_test_table);
+  const std::pair<const char*, const char*> linux_cases[]{
+      {"linux_first_frame", "CGPUI_EXIT_AFTER_FIRST_FRAME"},
+      {"linux_resize_after_first_frame", "CGPUI_RESIZE_AFTER_FIRST_FRAME"},
+      {"linux_close_after_first_frame", "CGPUI_CLOSE_AFTER_FIRST_FRAME"},
+  };
+  int code = 25;
+  for (const auto& [name, variable] : linux_cases) {
+    const std::string path = std::string{"tests/"} + name + ".cpp";
+    if (!contains(linux_smokes, ("\"" + path + "\"").c_str()) ||
+        !contains(read_source(("examples/hello_window/" + path).c_str()), variable)) {
+      return code;
+    }
+    ++code;
   }
 
-  const std::string windows_hello_window_branch =
-      platform_branch(hello_window_target_text, "windows");
-  if (windows_hello_window_branch.empty()) {
-    return 30;
-  }
-  if (!contains(windows_hello_window_branch, "cgpui_platform_win32")) {
+  const std::string windows_hello_dependencies =
+      toml_table(hello_manifest, "[target.'cfg(os = \"windows\")'.dependencies]");
+  if (!contains(windows_hello_dependencies, "cgpui.platform-win32")) {
     return 31;
   }
-  if (!contains(windows_hello_window_branch, "cgpui_renderer_vulkan")) {
+  if (!contains(windows_hello_dependencies, "cgpui.renderer-vulkan")) {
     return 32;
   }
-  if (!contains(windows_hello_window_branch, "CGPUI_EXIT_AFTER_FIRST_FRAME")) {
-    return 33;
-  }
-  if (!contains(windows_hello_window_branch,
-                "add_tests(\"windows_first_frame\"")) {
+  const std::string windows_smokes =
+      toml_table(hello_manifest, "[target.'cfg(os = \"windows\")'.test]");
+  if (!contains(windows_smokes, "\"tests/windows_first_frame.cpp\"")) {
     return 34;
   }
-  if (!contains(windows_hello_window_branch, "CGPUI_RESIZE_AFTER_FIRST_FRAME")) {
-    return 35;
-  }
-  if (!contains(windows_hello_window_branch,
-                "add_tests(\"windows_resize_after_first_frame\"")) {
+  if (!contains(windows_smokes, "\"tests/windows_resize_after_first_frame.cpp\"")) {
     return 36;
   }
 

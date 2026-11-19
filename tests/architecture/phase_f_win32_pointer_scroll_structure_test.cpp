@@ -44,7 +44,8 @@ int main() {
       read_source("src/platform/win32/win32_window_events.cpp");
   const std::string behavior =
       read_source("tests/platform/win32_pointer_scroll_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -55,7 +56,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &pointer_header, &decoder, &decoder_header, &proc, &pointer_events,
-      &events, &behavior, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &events, &behavior, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -75,9 +76,9 @@ int main() {
   if (!contains(behavior, "WM_MOUSEHWHEEL") ||
       !contains(behavior, "WHEEL_DELTA / 4") ||
       !contains(behavior, "events[2].precise") ||
-      !contains(xmake, "target(\"win32_pointer_scroll_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_win32_pointer_scroll_structure_test\")")) {
+      !contains(manifests, "\"win32_pointer_scroll_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_win32_pointer_scroll_structure_test.cpp\"")) {
     return 3;
   }
   if (line_count(pointer_header) > 60 || line_count(decoder_header) > 20 ||

@@ -37,7 +37,10 @@ struct SourceEvidence {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/renderer/mcpp.toml") +
+      read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -46,34 +49,33 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
-  if (xmake.empty() || roadmap.empty() || ledger_md.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty()) {
     return 1;
   }
 
   if (!contains(
-          xmake,
-          "target(\"phase_e_renderer_diagnostics_integration_closeout_test\")") ||
+          manifests,
+          "\"phase_e_renderer_diagnostics_integration_closeout_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/"
-          "phase_e_renderer_diagnostics_integration_closeout_test.cpp")) {
+          manifests,
+          "\"phase_e_renderer_diagnostics_integration_closeout_test.cpp\"")) {
     return 2;
   }
 
   constexpr std::array target_evidence{
-      "target(\"renderer_frame_diagnostics_test\")",
-      "target(\"renderer_upload_byte_diagnostics_test\")",
-      "target(\"renderer_draw_count_diagnostics_test\")",
-      "target(\"renderer_dropped_resource_diagnostics_test\")",
-      "target(\"renderer_frame_timing_diagnostics_test\")",
-      "target(\"vulkan_frame_diagnostic_snapshot_test\")",
-      "target(\"runtime_renderer_diagnostics_test\")",
-      "target(\"renderer_source_structure_test\")",
-      "target(\"ui_source_structure_test\")",
+      "\"renderer_frame_diagnostics_test.cpp\"",
+      "\"renderer_upload_byte_diagnostics_test.cpp\"",
+      "\"renderer_draw_count_diagnostics_test.cpp\"",
+      "\"renderer_dropped_resource_diagnostics_test.cpp\"",
+      "\"renderer_frame_timing_diagnostics_test.cpp\"",
+      "\"vulkan_frame_diagnostic_snapshot_test.cpp\"",
+      "\"runtime_renderer_diagnostics_test.cpp\"",
+      "\"renderer_source_structure_test.cpp\"",
+      "\"ui_source_structure_test.cpp\"",
   };
   for (std::size_t index = 0; index < target_evidence.size(); ++index) {
-    if (!contains(xmake, target_evidence[index])) {
+    if (!contains(manifests, target_evidence[index])) {
       return 10 + static_cast<int>(index);
     }
   }

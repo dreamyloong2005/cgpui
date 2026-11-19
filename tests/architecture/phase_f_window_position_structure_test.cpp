@@ -78,7 +78,8 @@ int main() {
       read_source("tests/platform/win32_window_position_test.cpp");
   const std::string wayland_test =
       read_source("tests/platform/wayland_window_position_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -93,7 +94,7 @@ int main() {
       &win32_position,
       &win32_proc, &wayland_position_internal, &wayland_position,
       &wayland_registered, &runtime_control, &runtime_windows, &event_kind,
-      &win32_test, &wayland_test, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &win32_test, &wayland_test, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -146,10 +147,10 @@ int main() {
       !contains(win32_test, "PlatformWindowDisplayState::fullscreen") ||
       !contains(wayland_test, "state.supported") ||
       !contains(wayland_test, "request_result") ||
-      !contains(xmake, "target(\"win32_window_position_test\")") ||
-      !contains(xmake, "target(\"wayland_window_position_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_window_position_structure_test\")")) {
+      !contains(manifests, "\"win32_window_position_test.cpp\"") ||
+      !contains(manifests, "\"wayland_window_position_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_window_position_structure_test.cpp\"")) {
     return 7;
   }
   if (line_count(position_header) > 20 || line_count(position_default) > 20 ||

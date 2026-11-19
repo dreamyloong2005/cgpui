@@ -48,7 +48,7 @@ std::size_t line_count(const std::string& text) {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -64,16 +64,16 @@ int main() {
   const std::string image_staging =
       read_source("src/renderer/vulkan/vulkan_image_texture_staging.cpp");
 
-  if (xmake.empty() || roadmap.empty() || ledger_md.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty() ||
       presentation.empty() || command_recording.empty() ||
       image_staging.empty()) {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"phase_e_final_closeout_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_e_final_closeout_test.cpp")) {
+  if (!contains(manifests, "\"phase_e_final_closeout_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_e_final_closeout_test.cpp\"")) {
     return 2;
   }
 
@@ -88,7 +88,7 @@ int main() {
       "phase_e_pixel_output_integration_closeout_test",
   };
   for (std::size_t index = 0; index < closeout_targets.size(); ++index) {
-    if (!contains(xmake, closeout_targets[index])) {
+    if (!contains(manifests, closeout_targets[index])) {
       return 10 + static_cast<int>(index);
     }
   }

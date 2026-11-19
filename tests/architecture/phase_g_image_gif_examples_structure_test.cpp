@@ -40,7 +40,8 @@ int main() {
       "tests/api_parity/phase_g_official_image_gif_examples_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_async_asset_loading_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -54,7 +55,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &transport, &paint, &render_view, &transport_test, &image, &gif,
-      &behavior, &previous, &xmake, &vocabulary, &core, &roadmap, &ledger_md,
+      &behavior, &previous, &manifests, &vocabulary, &core, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -91,9 +92,9 @@ int main() {
       !contains(gif, "CGPUI_RUN_PUBLIC_GIF_VIEWER_EXAMPLE") ||
       !contains(previous, "Step 658 ") ||
       !contains(previous, "official image/GIF examples and asset closeout") ||
-      !contains(xmake, "target(\"render_view_image_asset_transport_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_image_gif_examples_structure_test\")")) {
+      !contains(manifests, "\"render_view_image_asset_updates_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_image_gif_examples_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(transport) > 55 || line_count(render_view) > 113 ||

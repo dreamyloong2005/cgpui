@@ -67,7 +67,9 @@ int main() {
       read_source("tests/architecture/wayland_window_source_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_runtime_async_io_hook_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/async/mcpp.toml") +
+      read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
@@ -83,7 +85,7 @@ int main() {
       &win32_application, &wayland_header, &wayland_source, &wayland_core,
       &wayland_event_loop, &behavior, &win32_behavior, &wayland_behavior,
       &test_support, &ui_structure, &platform_structure, &win32_structure,
-      &wayland_structure, &previous, &xmake, &core_parity, &roadmap, &ledger_md,
+      &wayland_structure, &previous, &manifests, &core_parity, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -131,11 +133,11 @@ int main() {
       !contains(win32_structure, "win32_timer_wakeup.cpp") ||
       !contains(wayland_structure, "wayland_timer_wakeup.cpp") ||
       !contains(previous, "Step 640 async timer integration production behavior is next.") ||
-      !contains(xmake, "target(\"phase_g_runtime_async_timer_integration_test\")") ||
-      !contains(xmake, "target(\"phase_g_win32_timer_wakeup_test\")") ||
-      !contains(xmake, "target(\"phase_g_wayland_timer_wakeup_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_runtime_async_timer_integration_structure_test\")")) {
+      !contains(manifests, "\"runtime_async_timer_integration_test.cpp\"") ||
+      !contains(manifests, "\"win32_timer_wakeup_test.cpp\"") ||
+      !contains(manifests, "\"wayland_timer_wakeup_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_runtime_async_timer_integration_structure_test.cpp\"")) {
     return 8;
   }
   if (line_count(platform_header) > 70 || line_count(runtime_internal) > 260 ||

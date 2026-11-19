@@ -34,7 +34,8 @@ int main() {
   const std::string behavior = read_source("tests/ui/window_runtime_multi_window_event_routing_test.cpp");
   const std::string previous = read_source("tests/architecture/phase_f_multi_window_input_isolation_structure_test.cpp");
   const std::string ui_structure = read_source("tests/architecture/ui_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
@@ -42,7 +43,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&record, &state, &state_header, &private_header,
       &events, &lifecycle, &dispatch, &records, &activation, &run, &behavior,
-      &previous, &ui_structure, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &previous, &ui_structure, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(record, "std::optional<EventRoute> event_route") ||
@@ -72,8 +73,8 @@ int main() {
       line_count(dispatch) > 65 || line_count(records) > 145 ||
       line_count(activation) > 70 || line_count(run) > 141 ||
       line_count(behavior) > 210) return 8;
-  if (!contains(xmake, "target(\"window_runtime_multi_window_event_routing_test\")") ||
-      !contains(xmake, "target(\"phase_f_multi_window_event_routing_structure_test\")")) return 9;
+  if (!contains(manifests, "\"window_runtime_multi_window_event_routing_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_multi_window_event_routing_structure_test.cpp\"")) return 9;
   constexpr const char* completion =
       "Phase F Step 598 stores event route, result, and dispatch state per runtime window, keeps callback contexts bound to the originating record, and preserves root dispatch state across child events. Step 599 per-window theme isolation production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

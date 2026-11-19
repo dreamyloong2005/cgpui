@@ -39,7 +39,8 @@ int main() {
       "tests/architecture/win32_window_source_test.cpp");
   const std::string platform_structure = read_source(
       "tests/architecture/platform_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -48,7 +49,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &source, &native_header, &native_source, &application, &tree,
-      &behavior, &win32_structure, &platform_structure, &xmake, &roadmap,
+      &behavior, &win32_structure, &platform_structure, &manifests, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(header, "class Win32NativeMenuAcceleratorTable") ||
@@ -84,8 +85,8 @@ int main() {
   if (line_count(header) > 60 || line_count(source) > 130 ||
       line_count(application) > 170 || line_count(tree) > 130 ||
       line_count(behavior) > 130) return 8;
-  if (!contains(xmake, "target(\"win32_native_menu_accelerator_registration_test\")") ||
-      !contains(xmake, "target(\"phase_f_win32_native_menu_accelerator_registration_structure_test\")")) return 9;
+  if (!contains(manifests, "\"win32_native_menu_accelerator_registration_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_win32_native_menu_accelerator_registration_structure_test.cpp\"")) return 9;
   constexpr const char* completion =
       "Phase F Step 583 builds and transactionally owns a focused Win32 HACCEL table, shares recursive command ids with HMENU construction, translates supported Ctrl/Alt/Shift key-down accelerators before ordinary key dispatch, and preserves unsupported Win-key/key-up descriptors for diagnostics. Step 584 native menu command dispatch production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

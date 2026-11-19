@@ -35,7 +35,9 @@ int main() {
       read_source("tests/platform/win32_clipboard_test_lock.hpp");
   const std::string platform_structure =
       read_source("tests/architecture/platform_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml") +
+      read_source("packages/platform/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -46,7 +48,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &public_header, &defaults, &internal, &files, &behavior, &test_lock,
-      &platform_structure, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &platform_structure, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(public_header,
@@ -84,11 +86,11 @@ int main() {
       contains(behavior, "OpenClipboard(nullptr)")) return 13;
   if (!contains(platform_structure,
                 "\"src/platform/clipboard_win32_files.cpp\"") ||
-      !contains(xmake, "target(\"win32_clipboard_files_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_win32_clipboard_files_structure_test\")") ||
-      !contains(xmake,
-                "add_syslinks(\"shell32\", \"user32\", {public = true})")) {
+      !contains(manifests, "\"win32_clipboard_files_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_win32_clipboard_files_structure_test.cpp\"") ||
+      !contains(manifests,
+                "ldflags = [\"shell32.lib\", \"user32.lib\"]")) {
     return 7;
   }
   if (line_count(public_header) > 110 || line_count(defaults) > 80 ||

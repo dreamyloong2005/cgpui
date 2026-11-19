@@ -23,22 +23,24 @@ std::size_t line_count(const std::string& text) {
 }  // namespace
 
 int main() {
-  const std::string module = read_source("build/xmake/phase_j_stress_targets.lua");
-  const std::string root = read_source("xmake.lua");
+  const std::string module = read_source("tests/stress/mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
+  const std::string root = read_source("mcpp.toml");
   const std::string runner = read_source("tests/stress/phase_j_stress_runner.cpp");
   const std::string header = read_source("include/cgpui/ui/test_app.hpp");
   const std::string input = read_source("src/ui/test_app_input.cpp");
   const std::string manifest = read_source("scripts/ci/architecture-header-targets.txt");
   if (module.empty() || root.empty() || runner.empty() || header.empty() ||
       input.empty() || manifest.empty()) return 1;
-  if (!contains(root, "includes(\"build/xmake/phase_j_stress_targets.lua\")") ||
-      !contains(module, "target(\"phase_j_stress_runner\")") ||
-      !contains(module, "target(\"phase_j_stress_audit_test\")") ||
-      !contains(module, "target(\"phase_j_stress_structure_test\")")) return 2;
-  if (!contains(module, "tests/stress/phase_j_stress_runner.cpp") ||
-      !contains(module, "cgpui_ui") ||
+  if (!contains(root, "\"tests/stress\",") ||
+      !contains(module, "\"phase_j_stress_runner.cpp\"") ||
+      !contains(module, "\"phase_j_stress_audit_test.cpp\"") ||
+      !contains(module, "\"phase_j_stress_structure_test.cpp\"")) return 2;
+  if (!contains(module, "\"phase_j_stress_runner.cpp\"") ||
+      !contains(module, "cgpui.ui") ||
       !contains(manifest, "phase_j_stress_structure_test")) return 3;
-  if (line_count(runner) > 360 || line_count(module) > 40 ||
+  if (line_count(runner) > 360 || line_count(read_source("tests/stress/mcpp.toml")) > 40 ||
       line_count(header) > 145 || line_count(input) > 110) return 4;
   return 0;
 }

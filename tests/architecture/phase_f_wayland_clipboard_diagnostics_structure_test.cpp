@@ -40,7 +40,8 @@ int main() {
       read_source("tests/platform/wayland_clipboard_diagnostics_test.cpp");
   const std::string platform_structure =
       read_source("tests/architecture/platform_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -51,7 +52,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &public_header, &internal, &state_header, &state, &connection, &source,
-      &source_io, &behavior, &platform_structure, &xmake, &roadmap, &ledger_md,
+      &source_io, &behavior, &platform_structure, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const std::string* value : required) if (value->empty()) return 1;
   if (!contains(public_header, "enum class WaylandClipboardOperation") ||
@@ -76,9 +77,9 @@ int main() {
   if (!contains(platform_structure,
                 "clipboard_wayland_diagnostics_internal.hpp") ||
       !contains(platform_structure, "clipboard_wayland_diagnostics.cpp") ||
-      !contains(xmake, "target(\"wayland_clipboard_diagnostics_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_clipboard_diagnostics_structure_test\")")) {
+      !contains(manifests, "\"wayland_clipboard_diagnostics_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_clipboard_diagnostics_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(public_header) > 110 || line_count(internal) > 150 ||

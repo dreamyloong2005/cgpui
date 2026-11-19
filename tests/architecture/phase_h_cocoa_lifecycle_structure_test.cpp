@@ -76,16 +76,17 @@ int main() {
     return 3;
   }
 
-  const std::string xmake = read_source("xmake.lua");
-  const std::string module = read_source("build/xmake/phase_h_macos.lua");
-  const std::string targets = read_source("build/xmake/phase_h_structure_targets.lua");
-  if (missing(xmake, "includes(\"build/xmake/phase_h_macos.lua\")") ||
-      missing(xmake, "includes(\"build/xmake/phase_h_structure_targets.lua\")") ||
+  const std::string manifests = read_source("mcpp.toml");
+  const std::string module = read_source("packages/platform-macos/mcpp.toml") +
+      read_source("tests/platform/mcpp.toml");
+  const std::string targets = read_source("tests/architecture/mcpp.toml");
+  if (missing(manifests, "\"packages/platform-macos\",") ||
+      missing(manifests, "\"tests/architecture\",") ||
       module.empty() ||
-      missing(module, "target(\"macos_window_lifecycle_test\")") ||
-      missing(module, "add_files(path.join(os.projectdir(), \"src/platform/macos/*.mm\"))") ||
-      missing(module, "add_frameworks(\"AppKit\", \"QuartzCore\")") ||
-      targets.empty() || missing(targets, "target(\"phase_h_cocoa_lifecycle_structure_test\")")) {
+      missing(module, "\"macos/macos_*.mm\"") ||
+      missing(module, "\"../../src/platform/macos/*.mm\"") ||
+      missing(module, "frameworks = [\"AppKit\", \"CoreText\", \"UniformTypeIdentifiers\", \"QuartzCore\"]") ||
+      targets.empty() || missing(targets, "\"phase_h_cocoa_lifecycle_structure_test.cpp\"")) {
     return 6;
   }
 

@@ -6,7 +6,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -28,15 +28,15 @@ bool contains(const std::string& text, const char* value) {
 int main() {
   const std::string example =
       read_source("examples/api_parity/public_api_compatibility/main.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("examples/api_parity/mcpp.toml");
 
-  if (example.empty() || xmake.empty()) {
+  if (example.empty() || manifests.empty()) {
     return 1;
   }
-  if (!contains(xmake, "target(\"api_parity_public_api_compatibility\")") ||
+  if (!contains(manifests, "[targets.api_parity_public_api_compatibility]") ||
       !contains(
-          xmake,
-          "examples/api_parity/public_api_compatibility/main.cpp")) {
+          manifests,
+          "main = \"public_api_compatibility/main.cpp\"")) {
     return 2;
   }
 

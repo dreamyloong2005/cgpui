@@ -113,9 +113,9 @@ int test_structure_and_documentation() {
       read_source("include/cgpui/renderer/renderer.hpp");
   const std::string structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/renderer/mcpp.toml");
   if (header.empty() || source.empty() || aggregate.empty() ||
-      structure.empty() || xmake.empty()) {
+      structure.empty() || manifests.empty()) {
     return 40;
   }
   if (!contains(header, "struct SvgRasterizationRequest") ||
@@ -124,7 +124,7 @@ int test_structure_and_documentation() {
       !contains(aggregate, "cgpui/renderer/svg_rasterization.hpp") ||
       contains(aggregate, "plan_svg_rasterization(") ||
       !contains(structure, "src/renderer/svg_rasterization.cpp") ||
-      !contains(xmake, "target(\"svg_rasterization_plan_test\")")) {
+      !contains(manifests, "\"svg_rasterization_plan_test.cpp\"")) {
     return 41;
   }
 

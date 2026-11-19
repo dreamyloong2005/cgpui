@@ -47,9 +47,11 @@ std::string line_containing(const std::string& text, const char* anchor) {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("packages/renderer/build.mcpp");
   const std::string linux_backends =
-      read_source("build/xmake/phase_i_linux_backends.lua");
+      read_source("packages/platform-linux-wayland/build.mcpp") +
+      read_source("packages/platform-linux-wayland/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger = read_source("docs/gpui-complete-parity-ledger.md");
@@ -70,7 +72,7 @@ int main() {
   const std::string text_model_test =
       read_source("tests/ui/text_model_test.cpp");
 
-  if (xmake.empty() || linux_backends.empty() || roadmap.empty() || ledger.empty() ||
+  if (manifests.empty() || linux_backends.empty() || roadmap.empty() || ledger.empty() ||
       task_plan.empty() || findings.empty() || text_font_header.empty() ||
       text_font_source.empty() || text_shape_header.empty() ||
       text_shape_source.empty() || fallback_source.empty() ||
@@ -79,10 +81,10 @@ int main() {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"phase_d_font_fallback_audit_test\")") ||
+  if (!contains(manifests, "\"phase_d_font_fallback_audit_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_d_font_fallback_audit_test.cpp")) {
+          manifests,
+          "\"phase_d_font_fallback_audit_test.cpp\"")) {
     return 2;
   }
 
@@ -143,10 +145,10 @@ int main() {
       !contains(wayland_fontconfig,
                 "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
       !contains(wayland_fontconfig, "FcFontList") ||
-      !contains(xmake, "add_requires(\"fontconfig\"") ||
-      !contains(linux_backends, "has_package(\"fontconfig\")") ||
+      !contains(manifests, "\"fontconfig\"") ||
+      !contains(linux_backends, "\"fontconfig\"") ||
       !contains(linux_backends, "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
-      !contains(linux_backends, "add_packages(\"fontconfig\")")) {
+      !contains(linux_backends, "\"fontconfig\"")) {
     return 6;
   }
 

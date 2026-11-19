@@ -62,14 +62,15 @@ int main() {
     return 3;
   }
   const std::string module =
-      read_source("build/xmake/phase_i_linux_backends.lua");
+      read_source("tests/platform/mcpp.toml") +
+      read_source("tests/renderer/mcpp.toml");
   const std::string targets =
-      read_source("build/xmake/phase_i_structure_targets.lua");
-  if (!contains(module, "target(\"x11_window_lifecycle_test\")") ||
-      !contains(module, "target(\"x11_vulkan_surface_test\")") ||
-      !contains(module, "target(\"x11_scale_test\")") ||
+      read_source("tests/architecture/mcpp.toml");
+  if (!contains(module, "\"x11_window_lifecycle_test.cpp\"") ||
+      !contains(module, "\"x11_vulkan_surface_test.cpp\"") ||
+      !contains(module, "\"x11_scale_test.cpp\"") ||
       !contains(targets,
-                "target(\"phase_i_x11_lifecycle_structure_test\")")) {
+                "\"phase_i_x11_lifecycle_structure_test.cpp\"")) {
     return 4;
   }
   return 0;

@@ -37,7 +37,8 @@ int main() {
       "tests/architecture/win32_window_source_test.cpp");
   const std::string platform_structure = read_source(
       "tests/architecture/platform_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -46,7 +47,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &source, &state, &state_header, &application, &wayland,
-      &behavior, &win32_structure, &platform_structure, &xmake, &roadmap,
+      &behavior, &win32_structure, &platform_structure, &manifests, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(header, "class Win32NativeMenuTree") ||
@@ -80,8 +81,8 @@ int main() {
   if (line_count(header) > 50 || line_count(source) > 125 ||
       line_count(state) > 70 || line_count(application) > 190 ||
       line_count(behavior) > 130) return 8;
-  if (!contains(xmake, "target(\"win32_native_menu_tree_test\")") ||
-      !contains(xmake, "target(\"phase_f_win32_native_menu_tree_structure_test\")")) return 9;
+  if (!contains(manifests, "\"win32_native_menu_tree_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_win32_native_menu_tree_structure_test.cpp\"")) return 9;
   constexpr const char* completion =
       "Phase F Step 579 builds and owns recursive Win32 HMENU trees in a focused leaf, attaches installed menus to existing and future windows, preserves nested Unicode titles and separators, and keeps Wayland explicitly unsupported. Step 580 native menu check/radio/enabled state production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

@@ -7,7 +7,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -148,65 +148,21 @@ std::string read_win32_source() {
   return text;
 }
 
-std::string target_block(const std::string& xmake_text, const char* target_name) {
-  const std::string target_marker =
-      std::string("target(\"") + target_name + "\")";
-  const auto target_position = xmake_text.find(target_marker);
-  if (target_position == std::string::npos) {
+std::string toml_table(const std::string& manifest, const char* header) {
+  // The text of one TOML table: from its header to the next table header.
+  const auto begin = manifest.find(header);
+  if (begin == std::string::npos) {
     return {};
   }
-
-  const auto next_target_position = xmake_text.find("\ntarget(\"", target_position + 1);
-  const auto next_platform_position = xmake_text.find("\nif is_plat(", target_position + 1);
-  auto end_position = std::string::npos;
-  if (next_target_position != std::string::npos &&
-      next_platform_position != std::string::npos) {
-    end_position = std::min(next_target_position, next_platform_position);
-  } else if (next_target_position != std::string::npos) {
-    end_position = next_target_position;
-  } else if (next_platform_position != std::string::npos) {
-    end_position = next_platform_position;
-  }
-
-  return xmake_text.substr(
-      target_position,
-      end_position == std::string::npos
-          ? std::string::npos
-          : end_position - target_position);
+  const auto end = manifest.find("\n[", begin + 1);
+  return manifest.substr(
+      begin, end == std::string::npos ? std::string::npos : end - begin);
 }
 
-std::string platform_branch(const std::string& target_text, const char* platform_name) {
-  const std::string if_marker =
-      std::string("if is_plat(\"") + platform_name + "\") then";
-  const std::string elseif_marker =
-      std::string("elseif is_plat(\"") + platform_name + "\") then";
-
-  auto branch_position = target_text.find(if_marker);
-  if (branch_position == std::string::npos) {
-    branch_position = target_text.find(elseif_marker);
-  }
-  if (branch_position == std::string::npos) {
-    return {};
-  }
-
-  auto end_position = target_text.find("\n    elseif is_plat(", branch_position + 1);
-  const auto else_position = target_text.find("\n    else", branch_position + 1);
-  const auto end_marker_position = target_text.find("\n    end", branch_position + 1);
-  if (end_position == std::string::npos ||
-      (else_position != std::string::npos && else_position < end_position)) {
-    end_position = else_position;
-  }
-  if (end_position == std::string::npos ||
-      (end_marker_position != std::string::npos && end_marker_position < end_position)) {
-    end_position = end_marker_position;
-  }
-
-  return target_text.substr(
-      branch_position,
-      end_position == std::string::npos
-          ? std::string::npos
-          : end_position - branch_position);
-}
+constexpr const char* windows_test_table =
+    "[target.'cfg(os = \"windows\")'.test]";
+constexpr const char* windows_dependencies =
+    "[target.'cfg(os = \"windows\")'.dependencies]";
 
 } // namespace
 
@@ -824,145 +780,102 @@ int main() {
     return 93;
   }
 
-  const std::string xmake_text = read_source("xmake.lua");
-  if (xmake_text.empty()) {
+  const std::string platform_manifest = read_source("packages/platform-win32/mcpp.toml");
+  const std::string platform_tests = read_source("tests/platform/mcpp.toml");
+  const std::string renderer_tests = read_source("tests/renderer/mcpp.toml");
+  const std::string hello_manifest = read_source("examples/hello_window/mcpp.toml");
+  if (platform_manifest.empty() || platform_tests.empty() ||
+      renderer_tests.empty() || hello_manifest.empty()) {
     return 9;
   }
 
-  const std::string platform_target =
-      target_block(xmake_text, "cgpui_platform_win32");
-  if (platform_target.empty()) {
+  if (!contains(platform_manifest, "[targets.cgpui_platform_win32]")) {
     return 10;
   }
-  if (!contains(platform_target, "src/platform/win32/*.cpp")) {
+  if (!contains(platform_manifest, "\"../../src/platform/win32/*.cpp\"")) {
     return 11;
   }
-  if (!contains(platform_target, "cgpui_core") ||
-      !contains(platform_target, "cgpui_platform")) {
+  if (!contains(platform_manifest, "cgpui.core") ||
+      !contains(platform_manifest, "cgpui.platform")) {
     return 12;
   }
-  if (!contains(platform_target, "\"user32\"") ||
-      !contains(platform_target, "\"gdi32\"") ||
-      !contains(platform_target, "\"shell32\"") ||
-      !contains(platform_target, "\"ole32\"")) {
+  if (!contains(platform_manifest, "\"user32.lib\"") ||
+      !contains(platform_manifest, "\"gdi32.lib\"") ||
+      !contains(platform_manifest, "\"shell32.lib\"") ||
+      !contains(platform_manifest, "\"ole32.lib\"")) {
     return 13;
   }
 
-  const std::string input_target =
-      target_block(xmake_text, "win32_input_event_test");
-  if (input_target.empty()) {
-    return 14;
-  }
-  if (!contains(input_target, "tests/platform/win32_input_event_test.cpp")) {
-    return 15;
-  }
-  if (!contains(input_target, "cgpui_platform_win32")) {
+  // The Win32 platform tests are Windows-only programs of tests/platform,
+  // which links cgpui_platform_win32 on Windows.
+  const std::string platform_windows_tests =
+      toml_table(platform_tests, windows_test_table);
+  if (!contains(toml_table(platform_tests, windows_dependencies),
+                "cgpui.platform-win32")) {
     return 16;
   }
-  if (!contains(input_target, "add_tests(\"default\")")) {
-    return 17;
+  if (!contains(platform_windows_tests, "\"win32_input_event_test.cpp\"")) {
+    return 14;
   }
-
-  const std::string dpi_target =
-      target_block(xmake_text, "win32_dpi_scale_test");
-  if (dpi_target.empty()) {
+  if (!contains(platform_windows_tests, "\"win32_dpi_scale_test.cpp\"")) {
     return 33;
   }
-  if (!contains(dpi_target, "tests/platform/win32_dpi_scale_test.cpp")) {
-    return 34;
-  }
-  if (!contains(dpi_target, "cgpui_platform_win32")) {
-    return 35;
-  }
-  if (!contains(dpi_target, "add_tests(\"default\")")) {
-    return 36;
-  }
-
-  const std::string focus_target =
-      target_block(xmake_text, "win32_focus_event_test");
-  if (focus_target.empty()) {
+  if (!contains(platform_windows_tests, "\"win32_focus_event_test.cpp\"")) {
     return 40;
   }
-  if (!contains(focus_target, "tests/platform/win32_focus_event_test.cpp")) {
-    return 41;
-  }
-  if (!contains(focus_target, "cgpui_platform_win32")) {
-    return 42;
-  }
-  if (!contains(focus_target, "add_tests(\"default\")")) {
-    return 43;
-  }
-
-  const std::string text_input_target =
-      target_block(xmake_text, "win32_text_input_test");
-  if (text_input_target.empty()) {
+  if (!contains(platform_windows_tests, "\"win32_text_input_test.cpp\"")) {
     return 47;
-  }
-  if (!contains(text_input_target, "tests/platform/win32_text_input_test.cpp")) {
-    return 48;
-  }
-  if (!contains(text_input_target, "cgpui_platform_win32")) {
-    return 49;
   }
   if (line_count(win32_ole_drop_source) > 90 ||
       !contains(win32_ole_drop_source,
                 "Win32OleDropSource::QueryContinueDrag(") ||
       !contains(win32_ole_drop_source, "run_win32_ole_drag(")) return 90;
-  if (!contains(text_input_target, "add_tests(\"default\")")) {
-    return 50;
-  }
 
-  const std::string surface_target =
-      target_block(xmake_text, "win32_vulkan_surface_test");
-  if (surface_target.empty()) {
+  if (!contains(toml_table(renderer_tests, windows_test_table),
+                "\"win32_vulkan_surface_test.cpp\"")) {
     return 18;
   }
-  if (!contains(surface_target, "tests/renderer/win32_vulkan_surface_test.cpp")) {
-    return 19;
-  }
-  if (!contains(surface_target, "cgpui_platform_win32")) {
+  if (!contains(toml_table(renderer_tests, windows_dependencies),
+                "cgpui.platform-win32")) {
     return 20;
   }
-  if (!contains(surface_target, "cgpui_renderer_vulkan")) {
+  if (!contains(renderer_tests, "cgpui.renderer-vulkan")) {
     return 21;
   }
-  if (!contains(surface_target, "add_tests(\"default\")")) {
-    return 22;
-  }
 
-  const std::string hello_target =
-      target_block(xmake_text, "hello_window");
-  if (hello_target.empty()) {
+  if (!contains(hello_manifest, "[targets.hello_window]")) {
     return 23;
   }
-
   const std::string windows_branch =
-      platform_branch(hello_target, "windows");
+      toml_table(hello_manifest, windows_dependencies);
   if (windows_branch.empty()) {
     return 24;
   }
-  if (!contains(windows_branch, "cgpui_platform_win32")) {
+  if (!contains(windows_branch, "cgpui.platform-win32")) {
     return 25;
   }
-  if (!contains(windows_branch, "cgpui_renderer_vulkan")) {
+  if (!contains(windows_branch, "cgpui.renderer-vulkan")) {
     return 26;
   }
-  if (contains(windows_branch, "cgpui_platform_fallback") ||
-      contains(windows_branch, "cgpui_renderer_fallback")) {
+  if (contains(hello_manifest, "platform-fallback") ||
+      contains(hello_manifest, "renderer-fallback")) {
     return 27;
   }
-  if (!contains(windows_branch, "CGPUI_EXIT_AFTER_FIRST_FRAME") ||
-      !contains(windows_branch, "add_tests(\"windows_first_frame\"")) {
+  // Each smoke case is a program that sets the variables it needs.
+  const std::string windows_smokes = toml_table(hello_manifest, windows_test_table);
+  if (!contains(windows_smokes, "\"tests/windows_first_frame.cpp\"") ||
+      !contains(read_source("examples/hello_window/tests/windows_first_frame.cpp"),
+                "CGPUI_EXIT_AFTER_FIRST_FRAME")) {
     return 28;
   }
-  if (!contains(windows_branch, "CGPUI_RESIZE_AFTER_FIRST_FRAME") ||
-      !contains(windows_branch,
-                "add_tests(\"windows_resize_after_first_frame\"")) {
+  if (!contains(windows_smokes, "\"tests/windows_resize_after_first_frame.cpp\"") ||
+      !contains(read_source("examples/hello_window/tests/windows_resize_after_first_frame.cpp"),
+                "CGPUI_RESIZE_AFTER_FIRST_FRAME")) {
     return 29;
   }
-  if (!contains(windows_branch, "CGPUI_CLOSE_AFTER_FIRST_FRAME") ||
-      !contains(windows_branch,
-                "add_tests(\"windows_close_after_first_frame\"")) {
+  if (!contains(windows_smokes, "\"tests/windows_close_after_first_frame.cpp\"") ||
+      !contains(read_source("examples/hello_window/tests/windows_close_after_first_frame.cpp"),
+                "CGPUI_CLOSE_AFTER_FIRST_FRAME")) {
     return 30;
   }
 

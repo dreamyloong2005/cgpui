@@ -51,7 +51,8 @@ int main() {
     const auto submit = read("src/ui/render_view_commands.cpp");
     const auto recording =
         read("src/renderer/vulkan/vulkan_frame_draw_recording.cpp");
-    const auto module = read("build/xmake/capabilities/box_shadow_targets.lua");
+    const auto module = read("tests/renderer/mcpp.toml") +
+      read("tests/ui/mcpp.toml");
     require(has(effects, "struct BoxShadowDraw") && !has(effects, "vulkan"),
             "the shadow draw is a backend-neutral public leaf");
     require(has(fragment, "erf_approx(") && has(fragment, "1.0 - box") &&
@@ -67,9 +68,9 @@ int main() {
     require(has(submit, "frame.draw_box_shadow(") &&
                 has(recording, "VulkanFrameDrawResourceKind::box_shadow"),
             "shadow commands reach the frame and keep their draw order");
-    require(has(module, "tests/renderer/vulkan_box_shadow_pixel_test.cpp") &&
-                has(module, "tests/renderer/vulkan_box_shadow_geometry_test.cpp") &&
-                has(module, "tests/ui/box_shadow_submission_test.cpp"),
+    require(has(module, "\"vulkan_box_shadow_pixel_test.cpp\"") &&
+                has(module, "\"vulkan_box_shadow_geometry_test.cpp\"") &&
+                has(module, "\"box_shadow_submission_test.cpp\""),
             "the behavior tests are owned by the capability module");
     return 0;
   } catch (const std::exception& error) {

@@ -51,7 +51,8 @@ int main() {
   const std::string previous = read_source(
       "tests/architecture/phase_g_png_jpeg_decode_structure_test.cpp");
   const std::string stb = read_source("third_party/stb/stb_image.h");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/assets/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -66,7 +67,7 @@ int main() {
   const std::string* required[]{
       &header, &image_header, &internal, &metadata, &decoder, &image_decoder,
       &format_internal, &format_source, &behavior, &prelude, &cleanliness,
-      &inventory, &previous, &stb, &xmake, &vocabulary, &core, &roadmap,
+      &inventory, &previous, &stb, &manifests, &vocabulary, &core, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -116,8 +117,8 @@ int main() {
       !contains(inventory, "src/renderer/image_format_detection.cpp") ||
       !contains(previous, "Step 653 GIF ") ||
       !contains(previous, "decode boundary production behavior is next.") ||
-      !contains(xmake, "target(\"phase_g_gif_decode_test\")") ||
-      !contains(xmake, "target(\"phase_g_gif_decode_structure_test\")")) {
+      !contains(manifests, "\"gif_decode_test.cpp\"") ||
+      !contains(manifests, "\"phase_g_gif_decode_structure_test.cpp\"")) {
     return 7;
   }
   if (line_count(header) > 65 || line_count(internal) > 35 ||

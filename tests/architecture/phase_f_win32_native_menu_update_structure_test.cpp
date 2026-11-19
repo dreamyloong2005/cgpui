@@ -30,7 +30,8 @@ int main() {
       "tests/platform/win32_native_menu_update_test.cpp");
   const std::string state_structure = read_source(
       "tests/architecture/phase_f_win32_native_menu_state_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -38,7 +39,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &tree, &state, &application, &behavior, &state_structure, &xmake,
+      &tree, &state, &application, &behavior, &state_structure, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(tree, "if (model.items.empty()) return Win32NativeMenuTree{}") ||
@@ -55,8 +56,8 @@ int main() {
       !contains(behavior, "GetMenu(first_hwnd) != nullptr") ||
       !contains(behavior, "future_window")) return 4;
   if (!contains(state_structure, "MFT_RADIOCHECK") ||
-      !contains(xmake, "target(\"win32_native_menu_replacement_test\")") ||
-      !contains(xmake, "target(\"phase_f_win32_native_menu_replacement_structure_test\")")) return 5;
+      !contains(manifests, "\"win32_native_menu_update_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_win32_native_menu_update_structure_test.cpp\"")) return 5;
   if (line_count(tree) > 125 || line_count(state) > 70 ||
       line_count(application) > 190 || line_count(behavior) > 130) return 6;
   constexpr const char* completion =

@@ -86,8 +86,9 @@ int test_structure_and_documentation() {
       read_source("src/renderer/svg_rasterization_lunasvg.cpp");
   const std::string structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
-  if (header.empty() || backend.empty() || structure.empty() || xmake.empty()) {
+  const std::string manifests = read_source("packages/renderer/mcpp.toml") +
+      read_source("tests/renderer/mcpp.toml");
+  if (header.empty() || backend.empty() || structure.empty() || manifests.empty()) {
     return 30;
   }
   if (!contains(header, "struct SvgRasterizationResult") ||
@@ -95,8 +96,8 @@ int test_structure_and_documentation() {
       !contains(backend, "lunasvg::Document::loadFromData(") ||
       !contains(backend, "convertToRGBA()") ||
       !contains(structure, "src/renderer/svg_rasterization_lunasvg.cpp") ||
-      !contains(xmake, "add_requires(\"lunasvg\")") ||
-      !contains(xmake, "target(\"svg_lunasvg_rasterization_test\")")) {
+      !contains(manifests, "vendor.lunasvg = { path = \"../../third_party/lunasvg\" }") ||
+      !contains(manifests, "\"svg_lunasvg_rasterization_test.cpp\"")) {
     return 31;
   }
 

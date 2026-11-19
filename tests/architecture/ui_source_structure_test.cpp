@@ -214,7 +214,8 @@ int main() {
       read_source("include/cgpui/ui/text_rich_text_syntax.hpp");
   const std::string text_rich_text_syntax_source =
       read_source("src/ui/text_rich_text_syntax.cpp");
-  const std::string xmake_source = read_source("xmake.lua");
+  const std::string library_manifests = read_source("packages/renderer/mcpp.toml") +
+      read_source("packages/ui/mcpp.toml");
   if (!contains(text_shaping_backend_source,
                 "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND") ||
       !contains(text_shaping_internal_header, "TextShapingRequest") ||
@@ -332,10 +333,10 @@ int main() {
                 "append_emoji_presentation_color_glyph_plan(") ||
       !contains(fallback_source, "mark_emoji_presentation_selector_span(") ||
       !contains(fallback_source, "append_color_glyph_plan(") ||
-      !contains(xmake_source,
-                "add_files(\"src/ui/text_shaping_harfbuzz.cpp\")") ||
-      !contains(xmake_source,
-                "remove_files(\"src/ui/text_shaping_harfbuzz.cpp\")") ||
+      !contains(library_manifests,
+                "\"../../src/ui/text_shaping_harfbuzz.cpp\"") ||
+      !contains(library_manifests,
+                "\"!../../src/ui/text_shaping_harfbuzz.cpp\"") ||
       contains(text_shape_source, "run.glyphs.push_back")) {
     return 143;
   }
@@ -821,9 +822,14 @@ int main() {
       contains(text_font_header, "faces_.push_back") ||
       contains(text_font_header, "generic_fallback_families_.push_back") ||
       contains(text_font_header, "std::find(") ||
-      count_occurrences(xmake_source,
-                        "add_files(\"src/ui/text_font.cpp\")") < 2 ||
-      !contains(xmake_source, "remove_files(\"src/ui/text_font.cpp\")")) {
+      // text_font.cpp is compiled once, by packages/platform (mcpp links a
+      // dependency's objects, so xmake's second copy in the renderer would
+      // be a duplicate definition); renderer and ui depend on platform.
+      count_occurrences(read_source("packages/platform/mcpp.toml"),
+                        "\"../../src/ui/text_font.cpp\"") != 1 ||
+      contains(read_source("packages/renderer/mcpp.toml"),
+               "\"../../src/ui/text_font.cpp\"") ||
+      !contains(library_manifests, "\"!../../src/ui/text_font.cpp\"")) {
     return 150;
   }
 

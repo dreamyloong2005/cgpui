@@ -28,7 +28,7 @@ bool hello_window_uses_full_demo_smoke_flow(std::string_view text) {
          text.find("demo smoke flow did not") != std::string_view::npos;
 }
 
-bool xmake_has_platform_demo_smoke_tests(std::string_view text) {
+bool manifest_has_platform_demo_smoke_tests(std::string_view text) {
   return text.find("windows_demo_smoke_flow") != std::string_view::npos &&
          text.find("linux_demo_smoke_flow") != std::string_view::npos &&
          text.find("CGPUI_DEMO_SMOKE_FLOW") != std::string_view::npos &&
@@ -38,7 +38,7 @@ bool xmake_has_platform_demo_smoke_tests(std::string_view text) {
 } // namespace
 
 int main() {
-  std::ifstream source("examples/hello_window/main.cpp");
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/examples/hello_window/main.cpp");
   if (!source) {
     source.open("../../../../examples/hello_window/main.cpp");
   }
@@ -208,7 +208,8 @@ int main() {
     return 52;
   }
 
-  std::ifstream platform_source("include/cgpui/platform/platform_window.hpp");
+  std::ifstream platform_source(
+      std::string{CGPUI_SOURCE_ROOT} + "/include/cgpui/platform/platform_window.hpp");
   if (!platform_source) {
     platform_source.open(
         "../../../../include/cgpui/platform/platform_window.hpp");
@@ -225,18 +226,20 @@ int main() {
     return 17;
   }
 
-  std::ifstream xmake_source("xmake.lua");
-  if (!xmake_source) {
-    xmake_source.open("../../../../xmake.lua");
+  // hello_window's smoke cases: its manifest lists them, and each case
+  // program sets the environment variables it runs under.
+  std::string manifest_text;
+  for (const char* path : {"examples/hello_window/mcpp.toml",
+                           "examples/hello_window/tests/windows_demo_smoke_flow.cpp",
+                           "examples/hello_window/tests/linux_demo_smoke_flow.cpp"}) {
+    std::ifstream manifest(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
+    if (!manifest) {
+      return 53;
+    }
+    manifest_text.append(std::istreambuf_iterator<char>(manifest),
+                      std::istreambuf_iterator<char>());
   }
-  if (!xmake_source) {
-    return 53;
-  }
-
-  const std::string xmake_text{
-      std::istreambuf_iterator<char>(xmake_source),
-      std::istreambuf_iterator<char>()};
-  if (!xmake_has_platform_demo_smoke_tests(xmake_text)) {
+  if (!manifest_has_platform_demo_smoke_tests(manifest_text)) {
     return 54;
   }
 

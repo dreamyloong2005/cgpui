@@ -49,9 +49,11 @@ int main() {
       "tests/platform/wayland_atspi_dbus_object_test.cpp");
   const std::string test_support = read_source(
       "tests/platform/wayland_atspi_dbus_test_support.hpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("packages/platform-linux-atspi/build.mcpp") +
+      read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string linux_backends =
-      read_source("build/xmake/phase_i_linux_backends.lua");
+      read_source("packages/platform-linux-wayland/build.mcpp");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source(
@@ -63,7 +65,7 @@ int main() {
   const std::string* required[]{
       &object_header, &object, &dbus_header, &dbus, &messages_header,
       &messages, &adapter_header, &adapter, &services, &window, &behavior,
-      &test_support, &xmake, &linux_backends, &roadmap, &ledger_md,
+      &test_support, &manifests, &linux_backends, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -99,12 +101,12 @@ int main() {
       !contains(behavior, "org.freedesktop.DBus.Introspectable")) {
     return 5;
   }
-  if (!contains(xmake, "add_requires(\"dbus\", {system = true})") ||
-      !contains(xmake, "target(\"phase_g_wayland_atspi_dbus_object_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_wayland_atspi_dbus_object_structure_test\")") ||
+  if (!contains(manifests, "\"dbus-1\"") ||
+      !contains(manifests, "\"wayland_atspi_dbus_object_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_wayland_atspi_dbus_object_structure_test.cpp\"") ||
       !contains(linux_backends,
-                "add_packages(\"wayland\", \"dbus\", \"libxkbcommon\")")) {
+                "\"wayland-client\", \"wayland-cursor\", \"dbus-1\", \"xkbcommon\"")) {
     return 6;
   }
   if (contains(services, "#include <dbus/dbus.h>") ||

@@ -57,7 +57,8 @@ int main() {
         read("src/platform/linux/wayland_protocol_xdg_toplevel_interactive_internal.hpp");
     const auto registered =
         read("src/platform/linux/wayland_window_registered_title_bar.cpp");
-    const auto module = read("build/xmake/capabilities/client_title_bar_targets.lua");
+    const auto module = read("tests/platform/mcpp.toml") +
+      read("tests/ui/mcpp.toml");
     require(lines(core_leaf) <= 45 && has(core_leaf, "enum class WindowTitleBarMode") &&
             has(core_leaf, "enum class WindowControlArea") &&
             has(core_leaf, "struct WindowControlRegion") &&
@@ -93,10 +94,10 @@ int main() {
             has(wayland, "xdg_toplevel_show_window_menu(") && lines(registered) <= 25 &&
             has(registered, "RegisteredWaylandWindow::frame_metrics("),
             "Wayland client title bar and its protocol requests are focused modules");
-    require(has(module, "tests/platform/win32_client_title_bar_test.cpp") &&
-            has(module, "tests/platform/wayland_client_title_bar_test.cpp") &&
-            has(module, "tests/ui/window_control_region_test.cpp") &&
-            has(module, "is_plat(\"windows\")") && has(module, "is_plat(\"linux\")"),
+    require(has(module, "\"win32_client_title_bar_test.cpp\"") &&
+            has(module, "\"wayland_client_title_bar_test.cpp\"") &&
+            has(module, "\"window_control_region_test.cpp\"") &&
+            has(module, "[target.'cfg(os = \"windows\")'.test]") && has(module, "[target.'cfg(os = \"linux\")'.test]"),
             "client title bar tests live in the capability module, guarded by platform");
     return 0;
   } catch (const std::exception& error) {

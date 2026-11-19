@@ -25,8 +25,9 @@ int main() {
   const std::string opacity = read_source(
       "examples/api_parity/public_opacity_example/main.cpp");
   const std::string pin = read_source("docs/gpui-upstream-pinned-revision.md");
-  const std::string xmake = read_source("xmake.lua");
-  if (animation.empty() || opacity.empty() || pin.empty() || xmake.empty()) {
+  const std::string manifests = read_source("examples/api_parity/mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml");
+  if (animation.empty() || opacity.empty() || pin.empty() || manifests.empty()) {
     return 1;
   }
 
@@ -51,9 +52,9 @@ int main() {
   if (!contains(pin, "examples/animation.rs") ||
       !contains(pin, "examples/opacity.rs") ||
       !contains(pin, "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0") ||
-      !contains(xmake, "target(\"api_parity_public_animation_example\")") ||
-      !contains(xmake, "target(\"api_parity_public_opacity_example\")") ||
-      !contains(xmake, "target(\"phase_g_official_animation_examples_test\")")) {
+      !contains(manifests, "[targets.api_parity_public_animation_example]") ||
+      !contains(manifests, "[targets.api_parity_public_opacity_example]") ||
+      !contains(manifests, "\"phase_g_official_animation_examples_test.cpp\"")) {
     return 4;
   }
 

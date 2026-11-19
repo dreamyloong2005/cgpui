@@ -34,7 +34,8 @@ int main() {
       "tests/api_parity/phase_g_official_animation_examples_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_style_interpolation_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("examples/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string pin = read_source("docs/gpui-upstream-pinned-revision.md");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
@@ -48,7 +49,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &animation, &opacity, &behavior, &previous, &xmake, &pin, &vocabulary,
+      &animation, &opacity, &behavior, &previous, &manifests, &pin, &vocabulary,
       &core, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -79,10 +80,10 @@ int main() {
       !contains(previous, "Step 650 ") ||
       !contains(previous, "official animation and opacity examples") ||
       !contains(pin, "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0") ||
-      !contains(xmake, "target(\"api_parity_public_animation_example\")") ||
-      !contains(xmake, "target(\"api_parity_public_opacity_example\")") ||
-      !contains(xmake,
-                "target(\"phase_g_animation_examples_structure_test\")")) {
+      !contains(manifests, "[targets.api_parity_public_animation_example]") ||
+      !contains(manifests, "[targets.api_parity_public_opacity_example]") ||
+      !contains(manifests,
+                "\"phase_g_animation_examples_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(animation) > 140 || line_count(opacity) > 145 ||

@@ -31,29 +31,33 @@ int main() {
       "tests/architecture/phase_i_final_closeout_structure_test.cpp");
   const std::string api =
       read_source("tests/api_parity/phase_i_final_closeout_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string closeout =
-      read_source("build/xmake/phase_i_closeout_targets.lua");
+      read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml") +
+      read_source("tests/architecture/build.mcpp");
   const std::string manifest =
       read_source("scripts/ci/architecture-header-targets.txt");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string* required[]{&self, &api, &xmake, &closeout, &manifest,
+  const std::string* required[]{&self, &api, &manifests, &closeout, &manifest,
                                 &ledger_json};
   for (const auto* source : required) {
     if (source->empty()) return 1;
   }
 
-  if (!contains(xmake, "includes(\"build/xmake/phase_i_closeout_targets.lua\")") ||
-      contains(xmake, "target(\"phase_i_final_closeout_test\")") ||
-      contains(xmake, "target(\"phase_i_final_closeout_structure_test\")") ||
-      !contains(closeout, "target(\"phase_i_final_closeout_test\")") ||
-      !contains(closeout, "tests/api_parity/phase_i_final_closeout_test.cpp") ||
+  if (!contains(manifests, "\"tests/architecture\",") ||
+      contains(read_source("mcpp.toml"), "\"phase_i_final_closeout_test.cpp\"") ||
+      contains(read_source("mcpp.toml"), "\"phase_i_final_closeout_structure_test.cpp\"") ||
+      !contains(closeout, "\"phase_i_final_closeout_test.cpp\"") ||
+      !contains(closeout, "\"phase_i_final_closeout_test.cpp\"") ||
       !contains(closeout,
-                "target(\"phase_i_final_closeout_structure_test\")") ||
+                "\"phase_i_final_closeout_structure_test.cpp\"") ||
       !contains(closeout,
-                "tests/architecture/phase_i_final_closeout_structure_test.cpp") ||
-      !contains(closeout, "CGPUI_SOURCE_ROOT")) {
+                "\"phase_i_final_closeout_structure_test.cpp\"") ||
+      !contains(closeout, "source_root_define(2)")) {
     return 2;
   }
 
@@ -61,7 +65,7 @@ int main() {
                 "phase_i_final_closeout_structure_test|tests/architecture/"
                 "phase_i_final_closeout_structure_test.cpp") ||
       line_count(self) > 100 || line_count(api) > 190 ||
-      line_count(closeout) > 30) {
+      line_count(read_source("tests/architecture/mcpp.toml")) > 240) {
     return 3;
   }
 

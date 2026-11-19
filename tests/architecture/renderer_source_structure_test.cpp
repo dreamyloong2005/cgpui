@@ -989,30 +989,33 @@ int main(int argc, char** argv) {
       return 87;
     }
   }
-  const std::string pixel_output_xmake = read_source("xmake.lua");
+  const std::string pixel_output_manifest = read_source("tests/renderer/mcpp.toml");
   const std::string pixel_image_vertex_shader =
       read_source("src/renderer/vulkan/shaders/image.vert.glsl");
   const std::string pixel_text_vertex_shader =
       read_source("src/renderer/vulkan/shaders/text.vert.glsl");
   const std::string pixel_rounded_vertex_shader =
       read_source("src/renderer/vulkan/shaders/rounded_rect.vert.glsl");
+  // Wayland pixel capture is a Linux test program; the Vulkan pixel cases
+  // are Windows test programs (tests/renderer/mcpp.toml).
+  const std::size_t linux_tests =
+      pixel_output_manifest.find("[target.'cfg(os = \"linux\")'.test]");
   const std::size_t wayland_pixel_target =
-      pixel_output_xmake.find("target(\"wayland_frame_pixel_capture_test\")");
-  const std::size_t macos_platform_block =
-      pixel_output_xmake.find("if is_plat(\"macosx\") then");
-  if (wayland_pixel_target == std::string::npos ||
-      macos_platform_block == std::string::npos ||
-      wayland_pixel_target > macos_platform_block ||
-      !contains(pixel_output_xmake, "for _, pixel_case in ipairs({") ||
-      !contains(pixel_output_xmake,
-                "target(\"vulkan_\" .. pixel_case .. \"_pixel_test\")") ||
-      !contains(pixel_output_xmake, "\"text\",") ||
-      !contains(pixel_output_xmake, "\"rounded_rect\",") ||
-      !contains(pixel_output_xmake, "\"image\",") ||
-      !contains(pixel_output_xmake, "\"clip\",") ||
-      !contains(pixel_output_xmake, "\"transform\",") ||
-      !contains(pixel_output_xmake, "\"opacity\",") ||
-      !contains(pixel_output_xmake, "\"resize\"") ||
+      pixel_output_manifest.find("\"wayland_frame_pixel_capture_test.cpp\"");
+  const std::size_t windows_tests =
+      pixel_output_manifest.find("[target.'cfg(os = \"windows\")'.test]");
+  bool pixel_cases_registered = windows_tests != std::string::npos;
+  for (const char* pixel_case : {"text", "rounded_rect", "image", "clip",
+                                 "transform", "opacity", "resize"}) {
+    const std::size_t position = pixel_output_manifest.find(
+        std::string{"\"vulkan_"} + pixel_case + "_pixel_test.cpp\"");
+    pixel_cases_registered = pixel_cases_registered &&
+        position != std::string::npos && position > windows_tests;
+  }
+  if (linux_tests == std::string::npos ||
+      wayland_pixel_target == std::string::npos ||
+      wayland_pixel_target < linux_tests ||
+      !pixel_cases_registered ||
       !contains(pixel_image_vertex_shader, "normalized.y * 2.0 - 1.0") ||
       !contains(pixel_text_vertex_shader, "normalized.y * 2.0 - 1.0") ||
       !contains(pixel_rounded_vertex_shader,

@@ -39,7 +39,8 @@ struct SourceEvidence {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/renderer/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -48,40 +49,39 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
-  if (xmake.empty() || roadmap.empty() || ledger_md.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty()) {
     return 1;
   }
 
   if (!contains(
-          xmake,
-          "target(\"phase_e_clip_composition_integration_closeout_test\")") ||
+          manifests,
+          "\"phase_e_clip_composition_integration_closeout_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/"
-          "phase_e_clip_composition_integration_closeout_test.cpp")) {
+          manifests,
+          "\"phase_e_clip_composition_integration_closeout_test.cpp\"")) {
     return 2;
   }
 
   constexpr std::array target_evidence{
-      "target(\"vulkan_rounded_rect_geometry_test\")",
-      "target(\"vulkan_rounded_rect_buffer_test\")",
-      "target(\"vulkan_rounded_rect_pipeline_test\")",
-      "target(\"vulkan_rounded_rect_draw_recording_test\")",
-      "target(\"vulkan_rounded_rect_antialiasing_test\")",
-      "target(\"vulkan_rounded_rect_radii_test\")",
-      "target(\"vulkan_rounded_rect_stroke_test\")",
-      "target(\"vulkan_rounded_rect_fill_variants_test\")",
-      "target(\"vulkan_clip_stack_recording_test\")",
-      "target(\"vulkan_nested_opacity_test\")",
-      "target(\"vulkan_solid_rect_geometry_test\")",
-      "target(\"vulkan_composed_transform_test\")",
-      "target(\"vulkan_transform_clip_interaction_test\")",
-      "target(\"vulkan_stable_draw_order_test\")",
-      "target(\"vulkan_layer_ordering_test\")",
+      "\"vulkan_rounded_rect_geometry_test.cpp\"",
+      "\"vulkan_rounded_rect_buffer_test.cpp\"",
+      "\"vulkan_rounded_rect_pipeline_test.cpp\"",
+      "\"vulkan_rounded_rect_draw_recording_test.cpp\"",
+      "\"vulkan_rounded_rect_antialiasing_test.cpp\"",
+      "\"vulkan_rounded_rect_radii_test.cpp\"",
+      "\"vulkan_rounded_rect_stroke_test.cpp\"",
+      "\"vulkan_rounded_rect_fill_variants_test.cpp\"",
+      "\"vulkan_clip_stack_recording_test.cpp\"",
+      "\"vulkan_nested_opacity_test.cpp\"",
+      "\"vulkan_solid_rect_geometry_test.cpp\"",
+      "\"vulkan_composed_transform_test.cpp\"",
+      "\"vulkan_transform_clip_interaction_test.cpp\"",
+      "\"vulkan_stable_draw_order_test.cpp\"",
+      "\"vulkan_layer_ordering_test.cpp\"",
   };
   for (std::size_t index = 0; index < target_evidence.size(); ++index) {
-    if (!contains(xmake, target_evidence[index])) {
+    if (!contains(manifests, target_evidence[index])) {
       return 10 + static_cast<int>(index);
     }
   }

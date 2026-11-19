@@ -35,7 +35,8 @@ int main() {
       read_source("tests/ui/window_runtime_scale_diagnostics_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_f_ime_diagnostics_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -45,7 +46,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&event_header, &diagnostic_header,
-      &helper_header, &helper, &root, &child, &behavior, &previous, &xmake,
+      &helper_header, &helper, &root, &child, &behavior, &previous, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(event_header, "window_resized") ||
@@ -71,9 +72,9 @@ int main() {
       line_count(helper_header) > 20 || line_count(helper) > 30 ||
       line_count(root) > 40 || line_count(child) > 105 ||
       line_count(behavior) > 65) return 6;
-  if (!contains(xmake, "target(\"window_runtime_scale_diagnostics_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_scale_diagnostics_structure_test\")")) return 7;
+  if (!contains(manifests, "\"window_runtime_scale_diagnostics_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_scale_diagnostics_structure_test.cpp\"")) return 7;
   constexpr const char* completion =
       "Phase F Step 607 records root and child window resize-scale diagnostics with framebuffer and DPI snapshots, and verifies 64 scale changes retain the newest bounded 32-event sequence. Step 608 timer wakeup diagnostics and stress production behavior is next.";
   const std::string* documents[]{

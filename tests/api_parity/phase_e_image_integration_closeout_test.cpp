@@ -39,7 +39,8 @@ struct SourceEvidence {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/renderer/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -48,30 +49,30 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
-  if (xmake.empty() || roadmap.empty() || ledger_md.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty()) {
     return 1;
   }
 
-  if (!contains(xmake,
-                "target(\"phase_e_image_integration_closeout_test\")") ||
+  if (!contains(manifests,
+                "\"phase_e_image_integration_closeout_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_e_image_integration_closeout_test.cpp")) {
+          manifests,
+          "\"phase_e_image_integration_closeout_test.cpp\"")) {
     return 2;
   }
 
   constexpr std::array target_evidence{
-      "target(\"vulkan_image_texture_resources_test\")",
-      "target(\"vulkan_image_texture_upload_test\")",
-      "target(\"vulkan_image_texture_descriptor_test\")",
-      "target(\"vulkan_image_draw_recording_test\")",
-      "target(\"vulkan_image_tint_opacity_test\")",
-      "target(\"vulkan_image_texture_cache_test\")",
-      "target(\"vulkan_image_texture_invalidation_test\")",
+      "\"vulkan_image_texture_resources_test.cpp\"",
+      "\"vulkan_image_texture_upload_test.cpp\"",
+      "\"vulkan_image_texture_descriptor_test.cpp\"",
+      "\"vulkan_image_draw_recording_test.cpp\"",
+      "\"vulkan_image_tint_opacity_test.cpp\"",
+      "\"vulkan_image_texture_cache_test.cpp\"",
+      "\"vulkan_image_texture_invalidation_test.cpp\"",
   };
   for (std::size_t index = 0; index < target_evidence.size(); ++index) {
-    if (!contains(xmake, target_evidence[index])) {
+    if (!contains(manifests, target_evidence[index])) {
       return 10 + static_cast<int>(index);
     }
   }

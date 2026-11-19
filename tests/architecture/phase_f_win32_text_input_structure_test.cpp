@@ -48,7 +48,8 @@ int main() {
       read_source("src/platform/win32/win32_window_internal.hpp");
   const std::string behavior = read_source(
       "tests/platform/win32_text_input_production_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -59,7 +60,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &decoder_header, &decoder, &proc, &main_proc, &keyboard_proc,
-      &window_text, &window_events, &window_internal, &behavior, &xmake,
+      &window_text, &window_events, &window_internal, &behavior, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -89,9 +90,9 @@ int main() {
       !contains(behavior, "WM_SYSCHAR") ||
       !contains(behavior, "0xD83D") || !contains(behavior, "0xDE00") ||
       !contains(behavior, "VK_BACK") || !contains(behavior, "0x110000") ||
-      !contains(xmake, "target(\"win32_text_input_production_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_win32_text_input_structure_test\")")) {
+      !contains(manifests, "\"win32_text_input_production_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_win32_text_input_structure_test.cpp\"")) {
     return 4;
   }
   if (line_count(decoder_header) > 55 || line_count(decoder) > 115 ||

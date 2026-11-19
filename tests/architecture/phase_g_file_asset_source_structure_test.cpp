@@ -39,7 +39,8 @@ int main() {
       read_source("tests/assets/file_asset_source_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_animation_examples_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/assets/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -53,7 +54,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &error, &internal, &path, &source, &prelude, &cleanliness,
-      &behavior, &previous, &xmake, &vocabulary, &core, &roadmap, &ledger_md,
+      &behavior, &previous, &manifests, &vocabulary, &core, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -89,9 +90,9 @@ int main() {
       !contains(prelude, "cgpui/core/asset_source.hpp")) return 6;
   if (!contains(previous, "Step 651 file-backed asset loading ") ||
       !contains(previous, "production behavior is next.") ||
-      !contains(xmake, "target(\"phase_g_file_asset_source_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_file_asset_source_structure_test\")")) {
+      !contains(manifests, "\"file_asset_source_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_file_asset_source_structure_test.cpp\"")) {
     return 7;
   }
   if (line_count(header) > 65 || line_count(internal) > 20 ||

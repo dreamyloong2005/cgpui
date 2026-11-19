@@ -134,7 +134,7 @@ int test_phase_e_glyph_atlas_production_resources() {
 }
 
 int test_phase_e_glyph_atlas_production_structure_docs() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string glyph_atlas =
       read_source("include/cgpui/renderer/glyph_atlas.hpp");
   const std::string production_header =
@@ -152,16 +152,16 @@ int test_phase_e_glyph_atlas_production_structure_docs() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
 
-  if (xmake.empty() || glyph_atlas.empty() || production_header.empty() ||
+  if (manifests.empty() || glyph_atlas.empty() || production_header.empty() ||
       production_source.empty() || structure.empty() || roadmap.empty() ||
       ledger_md.empty() || ledger_json.empty() || task_plan.empty() ||
       findings.empty()) {
     return 30;
   }
 
-  if (!contains(xmake, "target(\"phase_e_glyph_atlas_production_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_e_glyph_atlas_production_test.cpp")) {
+  if (!contains(manifests, "\"phase_e_glyph_atlas_production_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_e_glyph_atlas_production_test.cpp\"")) {
     return 31;
   }
 

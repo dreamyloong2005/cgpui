@@ -55,7 +55,8 @@ int main() {
     const auto blur = read("src/renderer/vulkan/shaders/backdrop_blur.frag.glsl");
     const auto binaries =
         read("src/renderer/vulkan/vulkan_backdrop_blur_shader_binaries.cpp");
-    const auto module = read("build/xmake/capabilities/backdrop_blur_targets.lua");
+    const auto module = read("tests/renderer/mcpp.toml") +
+      read("tests/ui/mcpp.toml");
     require(has(effects, "if (backdrops.empty()) {") &&
                 has(effects, "vulkan_prepare_backdrop_blur_resources("),
             "offscreen resources are created only for frames with a backdrop");
@@ -67,9 +68,9 @@ int main() {
             "without support the backdrop falls back to the tint only");
     require(has(blur, "push_constants.direction") && has(binaries, "glslc -O"),
             "the blur is separable and its SPIR-V records how it was generated");
-    require(has(module, "tests/renderer/vulkan_backdrop_blur_pixel_test.cpp") &&
-                has(module, "tests/renderer/vulkan_backdrop_blur_plan_test.cpp") &&
-                has(module, "tests/ui/backdrop_blur_submission_test.cpp"),
+    require(has(module, "\"vulkan_backdrop_blur_pixel_test.cpp\"") &&
+                has(module, "\"vulkan_backdrop_blur_plan_test.cpp\"") &&
+                has(module, "\"backdrop_blur_submission_test.cpp\""),
             "the behavior tests are owned by the capability module");
     return 0;
   } catch (const std::exception& error) {

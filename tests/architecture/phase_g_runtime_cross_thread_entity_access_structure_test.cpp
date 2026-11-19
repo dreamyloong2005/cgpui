@@ -53,7 +53,8 @@ int main() {
       read_source("tests/header_cleanliness/ui_header_cleanliness.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_runtime_async_timer_integration_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/async/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
@@ -69,7 +70,7 @@ int main() {
       &public_header, &async_header, &templates, &runtime_header,
       &runtime_internal, &queue_internal, &queue_source, &drain_source,
       &core_source, &scheduling, &shutdown, &behavior, &ui_structure,
-      &header_cleanliness, &previous, &xmake, &vocabulary, &core_parity,
+      &header_cleanliness, &previous, &manifests, &vocabulary, &core_parity,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -117,10 +118,10 @@ int main() {
       !contains(header_cleanliness, "CrossThreadEntity<TestModel>") ||
       !contains(previous,
                 "Step 641 cross-thread entity \"") ||
-      !contains(xmake,
-                "target(\"phase_g_runtime_cross_thread_entity_access_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_runtime_cross_thread_entity_access_structure_test\")")) {
+      !contains(manifests,
+                "\"runtime_cross_thread_entity_access_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_runtime_cross_thread_entity_access_structure_test.cpp\"")) {
     return 8;
   }
   if (line_count(public_header) > 90 || line_count(async_header) > 120 ||

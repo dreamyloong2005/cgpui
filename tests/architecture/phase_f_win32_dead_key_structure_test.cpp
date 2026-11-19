@@ -48,7 +48,8 @@ int main() {
       "src/platform/win32/win32_window_message_internal.hpp");
   const std::string behavior =
       read_source("tests/platform/win32_dead_key_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -59,7 +60,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &text_header, &decoder_header, &decoder, &proc, &window_text,
-      &window_events, &window_internal, &message_target, &behavior, &xmake,
+      &window_events, &window_internal, &message_target, &behavior, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -84,8 +85,8 @@ int main() {
       !contains(window_events, "reset_win32_text_input_state(text_input_state_)") ||
       !contains(behavior, "WM_SYSDEADCHAR") ||
       !contains(behavior, "text_events[3].composed") ||
-      !contains(xmake, "target(\"win32_dead_key_test\")") ||
-      !contains(xmake, "target(\"phase_f_win32_dead_key_structure_test\")")) {
+      !contains(manifests, "\"win32_dead_key_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_win32_dead_key_structure_test.cpp\"")) {
     return 3;
   }
   if (line_count(text_header) > 80 || line_count(decoder_header) > 20 ||

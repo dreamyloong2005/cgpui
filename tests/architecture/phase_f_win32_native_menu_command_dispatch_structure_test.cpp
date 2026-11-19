@@ -50,7 +50,9 @@ int main() {
       "tests/architecture/ui_source_structure_test.cpp");
   const std::string renderer_structure = read_source(
       "tests/architecture/renderer_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -61,7 +63,7 @@ int main() {
       &event, &events, &aggregate, &map_header, &map_source, &window_source,
       &proc_header, &proc_source, &proc, &runtime, &runtime_entry,
       &runtime_windows, &platform_behavior, &runtime_behavior, &win32_structure,
-      &platform_structure, &ui_structure, &renderer_structure, &xmake, &roadmap,
+      &platform_structure, &ui_structure, &renderer_structure, &manifests, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(event, "enum class NativeMenuCommandSource") ||
@@ -98,9 +100,9 @@ int main() {
       line_count(map_source) > 80 || line_count(window_source) > 40 ||
       line_count(proc_source) > 45 || line_count(runtime) > 35 ||
       line_count(platform_behavior) > 85 || line_count(runtime_behavior) > 70) return 8;
-  if (!contains(xmake, "target(\"win32_native_menu_command_test\")") ||
-      !contains(xmake, "target(\"native_menu_action_dispatch_test\")") ||
-      !contains(xmake, "target(\"phase_f_win32_native_menu_command_dispatch_structure_test\")")) return 9;
+  if (!contains(manifests, "\"win32_native_menu_command_test.cpp\"") ||
+      !contains(manifests, "\"native_menu_action_dispatch_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_win32_native_menu_command_dispatch_structure_test.cpp\"")) return 9;
   constexpr const char* completion =
       "Phase F Step 584 maps recursive Win32 menu command ids to immutable action names, emits menu/accelerator command events from WM_COMMAND, and routes them through existing scoped runtime action dispatch for root and additional windows. Step 585 native menu dispatch diagnostics production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

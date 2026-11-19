@@ -46,7 +46,8 @@ int main() {
       "tests/architecture/wayland_window_source_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_wayland_atspi_bus_connection_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source(
@@ -58,7 +59,7 @@ int main() {
   const std::string* required[]{
       &bus_header, &bus_source, &bus_health, &adapter_header, &adapter_bus,
       &bus_test_support, &behavior, &platform_inventory, &wayland_inventory,
-      &previous, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
+      &previous, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -102,8 +103,8 @@ int main() {
       "src/platform/linux/wayland_atspi_bus_health.cpp";
   if (!contains(platform_inventory, health_path) ||
       !contains(wayland_inventory, health_path) ||
-      !contains(xmake, "target(\"phase_g_wayland_atspi_bus_reconnect_test\")") ||
-      !contains(xmake, "target(\"phase_g_wayland_atspi_bus_reconnect_structure_test\")")) {
+      !contains(manifests, "\"wayland_atspi_bus_reconnect_test.cpp\"") ||
+      !contains(manifests, "\"phase_g_wayland_atspi_bus_reconnect_structure_test.cpp\"")) {
     return 6;
   }
   if (!contains(previous, "Phase G Step 632 discovers the Linux AT-SPI") ||

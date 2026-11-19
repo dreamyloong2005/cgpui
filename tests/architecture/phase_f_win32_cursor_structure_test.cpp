@@ -52,7 +52,8 @@ int main() {
       read_source("src/platform/win32/win32_window_internal.hpp");
   const std::string behavior =
       read_source("tests/platform/win32_cursor_production_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -63,7 +64,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &pointer_header, &cursor_header, &cursor, &window_cursor, &proc_header, &proc,
-      &main_proc, &window, &input_helpers, &window_internal, &behavior, &xmake,
+      &main_proc, &window, &input_helpers, &window_internal, &behavior, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -93,8 +94,8 @@ int main() {
   if (!contains(behavior, "WM_SETCURSOR") ||
       !contains(behavior, "WM_SETTINGCHANGE") ||
       !contains(behavior, "CursorShape::resize_all") ||
-      !contains(xmake, "target(\"win32_cursor_production_test\")") ||
-      !contains(xmake, "target(\"phase_f_win32_cursor_structure_test\")")) {
+      !contains(manifests, "\"win32_cursor_production_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_win32_cursor_structure_test.cpp\"")) {
     return 4;
   }
   if (line_count(pointer_header) > 60 || line_count(cursor_header) > 20 ||

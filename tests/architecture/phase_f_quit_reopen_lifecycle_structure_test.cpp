@@ -28,14 +28,15 @@ int main() {
   const std::string wayland = read_source("src/platform/linux/wayland_application_lifecycle.cpp");
   const std::string behavior = read_source("tests/platform/platform_reopen_lifecycle_test.cpp");
   const std::string previous = read_source("tests/architecture/phase_f_native_open_url_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&public_header, &application_header, &base,
-      &win32, &wayland, &behavior, &previous, &xmake, &roadmap, &ledger_md,
+      &win32, &wayland, &behavior, &previous, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(public_header, "using PlatformReopenCallback") ||
@@ -60,8 +61,8 @@ int main() {
       line_count(behavior) > 50 || line_count(wayland) > 45 ||
       line_count(win32) > 220) return 6;
   if (!contains(previous, "Phase F Step 591") ||
-      !contains(xmake, "target(\"platform_reopen_lifecycle_test\")") ||
-      !contains(xmake, "target(\"phase_f_quit_reopen_lifecycle_structure_test\")")) return 7;
+      !contains(manifests, "\"platform_reopen_lifecycle_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_quit_reopen_lifecycle_structure_test.cpp\"")) return 7;
   constexpr const char* completion =
       "Phase F Step 592 adds explicit reopen callback/result lifecycle behavior shared by Win32 and Wayland backends, reports missing callbacks without dispatch, supports callback replacement/clearing, and preserves existing platform quit paths. Step 593 platform-service result and unsupported-policy production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

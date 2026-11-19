@@ -44,7 +44,8 @@ int main() {
       read_source("tests/platform/win32_input_dpi_test.cpp");
   const std::string source_inventory =
       read_source("tests/architecture/win32_window_source_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -55,7 +56,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &coordinates_header, &coordinates, &events, &drag, &size, &behavior,
-      &source_inventory, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
+      &source_inventory, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -82,9 +83,9 @@ int main() {
       !contains(behavior, "WM_MOUSEWHEEL") ||
       !contains(source_inventory, "win32_input_coordinates.cpp") ||
       !contains(source_inventory, "win32_window_pointer_events.cpp") ||
-      !contains(xmake, "target(\"win32_input_dpi_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_win32_input_dpi_structure_test\")")) {
+      !contains(manifests, "\"win32_input_dpi_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_win32_input_dpi_structure_test.cpp\"")) {
     return 4;
   }
   if (line_count(coordinates_header) > 25 || line_count(coordinates) > 55 ||

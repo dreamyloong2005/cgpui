@@ -32,7 +32,8 @@ int main() {
       "src/platform/clipboard_win32_write.cpp");
   const std::string behavior = read_source(
       "tests/platform/win32_clipboard_unicode_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -42,7 +43,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &internal, &text, &read, &write, &behavior, &xmake, &roadmap,
+      &internal, &text, &read, &write, &behavior, &manifests, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(internal, "std::optional<std::wstring> widen_clipboard_text") ||
@@ -62,9 +63,9 @@ int main() {
       !contains(behavior, "invalid_utf8") ||
       !contains(behavior, "embedded_nul") ||
       !contains(behavior, "L\"baseline\"")) return 5;
-  if (!contains(xmake, "target(\"win32_clipboard_unicode_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_win32_clipboard_unicode_structure_test\")")) {
+  if (!contains(manifests, "\"win32_clipboard_unicode_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_win32_clipboard_unicode_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(internal) > 50 || line_count(text) > 90 ||

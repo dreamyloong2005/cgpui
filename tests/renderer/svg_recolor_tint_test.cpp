@@ -154,10 +154,10 @@ int test_structure_and_documentation() {
       read_source("src/renderer/svg_raster_cache.cpp");
   const std::string structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/renderer/mcpp.toml");
   if (header.empty() || source.empty() || internal.empty() || backend.empty() ||
       rasterization.empty() || cache_source.empty() || structure.empty() ||
-      xmake.empty()) {
+      manifests.empty()) {
     return 50;
   }
   if (!contains(header, "struct SvgRasterColorizationPlan") ||
@@ -167,7 +167,7 @@ int test_structure_and_documentation() {
       !contains(rasterization, "current_color") ||
       !contains(cache_source, "colorization") ||
       !contains(structure, "src/renderer/svg_raster_colorization.cpp") ||
-      !contains(xmake, "target(\"svg_recolor_tint_test\")")) {
+      !contains(manifests, "\"svg_recolor_tint_test.cpp\"")) {
     return 51;
   }
 

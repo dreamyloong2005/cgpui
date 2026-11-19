@@ -46,7 +46,8 @@ bool contains_any(const std::string& text,
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string ids_header =
       read_source("include/cgpui/ui/element_ids.hpp");
   const std::string dynamic_header =
@@ -77,7 +78,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
 
-  if (xmake.empty() || ids_header.empty() || dynamic_header.empty() ||
+  if (manifests.empty() || ids_header.empty() || dynamic_header.empty() ||
       static_header.empty() || static_source.empty() || render_header.empty() ||
       view_header.empty() || runtime_header.empty() ||
       diagnostics_header.empty() || static_runtime_source.empty() ||
@@ -89,13 +90,13 @@ int main() {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"static_element_tree_test\")") ||
-      !contains(xmake, "tests/ui/static_element_tree_test.cpp") ||
-      !contains(xmake, "target(\"static_render_runtime_test\")") ||
-      !contains(xmake, "tests/ui/static_render_runtime_test.cpp") ||
-      !contains(xmake, "target(\"zero_cost_abstraction_structure_test\")") ||
-      !contains(xmake,
-                "tests/architecture/zero_cost_abstraction_structure_test.cpp")) {
+  if (!contains(manifests, "\"static_element_tree_test.cpp\"") ||
+      !contains(manifests, "\"static_element_tree_test.cpp\"") ||
+      !contains(manifests, "\"static_render_runtime_test.cpp\"") ||
+      !contains(manifests, "\"static_render_runtime_test.cpp\"") ||
+      !contains(manifests, "\"zero_cost_abstraction_structure_test.cpp\"") ||
+      !contains(manifests,
+                "\"zero_cost_abstraction_structure_test.cpp\"")) {
     return 2;
   }
 

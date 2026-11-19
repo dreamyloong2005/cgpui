@@ -28,7 +28,8 @@ int main() {
       read_source("src/platform/win32/win32_ole_drop_target.cpp");
   const std::string behavior =
       read_source("tests/platform/win32_ole_drop_target_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -38,7 +39,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &header, &target, &behavior, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &header, &target, &behavior, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const std::string* value : required) if (value->empty()) return 1;
   if (!contains(header, "class Win32OleDropTarget final : public IDropTarget") ||
@@ -55,9 +56,9 @@ int main() {
       !contains(behavior, "E_INVALIDARG") ||
       !contains(behavior, "DROPEFFECT_NONE") ||
       !contains(behavior, "owner.updated != 1")) return 4;
-  if (!contains(xmake, "target(\"win32_ole_drop_target_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_win32_ole_drop_target_structure_test\")")) {
+  if (!contains(manifests, "\"win32_ole_drop_target_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_win32_ole_drop_target_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(header) > 120 || line_count(target) > 100 ||

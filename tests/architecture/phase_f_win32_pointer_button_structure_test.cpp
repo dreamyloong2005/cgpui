@@ -46,7 +46,8 @@ int main() {
       read_source("src/platform/win32/win32_window_factory.cpp");
   const std::string behavior =
       read_source("tests/platform/win32_pointer_button_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -57,7 +58,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &pointer_header, &decoder, &decoder_header, &proc, &pointer_events,
-      &events, &factory, &behavior, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &events, &factory, &behavior, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -80,9 +81,9 @@ int main() {
   if (!contains(behavior, "GetClassLongPtrW") ||
       !contains(behavior, "WM_XBUTTONDOWN") ||
       !contains(behavior, "click_count == 2") ||
-      !contains(xmake, "target(\"win32_pointer_button_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_win32_pointer_button_structure_test\")")) {
+      !contains(manifests, "\"win32_pointer_button_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_win32_pointer_button_structure_test.cpp\"")) {
     return 3;
   }
   if (line_count(decoder_header) > 25 || line_count(decoder) > 60 ||

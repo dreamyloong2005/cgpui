@@ -81,7 +81,7 @@ int main() {
       "tests/api_parity/phase_g_candidate_ledger_closeout_test.cpp");
   const std::string predecessor =
       read_source("tests/architecture/phase_g_action_macro_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -90,13 +90,13 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
-  const std::string* required[]{&self,       &predecessor, &xmake,    &roadmap,
+  const std::string* required[]{&self,       &predecessor, &manifests,    &roadmap,
                                 &ledger_md,  &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
-  if (!contains(xmake, "target(\"phase_g_candidate_ledger_closeout_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_g_candidate_ledger_closeout_test.cpp") ||
+  if (!contains(manifests, "\"phase_g_candidate_ledger_closeout_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_candidate_ledger_closeout_test.cpp\"") ||
       !contains(predecessor, "Step 676 candidate-ledger closeout audit")) {
     return 2;
   }

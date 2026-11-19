@@ -39,7 +39,9 @@ struct SourceEvidence {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/renderer/mcpp.toml") +
+      read_source("examples/api_parity/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -48,31 +50,31 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
-  if (xmake.empty() || roadmap.empty() || ledger_md.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty()) {
     return 1;
   }
 
-  if (!contains(xmake,
-                "target(\"phase_e_svg_integration_closeout_test\")") ||
+  if (!contains(manifests,
+                "\"phase_e_svg_integration_closeout_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_e_svg_integration_closeout_test.cpp")) {
+          manifests,
+          "\"phase_e_svg_integration_closeout_test.cpp\"")) {
     return 2;
   }
 
   constexpr std::array target_evidence{
-      "target(\"svg_rasterization_plan_test\")",
-      "target(\"svg_lunasvg_rasterization_test\")",
-      "target(\"svg_raster_cache_test\")",
-      "target(\"svg_viewport_scaling_test\")",
-      "target(\"svg_recolor_tint_test\")",
-      "target(\"svg_image_upload_integration_test\")",
-      "target(\"phase_e_svg_public_example_test\")",
-      "target(\"api_parity_public_svg_raster_upload\")",
+      "\"svg_rasterization_plan_test.cpp\"",
+      "\"svg_lunasvg_rasterization_test.cpp\"",
+      "\"svg_raster_cache_test.cpp\"",
+      "\"svg_viewport_scaling_test.cpp\"",
+      "\"svg_recolor_tint_test.cpp\"",
+      "\"svg_image_upload_integration_test.cpp\"",
+      "\"phase_e_svg_public_example_test.cpp\"",
+      "[targets.api_parity_public_svg_raster_upload]",
   };
   for (std::size_t index = 0; index < target_evidence.size(); ++index) {
-    if (!contains(xmake, target_evidence[index])) {
+    if (!contains(manifests, target_evidence[index])) {
       return 10 + static_cast<int>(index);
     }
   }

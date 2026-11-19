@@ -35,7 +35,8 @@ int main() {
       read_source("tests/ui/test_app_timer_control_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_test_app_simulated_input_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -49,7 +50,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &internal, &facade, &platform, &timer, &behavior, &previous,
-      &xmake, &vocabulary, &core, &roadmap, &ledger_md, &ledger_json,
+      &manifests, &vocabulary, &core, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -67,9 +68,9 @@ int main() {
       !contains(behavior, "schedule_repeating_timer(") ||
       !contains(behavior, "app.cancel_timer(view->repeating)")) return 4;
   if (!contains(previous, "Phase J Step 799 re-run upstream extractor against the pinned revision") ||
-      !contains(xmake, "target(\"phase_g_test_app_timer_control_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_test_app_timer_control_structure_test\")")) {
+      !contains(manifests, "\"test_app_timer_control_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_test_app_timer_control_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(header) > 125 || line_count(internal) > 140 ||

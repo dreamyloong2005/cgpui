@@ -117,11 +117,13 @@ int main() {
     const std::string quads = read("src/renderer/vulkan/vulkan_report_text_quads.cpp");
     require(has(quads, "native_glyph_placement(") && has(quads, "cell_glyph_placement("),
             "Vulkan quads must place native glyphs by glyph id");
-    const std::string module = read("build/xmake/capabilities/native_text_shaping_targets.lua");
-    require(has(module, "target(\"cgpui_renderer\")") && has(module, "target(\"cgpui_ui\")") &&
-                has(module, "remove_files(") && has(module, "text_shaping_directwrite.cpp") &&
-                has(module, "text_dwrite_analysis_win32.cpp") &&
-                has(module, "add_requires(\"harfbuzz\", {system = true})"),
+    const std::string module = read("packages/renderer/mcpp.toml") +
+      read("packages/ui/mcpp.toml") +
+      read("packages/renderer/build.mcpp");
+    require(has(module, "[targets.cgpui_renderer]") && has(module, "[targets.cgpui_ui]") &&
+                has(module, "\"!../../src/ui/text_") && has(module, "\"../../src/ui/text_shaping_directwrite.cpp\"") &&
+                has(module, "\"../../src/ui/text_dwrite_analysis_win32.cpp\"") &&
+                has(module, "\"harfbuzz\""),
             "native shaping sources must be renderer-owned and excluded from cgpui_ui");
     return 0;
   } catch (const std::exception& error) {

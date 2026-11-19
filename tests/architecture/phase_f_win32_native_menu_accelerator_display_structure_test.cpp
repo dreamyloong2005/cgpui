@@ -33,7 +33,8 @@ int main() {
       "tests/architecture/win32_window_source_test.cpp");
   const std::string platform_structure = read_source(
       "tests/architecture/platform_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -42,7 +43,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &source, &tree, &behavior, &win32_structure,
-      &platform_structure, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &platform_structure, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(header, "win32_native_menu_display_title(") ||
@@ -69,8 +70,8 @@ int main() {
       !contains(platform_structure, "win32_native_menu_accelerator.cpp")) return 6;
   if (line_count(header) > 25 || line_count(source) > 90 ||
       line_count(tree) > 125 || line_count(behavior) > 115) return 7;
-  if (!contains(xmake, "target(\"win32_native_menu_accelerator_display_test\")") ||
-      !contains(xmake, "target(\"phase_f_win32_native_menu_accelerator_display_structure_test\")")) return 8;
+  if (!contains(manifests, "\"win32_native_menu_accelerator_display_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_win32_native_menu_accelerator_display_structure_test.cpp\"")) return 8;
   constexpr const char* completion =
       "Phase F Step 582 formats Win32 native menu accelerator labels in a focused leaf, appends tab-aligned Ctrl/Alt/Shift/Win key text for letters, digits, function keys, and named keys, and preserves accelerator counts without claiming dispatch. Step 583 native menu accelerator registration production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

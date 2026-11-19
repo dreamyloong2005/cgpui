@@ -50,7 +50,7 @@ std::string line_containing(const std::string& text, const char* anchor) {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger =
@@ -73,7 +73,7 @@ int main() {
   const std::string text_model_test =
       read_source("tests/ui/text_model_test.cpp");
 
-  if (xmake.empty() || roadmap.empty() || ledger.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger.empty() ||
       task_plan.empty() || findings.empty() || measurement_header.empty() ||
       wrapping_header.empty() || paragraph_header.empty() ||
       grapheme_source.empty() || wrapping_source.empty() ||
@@ -82,11 +82,10 @@ int main() {
     return 1;
   }
 
-  if (!contains(xmake,
-                "target(\"phase_d_text_measurement_wrapping_audit_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/"
-                "phase_d_text_measurement_wrapping_audit_test.cpp")) {
+  if (!contains(manifests,
+                "\"phase_d_text_measurement_wrapping_audit_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_d_text_measurement_wrapping_audit_test.cpp\"")) {
     return 2;
   }
 

@@ -8,7 +8,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -105,30 +105,31 @@ int main() {
     return 12;
   }
 
-  const std::string xmake_text = read_source("xmake.lua");
-  if (xmake_text.empty()) {
+  const std::string manifests_text = read_source("mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
+  if (manifests_text.empty()) {
     return 13;
   }
   const std::string macos_xmake_text =
-      read_source("build/xmake/phase_h_macos.lua");
-  if (!contains(xmake_text, "includes(\"build/xmake/phase_h_macos.lua\")") ||
-      !contains(macos_xmake_text, "target(\"cgpui_platform_macos\")") ||
-      !contains(macos_xmake_text, "src/platform/macos/*.mm") ||
+      read_source("packages/platform-macos/mcpp.toml");
+  if (!contains(manifests_text, "\"packages/platform-macos\",") ||
+      !contains(macos_xmake_text, "[targets.cgpui_platform_macos]") ||
+      !contains(macos_xmake_text, "\"../../src/platform/macos/*.mm\"") ||
       !contains(macos_xmake_text,
-                "add_frameworks(\"AppKit\", \"QuartzCore\")")) {
+                "\"AppKit\"")) {
     return 14;
   }
   const std::string metal_xmake_text =
-      read_source("build/xmake/phase_h_metal.lua");
-  if (!contains(xmake_text, "includes(\"build/xmake/phase_h_metal.lua\")") ||
-      !contains(metal_xmake_text, "target(\"cgpui_renderer_metal\")") ||
-      !contains(metal_xmake_text, "src/renderer/metal/*.mm") ||
+      read_source("packages/renderer-metal/mcpp.toml");
+  if (!contains(manifests_text, "\"packages/renderer-metal\",") ||
+      !contains(metal_xmake_text, "[targets.cgpui_renderer_metal]") ||
+      !contains(metal_xmake_text, "\"../../src/renderer/metal/*.mm\"") ||
       !contains(metal_xmake_text,
-                "add_frameworks(\"Metal\", \"QuartzCore\")")) {
+                "frameworks = [\"Metal\", \"QuartzCore\"]")) {
     return 15;
   }
-  if (!contains(xmake_text, "target(\"desktop_target_readiness_test\")") ||
-      !contains(xmake_text, "tests/architecture/desktop_target_readiness_test.cpp")) {
+  if (!contains(manifests_text, "\"desktop_target_readiness_test.cpp\"") ||
+      !contains(manifests_text, "\"desktop_target_readiness_test.cpp\"")) {
     return 16;
   }
 

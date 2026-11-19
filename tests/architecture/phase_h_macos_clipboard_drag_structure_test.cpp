@@ -59,13 +59,13 @@ int main() {
       !contains(clipboard, "NSPasteboardTypeTIFF")) {
     return 3;
   }
-  const std::string module = read_source("build/xmake/phase_h_macos.lua");
+  const std::string module = read_source("tests/platform/mcpp.toml");
   const std::string targets =
-      read_source("build/xmake/phase_h_structure_targets.lua");
-  if (!contains(module, "target(\"macos_clipboard_test\")") ||
-      !contains(module, "target(\"macos_drag_drop_test\")") ||
+      read_source("tests/architecture/mcpp.toml");
+  if (!contains(module, "\"macos/macos_*.mm\"") ||
+      !contains(module, "\"macos/macos_*.mm\"") ||
       !contains(targets,
-                "target(\"phase_h_macos_clipboard_drag_structure_test\")")) {
+                "\"phase_h_macos_clipboard_drag_structure_test.cpp\"")) {
     return 4;
   }
   return 0;

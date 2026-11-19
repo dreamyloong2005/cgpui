@@ -36,7 +36,7 @@ int main() {
       read_source(".github/workflows/phase-g-windows-linux.yml");
   const std::string previous = read_source(
       "tests/architecture/phase_g_linux_debug_packaging_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -46,7 +46,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &windows_core, &windows_debug, &windows_release, &linux_core,
-      &linux_debug, &linux_release, &workflow, &previous, &xmake,
+      &linux_debug, &linux_release, &workflow, &previous, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -95,14 +95,14 @@ int main() {
 
   if (!contains(previous,
                 "Phase G Step 668 adds a Linux Debug CI packaging path") ||
-      !contains(xmake,
-                "target(\"phase_g_release_packaging_structure_test\")")) {
+      !contains(manifests,
+                "\"phase_g_release_packaging_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(windows_core) > 190 || line_count(linux_core) > 190 ||
       line_count(windows_debug) > 35 || line_count(windows_release) > 35 ||
       line_count(linux_debug) > 20 || line_count(linux_release) > 20 ||
-      line_count(workflow) > 150 || line_count(xmake) > 4350) return 7;
+      line_count(workflow) > 150 || line_count(read_source("mcpp.toml")) > 100) return 7;
 
   constexpr const char* completion =
       "Phase G Step 669 adds Windows and Linux Release CI packaging paths "

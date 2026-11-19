@@ -25,8 +25,9 @@ int main() {
   const std::string gif = read_source(
       "examples/api_parity/public_gif_viewer_example/main.cpp");
   const std::string pin = read_source("docs/gpui-upstream-pinned-revision.md");
-  const std::string xmake = read_source("xmake.lua");
-  if (image.empty() || gif.empty() || pin.empty() || xmake.empty()) return 1;
+  const std::string manifests = read_source("examples/api_parity/mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml");
+  if (image.empty() || gif.empty() || pin.empty() || manifests.empty()) return 1;
 
   if (!contains(image, "class PublicImageExampleView") ||
       !contains(image, "FileAssetSource") ||
@@ -52,10 +53,10 @@ int main() {
   if (!contains(pin, "examples/image/image.rs") ||
       !contains(pin, "examples/gif_viewer.rs") ||
       !contains(pin, "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0") ||
-      !contains(xmake, "target(\"api_parity_public_image_example\")") ||
-      !contains(xmake, "target(\"api_parity_public_gif_viewer_example\")") ||
-      !contains(xmake,
-                "target(\"phase_g_official_image_gif_examples_test\")")) {
+      !contains(manifests, "[targets.api_parity_public_image_example]") ||
+      !contains(manifests, "[targets.api_parity_public_gif_viewer_example]") ||
+      !contains(manifests,
+                "\"phase_g_official_image_gif_examples_test.cpp\"")) {
     return 4;
   }
   const char* forbidden[]{

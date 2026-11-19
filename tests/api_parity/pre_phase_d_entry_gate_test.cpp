@@ -35,7 +35,7 @@ bool contains(const std::string& text, const char* value) {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -46,14 +46,14 @@ int main() {
   const std::string phase_c_final_audit =
       read_source("tests/api_parity/phase_c_final_ledger_audit_test.cpp");
 
-  if (xmake.empty() || roadmap.empty() || ledger_md.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || phase_c_final_audit.empty()) {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"pre_phase_d_entry_gate_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/pre_phase_d_entry_gate_test.cpp")) {
+  if (!contains(manifests, "\"pre_phase_d_entry_gate_test.cpp\"") ||
+      !contains(manifests,
+                "\"pre_phase_d_entry_gate_test.cpp\"")) {
     return 2;
   }
 

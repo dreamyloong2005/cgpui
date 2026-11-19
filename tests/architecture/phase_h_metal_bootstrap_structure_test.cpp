@@ -60,16 +60,17 @@ int main() {
     return 4;
   }
 
-  const std::string xmake = read_source("xmake.lua");
-  const std::string module = read_source("build/xmake/phase_h_metal.lua");
-  const std::string targets = read_source("build/xmake/phase_h_structure_targets.lua");
-  if (!contains(xmake, "includes(\"build/xmake/phase_h_metal.lua\")") ||
-      !contains(xmake, "includes(\"build/xmake/phase_h_structure_targets.lua\")") ||
+  const std::string manifests = read_source("mcpp.toml");
+  const std::string module = read_source("tests/renderer/mcpp.toml") +
+      read_source("packages/renderer-metal/mcpp.toml");
+  const std::string targets = read_source("tests/architecture/mcpp.toml");
+  if (!contains(manifests, "\"packages/renderer-metal\",") ||
+      !contains(manifests, "\"tests/architecture\",") ||
       module.empty() ||
-      !contains(module, "target(\"metal_bootstrap_test\")") ||
-      !contains(module, "add_files(path.join(os.projectdir(), \"src/renderer/metal/*.mm\"))") ||
-      !contains(module, "add_files(path.join(os.projectdir(), \"tests/renderer/metal/metal_bootstrap_test.mm\"))") ||
-      !contains(module, "add_includedirs(path.join(os.projectdir(), \"include\")") ||
-      targets.empty() || !contains(targets, "target(\"phase_h_metal_bootstrap_structure_test\")")) return 6;
+      !contains(module, "\"metal/metal_*.mm\"") ||
+      !contains(module, "\"../../src/renderer/metal/*.mm\"") ||
+      !contains(module, "\"metal/metal_*.mm\"") ||
+      !contains(module, "include_dirs = [\"../../include\"]") ||
+      targets.empty() || !contains(targets, "\"phase_h_metal_bootstrap_structure_test.cpp\"")) return 6;
   return 0;
 }

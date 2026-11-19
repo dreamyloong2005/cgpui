@@ -42,18 +42,18 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
 
   if (roadmap.empty() || ledger_md.empty() || ledger_json.empty() ||
-      xmake.empty()) {
+      manifests.empty()) {
     return 1;
   }
 
-  if (!contains(xmake,
-                "target(\"phase_c_style_cascade_depth_audit_test\")") ||
+  if (!contains(manifests,
+                "\"phase_c_style_cascade_depth_audit_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp")) {
+          manifests,
+          "\"phase_c_style_cascade_depth_audit_test.cpp\"")) {
     return 2;
   }
 

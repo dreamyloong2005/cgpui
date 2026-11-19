@@ -50,7 +50,7 @@ std::string line_containing(const std::string& text, const char* anchor) {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger =
@@ -96,7 +96,7 @@ int main() {
   const std::string header_cleanliness =
       read_source("tests/header_cleanliness/ui_header_cleanliness.cpp");
 
-  if (xmake.empty() || roadmap.empty() || ledger.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty() ||
       text_aggregate.empty() || text_rich_text_header.empty() ||
       text_rich_text_source.empty() ||
@@ -115,9 +115,9 @@ int main() {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"phase_d_rich_text_audit_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_d_rich_text_audit_test.cpp")) {
+  if (!contains(manifests, "\"phase_d_rich_text_audit_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_d_rich_text_audit_test.cpp\"")) {
     return 2;
   }
 

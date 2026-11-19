@@ -21,14 +21,14 @@ bool contains(const std::string& text, const char* value) {
 
 int main() {
   const std::string script = read_source("scripts/ci/macos-debug.sh");
-  const std::string xmake = read_source("xmake.lua");
-  const std::string targets = read_source("build/xmake/phase_h_structure_targets.lua");
+  const std::string manifests = read_source("third_party/VENDORED.md");
+  const std::string targets = read_source("tests/architecture/mcpp.toml");
   const std::string manifest = read_source("scripts/ci/architecture-header-targets.txt");
   const std::string workflow = read_source(".github/workflows/phase-h-macos.yml");
   const std::string task_plan = read_source("task_plan.md");
   const std::string progress = read_source("progress.md");
   const std::string findings = read_source("findings.md");
-  if (script.empty() || xmake.empty() || targets.empty() || manifest.empty() ||
+  if (script.empty() || manifests.empty() || targets.empty() || manifest.empty() ||
       workflow.empty()) {
     return 1;
   }
@@ -56,9 +56,9 @@ int main() {
       traversal_rejection >= output_creation || confinement >= output_creation) {
     return 2;
   }
-  if (!contains(xmake, "set_policy(\"package.requires_lock\", true)") ||
+  if (!contains(manifests, "Source archive SHA-256") ||
       !contains(targets,
-                "target(\"phase_h_macos_full_debug_verification_structure_test\")") ||
+                "\"phase_h_macos_full_debug_verification_structure_test.cpp\"") ||
       !contains(manifest,
                 "phase_h_macos_full_debug_verification_structure_test|") ||
       !contains(workflow, "macos-full-debug:") ||

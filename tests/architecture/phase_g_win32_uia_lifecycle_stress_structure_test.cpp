@@ -37,7 +37,8 @@ int main() {
       "src/platform/win32/win32_uia_updates.cpp");
   const std::string behavior = read_source(
       "tests/platform/win32_uia_lifecycle_stress_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -46,7 +47,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &lifetime_header, &lifetime, &adapter_header, &adapter, &updates,
-      &behavior, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
+      &behavior, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -67,9 +68,9 @@ int main() {
       !contains(behavior, "cycle < 64") ||
       !contains(behavior, "replacement == retired") ||
       !contains(behavior, "UIA_E_ELEMENTNOTAVAILABLE")) return 5;
-  if (!contains(xmake, "target(\"win32_uia_lifecycle_stress_test\")") ||
-      !contains(xmake,
-                "phase_g_win32_uia_lifecycle_stress_structure_test.cpp")) {
+  if (!contains(manifests, "\"win32_uia_lifecycle_stress_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_win32_uia_lifecycle_stress_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(lifetime_header) > 40 || line_count(lifetime) > 90 ||

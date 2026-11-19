@@ -10,7 +10,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -111,7 +111,7 @@ int test_registry_registers_svg_sources_without_decoding() {
 }
 
 int test_step_362_docs_and_structure_are_recorded() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string registry_header =
       read_source("include/cgpui/ui/image_asset_registry.hpp");
   const std::string registry_source =
@@ -127,7 +127,7 @@ int test_step_362_docs_and_structure_are_recorded() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
 
-  if (!contains(xmake, "phase_c_svg_image_asset_registration_test") ||
+  if (!contains(manifests, "\"phase_c_svg_image_asset_registration_test.cpp\"") ||
       !contains(registry_header, "class ImageAssetRegistry") ||
       !contains(registry_header, "class RegisteredImageAsset") ||
       !contains(registry_source, "ImageAssetRegistry::register_svg(") ||

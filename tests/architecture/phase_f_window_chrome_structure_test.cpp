@@ -78,7 +78,9 @@ int main() {
       read_source("tests/platform/wayland_window_chrome_test.cpp");
   const std::string alpha_test = read_source(
       "tests/renderer/vulkan_transparent_composite_alpha_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/renderer/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -93,7 +95,7 @@ int main() {
       &wayland_application, &wayland_internal, &wayland_chrome,
       &surface_selection, &swapchain_create, &runtime_run,
       &runtime_activation, &runtime_backdrop, &compositor, &win32_test, &wayland_test,
-      &alpha_test, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
+      &alpha_test, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -142,12 +144,12 @@ int main() {
                 "wait_for_client_side_decoration_requested") ||
       !contains(wayland_test,
                 "wait_for_server_side_decoration_requested") ||
-      !contains(xmake, "target(\"win32_window_chrome_test\")") ||
-      !contains(xmake, "target(\"wayland_window_chrome_test\")") ||
-      !contains(xmake,
-                "target(\"vulkan_transparent_composite_alpha_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_window_chrome_structure_test\")")) {
+      !contains(manifests, "\"win32_window_chrome_test.cpp\"") ||
+      !contains(manifests, "\"wayland_window_chrome_test.cpp\"") ||
+      !contains(manifests,
+                "\"vulkan_transparent_composite_alpha_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_window_chrome_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(chrome_default) > 20 || line_count(win32_chrome) > 58 ||

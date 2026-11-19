@@ -40,7 +40,10 @@ int main() {
       read_source("tests/architecture/platform_source_structure_test.cpp");
   const std::string header_cleanliness =
       read_source("tests/header_cleanliness/ui_header_cleanliness.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml") +
+      read_source("tests/async/mcpp.toml") +
+      read_source("tests/platform/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -51,7 +54,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &pool, &priority, &groups, &cancellation, &io, &timers, &entities,
-      &ui_source, &platform_source, &header_cleanliness, &xmake, &roadmap,
+      &ui_source, &platform_source, &header_cleanliness, &manifests, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -64,24 +67,24 @@ int main() {
       !contains(entities, "CrossThreadEntityQueueState")) return 2;
 
   const char* targets[]{
-      "phase_g_runtime_task_pool_test",
-      "phase_g_runtime_task_priority_test",
-      "phase_g_runtime_task_group_test",
-      "phase_g_runtime_task_cancellation_propagation_test",
-      "phase_g_runtime_async_io_hook_test",
-      "phase_g_runtime_async_timer_integration_test",
-      "phase_g_runtime_cross_thread_entity_access_test",
-      "phase_g_win32_timer_wakeup_test",
-      "phase_g_wayland_timer_wakeup_test",
-      "phase_g_runtime_task_pool_structure_test",
-      "phase_g_runtime_task_priority_structure_test",
-      "phase_g_runtime_task_group_structure_test",
-      "phase_g_runtime_task_cancellation_propagation_structure_test",
-      "phase_g_runtime_async_io_hook_structure_test",
-      "phase_g_runtime_async_timer_integration_structure_test",
-      "phase_g_runtime_cross_thread_entity_access_structure_test"};
+      "runtime_task_pool_test.cpp",
+      "runtime_task_priority_test.cpp",
+      "runtime_task_group_test.cpp",
+      "runtime_task_cancellation_propagation_test.cpp",
+      "runtime_async_io_hook_test.cpp",
+      "runtime_async_timer_integration_test.cpp",
+      "runtime_cross_thread_entity_access_test.cpp",
+      "win32_timer_wakeup_test.cpp",
+      "wayland_timer_wakeup_test.cpp",
+      "phase_g_runtime_task_pool_structure_test.cpp",
+      "phase_g_runtime_task_priority_structure_test.cpp",
+      "phase_g_runtime_task_group_structure_test.cpp",
+      "phase_g_runtime_task_cancellation_propagation_structure_test.cpp",
+      "phase_g_runtime_async_io_hook_structure_test.cpp",
+      "phase_g_runtime_async_timer_integration_structure_test.cpp",
+      "phase_g_runtime_cross_thread_entity_access_structure_test.cpp"};
   for (const char* target : targets) {
-    if (!contains(xmake, (std::string{"target(\""} + target + "\")").c_str())) {
+    if (!contains(manifests, (std::string{"\""} + target + "\"").c_str())) {
       return 3;
     }
   }
@@ -98,7 +101,7 @@ int main() {
   if (!contains(platform_source, "win32_timer_wakeup.cpp") ||
       !contains(platform_source, "wayland_timer_wakeup.cpp") ||
       !contains(header_cleanliness, "CrossThreadEntity<TestModel>") ||
-      !contains(xmake, "target(\"phase_g_async_runtime_closeout_test\")") ||
+      !contains(manifests, "\"phase_g_async_runtime_closeout_test.cpp\"") ||
       !contains(roadmap, "- [x] Steps 635-642: Complete async runtime")) {
     return 5;
   }

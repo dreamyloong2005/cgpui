@@ -30,7 +30,8 @@ int main() {
       "tests/platform/win32_file_open_dialog_plan_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_f_native_menu_closeout_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -38,7 +39,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&header, &source, &state, &behavior, &previous,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(header, "struct Win32FileDialogPlan") ||
       !contains(header, "win32_file_dialog_plan(") ||
@@ -57,8 +58,8 @@ int main() {
   if (line_count(header) > 55 || line_count(source) > 180 ||
       line_count(state) > 80 || line_count(behavior) > 45) return 6;
   if (!contains(previous, "Phase F Step 586") ||
-      !contains(xmake, "target(\"win32_file_open_dialog_plan_test\")") ||
-      !contains(xmake, "target(\"phase_f_win32_file_open_dialog_structure_test\")")) return 7;
+      !contains(manifests, "\"win32_file_open_dialog_plan_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_win32_file_open_dialog_structure_test.cpp\"")) return 7;
   constexpr const char* completion =
       "Phase F Step 587 implements Win32 open-file and multi-file dialogs in a focused COM leaf, maps filters and selection flags through a pure plan, handles cancellation without acceptance, and preserves explicit unsupported behavior elsewhere. Step 588 Win32 save-file dialog production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

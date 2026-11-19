@@ -29,7 +29,8 @@ int main() {
   const std::string behavior = read_source("tests/ui/window_runtime_multi_window_churn_test.cpp");
   const std::string previous = read_source("tests/architecture/phase_f_multi_window_accessibility_isolation_structure_test.cpp");
   const std::string ui_structure = read_source("tests/architecture/ui_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
@@ -37,7 +38,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&ownership, &reclamation,
       &reclamation_header, &records, &private_header, &behavior, &previous,
-      &ui_structure, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
+      &ui_structure, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(ownership, "retired_native_windows_.clear()") ||
@@ -61,8 +62,8 @@ int main() {
   if (line_count(ownership) > 30 || line_count(reclamation) > 50 ||
       line_count(reclamation_header) > 3 || line_count(records) > 150 ||
       line_count(private_header) > 260 || line_count(behavior) > 210) return 7;
-  if (!contains(xmake, "target(\"window_runtime_multi_window_churn_test\")") ||
-      !contains(xmake, "target(\"phase_f_multi_window_lifecycle_churn_structure_test\")")) return 8;
+  if (!contains(manifests, "\"window_runtime_multi_window_churn_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_multi_window_lifecycle_churn_structure_test.cpp\"")) return 8;
   constexpr const char* completion =
       "Phase F Step 601 reclaims closed child runtime records, opened-window entries, and per-window themes only after deferred native destruction, preserves close-callback observability, and keeps repeated child-window churn bounded. Step 602 multi-window event-loop closeout audit is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

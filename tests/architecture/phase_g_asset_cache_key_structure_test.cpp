@@ -38,7 +38,8 @@ int main() {
       read_source("tests/header_cleanliness/prelude_header_cleanliness.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_svg_asset_decode_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/assets/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -52,7 +53,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &source, &behavior, &core_cleanliness, &prelude,
-      &prelude_cleanliness, &previous, &xmake, &vocabulary, &core, &roadmap,
+      &prelude_cleanliness, &previous, &manifests, &vocabulary, &core, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -83,9 +84,9 @@ int main() {
   if (!contains(prelude, "cgpui/core/asset_cache_key.hpp") ||
       !contains(previous, "rasterization path. Step ") ||
       !contains(previous, "655 asset cache key production behavior is next.") ||
-      !contains(xmake, "target(\"phase_g_asset_cache_key_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_asset_cache_key_structure_test\")")) {
+      !contains(manifests, "\"asset_cache_key_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_asset_cache_key_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(header) > 60 || line_count(source) > 110 ||

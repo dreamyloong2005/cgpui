@@ -35,7 +35,8 @@ bool contains(const std::string& text, const char* value) {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("examples/api_parity/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -45,29 +46,29 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
 
-  if (xmake.empty() || roadmap.empty() || ledger_md.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty()) {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"phase_d_text_examples_closeout_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_d_text_examples_closeout_test.cpp")) {
+  if (!contains(manifests, "\"phase_d_text_examples_closeout_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_d_text_examples_closeout_test.cpp\"")) {
     return 2;
   }
 
   constexpr std::array example_targets{
-      "target(\"api_parity_public_text_input_examples\")",
-      "target(\"api_parity_public_text_wrapper_examples\")",
-      "target(\"api_parity_public_text_input_workflow\")",
-      "target(\"api_parity_public_rich_text_examples\")",
-      "target(\"phase_d_text_input_public_examples_test\")",
-      "target(\"phase_d_text_wrapper_public_examples_test\")",
-      "target(\"phase_d_text_input_workflow_examples_test\")",
-      "target(\"phase_d_rich_text_public_examples_test\")",
+      "[targets.api_parity_public_text_input_examples]",
+      "[targets.api_parity_public_text_wrapper_examples]",
+      "[targets.api_parity_public_text_input_workflow]",
+      "[targets.api_parity_public_rich_text_examples]",
+      "\"phase_d_text_input_public_examples_test.cpp\"",
+      "\"phase_d_text_wrapper_public_examples_test.cpp\"",
+      "\"phase_d_text_input_workflow_examples_test.cpp\"",
+      "\"phase_d_rich_text_public_examples_test.cpp\"",
   };
   for (std::size_t index = 0; index < example_targets.size(); ++index) {
-    if (!contains(xmake, example_targets[index])) {
+    if (!contains(manifests, example_targets[index])) {
       return 10 + static_cast<int>(index);
     }
   }

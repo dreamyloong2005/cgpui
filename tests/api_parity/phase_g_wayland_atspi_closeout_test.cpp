@@ -38,7 +38,9 @@ int main() {
       "tests/architecture/platform_source_structure_test.cpp");
   const std::string wayland_source = read_source(
       "tests/architecture/wayland_window_source_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml") +
+      read_source("tests/platform/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source(
@@ -49,7 +51,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &objects, &navigation, &roles, &text_value, &focus, &bus, &reconnect,
-      &platform_source, &wayland_source, &xmake, &roadmap, &ledger_md,
+      &platform_source, &wayland_source, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -63,22 +65,22 @@ int main() {
     return 2;
   }
   const char* targets[]{
-      "phase_g_wayland_atspi_dbus_object_test",
-      "phase_g_wayland_atspi_tree_navigation_test",
-      "phase_g_wayland_atspi_role_state_test",
-      "phase_g_wayland_atspi_text_value_event_test",
-      "phase_g_wayland_atspi_focus_event_test",
-      "phase_g_wayland_atspi_bus_connection_test",
-      "phase_g_wayland_atspi_bus_reconnect_test",
-      "phase_g_wayland_atspi_dbus_object_structure_test",
-      "phase_g_wayland_atspi_tree_navigation_structure_test",
-      "phase_g_wayland_atspi_role_state_structure_test",
-      "phase_g_wayland_atspi_text_value_event_structure_test",
-      "phase_g_wayland_atspi_focus_event_structure_test",
-      "phase_g_wayland_atspi_bus_connection_structure_test",
-      "phase_g_wayland_atspi_bus_reconnect_structure_test"};
+      "wayland_atspi_dbus_object_test.cpp",
+      "wayland_atspi_tree_navigation_test.cpp",
+      "wayland_atspi_role_state_test.cpp",
+      "wayland_atspi_text_value_event_test.cpp",
+      "wayland_atspi_focus_event_test.cpp",
+      "wayland_atspi_bus_connection_test.cpp",
+      "wayland_atspi_bus_reconnect_test.cpp",
+      "phase_g_wayland_atspi_dbus_object_structure_test.cpp",
+      "phase_g_wayland_atspi_tree_navigation_structure_test.cpp",
+      "phase_g_wayland_atspi_role_state_structure_test.cpp",
+      "phase_g_wayland_atspi_text_value_event_structure_test.cpp",
+      "phase_g_wayland_atspi_focus_event_structure_test.cpp",
+      "phase_g_wayland_atspi_bus_connection_structure_test.cpp",
+      "phase_g_wayland_atspi_bus_reconnect_structure_test.cpp"};
   for (const char* target : targets) {
-    if (!contains(xmake, (std::string{"target(\""} + target + "\")").c_str())) {
+    if (!contains(manifests, (std::string{"\""} + target + "\"").c_str())) {
       return 3;
     }
   }
@@ -93,9 +95,9 @@ int main() {
   }
   if (!contains(platform_source, "WaylandAtspiAccessibilityAdapter") ||
       !contains(platform_source, "WaylandAtspiBusConnection::is_connected") ||
-      !contains(xmake, "target(\"phase_g_wayland_atspi_closeout_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_g_wayland_atspi_closeout_test.cpp") ||
+      !contains(manifests, "\"phase_g_wayland_atspi_closeout_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_wayland_atspi_closeout_test.cpp\"") ||
       !contains(roadmap, "- [x] Steps 627-634: Implement Linux AT-SPI")) {
     return 5;
   }

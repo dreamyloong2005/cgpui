@@ -41,7 +41,6 @@ include_dirs = ["../../src/renderer/metal", "metal"]
 
 [test]
 discover = [
-    "native_text_glyph_spacing_test.cpp",
     "renderer_draw_count_diagnostics_test.cpp",
     "renderer_dropped_resource_diagnostics_test.cpp",
     "renderer_frame_diagnostics_test.cpp",
@@ -54,6 +53,12 @@ discover = [
     "svg_rasterization_plan_test.cpp",
     "svg_recolor_tint_test.cpp",
     "svg_viewport_scaling_test.cpp",
+]
+
+# Windows and Linux only (Vulkan, or a backend macOS does not have).
+[target.'cfg(any(os = "windows", os = "linux"))'.test]
+discover = [
+    "native_text_glyph_spacing_test.cpp",
     "vulkan_backdrop_blur_plan_test.cpp",
     "vulkan_box_shadow_geometry_test.cpp",
     "vulkan_clip_stack_recording_test.cpp",

@@ -64,7 +64,7 @@ std::string json_object_containing(const std::string& text,
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -74,14 +74,14 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
 
-  if (xmake.empty() || roadmap.empty() || ledger_md.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || vocabulary.empty()) {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"phase_c_final_ledger_audit_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_c_final_ledger_audit_test.cpp")) {
+  if (!contains(manifests, "\"phase_c_final_ledger_audit_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_final_ledger_audit_test.cpp\"")) {
     return 2;
   }
 

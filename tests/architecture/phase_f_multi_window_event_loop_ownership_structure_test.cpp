@@ -31,14 +31,15 @@ int main() {
   const std::string behavior = read_source("tests/ui/window_runtime_event_loop_ownership_test.cpp");
   const std::string ui_structure = read_source("tests/architecture/ui_source_structure_test.cpp");
   const std::string previous = read_source("tests/architecture/phase_f_platform_services_closeout_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&state, &internal, &ownership, &records,
-      &events, &scheduling, &run, &behavior, &ui_structure, &previous, &xmake,
+      &events, &scheduling, &run, &behavior, &ui_structure, &previous, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(state, "native_additional_windows_") ||
@@ -67,8 +68,8 @@ int main() {
       line_count(scheduling) > 140 || line_count(run) > 141 ||
       line_count(internal) > 260 || line_count(behavior) > 150) return 7;
   if (!contains(previous, "Phase F Step 594") ||
-      !contains(xmake, "target(\"window_runtime_event_loop_ownership_test\")") ||
-      !contains(xmake, "target(\"phase_f_multi_window_event_loop_ownership_structure_test\")")) return 8;
+      !contains(manifests, "\"window_runtime_event_loop_ownership_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_multi_window_event_loop_ownership_structure_test.cpp\"")) return 8;
   constexpr const char* completion =
       "Phase F Step 595 defers additional native-window destruction out of close callbacks through a focused retired-ownership queue, reclaims on platform wakeup or event-loop return, and rejects late events for inactive records. Step 596 multi-window redraw and resize isolation production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

@@ -129,9 +129,9 @@ int test_structure_and_documentation() {
       read_source("include/cgpui/renderer/renderer.hpp");
   const std::string structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/renderer/mcpp.toml");
   if (header.empty() || source.empty() || aggregate.empty() ||
-      structure.empty() || xmake.empty()) {
+      structure.empty() || manifests.empty()) {
     return 40;
   }
   if (!contains(header, "struct SvgImageUploadResult") ||
@@ -139,7 +139,7 @@ int test_structure_and_documentation() {
       !contains(source, "frame.upload_image(") ||
       !contains(aggregate, "cgpui/renderer/svg_image_upload.hpp") ||
       !contains(structure, "src/renderer/svg_image_upload.cpp") ||
-      !contains(xmake, "target(\"svg_image_upload_integration_test\")")) {
+      !contains(manifests, "\"svg_image_upload_integration_test.cpp\"")) {
     return 41;
   }
 

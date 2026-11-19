@@ -43,7 +43,9 @@ int main() {
   const std::string aggregate = read_source("include/cgpui/ui/ui.hpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_image_gif_examples_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/header_cleanliness/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -58,7 +60,7 @@ int main() {
   const std::string* required[]{
       &header, &internal, &facade, &platform, &renderer, &runtime,
       &runtime_internal, &behavior, &cleanliness, &aggregate, &previous,
-      &xmake, &vocabulary, &core,
+      &manifests, &vocabulary, &core,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -84,12 +86,12 @@ int main() {
       !contains(cleanliness, "#include \"cgpui/ui/test_app.hpp\"") ||
       !contains(aggregate, "#include \"cgpui/ui/test_app.hpp\"") ||
       !contains(previous, "Step 659 GPUI-style app and window test setup") ||
-      !contains(xmake, "target(\"phase_g_test_app_window_fixture_test\")") ||
-      !contains(xmake, "target(\"test_app_header_cleanliness\")") ||
-      !contains(xmake,
-                "target(\"phase_g_test_app_window_setup_structure_test\")") ||
-      !contains(xmake,
-                "set_basename(\"phase_g_test_app_window_fixture_structure_test\")")) {
+      !contains(manifests, "\"test_app_window_setup_test.cpp\"") ||
+      !contains(manifests, "\"test_app_header_cleanliness.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_test_app_window_setup_structure_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_test_app_window_setup_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(header) > 125 || line_count(internal) > 140 ||

@@ -31,28 +31,31 @@ int main() {
       "tests/architecture/phase_j_upstream_audit_structure_test.cpp");
   const std::string behavior =
       read_source("tests/api_parity/phase_j_upstream_audit_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml");
   const std::string module =
-      read_source("build/xmake/phase_j_audit_targets.lua");
+      read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml") +
+      read_source("tests/architecture/build.mcpp");
   const std::string manifest =
       read_source("scripts/ci/architecture-header-targets.txt");
-  if (self.empty() || behavior.empty() || xmake.empty() || module.empty() ||
+  if (self.empty() || behavior.empty() || manifests.empty() || module.empty() ||
       manifest.empty()) {
     return 1;
   }
-  if (!contains(xmake, "includes(\"build/xmake/phase_j_audit_targets.lua\")") ||
-      contains(xmake, "target(\"phase_j_upstream_audit_test\")") ||
-      !contains(module, "target(\"phase_j_upstream_audit_test\")") ||
+  if (!contains(manifests, "\"tests/architecture\",") ||
+      contains(read_source("mcpp.toml"), "\"phase_j_upstream_audit_test.cpp\"") ||
+      !contains(module, "\"phase_j_upstream_audit_test.cpp\"") ||
       !contains(module,
-                "target(\"phase_j_upstream_audit_structure_test\")") ||
-      !contains(module, "CGPUI_SOURCE_ROOT")) {
+                "\"phase_j_upstream_audit_structure_test.cpp\"") ||
+      !contains(module, "source_root_define(2)")) {
     return 2;
   }
   if (!contains(manifest,
                 "phase_j_upstream_audit_structure_test|tests/architecture/"
                 "phase_j_upstream_audit_structure_test.cpp") ||
       line_count(self) > 90 || line_count(behavior) > 140 ||
-      line_count(module) > 30) {
+      line_count(read_source("tests/architecture/mcpp.toml")) > 240) {
     return 3;
   }
   return 0;

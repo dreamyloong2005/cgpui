@@ -56,7 +56,8 @@ int main() {
       read_source("tests/header_cleanliness/ui_header_cleanliness.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_animation_curve_variant_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/animation/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
@@ -72,7 +73,7 @@ int main() {
       &public_header, &handles, &transition_header, &diagnostics_header,
       &cancellation, &state, &state_internal, &tick, &handle_source,
       &transition_source, &diagnostic_source, &runtime_internal, &aggregate,
-      &behavior, &ui_structure, &header_cleanliness, &previous, &xmake,
+      &behavior, &ui_structure, &header_cleanliness, &previous, &manifests,
       &vocabulary, &core_parity, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
@@ -110,9 +111,9 @@ int main() {
       !contains(ui_structure, "include/cgpui/ui/animation_cancellation.hpp") ||
       !contains(ui_structure, "src/ui/runtime_animation_cancellation.cpp") ||
       !contains(header_cleanliness, "cgpui/ui/animation_cancellation.hpp") ||
-      !contains(xmake, "target(\"phase_g_animation_cancellation_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_animation_cancellation_structure_test\")") ||
+      !contains(manifests, "\"animation_cancellation_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_animation_cancellation_structure_test.cpp\"") ||
       !contains(previous,
                 "Step 647 animation cancellation production behavior")) {
     return 6;

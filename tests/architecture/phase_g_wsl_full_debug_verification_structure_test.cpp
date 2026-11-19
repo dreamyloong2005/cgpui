@@ -30,7 +30,8 @@ int main() {
       "tests/architecture/phase_g_windows_full_debug_verification_structure_test.cpp");
   const std::string dependency_guard = read_source(
       "tests/architecture/phase_g_reproducible_dependency_setup_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/architecture/mcpp.toml") +
+      read_source("third_party/VENDORED.md");
   const std::string manifest =
       read_source("scripts/ci/architecture-header-targets.txt");
   const std::string roadmap = read_source(
@@ -42,14 +43,14 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &predecessor, &dependency_guard, &xmake, &manifest, &roadmap,
+      &predecessor, &dependency_guard, &manifests, &manifest, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
-  if (!contains(xmake,
-                "target(\"phase_g_wsl_full_debug_verification_structure_test\")") ||
-      !contains(xmake,
-                "tests/architecture/phase_g_wsl_full_debug_verification_structure_test.cpp") ||
+  if (!contains(manifests,
+                "\"phase_g_wsl_full_debug_verification_structure_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_wsl_full_debug_verification_structure_test.cpp\"") ||
       !contains(manifest,
                 "phase_g_wsl_full_debug_verification_structure_test|"
                 "tests/architecture/phase_g_wsl_full_debug_verification_structure_test.cpp")) {
@@ -57,7 +58,7 @@ int main() {
   }
   if (!contains(predecessor, "Step 674 WSL ") ||
       !contains(predecessor, "full-debug verification is next.") ||
-      !contains(xmake, "set_policy(\"package.requires_lock\", true)") ||
+      !contains(manifests, "Source archive SHA-256") ||
       !contains(dependency_guard, "3.0.9")) {
     return 3;
   }
@@ -80,7 +81,7 @@ int main() {
                 "upstream extractor against the pinned revision\"")) {
     return 5;
   }
-  if (line_count(xmake) > 4360 ||
+  if (line_count(read_source("mcpp.toml")) > 100 ||
       line_count(dependency_guard) > 180) {
     return 6;
   }

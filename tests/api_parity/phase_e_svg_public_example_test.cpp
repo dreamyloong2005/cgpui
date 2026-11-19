@@ -35,7 +35,9 @@ bool contains(const std::string& text, const char* value) {
 int main() {
   const std::string example = read_source(
       "examples/api_parity/public_svg_raster_upload/main.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("mcpp.toml") +
+      read_source("examples/api_parity/mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -46,20 +48,19 @@ int main() {
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
-  if (example.empty() || xmake.empty() || roadmap.empty() ||
+  if (example.empty() || manifests.empty() || roadmap.empty() ||
       ledger_md.empty() || ledger_json.empty() || vocabulary.empty() ||
       task_plan.empty() || findings.empty()) {
     return 1;
   }
 
   constexpr std::array xmake_fragments{
-      "target(\"api_parity_public_svg_raster_upload\")",
-      "examples/api_parity/public_svg_raster_upload/main.cpp",
-      "target(\"phase_e_svg_public_example_test\")",
-      "tests/api_parity/phase_e_svg_public_example_test.cpp",
+      "[targets.api_parity_public_svg_raster_upload]",
+      "main = \"public_svg_raster_upload/main.cpp\"",
+      "\"phase_e_svg_public_example_test.cpp\"",
   };
   for (std::size_t index = 0; index < xmake_fragments.size(); ++index) {
-    if (!contains(xmake, xmake_fragments[index])) {
+    if (!contains(manifests, xmake_fragments[index])) {
       return 10 + static_cast<int>(index);
     }
   }

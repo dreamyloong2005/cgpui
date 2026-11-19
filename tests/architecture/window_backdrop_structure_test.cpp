@@ -59,7 +59,8 @@ int main() {
     const auto runtime = read("src/ui/runtime_window_backdrop.cpp");
     const auto runtime_header = read("src/ui/runtime_window_backdrop_internal.hpp");
     const auto facade = read("src/ui/window_backdrop.cpp");
-    const auto module = read("build/xmake/capabilities/window_backdrop_targets.lua");
+    const auto module = read("tests/platform/mcpp.toml") +
+      read("tests/renderer/mcpp.toml");
     require(lines(core_leaf) <= 20 && has(core_leaf, "enum class WindowBackdrop") &&
             has(core_window, "WindowBackdrop backdrop = WindowBackdrop::none;"),
             "the backdrop enum is a core leaf carried by WindowDescriptor");
@@ -100,10 +101,10 @@ int main() {
             lines(facade) <= 50 && has(facade, "Window::set_backdrop(") &&
             has(runtime, "set_transparent_surface(true)"),
             "runtime and Window facade forward through focused sources");
-    require(has(module, "tests/platform/win32_window_backdrop_test.cpp") &&
-            has(module, "tests/platform/wayland_window_backdrop_test.cpp") &&
-            has(module, "tests/renderer/vulkan_surface_composition_test.cpp") &&
-            has(module, "is_plat(\"windows\")") && has(module, "is_plat(\"linux\")"),
+    require(has(module, "\"win32_window_backdrop_test.cpp\"") &&
+            has(module, "\"wayland_window_backdrop_test.cpp\"") &&
+            has(module, "\"vulkan_surface_composition_test.cpp\"") &&
+            has(module, "[target.'cfg(os = \"windows\")'.test]") && has(module, "[target.'cfg(os = \"linux\")'.test]"),
             "backdrop tests live in the capability module, guarded by platform");
     return 0;
   } catch (const std::exception& error) {

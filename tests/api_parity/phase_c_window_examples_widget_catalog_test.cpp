@@ -46,24 +46,25 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("examples/api_parity/mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml");
 
   if (example.empty() || vocabulary.empty() || roadmap.empty() ||
-      ledger_md.empty() || ledger_json.empty() || xmake.empty()) {
+      ledger_md.empty() || ledger_json.empty() || manifests.empty()) {
     return 1;
   }
 
   if (!contains(
-          xmake,
-          "target(\"api_parity_public_window_examples_widget_catalog\")") ||
+          manifests,
+          "[targets.api_parity_public_window_examples_widget_catalog]") ||
       !contains(
-          xmake,
-          "examples/api_parity/public_window_examples_widget_catalog/main.cpp") ||
-      !contains(xmake,
-                "target(\"phase_c_window_examples_widget_catalog_test\")") ||
+          manifests,
+          "main = \"public_window_examples_widget_catalog/main.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_window_examples_widget_catalog_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_window_examples_widget_catalog_test.cpp")) {
+          manifests,
+          "\"phase_c_window_examples_widget_catalog_test.cpp\"")) {
     return 2;
   }
 

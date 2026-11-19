@@ -36,7 +36,7 @@ bool contains(const std::string& text, const char* value) {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string widget_structure =
       read_source("tests/architecture/widget_source_structure_test.cpp");
   const std::string builtin_widget =
@@ -51,15 +51,15 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
 
-  if (xmake.empty() || widget_structure.empty() || builtin_widget.empty() ||
+  if (manifests.empty() || widget_structure.empty() || builtin_widget.empty() ||
       element_test.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || vocabulary.empty()) {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"phase_c_widget_family_structure_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_c_widget_family_structure_test.cpp")) {
+  if (!contains(manifests, "\"phase_c_widget_family_structure_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_widget_family_structure_test.cpp\"")) {
     return 2;
   }
 

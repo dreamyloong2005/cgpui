@@ -68,7 +68,9 @@ int main() {
       read_source("src/platform/linux/wayland_registered_window_internal.hpp");
   const std::string wayland_registered =
       read_source("src/platform/linux/wayland_window_registered.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml") +
+      read_source("tests/platform/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -84,7 +86,7 @@ int main() {
       win32_proc_lifecycle.empty() || win32_events.empty() ||
       wayland_internal.empty() || wayland_lifecycle.empty() ||
       wayland_events.empty() || wayland_registered_internal.empty() ||
-      wayland_registered.empty() || xmake.empty() || roadmap.empty() ||
+      wayland_registered.empty() || manifests.empty() || roadmap.empty() ||
       ledger_md.empty() || ledger_json.empty() || task_plan.empty() ||
       findings.empty()) {
     return 1;
@@ -163,19 +165,19 @@ int main() {
     return 10;
   }
 
-  if (!contains(xmake, "target(\"phase_f_window_lifecycle_state_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_platform_lifecycle_structure_test\")") ||
-      !contains(xmake,
-                "target(\"win32_window_lifecycle_state_test\")") ||
-      !contains(xmake,
-                "target(\"wayland_window_lifecycle_state_test\")") ||
+  if (!contains(manifests, "\"phase_f_window_lifecycle_state_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_platform_lifecycle_structure_test.cpp\"") ||
+      !contains(manifests,
+                "\"win32_window_lifecycle_state_test.cpp\"") ||
+      !contains(manifests,
+                "\"wayland_window_lifecycle_state_test.cpp\"") ||
       !contains(
-          xmake,
-          "target(\"win32_window_activation_focus_state_test\")") ||
+          manifests,
+          "\"win32_window_activation_focus_state_test.cpp\"") ||
       !contains(
-          xmake,
-          "target(\"wayland_window_activation_focus_state_test\")")) {
+          manifests,
+          "\"wayland_window_activation_focus_state_test.cpp\"")) {
     return 11;
   }
 

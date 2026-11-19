@@ -60,12 +60,12 @@ int main() {
       !contains(window, "MacOSAccessibilityState")) {
     return 4;
   }
-  const std::string module = read_source("build/xmake/phase_h_macos.lua");
+  const std::string module = read_source("tests/platform/mcpp.toml");
   const std::string targets =
-      read_source("build/xmake/phase_h_structure_targets.lua");
-  if (!contains(module, "target(\"macos_accessibility_test\")") ||
+      read_source("tests/architecture/mcpp.toml");
+  if (!contains(module, "\"macos/macos_*.mm\"") ||
       !contains(targets,
-                "target(\"phase_h_macos_accessibility_structure_test\")")) {
+                "\"phase_h_macos_accessibility_structure_test.cpp\"")) {
     return 5;
   }
   return 0;

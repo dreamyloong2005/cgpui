@@ -6,7 +6,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -33,17 +33,17 @@ int main() {
   const std::string app_aggregate = read_source("include/cgpui/app/app.hpp");
   const std::string example =
       read_source("examples/api_parity/public_api_compatibility/main.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
 
   if (vocabulary.empty() || prelude.empty() || ui_aggregate.empty() ||
-      app_aggregate.empty() || example.empty() || xmake.empty()) {
+      app_aggregate.empty() || example.empty() || manifests.empty()) {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"public_authoring_vocabulary_freeze_test\")") ||
+  if (!contains(manifests, "\"public_authoring_vocabulary_freeze_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp")) {
+          manifests,
+          "\"public_authoring_vocabulary_freeze_test.cpp\"")) {
     return 2;
   }
 

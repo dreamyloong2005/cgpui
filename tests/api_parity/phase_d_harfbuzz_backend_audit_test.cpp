@@ -46,17 +46,17 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
 
   if (harfbuzz_source.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty() ||
-      xmake.empty()) {
+      manifests.empty()) {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"phase_d_harfbuzz_backend_audit_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_d_harfbuzz_backend_audit_test.cpp")) {
+  if (!contains(manifests, "\"phase_d_harfbuzz_backend_audit_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_d_harfbuzz_backend_audit_test.cpp\"")) {
     return 2;
   }
 

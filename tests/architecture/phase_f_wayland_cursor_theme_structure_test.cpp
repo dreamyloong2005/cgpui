@@ -44,9 +44,10 @@ int main() {
       "tests/platform/wayland_test_compositor.cpp");
   const std::string behavior = read_source(
       "tests/platform/wayland_cursor_theme_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string linux_backends =
-      read_source("build/xmake/phase_i_linux_backends.lua");
+      read_source("packages/platform-linux-wayland/build.mcpp");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -58,7 +59,7 @@ int main() {
   const std::string* required[]{
       &cursor_header, &cursor, &application_cursor, &application, &core,
       &registry, &scale, &window_internal, &helper, &compositor, &behavior,
-      &xmake, &linux_backends, &roadmap, &ledger_md, &ledger_json, &task_plan,
+      &manifests, &linux_backends, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(cursor, "wl_cursor_theme_load(") ||
@@ -81,10 +82,10 @@ int main() {
       !contains(behavior, "write_cursor(") ||
       !contains(behavior, "request_fractional_scale(150)") ||
       !contains(behavior, "cursor.buffer_scale != 2")) return 5;
-  if (!contains(linux_backends, "add_syslinks(\"wayland-cursor\"") ||
-      !contains(xmake, "target(\"wayland_cursor_theme_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_cursor_theme_structure_test\")")) {
+  if (!contains(linux_backends, "\"wayland-cursor\"") ||
+      !contains(manifests, "\"wayland_cursor_theme_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_cursor_theme_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(cursor_header) > 50 || line_count(cursor) > 140 ||

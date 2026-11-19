@@ -44,18 +44,17 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
 
   if (roadmap.empty() || ledger_md.empty() || ledger_json.empty() ||
-      vocabulary.empty() || xmake.empty()) {
+      vocabulary.empty() || manifests.empty()) {
     return 1;
   }
 
-  if (!contains(xmake,
-                "target(\"phase_c_window_examples_closeout_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/"
-                "phase_c_window_examples_closeout_test.cpp")) {
+  if (!contains(manifests,
+                "\"phase_c_window_examples_closeout_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_window_examples_closeout_test.cpp\"")) {
     return 2;
   }
 

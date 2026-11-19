@@ -32,7 +32,7 @@ int main() {
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string predecessor = read_source(
       "tests/architecture/phase_g_reproducible_dependency_setup_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/architecture/mcpp.toml");
   const std::string manifest =
       read_source("scripts/ci/architecture-header-targets.txt");
   const std::string roadmap = read_source(
@@ -44,7 +44,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &phase_c_audit, &vocabulary, &predecessor, &xmake, &manifest,
+      &phase_c_audit, &vocabulary, &predecessor, &manifests, &manifest,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -58,10 +58,10 @@ int main() {
     return 2;
   }
 
-  if (!contains(xmake,
-                "target(\"phase_g_windows_full_debug_verification_structure_test\")") ||
-      !contains(xmake,
-                "tests/architecture/phase_g_windows_full_debug_verification_structure_test.cpp") ||
+  if (!contains(manifests,
+                "\"phase_g_windows_full_debug_verification_structure_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_windows_full_debug_verification_structure_test.cpp\"") ||
       !contains(manifest,
                 "phase_g_windows_full_debug_verification_structure_test|"
                 "tests/architecture/phase_g_windows_full_debug_verification_structure_test.cpp")) {
@@ -91,7 +91,7 @@ int main() {
                 "upstream extractor against the pinned revision\"")) {
     return 6;
   }
-  if (line_count(xmake) > 4360 ||
+  if (line_count(read_source("mcpp.toml")) > 100 ||
       line_count(phase_c_audit) > 220) {
     return 7;
   }

@@ -54,7 +54,8 @@ int main() {
       read_source("tests/header_cleanliness/ui_header_cleanliness.cpp");
   const std::string previous =
       read_source("tests/api_parity/phase_g_async_runtime_closeout_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/animation/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
@@ -69,7 +70,7 @@ int main() {
   const std::string* required[]{
       &public_header, &aggregate, &source, &animation_start, &runtime_header,
       &runtime_internal, &behavior, &ui_structure, &header_cleanliness,
-      &previous, &xmake, &vocabulary, &core_parity, &roadmap, &ledger_md,
+      &previous, &manifests, &vocabulary, &core_parity, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -102,9 +103,9 @@ int main() {
       !contains(ui_structure, "include/cgpui/ui/animation_transition.hpp") ||
       !contains(ui_structure, "src/ui/animation_transition.cpp") ||
       !contains(header_cleanliness, "cgpui/ui/animation_transition.hpp") ||
-      !contains(xmake, "target(\"phase_g_animation_transition_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_animation_transition_structure_test\")") ||
+      !contains(manifests, "\"runtime_animation_transition_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_animation_transition_structure_test.cpp\"") ||
       !contains(previous, "Step 643 animation transition \"")) return 6;
   if (line_count(public_header) > 100 || line_count(source) > 120 ||
       line_count(animation_start) > 80 || line_count(behavior) > 190 ||

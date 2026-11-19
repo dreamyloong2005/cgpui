@@ -44,7 +44,8 @@ int main() {
       read_source("tests/platform/wayland_test_compositor.cpp");
   const std::string source_guard =
       read_source("tests/architecture/wayland_window_source_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -55,7 +56,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &state_header, &state, &callbacks, &core, &registry, &window_events,
-      &behavior, &compositor, &source_guard, &xmake, &roadmap, &ledger_md,
+      &behavior, &compositor, &source_guard, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) return 1;
@@ -87,9 +88,9 @@ int main() {
       !contains(compositor, "wl_pointer_send_axis_value120(") ||
       !contains(compositor, "wl_pointer_send_axis_stop(") ||
       !contains(compositor, "wl_pointer_interface,\n      std::min<std::uint32_t>(wl_resource_get_version(resource), 9)") ||
-      !contains(xmake, "target(\"wayland_pointer_axis_frame_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_pointer_axis_frame_structure_test\")")) {
+      !contains(manifests, "\"wayland_pointer_axis_frame_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_pointer_axis_frame_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(state_header) > 55 || line_count(state) > 100 ||

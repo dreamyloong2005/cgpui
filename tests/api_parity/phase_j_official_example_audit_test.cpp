@@ -42,11 +42,11 @@ int main() {
   const std::string ledger_md =
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string targets = read_source("scripts/ci/example-targets.txt");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string* required[]{&snapshot,    &matrix, &report, &ledger_json,
-                                &ledger_md,   &targets, &xmake, &roadmap};
+                                &ledger_md,   &targets, &manifests, &roadmap};
   for (const auto* source : required) {
     if (source->empty()) return 1;
   }

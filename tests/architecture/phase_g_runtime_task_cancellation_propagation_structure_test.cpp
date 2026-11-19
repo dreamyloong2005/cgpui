@@ -44,7 +44,8 @@ int main() {
       read_source("tests/architecture/ui_source_structure_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_runtime_task_group_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/async/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
@@ -59,7 +60,7 @@ int main() {
   const std::string* required[]{
       &public_header, &group_internal, &group_source, &propagation_source,
       &handle_source, &tasks_source, &behavior, &header_cleanliness,
-      &ui_structure, &previous, &xmake, &vocabulary, &core_parity, &roadmap,
+      &ui_structure, &previous, &manifests, &vocabulary, &core_parity, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -97,11 +98,11 @@ int main() {
   if (!contains(header_cleanliness, "create_child_group()") ||
       !contains(ui_structure, "src/ui/runtime_task_group_propagation.cpp") ||
       !contains(previous, "runtime_task_group_propagation.cpp") ||
-      !contains(xmake,
-                "target(\"phase_g_runtime_task_cancellation_propagation_test\")") ||
+      !contains(manifests,
+                "\"runtime_task_cancellation_propagation_test.cpp\"") ||
       !contains(
-          xmake,
-          "target(\"phase_g_runtime_task_cancellation_propagation_structure_test\")")) {
+          manifests,
+          "\"phase_g_runtime_task_cancellation_propagation_structure_test.cpp\"")) {
     return 8;
   }
   if (line_count(public_header) > 80 || line_count(group_internal) > 90 ||

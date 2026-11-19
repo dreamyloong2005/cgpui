@@ -10,7 +10,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -117,7 +117,7 @@ int test_image_source_preserves_raster_asset_front_end() {
 }
 
 int test_step_361_docs_and_structure_are_recorded() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml");
   const std::string image_source_header =
       read_source("include/cgpui/ui/image_source.hpp");
   const std::string image_source_source =
@@ -135,7 +135,7 @@ int test_step_361_docs_and_structure_are_recorded() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
 
-  if (!contains(xmake, "phase_c_svg_image_front_end_test") ||
+  if (!contains(manifests, "\"phase_c_svg_image_front_end_test.cpp\"") ||
       !contains(image_source_header, "enum class ImageSourceKind") ||
       !contains(image_source_header, "class ImageSource") ||
       !contains(image_source_source, "svg_image_source(") ||

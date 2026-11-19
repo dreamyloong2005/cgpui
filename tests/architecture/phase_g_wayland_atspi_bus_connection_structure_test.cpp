@@ -54,9 +54,10 @@ int main() {
       "tests/architecture/wayland_window_source_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_wayland_atspi_focus_event_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string linux_backends =
-      read_source("build/xmake/phase_i_linux_backends.lua");
+      read_source("mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source(
@@ -69,7 +70,7 @@ int main() {
       &bus_header, &bus_source, &bus_health, &adapter_header, &adapter_source,
       &adapter_bus, &services, &linux_atspi_api, &window, &behavior,
       &bus_test_support, &platform_inventory,
-      &wayland_inventory, &previous, &xmake, &linux_backends, &roadmap, &ledger_md,
+      &wayland_inventory, &previous, &manifests, &linux_backends, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -130,10 +131,10 @@ int main() {
       !contains(wayland_inventory, adapter_bus_path)) {
     return 8;
   }
-  if (!contains(xmake, "target(\"phase_g_wayland_atspi_bus_connection_test\")") ||
+  if (!contains(manifests, "\"wayland_atspi_bus_connection_test.cpp\"") ||
       !contains(
-          xmake,
-          "target(\"phase_g_wayland_atspi_bus_connection_structure_test\")")) {
+          manifests,
+          "\"phase_g_wayland_atspi_bus_connection_structure_test.cpp\"")) {
     return 9;
   }
   if (line_count(bus_header) > 70 || line_count(bus_source) > 180 ||

@@ -35,7 +35,9 @@ int main() {
       "tests/architecture/phase_g_win32_uia_lifecycle_stress_structure_test.cpp");
   const std::string source_guard = read_source(
       "tests/architecture/win32_window_source_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml") +
+      read_source("tests/platform/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -44,7 +46,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &provider, &navigation, &patterns, &events, &integration, &lifetime,
-      &stress, &source_guard, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &stress, &source_guard, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -57,19 +59,19 @@ int main() {
       !contains(stress, "revision <= 128") ||
       !contains(stress, "cycle < 64")) return 2;
   const char* targets[]{
-      "win32_uia_provider_object_test", "win32_uia_tree_navigation_test",
-      "win32_uia_get_object_message_test", "win32_uia_pattern_provider_test",
-      "win32_uia_live_event_test", "win32_uia_runtime_change_integration_test",
-      "win32_uia_provider_lifetime_test", "win32_uia_lifecycle_stress_test",
-      "phase_g_win32_uia_provider_object_structure_test",
-      "phase_g_win32_uia_tree_navigation_structure_test",
-      "phase_g_win32_uia_pattern_provider_structure_test",
-      "phase_g_win32_uia_live_event_structure_test",
-      "phase_g_win32_uia_change_integration_structure_test",
-      "phase_g_win32_uia_provider_lifetime_structure_test",
-      "phase_g_win32_uia_lifecycle_stress_structure_test"};
+      "win32_uia_provider_object_test.cpp", "win32_uia_tree_navigation_test.cpp",
+      "win32_uia_get_object_message_test.cpp", "win32_uia_pattern_provider_test.cpp",
+      "win32_uia_live_event_test.cpp", "win32_uia_runtime_change_integration_test.cpp",
+      "win32_uia_provider_lifetime_test.cpp", "win32_uia_lifecycle_stress_test.cpp",
+      "phase_g_win32_uia_provider_object_structure_test.cpp",
+      "phase_g_win32_uia_tree_navigation_structure_test.cpp",
+      "phase_g_win32_uia_pattern_provider_structure_test.cpp",
+      "phase_g_win32_uia_live_event_structure_test.cpp",
+      "phase_g_win32_uia_change_integration_structure_test.cpp",
+      "phase_g_win32_uia_provider_lifetime_structure_test.cpp",
+      "phase_g_win32_uia_lifecycle_stress_structure_test.cpp"};
   for (const char* target : targets) {
-    if (!contains(xmake, (std::string{"target(\""} + target + "\")").c_str())) {
+    if (!contains(manifests, (std::string{"\""} + target + "\"").c_str())) {
       return 3;
     }
   }
@@ -77,9 +79,9 @@ int main() {
       !contains(source_guard, "win32_uia_range_pattern.cpp") ||
       !contains(source_guard, "win32_uia_tree_state.cpp") ||
       !contains(roadmap, "- [x] Steps 619-626: Implement Win32 UIA")) return 4;
-  if (!contains(xmake, "target(\"phase_g_win32_uia_closeout_test\")") ||
-      !contains(xmake,
-                "tests/api_parity/phase_g_win32_uia_closeout_test.cpp")) {
+  if (!contains(manifests, "\"phase_g_win32_uia_closeout_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_win32_uia_closeout_test.cpp\"")) {
     return 5;
   }
 

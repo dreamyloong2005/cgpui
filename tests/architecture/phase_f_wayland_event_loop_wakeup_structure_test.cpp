@@ -32,7 +32,8 @@ int main() {
       "src/platform/linux/wayland_input_internal.hpp");
   const std::string behavior = read_source(
       "tests/platform/wayland_event_loop_wakeup_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -42,7 +43,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &event_loop, &lifecycle, &core, &input, &behavior, &xmake, &roadmap,
+      &event_loop, &lifecycle, &core, &input, &behavior, &manifests, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(event_loop, "wl_display_prepare_read(display)") ||
@@ -60,9 +61,9 @@ int main() {
       !contains(behavior, "wakeup_count.load() != 1") ||
       !contains(behavior, "wakeup_count.load() != 2") ||
       !contains(behavior, "(*app)->quit()") ||
-      !contains(xmake, "target(\"wayland_event_loop_wakeup_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_event_loop_wakeup_structure_test\")")) {
+      !contains(manifests, "\"wayland_event_loop_wakeup_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_event_loop_wakeup_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(event_loop) > 110 || line_count(lifecycle) > 25 ||

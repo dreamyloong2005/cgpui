@@ -80,7 +80,8 @@ int main() {
       read_source("tests/platform/win32_window_close_policy_test.cpp");
   const std::string wayland_test =
       read_source("tests/platform/wayland_window_close_policy_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -97,7 +98,7 @@ int main() {
       runtime_context.empty() || runtime_context_close.empty() ||
       runtime_control.empty() || runtime_windows.empty() ||
       app_runner_test.empty() || win32_test.empty() || wayland_test.empty() ||
-      xmake.empty() || roadmap.empty() || ledger_md.empty() ||
+      manifests.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty()) {
     return 1;
   }
@@ -148,10 +149,10 @@ int main() {
       !contains(wayland_test, "cancelled.coalesced_count != 1")) {
     return 8;
   }
-  if (!contains(xmake, "target(\"win32_window_close_policy_test\")") ||
-      !contains(xmake, "target(\"wayland_window_close_policy_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_window_close_policy_structure_test\")")) {
+  if (!contains(manifests, "\"win32_window_close_policy_test.cpp\"") ||
+      !contains(manifests, "\"wayland_window_close_policy_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_window_close_policy_structure_test.cpp\"")) {
     return 9;
   }
   if (line_count(close_header) > 35 || line_count(close_internal) > 25 ||

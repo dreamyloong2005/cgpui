@@ -44,7 +44,8 @@ int main() {
       read_source("tests/platform/wayland_test_compositor.cpp");
   const std::string source_inventory =
       read_source("tests/architecture/wayland_window_source_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -55,7 +56,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &input, &keyboard, &application_keyboard, &behavior, &compositor_header,
-      &compositor, &source_inventory, &xmake, &roadmap, &ledger_md,
+      &compositor, &source_inventory, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -84,9 +85,9 @@ int main() {
       !contains(compositor_header, "request_keyboard_modifier_masks(") ||
       !contains(compositor, "name[Group2]") ||
       !contains(compositor, "dispatch_pending_keyboard_keymap(") ||
-      !contains(xmake, "target(\"wayland_keyboard_layout_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_keyboard_layout_structure_test\")")) {
+      !contains(manifests, "\"wayland_keyboard_layout_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_keyboard_layout_structure_test.cpp\"")) {
     return 4;
   }
   if (line_count(input) > 117 || line_count(keyboard) > 145 ||

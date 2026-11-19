@@ -48,7 +48,8 @@ int main() {
       read_source("tests/header_cleanliness/ui_header_cleanliness.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_element_lifecycle_animation_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/animation/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string pin = read_source("docs/gpui-upstream-pinned-revision.md");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
@@ -64,7 +65,7 @@ int main() {
   const std::string* required[]{
       &base_header, &public_header, &aggregate, &store, &state, &element,
       &sequence, &sequence_state, &behavior, &ui_structure,
-      &header_cleanliness, &previous, &xmake, &pin, &vocabulary, &core_parity,
+      &header_cleanliness, &previous, &manifests, &pin, &vocabulary, &core_parity,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -98,8 +99,8 @@ int main() {
       !contains(ui_structure, "include/cgpui/ui/element_animation_sequence.hpp") ||
       !contains(ui_structure, "src/ui/element_animation_sequence_state.cpp") ||
       !contains(header_cleanliness, "cgpui/ui/element_animation_sequence.hpp") ||
-      !contains(xmake, "target(\"phase_g_element_animation_sequence_test\")") ||
-      !contains(xmake, "target(\"phase_g_element_animation_sequence_structure_test\")") ||
+      !contains(manifests, "\"element_animation_sequence_test.cpp\"") ||
+      !contains(manifests, "\"phase_g_element_animation_sequence_structure_test.cpp\"") ||
       !contains(previous,
                 "animation repeat and chaining production behavior is next.")) {
     return 6;

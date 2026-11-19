@@ -47,7 +47,9 @@ int main() {
     const auto shutdown = read("src/ui/runtime_shutdown.cpp");
     const auto app = read("src/app/app_appearance.cpp");
     const auto window = read("src/ui/window_appearance.cpp");
-    const auto module = read("build/xmake/capabilities/system_appearance_targets.lua");
+    const auto module = read("packages/platform-win32/mcpp.toml") +
+      read("tests/platform/mcpp.toml") +
+      read("tests/ui/mcpp.toml");
     require(lines(leaf) <= 60 && !has(leaf, "<windows.h>") && !has(leaf, "HKEY") &&
             has(leaf, "struct SystemAppearance") && has(leaf, "SystemAppearanceCallback"),
             "appearance leaf must stay small and platform neutral");
@@ -86,10 +88,10 @@ int main() {
             has(app, "App::set_system_appearance_callback(") &&
             has(window, "Window::appearance()"),
             "App and Window facades must forward through focused sources");
-    require(has(module, "target(\"cgpui_platform_win32\")") &&
-            has(module, "add_syslinks(\"dwmapi\"") &&
-            has(module, "tests/platform/win32_system_appearance_test.cpp") &&
-            has(module, "tests/ui/window_runtime_system_appearance_test.cpp"),
+    require(has(module, "[targets.cgpui_platform_win32]") &&
+            has(module, "\"dwmapi.lib\"") &&
+            has(module, "\"win32_system_appearance_test.cpp\"") &&
+            has(module, "\"window_runtime_system_appearance_test.cpp\""),
             "dwmapi link and appearance tests must live in the capability module");
     return 0;
   } catch (const std::exception& error) {

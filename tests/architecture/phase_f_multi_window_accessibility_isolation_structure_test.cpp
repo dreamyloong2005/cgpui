@@ -35,7 +35,8 @@ int main() {
   const std::string behavior = read_source("tests/ui/window_runtime_multi_window_accessibility_test.cpp");
   const std::string previous = read_source("tests/architecture/phase_f_multi_window_theme_isolation_structure_test.cpp");
   const std::string ui_structure = read_source("tests/architecture/ui_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
@@ -43,7 +44,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&record, &root, &window, &window_header,
       &static_accessibility, &static_header, &frame, &activation, &records,
-      &run, &private_header, &behavior, &previous, &ui_structure, &xmake,
+      &run, &private_header, &behavior, &previous, &ui_structure, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(record, "last_accessibility_update") ||
@@ -71,8 +72,8 @@ int main() {
       line_count(static_accessibility) > 75 || line_count(static_header) > 25 ||
       line_count(frame) > 180 || line_count(private_header) > 260 ||
       line_count(behavior) > 260) return 8;
-  if (!contains(xmake, "target(\"window_runtime_multi_window_accessibility_test\")") ||
-      !contains(xmake, "target(\"phase_f_multi_window_accessibility_isolation_structure_test\")")) return 9;
+  if (!contains(manifests, "\"window_runtime_multi_window_accessibility_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_multi_window_accessibility_isolation_structure_test.cpp\"")) return 9;
   constexpr const char* completion =
       "Phase F Step 600 submits accessibility trees and live updates per runtime window, derives child snapshots from their own static render trees and focus state, and preserves root accessibility history across child frames. Step 601 multi-window lifecycle integration and churn production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

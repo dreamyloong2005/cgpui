@@ -6,7 +6,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -30,21 +30,22 @@ int main() {
       read_source("examples/api_parity/public_async_test_workflow/main.cpp");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("examples/api_parity/mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml");
 
-  if (example.empty() || vocabulary.empty() || xmake.empty()) {
+  if (example.empty() || vocabulary.empty() || manifests.empty()) {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"api_parity_public_async_test_workflow\")") ||
+  if (!contains(manifests, "[targets.api_parity_public_async_test_workflow]") ||
       !contains(
-          xmake,
-          "examples/api_parity/public_async_test_workflow/main.cpp") ||
-      !contains(xmake,
-                "target(\"public_async_test_workflow_example_test\")") ||
+          manifests,
+          "main = \"public_async_test_workflow/main.cpp\"") ||
+      !contains(manifests,
+                "\"public_async_test_workflow_example_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/public_async_test_workflow_example_test.cpp")) {
+          manifests,
+          "\"public_async_test_workflow_example_test.cpp\"")) {
     return 2;
   }
 

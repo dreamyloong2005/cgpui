@@ -34,7 +34,8 @@ int main() {
   const std::string run = read_source("src/ui/runtime_run.cpp");
   const std::string behavior = read_source("tests/ui/window_runtime_multi_window_geometry_test.cpp");
   const std::string previous = read_source("tests/architecture/phase_f_multi_window_event_loop_ownership_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
@@ -42,7 +43,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&record, &activation, &events, &records,
       &frames, &resize, &window_render, &frame_schedule, &frame_state,
-      &scheduling, &run, &behavior, &previous, &xmake, &roadmap, &ledger_md,
+      &scheduling, &run, &behavior, &previous, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(record, "Size framebuffer_size{}") ||
@@ -79,8 +80,8 @@ int main() {
       line_count(frame_state) > 10 || line_count(scheduling) > 135 ||
       line_count(run) > 145 || line_count(behavior) > 210) return 8;
   if (!contains(previous, "Phase F Step 595") ||
-      !contains(xmake, "target(\"window_runtime_multi_window_geometry_test\")") ||
-      !contains(xmake, "target(\"phase_f_multi_window_geometry_isolation_structure_test\")")) return 9;
+      !contains(manifests, "\"window_runtime_multi_window_geometry_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_multi_window_geometry_isolation_structure_test.cpp\"")) return 9;
   constexpr const char* completion =
       "Phase F Step 596 stores framebuffer, viewport, scale, and redraw state per runtime window, routes child resize/render through that record, and preserves pending root invalidation across child frames. Step 597 multi-window input and focus isolation production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

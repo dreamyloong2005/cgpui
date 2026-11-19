@@ -38,7 +38,11 @@ int main() {
       "tests/header_cleanliness/test_app_header_cleanliness.cpp");
   const std::string runner_cleanliness = read_source(
       "tests/header_cleanliness/test_runner_header_cleanliness.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml") +
+      read_source("tests/header_cleanliness/mcpp.toml") +
+      read_source("tests/ui/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -49,7 +53,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &setup, &input, &timers, &async, &rendering, &services, &runner,
-      &app_cleanliness, &runner_cleanliness, &xmake, &roadmap, &ledger_md,
+      &app_cleanliness, &runner_cleanliness, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -62,26 +66,26 @@ int main() {
       !contains(runner, "#define CGPUI_TEST_WITH_OPTIONS")) return 2;
 
   const char* targets[]{
-      "phase_g_test_app_window_fixture_test",
-      "phase_g_test_app_simulated_input_test",
-      "phase_g_test_app_timer_control_test",
-      "phase_g_test_app_async_control_test",
-      "phase_g_test_app_rendering_control_test",
-      "phase_g_test_app_platform_services_test",
-      "phase_g_test_runner_test",
-      "phase_g_test_runner_macro_test",
-      "phase_g_test_app_window_setup_structure_test",
-      "phase_g_test_app_simulated_input_structure_test",
-      "phase_g_test_app_timer_control_structure_test",
-      "phase_g_test_app_async_control_structure_test",
-      "phase_g_test_app_rendering_control_structure_test",
-      "phase_g_test_app_platform_services_structure_test",
-      "phase_g_test_runner_structure_test",
-      "test_app_header_cleanliness",
-      "test_runner_header_cleanliness",
-      "phase_g_test_support_closeout_test"};
+      "test_app_window_setup_test.cpp",
+      "test_app_simulated_input_test.cpp",
+      "test_app_timer_control_test.cpp",
+      "test_app_async_control_test.cpp",
+      "test_app_rendering_control_test.cpp",
+      "test_app_platform_services_test.cpp",
+      "test_runner_test.cpp",
+      "test_runner_macro_test.cpp",
+      "phase_g_test_app_window_setup_structure_test.cpp",
+      "phase_g_test_app_simulated_input_structure_test.cpp",
+      "phase_g_test_app_timer_control_structure_test.cpp",
+      "phase_g_test_app_async_control_structure_test.cpp",
+      "phase_g_test_app_rendering_control_structure_test.cpp",
+      "phase_g_test_app_platform_services_structure_test.cpp",
+      "phase_g_test_runner_structure_test.cpp",
+      "test_app_header_cleanliness.cpp",
+      "test_runner_header_cleanliness.cpp",
+      "phase_g_test_support_closeout_test.cpp"};
   for (const char* target : targets) {
-    if (!contains(xmake, (std::string{"target(\""} + target + "\")").c_str())) {
+    if (!contains(manifests, (std::string{"\""} + target + "\"").c_str())) {
       return 3;
     }
   }

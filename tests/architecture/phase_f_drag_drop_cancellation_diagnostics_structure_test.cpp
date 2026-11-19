@@ -28,7 +28,8 @@ int main() {
       "tests/ui/window_runtime_drag_drop_cancellation_diagnostics_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_f_clipboard_ownership_diagnostics_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -38,7 +39,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&public_header, &runtime, &behavior, &previous,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(public_header, "bool cancelled = false;")) return 2;
   if (!contains(runtime,
@@ -54,10 +55,10 @@ int main() {
       !contains(previous, "Phase F Step 604")) return 4;
   if (line_count(public_header) > 45 || line_count(runtime) > 170 ||
       line_count(behavior) > 75) return 5;
-  if (!contains(xmake,
-                "target(\"window_runtime_drag_drop_cancellation_diagnostics_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_drag_drop_cancellation_diagnostics_structure_test\")")) return 6;
+  if (!contains(manifests,
+                "\"window_runtime_drag_drop_cancellation_diagnostics_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_drag_drop_cancellation_diagnostics_structure_test.cpp\"")) return 6;
   constexpr const char* completion =
       "Phase F Step 605 marks drag exits as cancelled runtime diagnostics, preserves successful enter/drop reporting, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 606 IME diagnostics and stress production behavior is next.";
   const std::string* documents[]{

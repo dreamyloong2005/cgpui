@@ -39,7 +39,8 @@ int main() {
       "tests/platform/wayland_atspi_role_state_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_wayland_atspi_tree_navigation_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source(
@@ -50,7 +51,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &object_header, &object, &role_header, &role, &messages, &behavior,
-      &previous, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
+      &previous, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -98,9 +99,9 @@ int main() {
           "wayland_atspi_role_for(PlatformAccessibilityRole::text_input).id != 79")) {
     return 7;
   }
-  if (!contains(xmake, "target(\"phase_g_wayland_atspi_role_state_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_wayland_atspi_role_state_structure_test\")")) {
+  if (!contains(manifests, "\"wayland_atspi_role_state_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_wayland_atspi_role_state_structure_test.cpp\"")) {
     return 8;
   }
   if (line_count(object_header) > 55 || line_count(object) > 65 ||

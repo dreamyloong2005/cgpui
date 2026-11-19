@@ -31,7 +31,7 @@ int main() {
     const auto header = read("src/platform/win32/win32_window_client_size_internal.hpp");
     const auto source = read("src/platform/win32/win32_window_client_size.cpp");
     const auto factory = read("src/platform/win32/win32_window_factory.cpp");
-    const auto module = read("build/xmake/capabilities/logical_window_size_targets.lua");
+    const auto module = read("tests/platform/mcpp.toml");
     require(lines(header) <= 30 && lines(source) <= 60 &&
             has(source, "GetDpiForWindow(hwnd)") &&
             has(source, "win32_outer_size_for_client("),
@@ -42,8 +42,8 @@ int main() {
             factory.find("win32_set_logical_client_size(") <
                 factory.find("ShowWindow("),
             "the factory must size the client after the chrome frame and before showing");
-    require(has(module, "tests/platform/win32_logical_window_size_test.cpp") &&
-            has(module, "is_plat(\"windows\")"),
+    require(has(module, "\"win32_logical_window_size_test.cpp\"") &&
+            has(module, "[target.'cfg(os = \"windows\")'.test]"),
             "the behavior test must be owned by its capability module");
     return 0;
   } catch (const std::exception& error) {

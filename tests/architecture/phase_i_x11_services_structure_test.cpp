@@ -40,11 +40,12 @@ int main() {
     return 2;
   }
   const std::string module =
-      read_source("build/xmake/phase_i_linux_backends.lua");
-  const std::string xmake = read_source("xmake.lua");
-  if (!contains(module, "target(\"cgpui_platform_linux_atspi\")") ||
-      !contains(module, "target(\"x11_platform_services_test\")") ||
-      !contains(xmake, "add_tests(\"x11_demo_smoke_flow\"")) {
+      read_source("packages/platform-linux-atspi/mcpp.toml") +
+      read_source("tests/platform/mcpp.toml");
+  const std::string manifests = read_source("examples/hello_window/mcpp.toml");
+  if (!contains(module, "[targets.cgpui_platform_linux_atspi]") ||
+      !contains(module, "\"x11_platform_services_test.cpp\"") ||
+      !contains(manifests, "\"tests/x11_demo_smoke_flow.cpp\"")) {
     return 3;
   }
   return 0;

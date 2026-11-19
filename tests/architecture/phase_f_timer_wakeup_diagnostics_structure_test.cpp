@@ -29,7 +29,8 @@ int main() {
       "tests/ui/window_runtime_timer_wakeup_diagnostics_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_f_scale_diagnostics_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -39,7 +40,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&public_header, &timers, &scheduling, &behavior,
-      &previous, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
+      &previous, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(public_header, "scheduling")) return 2;
@@ -57,10 +58,10 @@ int main() {
       !contains(previous, "Phase F Step 607")) return 4;
   if (line_count(public_header) > 50 || line_count(timers) > 115 ||
       line_count(scheduling) > 140 || line_count(behavior) > 70) return 5;
-  if (!contains(xmake,
-                "target(\"window_runtime_timer_wakeup_diagnostics_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_timer_wakeup_diagnostics_structure_test\")")) return 6;
+  if (!contains(manifests,
+                "\"window_runtime_timer_wakeup_diagnostics_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_timer_wakeup_diagnostics_structure_test.cpp\"")) return 6;
   constexpr const char* completion =
       "Phase F Step 608 records fired timer diagnostics with stable TimerIds, and verifies 64 zero-delay timers request platform wakeups and drain into a bounded 32-event tail. Step 609 task wakeup diagnostics and stress production behavior is next.";
   const std::string* documents[]{

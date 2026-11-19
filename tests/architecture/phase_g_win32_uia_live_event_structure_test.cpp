@@ -43,7 +43,8 @@ int main() {
       "tests/platform/win32_uia_event_test_support.hpp");
   const std::string source_guard = read_source(
       "tests/architecture/win32_window_source_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -53,7 +54,7 @@ int main() {
   const std::string* required[]{
       &event_header, &events, &updates, &lifetime, &adapter_header, &adapter,
       &behavior,
-      &test_support, &source_guard, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &test_support, &source_guard, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -85,9 +86,9 @@ int main() {
       !contains(behavior, "skipped_client_count") ||
       !contains(source_guard, "win32_uia_events.cpp") ||
       !contains(source_guard, "win32_uia_updates.cpp")) return 5;
-  if (!contains(xmake, "target(\"win32_uia_live_event_test\")") ||
-      !contains(xmake,
-                "phase_g_win32_uia_live_event_structure_test.cpp")) return 6;
+  if (!contains(manifests, "\"win32_uia_live_event_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_win32_uia_live_event_structure_test.cpp\"")) return 6;
   if (line_count(event_header) > 60 || line_count(events) > 160 ||
       line_count(updates) > 80 || line_count(adapter_header) > 80 ||
       line_count(adapter) > 120 || line_count(behavior) > 150 ||

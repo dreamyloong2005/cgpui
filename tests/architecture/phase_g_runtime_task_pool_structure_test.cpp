@@ -43,7 +43,8 @@ int main() {
       read_source("tests/async/runtime_task_pool_test.cpp");
   const std::string ui_structure =
       read_source("tests/architecture/ui_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/async/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -55,7 +56,7 @@ int main() {
   const std::string* required[]{
       &pool_header, &pool_source, &priority_source, &tasks_source, &shutdown_source,
       &runtime_internal, &diagnostics_header, &diagnostics_source, &behavior,
-      &ui_structure, &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan,
+      &ui_structure, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
       &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -106,8 +107,8 @@ int main() {
   }
   if (!contains(ui_structure, "src/ui/runtime_task_pool_internal.hpp") ||
       !contains(ui_structure, "src/ui/runtime_task_pool.cpp") ||
-      !contains(xmake, "target(\"phase_g_runtime_task_pool_test\")") ||
-      !contains(xmake, "target(\"phase_g_runtime_task_pool_structure_test\")")) {
+      !contains(manifests, "\"runtime_task_pool_test.cpp\"") ||
+      !contains(manifests, "\"phase_g_runtime_task_pool_structure_test.cpp\"")) {
     return 8;
   }
   if (line_count(pool_header) > 60 || line_count(pool_source) > 120 ||

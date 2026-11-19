@@ -51,7 +51,8 @@ int main() {
       read_source("tests/header_cleanliness/ui_header_cleanliness.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_runtime_task_cancellation_propagation_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/async/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
@@ -67,7 +68,7 @@ int main() {
       &public_header, &runtime_header, &context_header, &async_header,
       &internal, &hook_source, &registry_source, &completion_source,
       &scheduling, &shutdown, &behavior, &ui_structure, &header_cleanliness,
-      &previous, &xmake, &vocabulary, &core_parity, &roadmap, &ledger_md,
+      &previous, &manifests, &vocabulary, &core_parity, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -101,9 +102,9 @@ int main() {
       !contains(ui_structure, "src/ui/runtime_async_io_completion.cpp") ||
       !contains(header_cleanliness, "cgpui::AsyncIoHook async_io_hook") ||
       !contains(previous, "639 async I/O hook production behavior is next.") ||
-      !contains(xmake, "target(\"phase_g_runtime_async_io_hook_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_runtime_async_io_hook_structure_test\")")) {
+      !contains(manifests, "\"runtime_async_io_hook_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_runtime_async_io_hook_structure_test.cpp\"")) {
     return 8;
   }
   if (line_count(public_header) > 70 || line_count(internal) > 80 ||

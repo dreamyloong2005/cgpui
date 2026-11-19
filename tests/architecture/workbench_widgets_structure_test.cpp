@@ -103,11 +103,12 @@ int main() {
             "the menu surface uses the C5 shadow and optional C6 blur");
     require(has(read("src/ui/workbench/popover_menu_layout.cpp"), "measure_text("),
             "menu labels and accelerators use real text metrics");
-    const std::string module = read("build/xmake/capabilities/workbench_widgets_targets.lua");
-    require(has(module, "src/ui/workbench/*.cpp") && has(module, "example_workbench"),
+    const std::string module = read("packages/ui/mcpp.toml") +
+      read("examples/workbench/mcpp.toml");
+    require(has(module, "\"../../src/ui/workbench/*.cpp\"") && has(module, "[targets.example_workbench]"),
             "the capability module owns the sources and the example");
-    require(!has(read("xmake.lua"), "workbench"),
-            "workbench targets stay out of the root xmake.lua");
+    require(!has(read("mcpp.toml"), "workbench_"),
+            "workbench targets stay out of the root mcpp.toml");
   } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';
     return 1;

@@ -20,15 +20,18 @@ bool contains(const std::string& text, const char* value) {
 }  // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("mcpp.toml") +
+      read_source("packages/platform-linux-x11/mcpp.toml");
   const std::string backends =
-      read_source("build/xmake/phase_i_linux_backends.lua");
+      read_source("packages/platform-linux-wayland/mcpp.toml") +
+      read_source("packages/platform-linux-x11/mcpp.toml") +
+      read_source("packages/platform-linux-x11/build.mcpp");
   const std::string targets =
-      read_source("build/xmake/phase_i_structure_targets.lua");
-  if (!contains(xmake,
-                "includes(\"build/xmake/phase_i_linux_backends.lua\")") ||
-      !contains(xmake,
-                "includes(\"build/xmake/phase_i_structure_targets.lua\")") ||
+      read_source("tests/architecture/mcpp.toml");
+  if (!contains(manifests,
+                "\"packages/platform-linux-x11\",") ||
+      !contains(manifests,
+                "\"tests/architecture\",") ||
       backends.empty() || targets.empty()) {
     return 1;
   }
@@ -67,17 +70,19 @@ int main() {
     return 5;
   }
 
-  if (!contains(backends, "target(\"cgpui_platform_linux_wayland\")") ||
-      !contains(backends, "target(\"cgpui_platform_linux_x11\")") ||
-      !contains(backends, "src/platform/linux/x11/*.cpp") ||
-      !contains(backends, "add_syslinks(\"xcb\"") ||
-      !contains(backends, "libxkbcommon")) {
+  if (!contains(backends, "[targets.cgpui_platform_linux_wayland]") ||
+      !contains(backends, "[targets.cgpui_platform_linux_x11]") ||
+      !contains(backends, "\"../../src/platform/linux/x11/*.cpp\"") ||
+      !contains(backends, "\"xcb\"") ||
+      !contains(backends, "\"xkbcommon\"")) {
     return 6;
   }
 
   if (!contains(targets,
-                "target(\"phase_i_x11_boundary_structure_test\")") ||
-      contains(xmake, "src/platform/linux/x11/*.cpp")) {
+                "\"phase_i_x11_boundary_structure_test.cpp\"") ||
+      // cgpui_platform compiles only the shared X11 clipboard sources.
+      contains(read_source("packages/platform/mcpp.toml"),
+               "\"../../src/platform/linux/x11/*.cpp\"")) {
     return 7;
   }
 

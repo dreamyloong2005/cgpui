@@ -68,7 +68,9 @@ int main() {
       read_source("tests/ui/window_runtime_pointer_capture_platform_test.cpp");
   const std::string source_inventory =
       read_source("tests/architecture/win32_window_source_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -82,7 +84,7 @@ int main() {
       &capture_default, &capture_internal, &capture, &window_capture,
       &proc_header, &proc, &main_proc, &window_internal, &message_target,
       &runtime_capture, &runtime_input, &runtime_disabled, &behavior,
-      &runtime_behavior, &source_inventory, &xmake, &roadmap, &ledger_md,
+      &runtime_behavior, &source_inventory, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -129,11 +131,11 @@ int main() {
   if (!contains(behavior, "WM_CANCELMODE") ||
       !contains(runtime_behavior, "PointerCaptureChanged") ||
       !contains(source_inventory, "win32_pointer_capture.cpp") ||
-      !contains(xmake, "target(\"win32_pointer_capture_test\")") ||
-      !contains(xmake,
-                "target(\"window_runtime_pointer_capture_platform_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_win32_pointer_capture_structure_test\")")) {
+      !contains(manifests, "\"win32_pointer_capture_test.cpp\"") ||
+      !contains(manifests,
+                "\"window_runtime_pointer_capture_platform_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_win32_pointer_capture_structure_test.cpp\"")) {
     return 7;
   }
   if (line_count(capture_header) > 25 || line_count(capture_internal) > 20 ||

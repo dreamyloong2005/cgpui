@@ -41,35 +41,10 @@ int main() {
       read_source(".github/workflows/phase-g-windows-linux.yml");
   const std::string previous = read_source(
       "tests/architecture/phase_g_example_smoke_matrix_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
-  const std::string phase_h_targets =
-      read_source("build/xmake/phase_h_structure_targets.lua");
-  const std::string phase_h_closeout =
-      read_source("build/xmake/phase_h_closeout_targets.lua");
-  const std::string phase_i_targets =
-      read_source("build/xmake/phase_i_structure_targets.lua");
-  const std::string phase_i_closeout =
-      read_source("build/xmake/phase_i_closeout_targets.lua");
-  const std::string phase_j_audit =
-      read_source("build/xmake/phase_j_audit_targets.lua");
-  const std::string phase_j_examples =
-      read_source("build/xmake/phase_j_example_targets.lua");
-  const std::string phase_j_performance =
-      read_source("build/xmake/phase_j_performance_targets.lua");
-  const std::string phase_j_stress =
-      read_source("build/xmake/phase_j_stress_targets.lua");
-  const std::string phase_j_documentation =
-      read_source("build/xmake/phase_j_documentation_targets.lua");
-  const std::string phase_j_release =
-      read_source("build/xmake/phase_j_release_targets.lua");
-  const std::string phase_j_closeout =
-      read_source("build/xmake/phase_j_closeout_targets.lua");
-  std::string capability_targets;
-  for (const auto& entry : fs::directory_iterator(root / "build/xmake/capabilities")) {
-    if (!entry.is_regular_file() || entry.path().extension() != ".lua") continue;
-    std::ifstream module(entry.path());
-    capability_targets.append(std::istreambuf_iterator<char>(module), {});
-  }
+  // Each matrix entry names a test program of tests/architecture or
+  // tests/header_cleanliness; mcpp names it after its file.
+  const std::string manifests = read_source("tests/architecture/mcpp.toml") +
+      read_source("tests/header_cleanliness/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -79,18 +54,11 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &matrix, &windows, &linux, &workflow, &previous, &xmake, &phase_h_targets,
-      &phase_h_closeout, &phase_i_targets, &phase_i_closeout,
-      &phase_j_audit, &phase_j_examples, &phase_j_performance, &phase_j_stress,
-      &phase_j_documentation, &phase_j_release, &phase_j_closeout, &capability_targets,
+      &matrix, &windows, &linux, &workflow, &previous, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
-  const std::string registered_targets =
-      xmake + phase_h_targets + phase_h_closeout + phase_i_targets +
-      phase_i_closeout + phase_j_audit + phase_j_examples +
-      phase_j_performance + phase_j_stress + phase_j_documentation +
-      phase_j_release + phase_j_closeout + capability_targets;
+  const std::string& registered_targets = manifests;
 
   std::unordered_set<std::string> targets;
   std::unordered_set<std::string> sources;
@@ -109,11 +77,9 @@ int main() {
         !sources.insert(source).second) return 2;
     if (!source.starts_with("tests/architecture/") &&
         !source.starts_with("tests/header_cleanliness/")) return 2;
-    if (!fs::is_regular_file(root / source) ||
-        !contains(registered_targets, "target(\"" + target + "\")") ||
-        !contains(registered_targets, "add_files(\"" + source + "\")") &&
-        !contains(registered_targets,
-                  "add_files(path.join(os.projectdir(), \"" + source + "\")")) {
+    const std::string file = source.substr(source.rfind('/') + 1);
+    if (!fs::is_regular_file(root / source) || file != target + ".cpp" ||
+        !contains(registered_targets, "\"" + file + "\"")) {
       return 3;
     }
   }
@@ -144,11 +110,11 @@ int main() {
       !contains(workflow, "linux-architecture-header:") ||
       !contains(workflow, "scripts/ci/linux-architecture-header.sh")) return 7;
   if (!contains(previous, "Phase G Step 670 adds Windows and Linux CI") ||
-      !contains(xmake,
-                "target(\"phase_g_architecture_header_matrix_structure_test\")")) return 8;
+      !contains(manifests,
+                "\"phase_g_architecture_header_matrix_structure_test.cpp\"")) return 8;
   if (line_count(windows) > 105 ||
       line_count(linux) > 95 || line_count(workflow) > 170 ||
-      line_count(xmake) > 4370) return 9;
+      line_count(read_source("mcpp.toml")) > 100) return 9;
 
   constexpr const char* completion =
       "Phase G Step 671 adds Windows and Linux CI architecture/header "

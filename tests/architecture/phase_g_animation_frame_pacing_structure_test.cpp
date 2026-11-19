@@ -58,7 +58,8 @@ int main() {
       read_source("tests/header_cleanliness/ui_header_cleanliness.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_animation_cancellation_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/animation/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -74,7 +75,7 @@ int main() {
       &header, &diagnostics, &private_header, &pacing, &state, &start,
       &cancel, &tick, &element, &run, &diagnostic_source, &aggregate,
       &behavior, &lifecycle, &sequence, &ui_structure, &cleanliness, &previous,
-      &xmake, &vocabulary, &core, &roadmap, &ledger_md, &ledger_json,
+      &manifests, &vocabulary, &core, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -118,9 +119,9 @@ int main() {
   if (!contains(aggregate, "cgpui/ui/animation_frame_pacing.hpp") ||
       !contains(ui_structure, "runtime_animation_frame_pacing.cpp") ||
       !contains(cleanliness, "cgpui/ui/animation_frame_pacing.hpp") ||
-      !contains(xmake, "target(\"phase_g_animation_frame_pacing_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_animation_frame_pacing_structure_test\")") ||
+      !contains(manifests, "\"animation_frame_pacing_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_animation_frame_pacing_structure_test.cpp\"") ||
       !contains(previous, "Step 648 animation frame pacing") ||
       !contains(previous, "production behavior")) {
     return 7;

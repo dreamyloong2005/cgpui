@@ -43,7 +43,8 @@ int main() {
       "tests/platform/win32_uia_provider_lifetime_test.cpp");
   const std::string source_guard = read_source(
       "tests/architecture/win32_window_source_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -53,7 +54,7 @@ int main() {
   const std::string* required[]{
       &lifetime_header, &lifetime, &provider_object, &provider_state,
       &tree_state_header, &tree_state, &updates, &behavior, &source_guard,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(lifetime, "reconcile_win32_uia_provider_lifetime(") ||
@@ -75,9 +76,9 @@ int main() {
   if (!contains(source_guard, "win32_uia_lifetime.cpp") ||
       !contains(source_guard, "win32_uia_provider_state.cpp") ||
       !contains(source_guard, "win32_uia_tree_state.cpp") ||
-      !contains(xmake, "target(\"win32_uia_provider_lifetime_test\")") ||
-      !contains(xmake,
-                "phase_g_win32_uia_provider_lifetime_structure_test.cpp")) {
+      !contains(manifests, "\"win32_uia_provider_lifetime_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_win32_uia_provider_lifetime_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(lifetime_header) > 40 || line_count(lifetime) > 90 ||

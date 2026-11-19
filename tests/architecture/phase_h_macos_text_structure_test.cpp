@@ -56,12 +56,12 @@ int main() {
       !contains(content, "firstRectForCharacterRange:")) {
     return 3;
   }
-  const std::string module = read_source("build/xmake/phase_h_macos.lua");
+  const std::string module = read_source("tests/platform/mcpp.toml");
   const std::string targets =
-      read_source("build/xmake/phase_h_structure_targets.lua");
-  if (!contains(module, "target(\"macos_font_discovery_test\")") ||
-      !contains(module, "target(\"macos_text_input_test\")") ||
-      !contains(targets, "target(\"phase_h_macos_text_structure_test\")")) {
+      read_source("tests/architecture/mcpp.toml");
+  if (!contains(module, "\"macos/macos_*.mm\"") ||
+      !contains(module, "\"macos/macos_*.mm\"") ||
+      !contains(targets, "\"phase_h_macos_text_structure_test.cpp\"")) {
     return 4;
   }
   return 0;

@@ -39,7 +39,8 @@ int main() {
       "tests/platform/win32_uia_event_test_support.hpp");
   const std::string behavior = read_source(
       "tests/platform/win32_uia_runtime_change_integration_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -48,7 +49,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &runtime_updates, &runtime_window, &events, &updates, &runtime_support,
-      &event_support, &behavior, &xmake, &roadmap, &ledger_md, &ledger_json,
+      &event_support, &behavior, &manifests, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -71,10 +72,10 @@ int main() {
       !contains(events, "UIA_ValueValuePropertyId") ||
       !contains(events, "UIA_Text_TextChangedEventId") ||
       !contains(events, "UIA_AutomationFocusChangedEventId")) return 4;
-  if (!contains(xmake,
-                "target(\"win32_uia_runtime_change_integration_test\")") ||
-      !contains(xmake,
-                "phase_g_win32_uia_change_integration_structure_test.cpp")) {
+  if (!contains(manifests,
+                "\"win32_uia_runtime_change_integration_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_win32_uia_change_integration_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(events) > 160 || line_count(updates) > 80 ||

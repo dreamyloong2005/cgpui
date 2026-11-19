@@ -25,13 +25,14 @@ std::size_t line_count(const std::string& text) {
 
 int main() {
   const std::string module =
-      read_source("build/xmake/phase_j_documentation_targets.lua");
-  const std::string root = read_source("xmake.lua");
+      read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
+  const std::string root = read_source("mcpp.toml");
   const std::string manifest = read_source("scripts/ci/architecture-header-targets.txt");
   if (module.empty() || root.empty() || manifest.empty()) return 1;
-  if (!contains(root, "includes(\"build/xmake/phase_j_documentation_targets.lua\")") ||
-      !contains(module, "target(\"phase_j_documentation_audit_test\")") ||
-      !contains(module, "target(\"phase_j_documentation_structure_test\")") ||
+  if (!contains(root, "\"tests/architecture\",") ||
+      !contains(module, "\"phase_j_documentation_audit_test.cpp\"") ||
+      !contains(module, "\"phase_j_documentation_structure_test.cpp\"") ||
       !contains(manifest, "phase_j_documentation_structure_test")) return 2;
   const std::array paths{
       "README.md", "docs/getting-started.md", "docs/architecture.md",
@@ -41,6 +42,6 @@ int main() {
     const std::string source = read_source(path);
     if (source.empty() || line_count(source) > 180) return 3;
   }
-  if (line_count(module) > 30) return 4;
+  if (line_count(read_source("tests/architecture/mcpp.toml")) > 240) return 4;
   return 0;
 }

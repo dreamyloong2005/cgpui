@@ -31,7 +31,7 @@ int main() {
   const std::string diagnostics = read_source(
       "tests/architecture/phase_f_native_menu_dispatch_diagnostics_structure_test.cpp");
   const std::string wayland = read_source("src/platform/linux/wayland_native.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -39,7 +39,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&tree, &state, &replacement, &display,
-      &registration, &dispatch, &diagnostics, &wayland, &xmake, &roadmap,
+      &registration, &dispatch, &diagnostics, &wayland, &manifests, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(tree, "Phase F Step 579") ||
@@ -52,9 +52,9 @@ int main() {
   if (!contains(wayland, ".supported = false") ||
       !contains(wayland, ".backend = \"wayland\"") ||
       !contains(wayland, ".skipped_accelerator_count = accelerator_count")) return 3;
-  if (!contains(xmake, "target(\"phase_f_native_menu_closeout_structure_test\")") ||
-      !contains(xmake, "target(\"phase_f_native_menu_dispatch_diagnostics_structure_test\")") ||
-      !contains(xmake, "target(\"phase_f_win32_native_menu_tree_structure_test\")")) return 4;
+  if (!contains(manifests, "\"phase_f_native_menu_closeout_structure_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_native_menu_dispatch_diagnostics_structure_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_win32_native_menu_tree_structure_test.cpp\"")) return 4;
   constexpr const char* completion =
       "Phase F Step 586 audits and closes the Steps 579-585 native-menu and accelerator band, freezing Win32 menu tree/state/replacement, accelerator display/registration, command dispatch, diagnostics, and explicit Wayland unsupported behavior. Step 587 open-file dialog production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

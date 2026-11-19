@@ -75,7 +75,9 @@ int main() {
       "tests/platform/wayland_child_window_ownership_test.cpp");
   const std::string compositor =
       read_source("tests/platform/wayland_test_compositor.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -89,7 +91,7 @@ int main() {
       &runtime_windows, &runtime_activation, &runtime_ownership, &runtime_run,
       &win32_application, &win32_factory, &wayland_child, &wayland_creation,
       &wayland_protocol, &wayland_window, &wayland_internal, &runtime_test,
-      &win32_test, &wayland_test, &compositor, &xmake, &roadmap, &ledger_md,
+      &win32_test, &wayland_test, &compositor, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
@@ -121,11 +123,11 @@ int main() {
   }
   if (!contains(runtime_test, "creation_order ==") ||
       !contains(runtime_test, "received_root_parent") ||
-      !contains(xmake, "target(\"win32_child_window_ownership_test\")") ||
-      !contains(xmake, "target(\"wayland_child_window_ownership_test\")") ||
-      !contains(xmake, "target(\"window_runtime_child_ownership_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_child_window_ownership_structure_test\")")) {
+      !contains(manifests, "\"win32_child_window_ownership_test.cpp\"") ||
+      !contains(manifests, "\"wayland_child_window_ownership_test.cpp\"") ||
+      !contains(manifests, "\"window_runtime_child_ownership_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_child_window_ownership_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(platform_default) > 20 ||

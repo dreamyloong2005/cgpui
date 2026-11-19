@@ -33,7 +33,7 @@ int main() {
     const auto proc = read("src/platform/win32/win32_window_proc.cpp");
     const auto backdrop = read("src/platform/win32/win32_window_backdrop.cpp");
     const auto factory = read("src/platform/win32/win32_window_factory.cpp");
-    const auto module = read("build/xmake/capabilities/backdrop_erase_targets.lua");
+    const auto module = read("tests/platform/mcpp.toml");
     require(lines(header) <= 20 && lines(source) <= 35 &&
             has(source, "WM_ERASEBKGND") && has(source, "BLACK_BRUSH") &&
             has(source, "win32_window_backdrop_property"),
@@ -45,7 +45,7 @@ int main() {
             "extending the frame must erase the redirection surface again");
     require(!has(factory, "hbrBackground"),
             "opaque windows keep the null class brush");
-    require(has(module, "tests/platform/win32_backdrop_erase_test.cpp"),
+    require(has(module, "\"win32_backdrop_erase_test.cpp\""),
             "the behavior test must be owned by its capability module");
     return 0;
   } catch (const std::exception& error) {

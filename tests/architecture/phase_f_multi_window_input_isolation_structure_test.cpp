@@ -35,7 +35,8 @@ int main() {
   const std::string behavior = read_source("tests/ui/window_runtime_multi_window_input_test.cpp");
   const std::string previous = read_source("tests/architecture/phase_f_multi_window_geometry_isolation_structure_test.cpp");
   const std::string ui_structure = read_source("tests/architecture/ui_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
@@ -43,7 +44,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&record, &state, &state_header, &private_header,
       &context, &events, &dispatch, &lifecycle, &focus, &capture, &records,
-      &behavior, &previous, &ui_structure, &xmake, &roadmap, &ledger_md,
+      &behavior, &previous, &ui_structure, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(record, "ViewInputState input{}") ||
@@ -70,8 +71,8 @@ int main() {
       line_count(context) > 90 || line_count(events) > 110 ||
       line_count(focus) > 90 || line_count(capture) > 50 ||
       line_count(records) > 145 || line_count(behavior) > 210) return 7;
-  if (!contains(xmake, "target(\"window_runtime_multi_window_input_test\")") ||
-      !contains(xmake, "target(\"phase_f_multi_window_input_isolation_structure_test\")")) return 8;
+  if (!contains(manifests, "\"window_runtime_multi_window_input_test.cpp\"") ||
+      !contains(manifests, "\"phase_f_multi_window_input_isolation_structure_test.cpp\"")) return 8;
   constexpr const char* completion =
       "Phase F Step 597 stores input state per runtime window, routes context focus and pointer capture to the originating window, and keeps root input accessors synchronized without child contamination. Step 598 multi-window event routing isolation production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

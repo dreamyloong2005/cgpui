@@ -36,8 +36,7 @@ int main() {
     const auto native_header = read("src/ui/text_glyph_raster_win32_internal.hpp");
     const auto coverage_header = read("src/ui/text_glyph_coverage_win32_internal.hpp");
     const auto production = read("src/renderer/vulkan/vulkan_report_text_quads.cpp");
-    const auto build = read("xmake.lua");
-    const auto module = read("build/xmake/capabilities/native_text_targets.lua");
+    const auto build = read("mcpp.toml");
     const auto pixel_shape = read("tests/renderer/vulkan_text_pixel_shape_support.hpp");
     require(lines(pixel_shape) <= 60 && has(pixel_shape, "text_ink_shape("),
             "pixel glyph shape inspection must stay in a focused test helper");
@@ -57,17 +56,18 @@ int main() {
             "DirectWrite layout and coverage extraction must remain separate modules");
     require(has(production, "rasterize_text_glyph(") && !has(production, "rasterize_fallback_glyph("),
             "Vulkan production glyph preparation bypassed the native rasterizer");
-    const auto renderer_start = module.find("target(\"cgpui_renderer\")");
-    const auto renderer_end = module.find("target_end()", renderer_start);
-    const auto renderer = module.substr(renderer_start, renderer_end - renderer_start);
-    require(renderer_start != std::string::npos && has(build, "includes(\"build/xmake/capabilities/*.lua\")") &&
-            has(renderer, "text_glyph_rasterizer.cpp") && has(renderer, "text_glyph_raster_win32.cpp") &&
-            has(renderer, "text_glyph_coverage_win32.cpp") && has(renderer, "add_syslinks(\"dwrite\""),
+    // packages/renderer compiles and links the native rasterizer;
+    // packages/ui leaves those sources out of its src/ui wildcard.
+    const auto renderer = read("packages/renderer/mcpp.toml");
+    require(has(build, "\"tests/ui\",") &&
+            has(renderer, "\"../../src/ui/text_glyph_rasterizer.cpp\"") &&
+            has(renderer, "\"../../src/ui/text_glyph_raster_win32.cpp\"") &&
+            has(renderer, "\"../../src/ui/text_glyph_coverage_win32.cpp\"") &&
+            has(renderer, "ldflags = [\"dwrite.lib\"]"),
             "native rasterizer must be owned and linked by cgpui_renderer");
-    const auto ui_start = module.find("target(\"cgpui_ui\")");
-    const auto ui = module.substr(ui_start, module.find("target_end()", ui_start) - ui_start);
+    const auto ui = read("packages/ui/mcpp.toml");
     for (const auto* source : {"text_glyph_rasterizer.cpp", "text_glyph_raster_win32.cpp", "text_glyph_coverage_win32.cpp"}) {
-      require(ui_start != std::string::npos && has(ui, std::string("remove_files(path.join(os.projectdir(), \"src/ui/") + source + "\"))"),
+      require(has(ui, std::string("\"!../../src/ui/") + source + "\""),
               "UI wildcard duplicated renderer-owned native rasterizer sources");
     }
     return 0;

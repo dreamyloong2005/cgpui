@@ -56,7 +56,9 @@ int main() {
       read_source("tests/platform/wayland_pointer_motion_test.cpp");
   const std::string runtime_behavior =
       read_source("tests/ui/window_runtime_pointer_exit_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/ui/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -70,7 +72,7 @@ int main() {
       &window_bridge, &window_events, &event_kind, &event_pointer_internal,
       &runtime_input, &runtime_windows, &runtime_record_input, &wayland_behavior,
       &runtime_behavior,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -106,10 +108,10 @@ int main() {
       !contains(wayland_behavior, "request_pointer_leave()") ||
       !contains(runtime_behavior, "EventKind::pointer_exited") ||
       !contains(runtime_behavior, "exit_cleared_hover") ||
-      !contains(xmake, "target(\"wayland_pointer_motion_test\")") ||
-      !contains(xmake, "target(\"window_runtime_pointer_exit_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_pointer_motion_structure_test\")")) {
+      !contains(manifests, "\"wayland_pointer_motion_test.cpp\"") ||
+      !contains(manifests, "\"window_runtime_pointer_exit_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_pointer_motion_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(application_pointer) > 80 || line_count(window_events) > 70 ||

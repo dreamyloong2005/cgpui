@@ -34,7 +34,7 @@ int main() {
       read_source(".github/workflows/phase-g-windows-linux.yml");
   const std::string previous = read_source(
       "tests/architecture/phase_g_release_packaging_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -44,7 +44,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &targets, &windows, &linux, &workflow, &previous, &xmake,
+      &targets, &windows, &linux, &workflow, &previous, &manifests,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -98,13 +98,13 @@ int main() {
       !contains(workflow, "mesa-vulkan-drivers")) return 5;
 
   if (!contains(previous, "Phase G Step 669 adds Windows and Linux Release") ||
-      !contains(xmake,
-                "target(\"phase_g_example_smoke_matrix_structure_test\")")) {
+      !contains(manifests,
+                "\"phase_g_example_smoke_matrix_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(targets) > 30 || line_count(windows) > 150 ||
       line_count(linux) > 180 || line_count(workflow) > 210 ||
-      line_count(xmake) > 4360) return 7;
+      line_count(read_source("mcpp.toml")) > 100) return 7;
 
   constexpr const char* completion =
       "Phase G Step 670 adds Windows and Linux CI example/smoke matrices "

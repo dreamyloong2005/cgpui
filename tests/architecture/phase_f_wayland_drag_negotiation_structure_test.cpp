@@ -27,14 +27,14 @@ int main() {
   const std::string events = read_source("src/platform/linux/wayland_data_device_drag_events.cpp");
   const std::string behavior = read_source("tests/platform/wayland_pointer_button_test.cpp");
   const std::string compositor = read_source("tests/platform/wayland_test_compositor.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string* required[]{&header, &offer, &actions, &events, &behavior,
-                                &compositor, &xmake, &roadmap, &ledger_md,
+                                &compositor, &manifests, &roadmap, &ledger_md,
                                 &ledger_json, &task_plan, &findings};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(header, "WaylandDataDevice* owner = nullptr") ||
@@ -56,7 +56,7 @@ int main() {
   if (line_count(header) > 110 || line_count(offer) > 120 ||
       line_count(actions) > 115 || line_count(events) > 90 ||
       line_count(behavior) > 360 || line_count(compositor) > 3700) return 6;
-  if (!contains(xmake, "target(\"phase_f_wayland_drag_negotiation_structure_test\")")) return 7;
+  if (!contains(manifests, "\"phase_f_wayland_drag_negotiation_structure_test.cpp\"")) return 7;
   constexpr const char* completion =
       "Phase F Step 573 makes Wayland drag negotiation order-safe, advertises destination copy/move capabilities independently of source actions, renegotiates late offer events, preserves pending enter actions, and rejects invalid finish requests. Step 574 Wayland data-device finish negotiation production behavior is next.";
   const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};

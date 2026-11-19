@@ -59,7 +59,8 @@ int main() {
       read_source("tests/architecture/ui_source_structure_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_runtime_task_priority_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/async/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
@@ -77,7 +78,7 @@ int main() {
       &propagation_source,
       &handle_source, &context_source, &async_source, &tasks_source,
       &runtime_internal, &behavior, &header_cleanliness, &ui_structure,
-      &previous, &xmake, &vocabulary, &core_parity, &roadmap, &ledger_md,
+      &previous, &manifests, &vocabulary, &core_parity, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -141,9 +142,9 @@ int main() {
     if (!contains(ui_structure, path)) return 11;
   }
   if (!contains(previous, "Step 637 structured") ||
-      !contains(xmake, "target(\"phase_g_runtime_task_group_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_runtime_task_group_structure_test\")")) {
+      !contains(manifests, "\"runtime_task_group_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_runtime_task_group_structure_test.cpp\"")) {
     return 12;
   }
   if (line_count(public_header) > 80 || line_count(group_internal) > 70 ||

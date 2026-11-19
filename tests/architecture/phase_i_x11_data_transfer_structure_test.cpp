@@ -53,11 +53,11 @@ int main() {
   }
   const std::string factory = read_source("src/platform/clipboard.cpp");
   const std::string module =
-      read_source("build/xmake/phase_i_linux_backends.lua");
+      read_source("tests/platform/mcpp.toml");
   if (!contains(factory, "LinuxPlatformBackend::x11") ||
       !contains(factory, "create_x11_clipboard") ||
-      !contains(module, "target(\"x11_clipboard_test\")") ||
-      !contains(module, "target(\"x11_drag_drop_test\")")) {
+      !contains(module, "\"x11_clipboard_test.cpp\"") ||
+      !contains(module, "\"x11_drag_drop_test.cpp\"")) {
     return 3;
   }
   return 0;

@@ -51,7 +51,7 @@ int main() {
     const auto monitor = read("src/platform/linux/wayland_portal_appearance_monitor.cpp");
     const auto reader = read("src/platform/linux/wayland_portal_appearance_read.cpp");
     const auto signals = read("src/platform/linux/wayland_portal_appearance_signals.cpp");
-    const auto module = read("build/xmake/capabilities/wayland_system_appearance_targets.lua");
+    const auto module = read("tests/platform/mcpp.toml");
     require(platform_neutral(appearance) && platform_neutral(dpi) &&
             platform_neutral(application),
             "public appearance/DPI headers must not expose D-Bus or Wayland");
@@ -87,10 +87,10 @@ int main() {
             has(reader, "\"Read\"") && has(signals, "dbus_connection_dispatch(") &&
             has(signals, ".changed = changed"),
             "portal monitor must be split into connect, read, and signal modules");
-    require(has(module, "is_plat(\"linux\")") &&
-            has(module, "wayland_portal_settings_test") &&
-            has(module, "wayland_portal_appearance_monitor_test") &&
-            has(module, "wayland_dpi_awareness_test"),
+    require(has(module, "[target.'cfg(os = \"linux\")'.test]") &&
+            has(module, "\"wayland_portal_settings_test.cpp\"") &&
+            has(module, "\"wayland_portal_appearance_monitor_test.cpp\"") &&
+            has(module, "\"wayland_dpi_awareness_test.cpp\""),
             "Linux appearance targets must live in the guarded capability module");
     return 0;
   } catch (const std::exception& error) {

@@ -42,7 +42,8 @@ int main() {
       "src/platform/win32/win32_window_proc_keyboard.cpp");
   const std::string behavior =
       read_source("tests/platform/win32_keyboard_key_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -53,7 +54,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &keyboard_header, &decoder, &decoder_header, &internal, &proc, &behavior,
-      &xmake, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -75,9 +76,9 @@ int main() {
   if (!contains(behavior, "WM_SYSKEYDOWN") ||
       !contains(behavior, "repeat_count != 3") ||
       !contains(behavior, "events[3].extended") ||
-      !contains(xmake, "target(\"win32_keyboard_key_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_win32_keyboard_key_structure_test\")")) {
+      !contains(manifests, "\"win32_keyboard_key_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_win32_keyboard_key_structure_test.cpp\"")) {
     return 3;
   }
   if (line_count(keyboard_header) > 35 || line_count(decoder_header) > 20 ||

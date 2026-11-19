@@ -74,7 +74,6 @@ discover = [
     "phase_e_clip_composition_integration_closeout_test.cpp",
     "phase_e_final_closeout_test.cpp",
     "phase_e_glyph_atlas_integration_closeout_test.cpp",
-    "phase_e_glyph_atlas_production_test.cpp",
     "phase_e_image_integration_closeout_test.cpp",
     "phase_e_pixel_output_integration_closeout_test.cpp",
     "phase_e_renderer_diagnostics_integration_closeout_test.cpp",
@@ -122,4 +121,10 @@ discover = [
     "view_handle_spelling_test.cpp",
     "window_context_capability_test.cpp",
     "window_view_observation_test.cpp",
+]
+
+# Windows and Linux only (Vulkan, or a backend macOS does not have).
+[target.'cfg(any(os = "windows", os = "linux"))'.test]
+discover = [
+    "phase_e_glyph_atlas_production_test.cpp",
 ]

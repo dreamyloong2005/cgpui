@@ -39,7 +39,8 @@ int main() {
       read_source("tests/header_cleanliness/prelude_header_cleanliness.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_asset_cache_key_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/assets/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -53,7 +54,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &key_header, &error, &source, &behavior, &core_cleanliness,
-      &prelude, &prelude_cleanliness, &previous, &xmake, &vocabulary, &core,
+      &prelude, &prelude_cleanliness, &previous, &manifests, &vocabulary, &core,
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -86,9 +87,9 @@ int main() {
       !contains(prelude, "cgpui/core/asset_reload.hpp") ||
       !contains(previous, "Step 656 asset reload invalidation production ") ||
       !contains(previous, "behavior is next.") ||
-      !contains(xmake, "target(\"phase_g_asset_reload_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_asset_reload_structure_test\")")) {
+      !contains(manifests, "\"asset_reload_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_asset_reload_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(header) > 65 || line_count(source) > 130 ||

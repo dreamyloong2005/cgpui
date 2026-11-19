@@ -36,7 +36,8 @@ int main() {
       "tests/platform/wayland_test_compositor.cpp");
   const std::string behavior = read_source(
       "tests/platform/wayland_configure_lifecycle_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -47,7 +48,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &configure, &configure_internal, &window_internal, &helper,
-      &compositor_header, &compositor, &behavior, &xmake, &roadmap,
+      &compositor_header, &compositor, &behavior, &manifests, &roadmap,
       &ledger_md, &ledger_json, &task_plan, &findings};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(configure, "bool WaylandWindow::acknowledge_configure(") ||
@@ -72,9 +73,9 @@ int main() {
                 "request_toplevel_configure_state(0, 0") ||
       !contains(behavior, "wait_for_toplevel_configure_sent_count(4)") ||
       !contains(behavior, "resize_count.load() != 2") ||
-      !contains(xmake, "target(\"wayland_configure_lifecycle_test\")") ||
-      !contains(xmake,
-                "target(\"phase_f_wayland_configure_lifecycle_structure_test\")")) {
+      !contains(manifests, "\"wayland_configure_lifecycle_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_f_wayland_configure_lifecycle_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(configure) > 100 || line_count(configure_internal) > 25 ||

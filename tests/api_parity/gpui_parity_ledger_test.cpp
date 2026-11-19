@@ -1600,271 +1600,275 @@ int main() {
     return 79;
   }
 
-  const std::string xmake = read_source("xmake.lua");
-  if (!contains(xmake, "target(\"gpui_parity_ledger_test\")") ||
-      !contains(xmake, "target(\"context_render_spelling_test\")") ||
-      !contains(xmake, "target(\"context_capabilities_test\")") ||
-      !contains(xmake, "target(\"app_context_capability_test\")") ||
-      !contains(xmake, "target(\"view_context_capability_test\")") ||
-      !contains(xmake, "target(\"window_context_capability_test\")") ||
-      !contains(xmake, "target(\"element_context_capability_test\")") ||
-      !contains(xmake, "target(\"view_handle_spelling_test\")") ||
-      !contains(xmake, "target(\"public_authoring_surface_test\")") ||
-      !contains(xmake, "target(\"entity_lifecycle_creation_test\")") ||
-      !contains(xmake, "target(\"entity_weak_handle_semantics_test\")") ||
-      !contains(xmake, "target(\"entity_observation_test\")") ||
-      !contains(xmake,
-                "target(\"window_runtime_observation_closure_test\")") ||
-      !contains(xmake, "target(\"entity_transaction_test\")") ||
-      !contains(xmake, "target(\"entity_invalidation_test\")") ||
-      !contains(xmake, "target(\"entity_deletion_test\")") ||
-      !contains(xmake, "target(\"typed_action_surface_test\")") ||
-      !contains(xmake, "target(\"typed_action_dispatch_test\")") ||
-      !contains(xmake, "target(\"action_scope_metadata_test\")") ||
-      !contains(xmake, "target(\"action_enablement_metadata_test\")") ||
-      !contains(xmake, "target(\"action_bubbling_test\")") ||
-      !contains(xmake, "target(\"key_binding_grammar_test\")") ||
-      !contains(xmake, "target(\"key_binding_platform_modifier_test\")") ||
-      !contains(xmake, "target(\"keymap_context_test\")") ||
-      !contains(xmake, "target(\"typed_action_command_metadata_test\")") ||
-      !contains(xmake, "target(\"command_palette_key_integration_test\")") ||
-      !contains(xmake,
-                "target(\"test_context_keystroke_simulation_test\")") ||
-      !contains(xmake,
-                "target(\"test_context_pointer_simulation_test\")") ||
-      !contains(xmake, "target(\"test_context_time_async_test\")") ||
-      !contains(xmake, "target(\"test_context_frame_pump_test\")") ||
-      !contains(xmake, "target(\"renderer_frame_result_conventions_test\")") ||
-      !contains(xmake, "target(\"async_spawn_result_conventions_test\")") ||
-      !contains(xmake, "target(\"api_parity_hello_world\")") ||
-      !contains(xmake,
-                "target(\"api_parity_public_api_compatibility\")") ||
-      !contains(xmake,
-                "target(\"api_parity_public_authoring_workflow\")") ||
-      !contains(xmake,
-                "target(\"api_parity_public_context_capabilities\")") ||
-      !contains(xmake,
-                "target(\"api_parity_public_async_test_workflow\")") ||
-      !contains(xmake,
-                "target(\"api_parity_public_phase_b_surface_closure\")") ||
-      !contains(xmake,
-                "target(\"public_api_compatibility_examples_test\")") ||
-      !contains(xmake,
-                "target(\"public_api_example_expansion_test\")") ||
-      !contains(xmake,
-                "target(\"public_context_capability_example_test\")") ||
-      !contains(xmake,
-                "target(\"public_async_test_workflow_example_test\")") ||
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/ui/mcpp.toml") +
+      read_source("examples/api_parity/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml") +
+      read_source("packages/ui/mcpp.toml");
+  if (!contains(manifests, "\"gpui_parity_ledger_test.cpp\"") ||
+      !contains(manifests, "\"context_render_spelling_test.cpp\"") ||
+      !contains(manifests, "\"context_capabilities_test.cpp\"") ||
+      !contains(manifests, "\"app_context_capability_test.cpp\"") ||
+      !contains(manifests, "\"view_context_capability_test.cpp\"") ||
+      !contains(manifests, "\"window_context_capability_test.cpp\"") ||
+      !contains(manifests, "\"element_context_capability_test.cpp\"") ||
+      !contains(manifests, "\"view_handle_spelling_test.cpp\"") ||
+      !contains(manifests, "\"public_authoring_surface_test.cpp\"") ||
+      !contains(manifests, "\"entity_lifecycle_creation_test.cpp\"") ||
+      !contains(manifests, "\"entity_weak_handle_semantics_test.cpp\"") ||
+      !contains(manifests, "\"entity_observation_test.cpp\"") ||
+      !contains(manifests,
+                "\"window_runtime_observation_closure_test.cpp\"") ||
+      !contains(manifests, "\"entity_transaction_test.cpp\"") ||
+      !contains(manifests, "\"entity_invalidation_test.cpp\"") ||
+      !contains(manifests, "\"entity_deletion_test.cpp\"") ||
+      !contains(manifests, "\"typed_action_surface_test.cpp\"") ||
+      !contains(manifests, "\"typed_action_dispatch_test.cpp\"") ||
+      !contains(manifests, "\"action_scope_metadata_test.cpp\"") ||
+      !contains(manifests, "\"action_enablement_metadata_test.cpp\"") ||
+      !contains(manifests, "\"action_bubbling_test.cpp\"") ||
+      !contains(manifests, "\"key_binding_grammar_test.cpp\"") ||
+      !contains(manifests, "\"key_binding_platform_modifier_test.cpp\"") ||
+      !contains(manifests, "\"keymap_context_test.cpp\"") ||
+      !contains(manifests, "\"typed_action_command_metadata_test.cpp\"") ||
+      !contains(manifests, "\"command_palette_key_integration_test.cpp\"") ||
+      !contains(manifests,
+                "\"test_context_keystroke_simulation_test.cpp\"") ||
+      !contains(manifests,
+                "\"test_context_pointer_simulation_test.cpp\"") ||
+      !contains(manifests, "\"test_context_time_async_test.cpp\"") ||
+      !contains(manifests, "\"test_context_frame_pump_test.cpp\"") ||
+      !contains(manifests, "\"renderer_frame_result_conventions_test.cpp\"") ||
+      !contains(manifests, "\"async_spawn_result_conventions_test.cpp\"") ||
+      !contains(manifests, "[targets.api_parity_hello_world]") ||
+      !contains(manifests,
+                "[targets.api_parity_public_api_compatibility]") ||
+      !contains(manifests,
+                "[targets.api_parity_public_authoring_workflow]") ||
+      !contains(manifests,
+                "[targets.api_parity_public_context_capabilities]") ||
+      !contains(manifests,
+                "[targets.api_parity_public_async_test_workflow]") ||
+      !contains(manifests,
+                "[targets.api_parity_public_phase_b_surface_closure]") ||
+      !contains(manifests,
+                "\"public_api_compatibility_examples_test.cpp\"") ||
+      !contains(manifests,
+                "\"public_api_example_expansion_test.cpp\"") ||
+      !contains(manifests,
+                "\"public_context_capability_example_test.cpp\"") ||
+      !contains(manifests,
+                "\"public_async_test_workflow_example_test.cpp\"") ||
       !contains(
-          xmake,
-          "target(\"public_phase_b_surface_closure_example_test\")") ||
-      !contains(xmake,
-                "target(\"public_authoring_vocabulary_freeze_test\")") ||
-      !contains(xmake,
-                "target(\"public_phase_b_completion_audit_test\")") ||
-      !contains(xmake,
-                "target(\"phase_c_style_cascade_depth_audit_test\")") ||
-      !contains(xmake,
-                "target(\"phase_c_focusable_interactable_audit_test\")") ||
-      !contains(xmake,
-                "target(\"phase_c_uniform_list_audit_test\")") ||
-      !contains(xmake,
-                "target(\"phase_c_window_examples_public_api_test\")") ||
-      !contains(xmake,
-                "target(\"phase_c_window_examples_workflow_test\")") ||
+          manifests,
+          "\"public_phase_b_surface_closure_example_test.cpp\"") ||
+      !contains(manifests,
+                "\"public_authoring_vocabulary_freeze_test.cpp\"") ||
+      !contains(manifests,
+                "\"public_phase_b_completion_audit_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_style_cascade_depth_audit_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_focusable_interactable_audit_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_uniform_list_audit_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_window_examples_public_api_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_window_examples_workflow_test.cpp\"") ||
       !contains(
-          xmake,
-          "target(\"phase_c_window_examples_widget_catalog_test\")") ||
+          manifests,
+          "\"phase_c_window_examples_widget_catalog_test.cpp\"") ||
       !contains(
-          xmake,
-          "target(\"phase_c_window_examples_interaction_states_test\")") ||
-      !contains(xmake,
-                "target(\"phase_c_window_examples_service_matrix_test\")") ||
-      !contains(xmake,
-                "target(\"phase_c_window_examples_closeout_test\")") ||
-      !contains(xmake, "target(\"phase_c_svg_image_front_end_test\")") ||
-      !contains(xmake,
-                "target(\"phase_c_svg_image_asset_registration_test\")") ||
-      !contains(xmake, "target(\"builtin_widget_test\")") ||
-      !contains(xmake, "target(\"widget_source_structure_test\")") ||
-      !contains(xmake, "target(\"api_parity_public_window_examples\")") ||
-      !contains(xmake,
-                "target(\"api_parity_public_window_examples_workflow\")") ||
+          manifests,
+          "\"phase_c_window_examples_interaction_states_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_window_examples_service_matrix_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_window_examples_closeout_test.cpp\"") ||
+      !contains(manifests, "\"phase_c_svg_image_front_end_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_svg_image_asset_registration_test.cpp\"") ||
+      !contains(manifests, "\"builtin_widget_test.cpp\"") ||
+      !contains(manifests, "\"widget_source_structure_test.cpp\"") ||
+      !contains(manifests, "[targets.api_parity_public_window_examples]") ||
+      !contains(manifests,
+                "[targets.api_parity_public_window_examples_workflow]") ||
       !contains(
-          xmake,
-          "target(\"api_parity_public_window_examples_widget_catalog\")") ||
+          manifests,
+          "[targets.api_parity_public_window_examples_widget_catalog]") ||
       !contains(
-          xmake,
-          "target(\"api_parity_public_window_examples_interaction_states\")") ||
+          manifests,
+          "[targets.api_parity_public_window_examples_interaction_states]") ||
       !contains(
-          xmake,
-          "target(\"api_parity_public_window_examples_service_matrix\")") ||
-      !contains(xmake, "tests/api_parity/gpui_parity_ledger_test.cpp") ||
-      !contains(xmake, "tests/api_parity/context_render_spelling_test.cpp") ||
-      !contains(xmake, "tests/api_parity/context_capabilities_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/app_context_capability_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/view_context_capability_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/window_context_capability_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/element_context_capability_test.cpp") ||
-      !contains(xmake, "tests/api_parity/view_handle_spelling_test.cpp") ||
-      !contains(xmake, "tests/api_parity/public_authoring_surface_test.cpp") ||
-      !contains(xmake, "tests/api_parity/entity_lifecycle_creation_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/entity_weak_handle_semantics_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/entity_observation_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/window_runtime_observation_closure_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/entity_transaction_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/entity_invalidation_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/entity_deletion_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/typed_action_surface_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/typed_action_dispatch_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/action_scope_metadata_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/action_enablement_metadata_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/action_bubbling_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/key_binding_grammar_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/key_binding_platform_modifier_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/keymap_context_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/key_binding_partial_match_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/key_binding_disabled_scope_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/typed_action_command_metadata_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/command_palette_key_integration_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/test_context_keystroke_simulation_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/test_context_pointer_simulation_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/test_context_time_async_test.cpp") ||
-      !contains(xmake,
-                "tests/ui/test_context_frame_pump_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/renderer_frame_result_conventions_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/async_spawn_result_conventions_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/public_api_compatibility_examples_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/public_api_example_expansion_test.cpp") ||
+          manifests,
+          "[targets.api_parity_public_window_examples_service_matrix]") ||
+      !contains(manifests, "\"gpui_parity_ledger_test.cpp\"") ||
+      !contains(manifests, "\"context_render_spelling_test.cpp\"") ||
+      !contains(manifests, "\"context_capabilities_test.cpp\"") ||
+      !contains(manifests,
+                "\"app_context_capability_test.cpp\"") ||
+      !contains(manifests,
+                "\"view_context_capability_test.cpp\"") ||
+      !contains(manifests,
+                "\"window_context_capability_test.cpp\"") ||
+      !contains(manifests,
+                "\"element_context_capability_test.cpp\"") ||
+      !contains(manifests, "\"view_handle_spelling_test.cpp\"") ||
+      !contains(manifests, "\"public_authoring_surface_test.cpp\"") ||
+      !contains(manifests, "\"entity_lifecycle_creation_test.cpp\"") ||
+      !contains(manifests,
+                "\"entity_weak_handle_semantics_test.cpp\"") ||
+      !contains(manifests,
+                "\"entity_observation_test.cpp\"") ||
+      !contains(manifests,
+                "\"window_runtime_observation_closure_test.cpp\"") ||
+      !contains(manifests,
+                "\"entity_transaction_test.cpp\"") ||
+      !contains(manifests,
+                "\"entity_invalidation_test.cpp\"") ||
+      !contains(manifests,
+                "\"entity_deletion_test.cpp\"") ||
+      !contains(manifests,
+                "\"typed_action_surface_test.cpp\"") ||
+      !contains(manifests,
+                "\"typed_action_dispatch_test.cpp\"") ||
+      !contains(manifests,
+                "\"action_scope_metadata_test.cpp\"") ||
+      !contains(manifests,
+                "\"action_enablement_metadata_test.cpp\"") ||
+      !contains(manifests,
+                "\"action_bubbling_test.cpp\"") ||
+      !contains(manifests,
+                "\"key_binding_grammar_test.cpp\"") ||
+      !contains(manifests,
+                "\"key_binding_platform_modifier_test.cpp\"") ||
+      !contains(manifests,
+                "\"keymap_context_test.cpp\"") ||
+      !contains(manifests,
+                "\"key_binding_partial_match_test.cpp\"") ||
+      !contains(manifests,
+                "\"key_binding_disabled_scope_test.cpp\"") ||
+      !contains(manifests,
+                "\"typed_action_command_metadata_test.cpp\"") ||
+      !contains(manifests,
+                "\"command_palette_key_integration_test.cpp\"") ||
+      !contains(manifests,
+                "\"test_context_keystroke_simulation_test.cpp\"") ||
+      !contains(manifests,
+                "\"test_context_pointer_simulation_test.cpp\"") ||
+      !contains(manifests,
+                "\"test_context_time_async_test.cpp\"") ||
+      !contains(manifests,
+                "\"test_context_frame_pump_test.cpp\"") ||
+      !contains(manifests,
+                "\"renderer_frame_result_conventions_test.cpp\"") ||
+      !contains(manifests,
+                "\"async_spawn_result_conventions_test.cpp\"") ||
+      !contains(manifests,
+                "\"public_api_compatibility_examples_test.cpp\"") ||
+      !contains(manifests,
+                "\"public_api_example_expansion_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/public_context_capability_example_test.cpp") ||
+          manifests,
+          "\"public_context_capability_example_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/public_async_test_workflow_example_test.cpp") ||
+          manifests,
+          "\"public_async_test_workflow_example_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/public_phase_b_surface_closure_example_test.cpp") ||
+          manifests,
+          "\"public_phase_b_surface_closure_example_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/public_authoring_vocabulary_freeze_test.cpp") ||
+          manifests,
+          "\"public_authoring_vocabulary_freeze_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/public_phase_b_completion_audit_test.cpp") ||
+          manifests,
+          "\"public_phase_b_completion_audit_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp") ||
+          manifests,
+          "\"phase_c_style_cascade_depth_audit_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_focusable_interactable_audit_test.cpp") ||
-      !contains(xmake,
-                "tests/api_parity/phase_c_uniform_list_audit_test.cpp") ||
+          manifests,
+          "\"phase_c_focusable_interactable_audit_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_c_uniform_list_audit_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_window_examples_public_api_test.cpp") ||
+          manifests,
+          "\"phase_c_window_examples_public_api_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_window_examples_workflow_test.cpp") ||
+          manifests,
+          "\"phase_c_window_examples_workflow_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_window_examples_widget_catalog_test.cpp") ||
+          manifests,
+          "\"phase_c_window_examples_widget_catalog_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_window_examples_interaction_states_test.cpp") ||
+          manifests,
+          "\"phase_c_window_examples_interaction_states_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_window_examples_service_matrix_test.cpp") ||
+          manifests,
+          "\"phase_c_window_examples_service_matrix_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_window_examples_closeout_test.cpp") ||
+          manifests,
+          "\"phase_c_window_examples_closeout_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_svg_image_front_end_test.cpp") ||
+          manifests,
+          "\"phase_c_svg_image_front_end_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/phase_c_svg_image_asset_registration_test.cpp") ||
-      !contains(xmake, "tests/ui/builtin_widget_test.cpp") ||
+          manifests,
+          "\"phase_c_svg_image_asset_registration_test.cpp\"") ||
+      !contains(manifests, "\"builtin_widget_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/architecture/widget_source_structure_test.cpp") ||
-      !contains(xmake, "add_files(\"src/ui/widgets/*.cpp\")") ||
-      !contains(xmake, "examples/api_parity/hello_world/main.cpp") ||
+          manifests,
+          "\"widget_source_structure_test.cpp\"") ||
+      !contains(manifests, "\"../../src/ui/widgets/*.cpp\"") ||
+      !contains(manifests, "main = \"hello_world/main.cpp\"") ||
       !contains(
-          xmake,
-          "examples/api_parity/public_api_compatibility/main.cpp") ||
+          manifests,
+          "main = \"public_api_compatibility/main.cpp\"") ||
       !contains(
-          xmake,
-          "examples/api_parity/public_authoring_workflow/main.cpp") ||
+          manifests,
+          "main = \"public_authoring_workflow/main.cpp\"") ||
       !contains(
-          xmake,
-          "examples/api_parity/public_context_capabilities/main.cpp") ||
+          manifests,
+          "main = \"public_context_capabilities/main.cpp\"") ||
       !contains(
-          xmake,
-          "examples/api_parity/public_async_test_workflow/main.cpp")) {
+          manifests,
+          "main = \"public_async_test_workflow/main.cpp\"")) {
     return 14;
   }
 
   if (!contains(
-          xmake,
-          "examples/api_parity/public_phase_b_surface_closure/main.cpp")) {
+          manifests,
+          "main = \"public_phase_b_surface_closure/main.cpp\"")) {
     return 14;
   }
 
-  if (!contains(xmake,
-                "examples/api_parity/public_window_examples/main.cpp")) {
-    return 14;
-  }
-
-  if (!contains(
-          xmake,
-          "examples/api_parity/public_window_examples_workflow/main.cpp")) {
+  if (!contains(manifests,
+                "main = \"public_window_examples/main.cpp\"")) {
     return 14;
   }
 
   if (!contains(
-          xmake,
-          "examples/api_parity/public_window_examples_widget_catalog/main.cpp")) {
+          manifests,
+          "main = \"public_window_examples_workflow/main.cpp\"")) {
     return 14;
   }
 
   if (!contains(
-          xmake,
-          "examples/api_parity/public_window_examples_interaction_states/main.cpp")) {
+          manifests,
+          "main = \"public_window_examples_widget_catalog/main.cpp\"")) {
     return 14;
   }
 
   if (!contains(
-          xmake,
-          "examples/api_parity/public_window_examples_service_matrix/main.cpp")) {
+          manifests,
+          "main = \"public_window_examples_interaction_states/main.cpp\"")) {
+    return 14;
+  }
+
+  if (!contains(
+          manifests,
+          "main = \"public_window_examples_service_matrix/main.cpp\"")) {
     return 14;
   }
 

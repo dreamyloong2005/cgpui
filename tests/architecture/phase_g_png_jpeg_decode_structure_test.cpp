@@ -41,7 +41,9 @@ int main() {
       read_source("tests/architecture/renderer_source_structure_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_file_asset_source_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("packages/renderer/mcpp.toml") +
+      read_source("tests/assets/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
@@ -55,7 +57,7 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &source, &behavior, &vendor, &stb, &prelude, &cleanliness,
-      &inventory, &previous, &xmake, &vocabulary, &core, &roadmap, &ledger_md,
+      &inventory, &previous, &manifests, &vocabulary, &core, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -84,16 +86,16 @@ int main() {
       !contains(vendor,
                 "594C2FE35D49488B4382DBFAEC8F98366DEFCA819D916AC95BECF3E75F4200B3") ||
       !contains(stb, "stbi_load_from_memory") ||
-      !contains(xmake, "add_includedirs(\"third_party/stb\")") ||
-      contains(xmake, "add_requires(\"stb") ||
+      !contains(manifests, "\"../../third_party/stb\"") ||
+      contains(manifests, "vendor.stb") ||
       !contains(prelude, "cgpui/renderer/image_decode.hpp")) return 5;
   if (!contains(inventory, "include/cgpui/renderer/image_decode.hpp") ||
       !contains(inventory, "src/renderer/image_decode_stb.cpp") ||
       !contains(previous, "Step 652 PNG and JPEG decode boundary production ") ||
       !contains(previous, "behavior is next.") ||
-      !contains(xmake, "target(\"phase_g_png_jpeg_decode_test\")") ||
-      !contains(xmake,
-                "target(\"phase_g_png_jpeg_decode_structure_test\")")) {
+      !contains(manifests, "\"image_decode_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_png_jpeg_decode_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(header) > 55 || line_count(source) > 125 ||

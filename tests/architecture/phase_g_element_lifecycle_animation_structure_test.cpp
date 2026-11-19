@@ -57,7 +57,8 @@ int main() {
       read_source("tests/header_cleanliness/ui_header_cleanliness.cpp");
   const std::string previous =
       read_source("tests/architecture/phase_g_animation_transition_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/animation/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
@@ -73,7 +74,7 @@ int main() {
       &public_header, &aggregate, &store, &element, &forwarding, &runtime,
       &runtime_state, &runtime_internal, &flex, &stack, &scroll_header,
       &scroll, &scroll_element, &behavior, &ui_structure, &header_cleanliness, &previous,
-      &xmake, &vocabulary, &core_parity, &roadmap, &ledger_md, &ledger_json,
+      &manifests, &vocabulary, &core_parity, &roadmap, &ledger_md, &ledger_json,
       &task_plan, &findings};
   for (const auto* item : required) if (item->empty()) return 1;
 
@@ -117,8 +118,8 @@ int main() {
       !contains(ui_structure, "include/cgpui/ui/element_animation.hpp") ||
       !contains(ui_structure, "src/ui/runtime_element_animation.cpp") ||
       !contains(header_cleanliness, "cgpui/ui/element_animation.hpp") ||
-      !contains(xmake, "target(\"phase_g_element_lifecycle_animation_test\")") ||
-      !contains(xmake, "target(\"phase_g_element_lifecycle_animation_structure_test\")") ||
+      !contains(manifests, "\"element_lifecycle_animation_test.cpp\"") ||
+      !contains(manifests, "\"phase_g_element_lifecycle_animation_structure_test.cpp\"") ||
       !contains(previous, "644 element lifecycle animation")) return 8;
   if (line_count(public_header) > 140 || line_count(store) > 220 ||
       line_count(element) > 100 || line_count(forwarding) > 120 ||

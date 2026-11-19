@@ -55,7 +55,8 @@ int main() {
       "tests/platform/win32_uia_tree_navigation_test.cpp");
   const std::string message_behavior = read_source(
       "tests/platform/win32_uia_get_object_message_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/platform/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
@@ -67,7 +68,7 @@ int main() {
       &lifetime, &fragment,
       &adapter_header, &adapter, &updates, &window, &proc_header, &proc,
       &main_proc,
-      &navigation_behavior, &message_behavior, &xmake, &roadmap, &ledger_md,
+      &navigation_behavior, &message_behavior, &manifests, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -98,10 +99,10 @@ int main() {
       !contains(navigation_behavior, "ElementProviderFromPoint(") ||
       !contains(message_behavior, "UiaRootObjectId") ||
       !contains(message_behavior, "handle_get_object(")) return 5;
-  if (!contains(xmake, "target(\"win32_uia_tree_navigation_test\")") ||
-      !contains(xmake, "target(\"win32_uia_get_object_message_test\")") ||
-      !contains(xmake,
-                "phase_g_win32_uia_tree_navigation_structure_test.cpp")) {
+  if (!contains(manifests, "\"win32_uia_tree_navigation_test.cpp\"") ||
+      !contains(manifests, "\"win32_uia_get_object_message_test.cpp\"") ||
+      !contains(manifests,
+                "\"phase_g_win32_uia_tree_navigation_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(object_header) > 90 || line_count(navigation_header) > 70 ||

@@ -34,7 +34,8 @@ bool contains(const std::string& text, const char* value) {
 } // namespace
 
 int main() {
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("tests/renderer/mcpp.toml");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
@@ -62,7 +63,7 @@ int main() {
   const std::string frame_test =
       read_source("tests/renderer/vulkan_frame_lifetime_test.cpp");
 
-  if (xmake.empty() || roadmap.empty() || ledger_md.empty() ||
+  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
       ledger_json.empty() || task_plan.empty() || findings.empty() ||
       pipeline.empty() || resources.empty() || shaders.empty() ||
       vertex_buffer.empty() || draw.empty() || positioning.empty() ||
@@ -71,26 +72,25 @@ int main() {
   }
 
   if (!contains(
-          xmake,
-          "target(\"phase_e_text_pipeline_integration_closeout_test\")") ||
+          manifests,
+          "\"phase_e_text_pipeline_integration_closeout_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/"
-          "phase_e_text_pipeline_integration_closeout_test.cpp")) {
+          manifests,
+          "\"phase_e_text_pipeline_integration_closeout_test.cpp\"")) {
     return 2;
   }
 
   constexpr std::array target_evidence{
-      "target(\"vulkan_text_pipeline_state_test\")",
-      "target(\"vulkan_text_shader_module_test\")",
-      "target(\"vulkan_text_pipeline_resources_test\")",
-      "target(\"vulkan_text_vertex_buffer_test\")",
-      "target(\"vulkan_text_draw_recording_test\")",
-      "target(\"vulkan_text_positioning_test\")",
-      "target(\"vulkan_text_coverage_test\")",
+      "\"vulkan_text_pipeline_state_test.cpp\"",
+      "\"vulkan_text_shader_module_test.cpp\"",
+      "\"vulkan_text_pipeline_resources_test.cpp\"",
+      "\"vulkan_text_vertex_buffer_test.cpp\"",
+      "\"vulkan_text_draw_recording_test.cpp\"",
+      "\"vulkan_text_positioning_test.cpp\"",
+      "\"vulkan_text_coverage_test.cpp\"",
   };
   for (std::size_t index = 0; index < target_evidence.size(); ++index) {
-    if (!contains(xmake, target_evidence[index])) {
+    if (!contains(manifests, target_evidence[index])) {
       return 10 + static_cast<int>(index);
     }
   }

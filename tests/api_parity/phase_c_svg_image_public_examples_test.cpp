@@ -6,7 +6,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -28,7 +28,9 @@ bool contains(const std::string& text, const char* value) {
 int main() {
   const std::string example =
       read_source("examples/api_parity/public_svg_image_sources/main.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("mcpp.toml") +
+      read_source("examples/api_parity/mcpp.toml") +
+      read_source("tests/api_parity/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string roadmap = read_source(
@@ -38,19 +40,18 @@ int main() {
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
 
-  if (example.empty() || xmake.empty() || vocabulary.empty() ||
+  if (example.empty() || manifests.empty() || vocabulary.empty() ||
       roadmap.empty() || ledger_md.empty() || ledger_json.empty()) {
     return 1;
   }
 
   constexpr std::array xmake_fragments{
-      "target(\"api_parity_public_svg_image_sources\")",
-      "examples/api_parity/public_svg_image_sources/main.cpp",
-      "target(\"phase_c_svg_image_public_examples_test\")",
-      "tests/api_parity/phase_c_svg_image_public_examples_test.cpp",
+      "[targets.api_parity_public_svg_image_sources]",
+      "main = \"public_svg_image_sources/main.cpp\"",
+      "\"phase_c_svg_image_public_examples_test.cpp\"",
   };
   for (std::size_t index = 0; index < xmake_fragments.size(); ++index) {
-    if (!contains(xmake, xmake_fragments[index])) {
+    if (!contains(manifests, xmake_fragments[index])) {
       return 10 + static_cast<int>(index);
     }
   }

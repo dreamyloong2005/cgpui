@@ -7,7 +7,7 @@
 namespace {
 
 std::string read_source(const char* path) {
-  std::ifstream source(path);
+  std::ifstream source(std::string{CGPUI_SOURCE_ROOT} + "/" + path);
   if (!source) {
     source.open((std::string("../../../../") + path).c_str());
   }
@@ -35,17 +35,18 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
+      read_source("examples/api_parity/mcpp.toml");
 
   if (roadmap.empty() || vocabulary.empty() || ledger_md.empty() ||
-      ledger_json.empty() || xmake.empty()) {
+      ledger_json.empty() || manifests.empty()) {
     return 1;
   }
 
-  if (!contains(xmake, "target(\"public_phase_b_completion_audit_test\")") ||
+  if (!contains(manifests, "\"public_phase_b_completion_audit_test.cpp\"") ||
       !contains(
-          xmake,
-          "tests/api_parity/public_phase_b_completion_audit_test.cpp")) {
+          manifests,
+          "\"public_phase_b_completion_audit_test.cpp\"")) {
     return 2;
   }
 
@@ -85,15 +86,17 @@ int main() {
       "examples/api_parity/public_phase_b_surface_closure/main.cpp",
   };
   constexpr std::array public_example_targets{
-      "target(\"api_parity_public_api_compatibility\")",
-      "target(\"api_parity_public_authoring_workflow\")",
-      "target(\"api_parity_public_context_capabilities\")",
-      "target(\"api_parity_public_async_test_workflow\")",
-      "target(\"api_parity_public_phase_b_surface_closure\")",
+      "[targets.api_parity_public_api_compatibility]",
+      "[targets.api_parity_public_authoring_workflow]",
+      "[targets.api_parity_public_context_capabilities]",
+      "[targets.api_parity_public_async_test_workflow]",
+      "[targets.api_parity_public_phase_b_surface_closure]",
   };
   for (std::size_t index = 0; index < public_example_paths.size(); ++index) {
-    if (!contains(xmake, public_example_paths[index]) ||
-        !contains(xmake, public_example_targets[index])) {
+    const std::string entry = std::string{"main = \""} +
+        (public_example_paths[index] + sizeof("examples/api_parity/") - 1) + "\"";
+    if (!contains(manifests, entry.c_str()) ||
+        !contains(manifests, public_example_targets[index])) {
       return 10 + static_cast<int>(index);
     }
 
@@ -138,17 +141,17 @@ int main() {
       "tests/api_parity/public_phase_b_completion_audit_test.cpp",
   };
   constexpr std::array public_test_targets{
-      "target(\"public_api_compatibility_examples_test\")",
-      "target(\"public_api_example_expansion_test\")",
-      "target(\"public_context_capability_example_test\")",
-      "target(\"public_async_test_workflow_example_test\")",
-      "target(\"public_phase_b_surface_closure_example_test\")",
-      "target(\"public_authoring_vocabulary_freeze_test\")",
-      "target(\"public_phase_b_completion_audit_test\")",
+      "\"public_api_compatibility_examples_test.cpp\"",
+      "\"public_api_example_expansion_test.cpp\"",
+      "\"public_context_capability_example_test.cpp\"",
+      "\"public_async_test_workflow_example_test.cpp\"",
+      "\"public_phase_b_surface_closure_example_test.cpp\"",
+      "\"public_authoring_vocabulary_freeze_test.cpp\"",
+      "\"public_phase_b_completion_audit_test.cpp\"",
   };
   for (std::size_t index = 0; index < public_test_paths.size(); ++index) {
-    if (!contains(xmake, public_test_paths[index]) ||
-        !contains(xmake, public_test_targets[index])) {
+    if (read_source(public_test_paths[index]).empty() ||
+        !contains(manifests, public_test_targets[index])) {
       return 150 + static_cast<int>(index);
     }
   }

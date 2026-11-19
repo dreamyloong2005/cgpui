@@ -59,7 +59,8 @@ int main() {
       read_source("tests/architecture/ui_source_structure_test.cpp");
   const std::string previous = read_source(
       "tests/architecture/phase_g_runtime_task_pool_structure_test.cpp");
-  const std::string xmake = read_source("xmake.lua");
+  const std::string manifests = read_source("tests/async/mcpp.toml") +
+      read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
@@ -76,7 +77,7 @@ int main() {
       &aggregate, &priority_internal, &priority_source, &context_source,
       &async_source, &pool_header, &pool_source, &tasks_source, &results_source,
       &runtime_internal, &behavior, &header_cleanliness, &ui_structure,
-      &previous, &xmake, &vocabulary, &core_parity, &roadmap, &ledger_md,
+      &previous, &manifests, &vocabulary, &core_parity, &roadmap, &ledger_md,
       &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
@@ -136,8 +137,8 @@ int main() {
     if (!contains(ui_structure, path)) return 10;
   }
   if (!contains(previous, "std::array<std::deque<Work>, 3> queues_") ||
-      !contains(xmake, "target(\"phase_g_runtime_task_priority_test\")") ||
-      !contains(xmake, "target(\"phase_g_runtime_task_priority_structure_test\")")) {
+      !contains(manifests, "\"runtime_task_priority_test.cpp\"") ||
+      !contains(manifests, "\"phase_g_runtime_task_priority_structure_test.cpp\"")) {
     return 11;
   }
   if (line_count(public_header) > 30 || line_count(priority_internal) > 40 ||
