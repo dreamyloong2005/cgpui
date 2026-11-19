@@ -78,6 +78,10 @@ int main() {
       !contains(test_lock, "CreateMutexW") ||
       !contains(test_lock, "WaitForSingleObject") ||
       !contains(behavior, "Win32ClipboardTestLock clipboard_lock")) return 12;
+  // Clipboard listeners hold the clipboard after every change; the test's
+  // own helpers must retry OpenClipboard (they failed 5 in 425 runs).
+  if (!contains(behavior, "open_system_clipboard_for_test()") ||
+      contains(behavior, "OpenClipboard(nullptr)")) return 13;
   if (!contains(platform_structure,
                 "\"src/platform/clipboard_win32_files.cpp\"") ||
       !contains(xmake, "target(\"win32_clipboard_files_test\")") ||

@@ -1,5 +1,6 @@
 #include "cgpui/platform/clipboard.hpp"
 #include "win32_clipboard_test_lock.hpp"
+#include "win32_clipboard_test_open.hpp"
 
 #include <shellapi.h>
 
@@ -14,7 +15,7 @@
 namespace {
 
 std::optional<std::wstring> read_system_text() {
-  if (OpenClipboard(nullptr) == FALSE) return std::nullopt;
+  if (!cgpui::test::open_system_clipboard_for_test()) return std::nullopt;
   const HANDLE handle = GetClipboardData(CF_UNICODETEXT);
   const auto* text = handle == nullptr
       ? nullptr
@@ -38,7 +39,7 @@ bool write_system_text(std::wstring_view text) {
   std::memcpy(locked, text.data(), text.size() * sizeof(wchar_t));
   static_cast<wchar_t*>(locked)[text.size()] = L'\0';
   GlobalUnlock(handle);
-  if (OpenClipboard(nullptr) == FALSE) {
+  if (!cgpui::test::open_system_clipboard_for_test()) {
     GlobalFree(handle);
     return false;
   }
@@ -50,7 +51,7 @@ bool write_system_text(std::wstring_view text) {
 }
 
 std::optional<std::vector<std::wstring>> read_system_files() {
-  if (OpenClipboard(nullptr) == FALSE) return std::nullopt;
+  if (!cgpui::test::open_system_clipboard_for_test()) return std::nullopt;
   const HANDLE handle = GetClipboardData(CF_HDROP);
   if (handle == nullptr) {
     CloseClipboard();
@@ -80,7 +81,7 @@ class ClipboardRestore {
   ~ClipboardRestore() {
     if (original_) {
       (void)write_system_text(*original_);
-    } else if (OpenClipboard(nullptr) != FALSE) {
+    } else if (cgpui::test::open_system_clipboard_for_test()) {
       (void)EmptyClipboard();
       CloseClipboard();
     }

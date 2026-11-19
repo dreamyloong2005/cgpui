@@ -49,7 +49,18 @@ storage, syntax highlighting rules, agent protocol) stays in the consumer.
   listeners hold the clipboard after each change; the Win32 clipboard and the
   test now retry `OpenClipboard`); `clipboard_test` had the same
   unretried `OpenClipboard` in its own read / write / restore helpers
-  (failed 1 in 3 locally on 2026-11-19) and now retries too. Treat any failure as real.
+  (failed 1 in 3 locally on 2026-11-19) and now retries too.
+  `win32_clipboard_files_test` still had unretried helpers (exit 4 / 9,
+  5 in 425 looped runs); all three tests now share
+  `tests/platform/win32_clipboard_test_open.hpp` (1 s retry). Measured
+  listener holds: explorer.exe, cbdhsvc (clipboard history),
+  DefenderSessionHelper, 20-75 ms each. The production
+  `open_win32_clipboard` budget was 20 x `Sleep(5)`, i.e. 100-310 ms
+  depending on timer resolution; it is now a 500 ms wall-clock deadline with
+  2-32 ms backoff, guarded by `win32_clipboard_contention_test` (another
+  process holds the clipboard 250 ms / 1.5 s). Note that `OpenClipboard(nullptr)`
+  does not block another `OpenClipboard(nullptr)`; only windowed opens
+  (real listeners) contend. Treat any failure as real.
 - Record anything only observable in a real window (visual material, title
   bar color, IME candidate placement) as "not visually verified" in the
   capability doc until observed.

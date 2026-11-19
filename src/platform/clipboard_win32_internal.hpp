@@ -18,7 +18,7 @@ std::optional<std::wstring> widen_clipboard_text(std::string_view value);
 std::optional<std::string> narrow_clipboard_text(std::wstring_view value);
 
 // Clipboard listeners (clipboard history, sync tools) hold the clipboard open
-// briefly after each change. Retries OpenClipboard for up to ~100 ms.
+// briefly after each change. Retries OpenClipboard for up to ~500 ms.
 [[nodiscard]] bool open_win32_clipboard();
 
 class Win32Clipboard final : public Clipboard {

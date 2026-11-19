@@ -967,6 +967,14 @@ if is_plat("windows") then
         add_syslinks("shell32", "user32")
         add_tests("default")
 
+    target("win32_clipboard_contention_test")
+        set_kind("binary")
+        add_files("tests/platform/win32_clipboard_contention_test.cpp")
+        add_deps("cgpui_core", "cgpui_platform")
+        add_includedirs(public_includedirs)
+        add_syslinks("user32", "winmm")
+        add_tests("default")
+
     target("win32_ole_drop_target_test")
         set_kind("binary")
         add_files("tests/platform/win32_ole_drop_target_test.cpp")

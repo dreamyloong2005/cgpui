@@ -1,5 +1,6 @@
 #include "cgpui/platform/clipboard.hpp"
 #include "win32_clipboard_test_lock.hpp"
+#include "win32_clipboard_test_open.hpp"
 
 #include <cstring>
 #include <memory>
@@ -9,19 +10,8 @@
 
 namespace {
 
-// Clipboard listeners (clipboard history, sync tools) open the clipboard
-// briefly after every change, so a direct OpenClipboard can fail right after
-// a write. Retry for up to one second, as clipboard clients are expected to.
-bool open_clipboard_with_retry() {
-  for (int attempt = 0; attempt < 100; ++attempt) {
-    if (OpenClipboard(nullptr) != FALSE) return true;
-    Sleep(10);
-  }
-  return false;
-}
-
 std::optional<std::wstring> read_system_text() {
-  if (!open_clipboard_with_retry()) return std::nullopt;
+  if (!cgpui::test::open_system_clipboard_for_test()) return std::nullopt;
   const HANDLE handle = GetClipboardData(CF_UNICODETEXT);
   if (handle == nullptr) {
     CloseClipboard();
@@ -50,7 +40,7 @@ bool write_system_text(std::wstring_view text) {
   std::memcpy(locked, text.data(), text.size() * sizeof(wchar_t));
   static_cast<wchar_t*>(locked)[text.size()] = L'\0';
   GlobalUnlock(handle);
-  if (!open_clipboard_with_retry()) {
+  if (!cgpui::test::open_system_clipboard_for_test()) {
     GlobalFree(handle);
     return false;
   }
@@ -68,7 +58,7 @@ class ClipboardRestore {
   ~ClipboardRestore() {
     if (original_) {
       (void)write_system_text(*original_);
-    } else if (open_clipboard_with_retry()) {
+    } else if (cgpui::test::open_system_clipboard_for_test()) {
       (void)EmptyClipboard();
       CloseClipboard();
     }
