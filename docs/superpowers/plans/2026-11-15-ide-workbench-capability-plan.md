@@ -47,7 +47,9 @@ storage, syntax highlighting rules, agent protocol) stays in the consumer.
 - Former flakes, now fixed: `x11_input_test` (waited for no Expose before
   grabbing; `829821ea`) and `win32_clipboard_unicode_test` (clipboard
   listeners hold the clipboard after each change; the Win32 clipboard and the
-  test now retry `OpenClipboard`). Treat any failure as real.
+  test now retry `OpenClipboard`); `clipboard_test` had the same
+  unretried `OpenClipboard` in its own read / write / restore helpers
+  (failed 1 in 3 locally on 2026-11-19) and now retries too. Treat any failure as real.
 - Record anything only observable in a real window (visual material, title
   bar color, IME candidate placement) as "not visually verified" in the
   capability doc until observed.
@@ -80,6 +82,11 @@ and platform layers. Each has a regression test that failed before the fix.
 | Vulkan: one render-finished semaphore per swapchain image, recreated with the swapchain (VUID-vkQueueSubmit-pSignalSemaphores-00067) | `8da87dc1` | `vulkan_semaphore_validation_test` (validation layer on, Windows and WSLg) |
 | UIA ExpandCollapse and SelectionItem patterns for tree items, tabs and menu items; expand / collapse / select actions reach tree rows and tabs. AT-SPI has no Action / Selection interface yet, so Linux keeps states only | `b1465aee` | `win32_uia_item_pattern_test`, `workbench_accessibility_actions_test` |
 | Popover menu surface opaque unless backdrop blur is requested | `a9bfffb5` | `workbench_popover_menu_test` |
+| The element tree a view returns from `render()` is painted every frame, after `View::paint` (the view's canvas beneath its elements), in the root and additional windows; window control regions come from that paint. Static element trees carry no paint style and are not painted. `examples/hello_window` showed only the clear color before; its panel and accent bar are observed on screen after this and the next fix | `2fa034c1` | `view_element_tree_paint_test` |
+| `v_stack()`, `row()`, `column()` keep their builder's box style: size fixes the content box, padding / margin surround it, background, border, radius, shadow and text style apply (hover / active state styles still do not) | `240124e2` | `stack_builder_style_test` |
+| `scroll(state, child)` places the child (whole subtree) at the scroll offset, re-clamped to the measured sizes, and clips it to the viewport | `5310604a` | `scroll_element_offset_test` |
+| Flex children resized by grow / shrink are laid out again at their final size, so their descendants follow the new box | `7fc15539` | `flex_grow_relayout_test` |
+| Additional windows synthesize click / keyboard activation gestures, and actions fired while their events are handled resolve focus owner, view and handler context from that window | `4740d34e` | `window_record_action_dispatch_test` |
 
 ## Order and rationale
 
