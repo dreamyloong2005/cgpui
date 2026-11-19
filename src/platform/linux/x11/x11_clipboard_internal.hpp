@@ -34,7 +34,7 @@ class X11Clipboard final : public Clipboard {
   [[nodiscard]] bool initialize();
   [[nodiscard]] std::optional<std::string> read_payload(
       xcb_atom_t target) const;
-  void own_selections();
+  bool own_selections();
   void event_loop();
   void handle_event(const xcb_generic_event_t& event);
   void handle_selection_request(const xcb_selection_request_event_t& request);

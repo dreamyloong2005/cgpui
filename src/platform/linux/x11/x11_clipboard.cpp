@@ -67,12 +67,21 @@ X11Clipboard::~X11Clipboard() {
   if (connection_ != nullptr) xcb_disconnect(connection_);
 }
 
-void X11Clipboard::own_selections() {
+bool X11Clipboard::own_selections() {
   xcb_set_selection_owner(
       connection_, window_, atoms_.clipboard, XCB_CURRENT_TIME);
   xcb_set_selection_owner(
       connection_, window_, XCB_ATOM_PRIMARY, XCB_CURRENT_TIME);
-  xcb_flush(connection_);
+  // Round trip: when this returns, the server has processed the ownership
+  // change, so a ConvertSelection any client sends afterwards reaches this
+  // window rather than the previous owner (flushing alone does not order
+  // requests across connections). It also reports whether we own CLIPBOARD.
+  xcb_get_selection_owner_reply_t* reply = xcb_get_selection_owner_reply(
+      connection_, xcb_get_selection_owner(connection_, atoms_.clipboard),
+      nullptr);
+  const bool owned = reply != nullptr && reply->owner == window_;
+  std::free(reply);
+  return owned;
 }
 
 bool X11Clipboard::write_text(std::string_view text) {
@@ -81,8 +90,7 @@ bool X11Clipboard::write_text(std::string_view text) {
     owned_text_ = std::string{text};
     owned_uri_list_.reset();
   }
-  own_selections();
-  return true;
+  return own_selections();
 }
 
 bool X11Clipboard::write_files(std::span<const std::string> paths) {
@@ -93,8 +101,7 @@ bool X11Clipboard::write_files(std::span<const std::string> paths) {
     owned_text_.reset();
     owned_uri_list_ = std::move(payload);
   }
-  own_selections();
-  return true;
+  return own_selections();
 }
 
 std::optional<std::string> X11Clipboard::read_text() const {
