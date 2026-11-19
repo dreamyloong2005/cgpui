@@ -3,7 +3,11 @@ param(
   [Parameter(Mandatory = $true)]
   [ValidateSet("Debug", "Release")]
   [string]$Mode,
-  [string]$OutputRoot = ""
+  [string]$OutputRoot = "",
+  # MSVC runtime passed to xmake (MD, MDd, MT, MTd); empty keeps the
+  # toolchain default.
+  [ValidateSet("", "MD", "MDd", "MT", "MTd")]
+  [string]$Runtimes = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,7 +56,13 @@ $env:XMAKE_CONFIGDIR = $configRoot
 
 Push-Location $repoRoot
 try {
-  & xmake f -P $repoRoot -y -c -m $modeName --ccache=n -o $buildRoot
+  $configArgs = @()
+  if (-not [string]::IsNullOrWhiteSpace($Runtimes)) {
+    $configArgs += "--runtimes=$Runtimes"
+  }
+  # Explicit platform: from a Git Bash / MSYS shell xmake would pick mingw.
+  & xmake f -P $repoRoot -y -c -p windows -a x64 -m $modeName --ccache=n `
+    -o $buildRoot @configArgs
   if ($LASTEXITCODE -ne 0) {
     throw "xmake f failed with exit code $LASTEXITCODE"
   }

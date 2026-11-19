@@ -23,6 +23,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--package-name", required=True)
     parser.add_argument("--archive-name", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--mode", choices=("release", "debug"), default="release")
     return parser.parse_args()
 
 
@@ -56,9 +57,10 @@ def write_content_manifest(
     platform: str,
     archive_name: str,
     epoch: int,
+    mode: str,
 ) -> Path:
     base_manifest = json.loads((package_root / "manifest.json").read_text("utf-8-sig"))
-    if base_manifest.get("platform") != platform or base_manifest.get("mode") != "release":
+    if base_manifest.get("platform") != platform or base_manifest.get("mode") != mode:
         raise SystemExit("package manifest platform/mode does not match release request")
     entries = [
         {
@@ -126,7 +128,7 @@ def main() -> int:
     epoch = int(os.environ.get("SOURCE_DATE_EPOCH", DEFAULT_SOURCE_DATE_EPOCH))
     args.output.parent.mkdir(parents=True, exist_ok=True)
     write_content_manifest(package_root, args.package_name, args.platform,
-                           args.archive_name, epoch)
+                           args.archive_name, epoch, args.mode)
     if args.platform == "windows":
         write_zip(args.output, package_root, args.package_name, epoch)
     else:
