@@ -78,7 +78,7 @@ FocusHandle WindowRuntimeContext::focus_handle(ElementId element_id) const {
 
 void WindowRuntimeContext::set_element_tree(
     std::unique_ptr<ElementTree> tree) const {
-  runtime.set_element_tree(std::move(tree));
+  runtime.set_element_tree_for_window(window_runtime_id, std::move(tree));
 }
 
 } // namespace cgpui

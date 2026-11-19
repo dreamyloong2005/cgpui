@@ -196,7 +196,8 @@ void WindowRuntimeContext::bind_text_edit_action(
 void WindowRuntimeContext::set_element_cursor(
     ElementId element_id,
     CursorShape cursor_shape) const {
-  runtime.set_element_cursor(element_id, cursor_shape);
+  runtime.set_element_cursor_for_window(
+      window_runtime_id, element_id, cursor_shape);
 }
 
 } // namespace cgpui

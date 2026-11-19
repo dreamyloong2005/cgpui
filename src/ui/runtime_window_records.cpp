@@ -42,6 +42,7 @@ WindowRuntimeContext WindowRuntime::context_for_record(
 void WindowRuntime::cleanup_closed_additional_window(
     WindowRuntimeRecord& record) {
   const ViewId root_view_id = record.root_view_id;
+  window_element_hosts_.erase(record.runtime_id.value);
   const PlatformWindow* window = record.window;
 
   if (window != nullptr) {

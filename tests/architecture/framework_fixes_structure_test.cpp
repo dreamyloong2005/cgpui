@@ -39,6 +39,9 @@ const std::vector<std::pair<std::string, std::size_t>> source_limits{
     {"src/ui/element_layout_placement.cpp", 120},
     {"src/ui/element_stack_paint.cpp", 40},
     {"src/ui/element_tree_traversal.cpp", 150},
+    {"src/ui/runtime_window_element_host_internal.hpp", 45},
+    {"src/ui/runtime_window_element_trees.cpp", 120},
+    {"src/ui/runtime_window_element_routing.cpp", 110},
 };
 
 } // namespace
@@ -63,6 +66,15 @@ int main() {
                 "src/ui/workbench/widget_root_element.cpp") &&
                 !has(read("include/cgpui/ui/widget_tree.hpp"), "WidgetRootElement"),
             "the widget tree has no private hit-test root");
+    // Item 2: window records own their element tree; the widget tree
+    // installs it for every window through the runtime context.
+    require(has(read("src/ui/runtime_event_windows.cpp"),
+                "dispatch_record_event_through_elements(") &&
+                has(read("src/ui/runtime_context_input.cpp"),
+                    "set_element_tree_for_window(window_runtime_id") &&
+                !has(read("src/ui/workbench/widget_tree_builder.cpp"),
+                     "root_window_runtime_id()"),
+            "every window runtime routes through its own element tree");
     require(!has(read("xmake.lua"), "framework_fixes"),
             "framework fix targets stay out of the root xmake.lua");
   } catch (const std::exception& error) {

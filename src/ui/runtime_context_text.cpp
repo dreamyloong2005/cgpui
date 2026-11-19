@@ -32,7 +32,7 @@ std::optional<ImeCandidateRect> WindowRuntimeContext::focused_text_ime_rect()
 
 AccessibilityTreeSnapshot WindowRuntimeContext::accessibility_snapshot()
     const {
-  return runtime.accessibility_snapshot();
+  return runtime.accessibility_snapshot_for_window(window_runtime_id);
 }
 
 bool WindowRuntimeContext::paste_clipboard_text() const {

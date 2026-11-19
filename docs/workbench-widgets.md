@@ -21,8 +21,11 @@ Every widget is an app-owned object with the same four calls:
 `WidgetTreeBuilder` builds the window element tree from `WidgetNode`s
 (role, name, value, `AccessibilityPatternState`, bounds, focusable,
 hit-testable, z order, cursor). `install(context)` sets it with
-`WindowRuntime::set_element_tree` (render returns an empty element), applies
-node cursors and a pending focus request. Nodes marked *stable* get their ids
+`WindowRuntimeContext::set_element_tree` for the context's window (root or
+additional window; render returns an empty element), applies node cursors
+and a pending focus request. Every window runtime routes pointer events by
+hit test, sets the cursor of the hit node, focuses a focusable node on a
+left press and publishes the tree to the platform accessibility tree. Nodes marked *stable* get their ids
 first, so a container keeps its id when rows, tabs or menu items change;
 keyboard focus, pointer capture and cursors key on those ids.
 Widgets give node bounds in window coordinates; the builder stores each
@@ -232,13 +235,6 @@ model. `PaintList::fill_text` copies the string per paint command.
 
 ## Limits
 
-- Record windows (TestApp windows and additional app windows) keep no
-  dynamic element tree in the runtime: `install` builds the tree for ids but
-  only the root window publishes it for hit testing, cursors and the platform
-  accessibility tree. Widget input does not depend on it, since the view
-  forwards every event. Behavior tests read accessibility through
-  `WidgetTreeBuilder::finish()` and hit testing through
-  `ElementTree::hit_test_root`.
 - Text in tabs, tree rows, tooltips and menus is single-line and clipped,
   with no ellipsis.
 - Menus cannot leave the window; no native popup windows.
@@ -269,7 +265,8 @@ Captured with `D:\Dev\shots\shot.ps1` and `shot_workbench.ps1` (real
 ## Not verified
 
 - Splitter drag, tab drag and keyboard focus rings in a real window (covered
-  by behavior tests only); the resize cursor through the root window hit test.
+  by behavior tests only); the resize cursor in a real window (tested
+  through a TestApp window's hit test).
 - Narrator / Accessibility Insights and Orca reading the new roles.
 - Backdrop blur under the menu (`CGPUI_WORKBENCH_BLUR=1`) and Mica.
 - Wayland: built and tested headless on Linux; no Wayland window captured.

@@ -89,13 +89,9 @@ std::unique_ptr<ElementTree> WidgetTreeBuilder::finish() {
 void WidgetTreeBuilder::install(const WindowRuntimeContext& context) {
   const ElementId* focus = focus_request_;
   focus_request_ = nullptr;
-  // Only the root window runtime routes through a dynamic element tree;
-  // additional windows (records) send every event to their view and keep
-  // ids for focus and capture, so the tree is built but not installed.
-  std::unique_ptr<ElementTree> tree = finish();
-  if (context.window_runtime_id == context.runtime.root_window_runtime_id()) {
-    context.runtime.set_element_tree(std::move(tree));
-  }
+  // Every window runtime (root or record) routes, sets cursors and
+  // publishes accessibility through its own element tree.
+  context.set_element_tree(finish());
   for (const auto& [id, cursor] : cursors_) {
     context.set_element_cursor(id, cursor);
   }

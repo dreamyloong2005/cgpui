@@ -116,7 +116,8 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
     }
   }
   if (tree_kind != RenderTreeKind::static_element_tree) {
-    (void)view.render(render_context);
+    install_rendered_element_for_record(
+        record, view.render(render_context), tree_kind, rendered_root_id);
   }
 
   last_render_record_ = RenderRecord{
@@ -133,6 +134,8 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
   if (accessibility_snapshot.has_value()) {
     update_platform_accessibility_tree_for_record(
         record, *accessibility_snapshot);
+  } else {
+    publish_element_tree_for_record(record);
   }
 
   std::vector<WindowControlRegion> window_control_regions;
@@ -149,7 +152,8 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
     return std::unexpected(result.error());
   }
   runtime_publish_window_control_regions(
-      record.window, nullptr, record.scale, std::move(window_control_regions));
+      record.window, element_tree_for_record(record), record.scale,
+      std::move(window_control_regions));
   last_renderer_frame_diagnostics_ =
       runtime_renderer_frame_diagnostic_snapshot(*record.renderer);
 

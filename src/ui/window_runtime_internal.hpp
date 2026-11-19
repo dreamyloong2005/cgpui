@@ -63,6 +63,7 @@ void dispatch_view_event_for_record(
     View& view,
     const PlatformEvent& event);
 #include "runtime_window_event_state_internal.hpp"
+#include "runtime_window_element_host_internal.hpp"
 void handle_native_additional_window_event(
     WindowRuntimeId runtime_id,
     const PlatformEvent& event);

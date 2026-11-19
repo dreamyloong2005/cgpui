@@ -15,7 +15,8 @@ void WindowRuntime::dispatch_view_event_for_record(
 
   begin_event_route_for_record(record, event);
   dispatching_view_event_ = true;
-  EventResult result = view.handle_event(event, context_for_record(record));
+  EventResult result =
+      dispatch_record_event_through_elements(record, view, event);
   dispatching_view_event_ = false;
   finish_event_dispatch_for_record(record, result);
 }

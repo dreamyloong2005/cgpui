@@ -50,9 +50,9 @@ class HostView final : public cgpui::View {
           rect.origin.y + rect.size.height / 2.0F};
 }
 
-// Accessibility snapshot of a freshly built widget tree. TestApp windows are
-// window records, which keep no dynamic element tree, so tests read the
-// tree the builder produces directly.
+// Accessibility snapshot of a freshly built widget tree, read from the tree
+// the builder produces (window records also publish their installed tree;
+// see window_record_element_tree_test).
 template <typename Build>
 [[nodiscard]] cgpui::AccessibilityTreeSnapshot snapshot_of(
     cgpui::Size viewport, std::optional<cgpui::ElementId> focused, Build&& build) {
