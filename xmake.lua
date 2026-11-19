@@ -4,6 +4,7 @@ set_languages("c++23")
 set_policy("package.requires_lock", true)
 
 add_rules("mode.debug", "mode.release")
+if is_plat("linux") and os.getenv("CGPUI_LINE_TABLES_ONLY") then add_cxflags("-g1") end
 
 add_requires("lunasvg")
 
