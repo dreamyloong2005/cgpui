@@ -267,6 +267,11 @@ dialog helpers. Production-depth native platform behavior remains later work.
 - `h_stack()`
 - `v_stack()`
 
+The flex and stack containers keep the box style set on their builder, like
+`div()`: a size fixes the content box, padding and margin surround it, and
+background, border, radius, shadow and text style apply. Hover / active
+state styles are not applied to them.
+
 Phase C Step 343 starts the built-in widget surface with button, label, and
 text-input builder spelling. Phase C Step 344 adds checkbox, radio, and switch
 builder spelling with checked/selected/on state metadata. Phase C Step 345 adds

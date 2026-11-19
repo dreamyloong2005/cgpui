@@ -1,5 +1,6 @@
 #include "cgpui/ui/element_layout_nodes.hpp"
 
+#include "element_stack_box_internal.hpp"
 #include "text_style_inheritance.hpp"
 
 #include <algorithm>
@@ -15,6 +16,8 @@ namespace {
 } // namespace
 
 LayoutOutput FlexElement::layout(LayoutInput input) const {
+  const Style child_text_style =
+      merge_inherited_text_style(inherited_text_style_, box_style_);
   std::vector<Size> child_sizes;
   child_sizes.reserve(children_.size());
   Size content_size;
@@ -26,7 +29,7 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
   for (std::size_t child_index = 0; child_index < children_.size();
        ++child_index) {
     const auto& child = children_[child_index];
-    child->inherit_text_style(inherited_text_style_);
+    child->inherit_text_style(child_text_style);
     LayoutInput child_input = input;
     child_input.constraints = {};
     const LayoutOutput child_output = child->layout(child_input);
@@ -57,8 +60,10 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
     relative_child_index += 1;
   }
 
+  const StackBox box =
+      resolve_stack_box(content_size, box_style_, input.constraints);
   const LayoutOutput output{
-      .size = constrain_size(content_size, input.constraints),
+      .size = box.outer,
   };
   set_layout_bounds(Rect{
       .origin = output.origin,
@@ -66,8 +71,8 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
   });
 
   const bool row = direction_ == FlexDirection::row;
-  const float output_main = row ? output.size.width : output.size.height;
-  const float output_cross = row ? output.size.height : output.size.width;
+  const float output_main = row ? box.content.width : box.content.height;
+  const float output_cross = row ? box.content.height : box.content.width;
   const float content_main = row ? content_size.width : content_size.height;
   const float positive_free_space = std::max(0.0F, output_main - content_main);
   const float overflow_space = std::max(0.0F, content_main - output_main);
@@ -131,8 +136,10 @@ LayoutOutput FlexElement::layout(LayoutInput input) const {
 
     children_[index]->place_layout(Rect{
         .origin =
-            row ? Point{.x = cursor, .y = cross_offset}
-                : Point{.x = cross_offset, .y = cursor},
+            row ? Point{.x = box.content_offset.x + cursor,
+                        .y = box.content_offset.y + cross_offset}
+                : Point{.x = box.content_offset.x + cross_offset,
+                        .y = box.content_offset.y + cursor},
         .size = child_size,
     });
 

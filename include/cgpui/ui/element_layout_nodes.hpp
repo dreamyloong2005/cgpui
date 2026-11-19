@@ -23,6 +23,9 @@ class VerticalStackElement : public Element {
  public:
   [[nodiscard]] float gap() const;
   void set_gap(float gap);
+  // Size, padding, margin and paint style of the stack's own box.
+  [[nodiscard]] const Style& box_style() const;
+  void set_box_style(Style style);
   void append_child(std::unique_ptr<Element> child);
   [[nodiscard]] std::span<const std::unique_ptr<Element>> children() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
@@ -35,6 +38,7 @@ class VerticalStackElement : public Element {
 
  private:
   float gap_ = 0.0F;
+  Style box_style_;
   Style inherited_text_style_;
   std::vector<std::unique_ptr<Element>> children_;
 };
@@ -55,6 +59,9 @@ class FlexElement : public Element {
   void set_align_items(AlignItems align_items);
   [[nodiscard]] JustifyContent justify_content() const;
   void set_justify_content(JustifyContent justify_content);
+  // Size, padding, margin and paint style of the flex container's own box.
+  [[nodiscard]] const Style& box_style() const;
+  void set_box_style(Style style);
   void append_child(std::unique_ptr<Element> child);
   [[nodiscard]] std::span<const std::unique_ptr<Element>> children() const;
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
@@ -70,6 +77,7 @@ class FlexElement : public Element {
   float gap_ = 0.0F;
   AlignItems align_items_ = AlignItems::start;
   JustifyContent justify_content_ = JustifyContent::start;
+  Style box_style_;
   Style inherited_text_style_;
   std::vector<std::unique_ptr<Element>> children_;
 };

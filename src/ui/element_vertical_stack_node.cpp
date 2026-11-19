@@ -1,6 +1,7 @@
 #include "cgpui/ui/element_layout_nodes.hpp"
 
 #include "element_layer_ordering.hpp"
+#include "element_stack_box_internal.hpp"
 #include "text_style_inheritance.hpp"
 
 #include <algorithm>
@@ -15,6 +16,14 @@ float VerticalStackElement::gap() const {
 
 void VerticalStackElement::set_gap(float gap) {
   gap_ = gap;
+}
+
+const Style& VerticalStackElement::box_style() const {
+  return box_style_;
+}
+
+void VerticalStackElement::set_box_style(Style style) {
+  box_style_ = std::move(style);
 }
 
 void VerticalStackElement::append_child(std::unique_ptr<Element> child) {
@@ -33,10 +42,14 @@ void VerticalStackElement::inherit_text_style(const Style& style) {
 }
 
 LayoutOutput VerticalStackElement::layout(LayoutInput input) const {
+  const Style child_text_style =
+      merge_inherited_text_style(inherited_text_style_, box_style_);
+  const Point content_offset =
+      resolve_stack_box({}, box_style_, {}).content_offset;
   Size content_size;
   std::size_t relative_child_index = 0;
   for (const auto& child : children_) {
-    child->inherit_text_style(inherited_text_style_);
+    child->inherit_text_style(child_text_style);
     LayoutInput child_input = input;
     child_input.constraints = {};
     const LayoutOutput child_output = child->layout(child_input);
@@ -47,7 +60,8 @@ LayoutOutput VerticalStackElement::layout(LayoutInput input) const {
       content_size.height += gap_;
     }
     child->place_layout(Rect{
-        .origin = {.x = 0.0F, .y = content_size.height},
+        .origin = {.x = content_offset.x,
+                   .y = content_offset.y + content_size.height},
         .size = child_output.size,
     });
     content_size.width = std::max(content_size.width, child_output.size.width);
@@ -56,7 +70,8 @@ LayoutOutput VerticalStackElement::layout(LayoutInput input) const {
   }
 
   const LayoutOutput output{
-      .size = constrain_size(content_size, input.constraints),
+      .size = resolve_stack_box(content_size, box_style_, input.constraints)
+                  .outer,
   };
   set_layout_bounds(Rect{
       .origin = output.origin,
@@ -66,7 +81,7 @@ LayoutOutput VerticalStackElement::layout(LayoutInput input) const {
     if (child->position() != Position::absolute) {
       continue;
     }
-    child->inherit_text_style(inherited_text_style_);
+    child->inherit_text_style(child_text_style);
     LayoutInput child_input = input;
     child_input.constraints = {};
     const LayoutOutput child_output = child->layout(child_input);

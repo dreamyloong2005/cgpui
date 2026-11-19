@@ -22,6 +22,14 @@ void FlexElement::set_gap(float gap) {
   gap_ = gap;
 }
 
+const Style& FlexElement::box_style() const {
+  return box_style_;
+}
+
+void FlexElement::set_box_style(Style style) {
+  box_style_ = std::move(style);
+}
+
 AlignItems FlexElement::align_items() const {
   return align_items_;
 }

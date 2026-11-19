@@ -17,6 +17,7 @@ std::unique_ptr<Element> ElementBuilder::build() && {
   if (kind_ == Kind::v_stack) {
     auto element = std::make_unique<VerticalStackElement>();
     element->set_gap(style_state_.base.gap);
+    element->set_box_style(style_state_.base);
     for (auto& child : children_) {
       element->append_child(std::move(child));
     }
@@ -28,6 +29,7 @@ std::unique_ptr<Element> ElementBuilder::build() && {
     element->set_gap(style_state_.base.gap);
     element->set_align_items(style_state_.base.align_items);
     element->set_justify_content(style_state_.base.justify_content);
+    element->set_box_style(style_state_.base);
     for (auto& child : children_) {
       element->append_child(std::move(child));
     }
