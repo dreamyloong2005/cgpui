@@ -77,17 +77,18 @@ int main() {
       !contains(windows, "-Mode Debug") ||
       !contains(windows, "ReusePreparedRoot") ||
       !contains(windows, "example-targets.txt") ||
-      !contains(windows, "xmake build") || !contains(windows, "-j 1") ||
-      !contains(windows, "xmake run") || !contains(windows, "xmake test") ||
+      contains(windows, "-j 1") ||
+      !contains(windows, "& $mcpp run -p examples/api_parity") ||
+      !contains(windows, "& $mcpp test -p examples/hello_window") ||
       !contains(windows, "windows_demo_smoke_flow")) return 3;
 
   if (!contains(linux, "linux-package.sh") ||
       !contains(linux, "CGPUI_CI_REUSE_PREPARED_ROOT") ||
-      !contains(linux, "python-tools") ||
+      !contains(linux, "linux-dependencies.sh") ||
       !contains(linux, "example-targets.txt") ||
-      !contains(linux, "weston") || !contains(linux, "xmake build") ||
-      !contains(linux, "-j 1") || !contains(linux, "xmake run") ||
-      !contains(linux, "xmake test") ||
+      !contains(linux, "weston") || contains(linux, "-j 1") ||
+      !contains(linux, "\"$MCPP\" run") ||
+      !contains(linux, "\"$MCPP\" test") ||
       !contains(linux, "linux_demo_smoke_flow")) return 4;
 
   if (!contains(workflow, "windows-examples-smoke:") ||

@@ -97,14 +97,14 @@ int main() {
   if (!contains(windows, "windows-package.ps1") ||
       !contains(windows, "ReusePreparedRoot") ||
       !contains(windows, "architecture-header-targets.txt") ||
-      !contains(windows, "xmake build") || !contains(windows, "-j 1") ||
-      !contains(windows, "xmake test")) return 5;
+      !contains(windows, "& $mcpp test --list") || contains(windows, "-j 1") ||
+      !contains(windows, "& $mcpp test -p tests/architecture")) return 5;
   if (!contains(linux, "linux-package.sh") ||
       !contains(linux, "CGPUI_CI_REUSE_PREPARED_ROOT") ||
-      !contains(linux, "python-tools") ||
+      !contains(linux, "linux-dependencies.sh") ||
       !contains(linux, "architecture-header-targets.txt") ||
-      !contains(linux, "xmake build") || !contains(linux, "-j 1") ||
-      !contains(linux, "xmake test")) return 6;
+      !contains(linux, "\"$MCPP\" test --list") || contains(linux, "-j 1") ||
+      !contains(linux, "-p tests/header_cleanliness")) return 6;
   if (!contains(workflow, "windows-architecture-header:") ||
       !contains(workflow, "scripts/ci/windows-architecture-header.ps1") ||
       !contains(workflow, "linux-architecture-header:") ||

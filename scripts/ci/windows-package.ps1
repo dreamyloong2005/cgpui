@@ -64,8 +64,9 @@ if ($LASTEXITCODE -ne 0) {
 }
 Push-Location $workspaceRoot
 try {
-  & $mcpp build --profile $profileName -p cgpui.app -p cgpui.hello-window `
-    -p cgpui.example-workbench
+  # Every member: selecting programs alone archives no library (mcpp links
+  # a program from its dependencies' objects).
+  & $mcpp build --profile $profileName
   if ($LASTEXITCODE -ne 0) {
     throw "mcpp build failed with exit code $LASTEXITCODE"
   }

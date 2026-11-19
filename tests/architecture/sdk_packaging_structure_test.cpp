@@ -43,8 +43,9 @@ int main() {
   const std::string linux_script =
       read_source("scripts/ci/linux-sdk-package.sh");
   const std::string packer = read_source("scripts/ci/sdk-package.py");
-  const std::string lock_reader =
-      read_source("scripts/ci/sdk_package_lock.py");
+  const std::string provenance =
+      read_source("scripts/ci/sdk_package_provenance.py");
+  const std::string cmake = read_source("scripts/ci/sdk_package_cmake.py");
   const std::string archiver =
       read_source("scripts/ci/create-release-artifact.py");
   const std::string base = read_source("scripts/ci/windows-package.ps1");
@@ -55,6 +56,7 @@ int main() {
   const std::string matrix =
       read_source("scripts/ci/architecture-header-targets.txt");
   if (windows.empty() || linux_script.empty() || packer.empty() ||
+      provenance.empty() || cmake.empty() ||
       doc.empty() || sample_cmake.empty() || sample_xmake.empty()) {
     return fail(1, "SDK scripts, sample and docs/sdk-packaging.md must exist");
   }
@@ -68,7 +70,8 @@ int main() {
       !has(linux_script, "linux-package.sh") ||
       !has(windows, "create-release-artifact.py") ||
       !has(linux_script, "create-release-artifact.py") ||
-      !has(base, "--runtimes=$Runtimes") ||
+      !has(base, "sdk-package.py\") workspace") ||
+      !has(base, "--cxx-runtime $cxxRuntime") ||
       !has(archiver, "\"--mode\"")) {
     return fail(3, "the SDK reuses the existing package and archive scripts");
   }
@@ -78,30 +81,32 @@ int main() {
       !has(packer, "\"system_libraries\"") ||
       !has(packer, "\"cxx_standard\"") || !has(packer, "\"sha256\"") ||
       !has(packer, "msvc_runtime(") || !has(packer, "example_workbench") ||
+      !has(packer, "\"build_system\"") ||
       !has(packer, "copy_private_headers(")) {
     return fail(4, "the manifest records source, toolchain, links and hashes");
   }
-  // Provenance comes from the committed lock only, so a package mirror in
-  // the effective git or xmake configuration cannot leak in.
-  if (!has(packer, "\"xmake_dependencies\": lock_provenance(") ||
-      !has(lock_reader, "\"git\", \"-C\", str(repo), \"show\", f\"HEAD:{LOCK_FILE}\"") ||
-      !has(lock_reader, "\"lock_sha256\"") ||
-      !has(lock_reader, "\"package_hash\"") ||
-      !has(lock_reader, "\"repo_url\"") ||
-      !has(lock_reader, "\"repo_commit\"") ||
-      has(lock_reader, "XMAKE_MAIN_REPO") || has(lock_reader, "config --get")) {
-    return fail(8, "dependency provenance comes from the committed lock");
+  // Vendored dependency provenance comes from third_party/VENDORED.md and
+  // the trees as committed at HEAD (git show HEAD:<path>), so the line
+  // endings of a checkout cannot change a digest.
+  if (!has(packer, "\"vendored_dependencies\": vendored_dependencies(") ||
+      !has(provenance, "\"show\", f\"HEAD:{name}\"") ||
+      !has(provenance, "\"tree_sha256\"") ||
+      !has(provenance, "\"source_archive_sha256\"") ||
+      !has(provenance, "\"upstream_commit\"") ||
+      !has(provenance, "VENDORED.md")) {
+    return fail(8, "dependency provenance comes from the committed tree");
   }
   if (!has(packer, "cgpuiConfig.cmake") ||
       !has(packer, "cgpuiConfigVersion.cmake") ||
-      !has(packer, "add_library(cgpui::cgpui INTERFACE IMPORTED)") ||
-      !has(packer, "INTERFACE_LINK_LIBRARIES") ||
+      !has(cmake, "add_library(cgpui::cgpui INTERFACE IMPORTED)") ||
+      !has(cmake, "INTERFACE_LINK_LIBRARIES") ||
       !has(sample_cmake, "cgpui::cgpui") ||
       !has(sample_xmake, "manifest.link_names")) {
     return fail(5, "consumers link through CMake and xmake");
   }
   // Tripwires: split the modules before raising these.
-  if (line_count(packer) > 540 || line_count(lock_reader) > 80 || line_count(windows) > 140 ||
+  if (line_count(packer) > 540 || line_count(provenance) > 160 ||
+      line_count(cmake) > 170 || line_count(windows) > 140 ||
       line_count(linux_script) > 80) {
     return fail(6, "SDK packaging scripts exceed their line limits");
   }

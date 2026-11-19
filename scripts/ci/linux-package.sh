@@ -50,8 +50,9 @@ profile=dev
 # The system libstdc++ (host-coupled), as consumers of the SDK link it.
 python3 "$repo_root/scripts/ci/sdk-package.py" workspace \
   --repo-root "$repo_root" --output "$workspace_root" --cxx-runtime host-coupled
-(cd "$workspace_root" && "$MCPP" build --profile "$profile" -p cgpui.app \
-  -p cgpui.hello-window -p cgpui.example-workbench)
+# Every member: selecting programs alone archives no library (mcpp links a
+# program from its dependencies' objects).
+(cd "$workspace_root" && "$MCPP" build --profile "$profile")
 
 build_dirs=()
 for candidate in "$workspace_root"/target/x86_64-linux-gnu/*/; do

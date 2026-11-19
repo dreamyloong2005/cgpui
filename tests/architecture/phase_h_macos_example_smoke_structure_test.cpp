@@ -56,13 +56,12 @@ int main() {
   }
   if (!contains(script, "set -euo pipefail") ||
       !contains(script, "macos-example-targets.txt") ||
-      !contains(script, "xmake -r -P \"$repo_root\"") ||
-      !contains(script, "xmake run -P \"$repo_root\"") ||
-      !contains(script, "macos_example_smoke_test/default") ||
-      !contains(script, "hello_window/macos_first_frame") ||
-      !contains(script, "hello_window/macos_resize_after_first_frame") ||
-      !contains(script, "hello_window/macos_demo_smoke_flow") ||
-      !contains(script, "hello_window/macos_close_after_first_frame")) {
+      !contains(script, "\"$mcpp\" run -p examples/api_parity") ||
+      !contains(script, "\"$mcpp\" test -p tests/platform macos_example_smoke_test") ||
+      !contains(script, "macos_first_frame") ||
+      !contains(script, "macos_resize_after_first_frame") ||
+      !contains(script, "macos_demo_smoke_flow") ||
+      !contains(script, "macos_close_after_first_frame")) {
     return 3;
   }
   // hello_window's macOS smoke cases are its own test programs; the public
@@ -83,7 +82,7 @@ int main() {
   }
   if (!contains(workflow, "runs-on: macos-latest") ||
       !contains(workflow, "scripts/ci/macos-example-smoke.sh") ||
-      !contains(workflow, "xmake-io/xmake-action") ||
+      !contains(workflow, "an mcpp on PATH") ||
       !contains(workflow, "3.0.9")) {
     return 6;
   }

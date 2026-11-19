@@ -40,15 +40,12 @@ int main() {
       !contains(script, "macos-debug.sh requires macOS") ||
       !contains(script, "output root must not contain parent traversal") ||
       !contains(script, "output root must not be the repository root") ||
-      !contains(script, "xmake v3.0.9") ||
-      !contains(script, "XMAKE_CONFIGDIR") ||
-      !contains(script, "XMAKE_GLOBALDIR") ||
-      !contains(script, "b9256335e0b6e70808e23dfe71627d8a4dcc0abf") ||
+      !contains(script, "mcpp 2026.11.18.1 or later") ||
       !contains(script, "build/phase-h-ci/macos-debug") ||
       !contains(script, "sw_vers -productVersion") ||
       !contains(script, "xcodebuild -version") ||
-      !contains(script, "xmake f -y -c -m debug -P \"$repo_root\"") ||
-      !contains(script, "xmake test -y -P \"$repo_root\"") ||
+      !contains(script, "\"$mcpp\" build") ||
+      !contains(script, "\"$mcpp\" test") ||
       !contains(script, "git diff --check") ||
       confinement == std::string::npos ||
       traversal_rejection == std::string::npos ||

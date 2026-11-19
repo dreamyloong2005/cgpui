@@ -51,10 +51,9 @@ int main() {
       !contains(core, "[System.IO.Path]::GetFullPath") ||
       !contains(core, "Remove-Item -LiteralPath $outputRoot") ||
       !contains(core, "windows-dependencies.ps1") ||
-      !contains(core, "xmake f") ||
-      !contains(core, "--ccache=n") ||
-      !contains(core, "xmake build") ||
-      !contains(core, "-j 1") ||
+      !contains(core, "sdk-package.py\") workspace") ||
+      !contains(core, "& $mcpp build --profile $profileName") ||
+      contains(core, "-j 1") ||
       !contains(core, "hello_window")) return 2;
 
   const char* artifacts[]{

@@ -42,7 +42,7 @@ int main() {
       read_source("scripts/ci/linux-dependencies.sh");
   const std::string action =
       read_source(".github/actions/setup-phase-g-dependencies/action.yml");
-  const std::string lock = read_source("xmake-requires.lock");
+  const std::string lock = read_source("third_party/VENDORED.md");
   const std::string windows_package =
       read_source("scripts/ci/windows-package.ps1");
   const std::string linux_package = read_source("scripts/ci/linux-package.sh");
@@ -77,49 +77,46 @@ int main() {
       &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
   for (const auto* source : required) if (source->empty()) return 1;
 
+  // Dependencies are pinned in the repository: lunasvg / plutovg are
+  // vendored at the versions the xmake lock pinned, with the archive
+  // digest recorded; mcpp itself is pinned (version and digest) in CI.
   if (!contains(manifests, "Source archive SHA-256") ||
-      !contains(lock, "__meta__") || !contains(lock, "version = \"1.0\"") ||
-      !contains(lock, "[\"windows|x64\"]") ||
-      !contains(lock, "[\"linux|x86_64\"]") ||
-      !contains(lock, "lunasvg") || !contains(lock, "vulkansdk") ||
-      !contains(lock, "libxkbcommon")) return 2;
-  constexpr const char* canonical_repository =
-      "url = \"https://github.com/xmake-io/xmake-repo.git\"";
-  if (contains(lock, "https://gitee.com/tboox/xmake-repo.git") ||
-      !contains(lock, canonical_repository) ||
-      count(lock, "url = ") != count(lock, canonical_repository)) return 2;
+      !contains(lock, "| v3.5.0 | `83c58df8103dc7dca423dfd824992af94d49bed6`") ||
+      !contains(lock, "| v1.3.3 | `bbd91f0d06a71491691b36330f29dffa4af87ccf`") ||
+      !contains(lock, "1abf1472ee6c4d19797916e8cc3c2e4b628e0d81178ffac60bdb0d457e32c690") ||
+      !contains(lock, "2b0d17a6e016f47b86f9c00e2cb82600041b1ea1f7d2a00c2d46ae542cbfed3c") ||
+      !contains(read_source("third_party/lunasvg/mcpp.toml"), "version = \"3.5.0\"") ||
+      !contains(read_source("third_party/plutovg/mcpp.toml"), "version = \"1.3.3\"")) return 2;
+  if (!contains(read_source("mcpp.toml"), "mcpp = \">=2026.11.18.1\"")) return 2;
 
-  if (!contains(windows_dependencies, "dependencies\\windows") ||
-      !contains(windows_dependencies, "XMAKE_GLOBALDIR") ||
-      !contains(windows_dependencies, "XMAKE_PKG_CACHEDIR") ||
-      !contains(windows_dependencies, "XMAKE_PKG_INSTALLDIR") ||
+  if (!contains(windows_dependencies, "mcpp-env.ps1") ||
+      !contains(windows_dependencies, "MCPP_HOME") ||
+      !contains(windows_dependencies, "VULKAN_SDK") ||
       !contains(windows_dependencies, "GITHUB_ENV")) return 3;
-  if (!contains(linux_dependencies, "dependencies/linux") ||
-      !contains(linux_dependencies, "XMAKE_GLOBALDIR") ||
-      !contains(linux_dependencies, "XMAKE_PKG_CACHEDIR") ||
-      !contains(linux_dependencies, "XMAKE_PKG_INSTALLDIR") ||
+  if (!contains(linux_dependencies, "mcpp-env.sh") ||
+      !contains(linux_dependencies, "MCPP_HOME") ||
+      !contains(linux_dependencies, "pkg-config --exists") ||
       !contains(linux_dependencies, "GITHUB_ENV")) return 4;
 
   const std::string* windows_consumers[]{
       &windows_package, &windows_examples, &windows_matrix};
   for (const auto* consumer : windows_consumers) {
-    if (!contains(*consumer, "windows-dependencies.ps1") ||
-        contains(*consumer, "xrepo update-repo")) return 5;
+    if (!contains(*consumer, "windows-dependencies.ps1")) return 5;
   }
   const std::string* linux_consumers[]{
       &linux_package, &linux_examples, &linux_matrix};
   for (const auto* consumer : linux_consumers) {
-    if (!contains(*consumer, "linux-dependencies.sh") ||
-        contains(*consumer, "xrepo update-repo")) return 6;
+    if (!contains(*consumer, "linux-dependencies.sh")) return 6;
   }
 
-  if (!contains(action, "xmake-version: 3.0.9") ||
-      !contains(action, "actions/cache@v4") ||
-      !contains(action, "pkg-cache") || !contains(action, "pkg-install") ||
+  const std::string setup_mcpp = read_source(".github/actions/setup-mcpp/action.yml");
+  if (!contains(action, "uses: ./.github/actions/setup-mcpp") ||
+      !contains(setup_mcpp, "version=2026.11.18.1") ||
+      !contains(setup_mcpp, "0800f2a7f3979c35f7c5a8f24c3470c8fdc8d53cdcd93b3faf0c9800b4502e42") ||
+      !contains(setup_mcpp, "344ee725639f62daedb1a18a62542af58a6a04c3fb9dc2b0c8dd879ddf232970") ||
       !contains(action, "windows-dependencies.ps1") ||
       !contains(action, "linux-dependencies.sh") ||
-      count(workflow, "uses: ./.github/actions/setup-phase-g-dependencies") != 8 ||
-      contains(workflow, "xmake-version: latest")) return 7;
+      count(workflow, "uses: ./.github/actions/setup-phase-g-dependencies") != 8) return 7;
 
   if (!contains(previous, "Phase G Step 671 adds Windows and Linux CI") ||
       !contains(manifest,

@@ -51,13 +51,10 @@ int main() {
       !contains(core, "set -euo pipefail") ||
       !contains(core, "realpath -m") ||
       !contains(core, "rm -rf -- \"$output_root\"") ||
-      !contains(core, "CGPUI_CI_TMPDIR") ||
-      !contains(core, "mktemp -d") ||
       !contains(core, "linux-dependencies.sh") ||
-      !contains(core, "xmake f") ||
-      !contains(core, "--ccache=n") ||
-      !contains(core, "xmake build") ||
-      !contains(core, "-j 1") ||
+      !contains(core, "sdk-package.py\" workspace") ||
+      !contains(core, "\"$MCPP\" build --profile \"$profile\"") ||
+      contains(core, "-j 1") ||
       !contains(core, "hello_window")) return 2;
 
   const char* artifacts[]{

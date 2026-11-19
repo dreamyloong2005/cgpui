@@ -26,10 +26,11 @@ import subprocess
 import tomllib
 from pathlib import Path
 
-LINUX_SYSTEM_PACKAGES = (
-    "harfbuzz", "freetype2", "fontconfig", "wayland", "libxkbcommon",
-    "dbus", "vulkan-icd-loader", "libxml2",
-)
+from sdk_package_cmake import cmake_config, cmake_version_file, readme
+from sdk_package_provenance import (
+    compiler_info, mcpp_info, msvc_runtime, pacman_versions, sha256,
+    vendored_dependencies, vulkan_sdk_version)
+
 LINK_ROOT = "examples/workbench"
 
 
@@ -181,117 +182,14 @@ def system_libraries(words: list[str], platform: str, own: set[str]) -> tuple[li
     return ordered, dirs
 
 
-def run_text(command: list[str]) -> str:
-    result = subprocess.run(command, capture_output=True, text=True,
-                            errors="replace")
-    return (result.stdout + result.stderr).strip()
 
 
-def compiler_path(build_dir: Path) -> str:
-    entries = json.loads((build_dir / "compile_commands.json").read_text("utf-8"))
-    for entry in entries:
-        words = entry.get("arguments") or entry["command"].split()
-        if words and Path(words[0]).name.lower() in ("cl.exe", "g++", "c++", "clang++"):
-            return words[0]
-    raise SystemExit(f"no C++ compiler in {build_dir / 'compile_commands.json'}")
 
 
-def compiler_info(build_dir: Path, platform: str) -> dict:
-    compiler = compiler_path(build_dir)
-    if platform == "windows":
-        # The banner may be localized; the version follows "C/C++".
-        banner = next((line for line in run_text([compiler]).splitlines()
-                       if "C/C++" in line), "unknown")
-        version = re.search(r"C/C\+\+\D*(\d+\.\d+\.\d+)", banner)
-        return {"id": "msvc", "path": compiler,
-                "version": version.group(1) if version else "unknown",
-                "toolset": Path(compiler).parents[3].name}
-    banner = run_text([compiler, "--version"]).splitlines()[0]
-    version = re.search(r"(\d+\.\d+\.\d+)", banner)
-    return {"id": "gcc" if "GCC" in banner or "g++" in banner else "clang",
-            "path": compiler, "banner": banner,
-            "version": version.group(1) if version else "unknown"}
 
 
-def msvc_runtime(build_dir: Path, library: Path) -> str:
-    """The CRT a static library was compiled for, from its directives."""
-    link = str(Path(compiler_path(build_dir)).with_name("link.exe"))
-    directives = run_text([link, "/dump", "/directives", str(library)]).upper()
-    debug = "MSVCRTD" in directives or "LIBCMTD" in directives
-    if "MSVCRT" in directives:
-        return "MDd" if debug else "MD"
-    if "LIBCMT" in directives:
-        return "MTd" if debug else "MT"
-    return "unknown"
 
 
-def vulkan_sdk_version(dirs: list[str]) -> str | None:
-    for directory in dirs:
-        match = re.search(r"VulkanSDK[\/]+([\d.]+)", directory)
-        if match:
-            return match.group(1)
-    return None
-
-
-def pacman_versions() -> dict[str, str]:
-    versions = {}
-    for package in LINUX_SYSTEM_PACKAGES:
-        output = run_text(["pacman", "-Q", package]).split()
-        versions[package] = output[1] if len(output) == 2 else "not installed"
-    return versions
-
-
-def tree_sha256(repo: Path, directory: str) -> str:
-    """SHA-256 over the committed files of a directory (the bytes in HEAD,
-    so line-ending conversion of a checkout does not change it): one line
-    `<sha256>  <path>` per file, sorted by path (sha256sum format)."""
-    files = sorted(n for n in git(repo, "ls-tree", "-r", "-z", "--name-only",
-                                  "HEAD", "--", directory).split("\0") if n)
-    lines = []
-    for name in files:
-        blob = subprocess.run(["git", "-C", str(repo), "show", f"HEAD:{name}"],
-                              check=True, capture_output=True).stdout
-        lines.append(f"{hashlib.sha256(blob).hexdigest()}  {name}\n")
-    return hashlib.sha256("".join(lines).encode("utf-8")).hexdigest()
-
-
-def vendored_dependencies(repo: Path, bundled: set[str]) -> list[dict]:
-    """third_party/VENDORED.md rows, with a SHA-256 of each committed tree."""
-    rows = []
-    table = (repo / "third_party" / "VENDORED.md").read_text("utf-8")
-    for line in table.splitlines():
-        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        if len(cells) != 6 or not cells[0].startswith("`") or cells[0] == "Directory":
-            continue
-        directory = cells[0].strip("`").rstrip("/")
-        name = re.sub(r"\[([^\]]+)\].*", r"\1", cells[1])
-        rows.append({
-            "name": name,
-            "directory": f"third_party/{directory}",
-            "version": cells[2].strip("`"),
-            "upstream_commit": cells[3].strip("`"),
-            "license": cells[4],
-            "source_archive_sha256": cells[5].strip("`") if cells[5] != "-" else None,
-            "tree_sha256": tree_sha256(repo, f"third_party/{directory}"),
-            "bundled": directory in bundled,
-        })
-    return rows
-
-
-def mcpp_info(mcpp: str, workspace: Path) -> dict:
-    version = run_text([mcpp, "--version"]).splitlines()[0]
-    manifest = tomllib.loads((workspace / "mcpp.toml").read_text("utf-8"))
-    return {"version": version.removeprefix("mcpp ").strip(), "path": mcpp,
-            "toolchain": manifest["workspace"].get("toolchain", {}),
-            "cxx_runtime": manifest["workspace"]["build"]["cxx_runtime"]}
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as source:
-        for chunk in iter(lambda: source.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def file_entries(package_root: Path) -> list[dict]:
@@ -314,152 +212,7 @@ def project_version(repo: Path) -> str:
     return manifest["package"]["version"]
 
 
-def cmake_config(platform: str, mode: str, runtime: str | None,
-                 libraries: list[dict], system: list[str]) -> str:
-    """cgpuiConfig.cmake: one imported static target per library and
-    cgpui::cgpui linking all of them in link order, then the system
-    libraries."""
-    lines = [
-        "# Generated by scripts/ci/sdk-package.py; see docs/sdk-packaging.md.",
-        "cmake_minimum_required(VERSION 3.21)",
-        "include(CMakeFindDependencyMacro)",
-        'get_filename_component(_cgpui_prefix "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)',
-        f'set(cgpui_PLATFORM "{platform}")',
-        f'set(cgpui_BUILD_MODE "{mode}")',
-    ]
-    if platform == "windows":
-        lines += [
-            f'set(cgpui_MSVC_RUNTIME "{runtime}")',
-            # mcpp has no debug CRT: both packages use the release DLL CRT
-            # (/MD), so a consumer's Debug configuration must use it too.
-            "if(NOT DEFINED CMAKE_MSVC_RUNTIME_LIBRARY)",
-            '  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")',
-            'elseif(NOT CMAKE_MSVC_RUNTIME_LIBRARY STREQUAL "MultiThreadedDLL")',
-            '  message(FATAL_ERROR "cgpui was built with /${cgpui_MSVC_RUNTIME}; '
-            'set CMAKE_MSVC_RUNTIME_LIBRARY to MultiThreadedDLL '
-            '(it is ${CMAKE_MSVC_RUNTIME_LIBRARY})")',
-            "endif()",
-            "find_dependency(Vulkan)",
-        ]
-    lines += ["if(NOT TARGET cgpui::cgpui)"]
-    link_items = []
-    for library in libraries:
-        target = f"cgpui::{library['name']}"
-        lines += [
-            f"  add_library({target} STATIC IMPORTED)",
-            f"  set_target_properties({target} PROPERTIES",
-            f'    IMPORTED_LOCATION "${{_cgpui_prefix}}/{library["path"]}")',
-        ]
-        link_items.append(target)
-    for name in system:
-        vulkan = name in ("vulkan-1",) and platform == "windows"
-        link_items.append("Vulkan::Vulkan" if vulkan else name)
-    lines += [
-        "  add_library(cgpui::cgpui INTERFACE IMPORTED)",
-        "  set_target_properties(cgpui::cgpui PROPERTIES",
-        '    INTERFACE_INCLUDE_DIRECTORIES "${_cgpui_prefix}/include"',
-        "    INTERFACE_COMPILE_FEATURES cxx_std_23",
-        '    INTERFACE_LINK_LIBRARIES "' + ";".join(link_items) + '")',
-        "endif()",
-        "unset(_cgpui_prefix)",
-        "",
-    ]
-    return "\n".join(lines)
 
-
-def cmake_version_file(version: str) -> str:
-    """Compatible when the request is not newer and the major version
-    matches (0.x: the minor version too)."""
-    return "\n".join([
-        "# Generated by scripts/ci/sdk-package.py.",
-        f'set(PACKAGE_VERSION "{version}")',
-        'string(REPLACE "." ";" _cgpui_have "${PACKAGE_VERSION}")',
-        'string(REPLACE "." ";" _cgpui_want "${PACKAGE_FIND_VERSION}.0.0")',
-        "list(GET _cgpui_have 0 _cgpui_have_major)",
-        "list(GET _cgpui_have 1 _cgpui_have_minor)",
-        "list(GET _cgpui_want 0 _cgpui_want_major)",
-        "list(GET _cgpui_want 1 _cgpui_want_minor)",
-        "set(PACKAGE_VERSION_COMPATIBLE FALSE)",
-        "if(NOT PACKAGE_FIND_VERSION OR",
-        "   (PACKAGE_FIND_VERSION VERSION_LESS_EQUAL PACKAGE_VERSION AND",
-        "    _cgpui_have_major EQUAL _cgpui_want_major AND",
-        "    (NOT _cgpui_have_major EQUAL 0 OR",
-        "     _cgpui_have_minor EQUAL _cgpui_want_minor)))",
-        "  set(PACKAGE_VERSION_COMPATIBLE TRUE)",
-        "endif()",
-        "if(PACKAGE_FIND_VERSION VERSION_EQUAL PACKAGE_VERSION)",
-        "  set(PACKAGE_VERSION_EXACT TRUE)",
-        "endif()",
-        'if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)',
-        '  set(PACKAGE_VERSION "${PACKAGE_VERSION} (64-bit)")',
-        "  set(PACKAGE_VERSION_UNSUITABLE TRUE)",
-        "endif()",
-        "",
-    ])
-
-
-def readme(manifest: dict) -> str:
-    windows = manifest["platform"] == "windows"
-    runtime = manifest.get("msvc_runtime")
-    lines = [
-        f"# {manifest['package']}",
-        "",
-        f"CGPUI {manifest['version']} SDK, {manifest['platform']} "
-        f"{manifest['architecture']} {manifest['mode']}, built from commit "
-        f"`{manifest['git_commit']}` (clean tree). `manifest.json` lists "
-        "the toolchain, dependency versions, link order and a SHA-256 for "
-        "every file. C++23 is required.",
-        "",
-        "## CMake",
-        "",
-        "```cmake",
-        "find_package(cgpui 0.1 REQUIRED CONFIG)  # -Dcgpui_DIR=<sdk>/lib/cmake/cgpui",
-        "add_executable(app main.cpp)",
-        "target_link_libraries(app PRIVATE cgpui::cgpui)",
-        "```",
-        "",
-        "`CMAKE_PREFIX_PATH=<sdk>` works too. `cgpui::cgpui` carries the include",
-        "directory, `cxx_std_23` and every library in link order, followed by",
-        "the system libraries.",
-    ]
-    if windows:
-        lines += [
-            f"This package uses the /{runtime} CRT (the release DLL CRT, in the",
-            "debug package too: mcpp builds have no debug CRT). The CMake config",
-            "sets `CMAKE_MSVC_RUNTIME_LIBRARY` to `MultiThreadedDLL` when the",
-            "consumer has not, and refuses another value. Vulkan comes from",
-            "`find_package(Vulkan)` (set `VULKAN_SDK`).",
-        ]
-    lines += [
-        "",
-        "## xmake",
-        "",
-        "```lua",
-        'local sdk = os.getenv("CGPUI_SDK")  -- the extracted package',
-        'target("app")',
-        '    set_kind("binary")',
-        '    set_languages("c++23")',
-    ]
-    if windows:
-        lines.append(f'    set_runtimes("{runtime}")')
-    lines += [
-        '    add_files("main.cpp")',
-        '    add_includedirs(path.join(sdk, "include"))',
-        '    add_linkdirs(path.join(sdk, "lib"))',
-        "    add_links(" + ", ".join(f'"{n}"' for n in manifest["link_names"]) + ")",
-        "    add_syslinks(" + ", ".join(f'"{n}"' for n in manifest["system_libraries"]) + ")",
-    ]
-    if windows:
-        lines.append('    add_linkdirs(path.join(os.getenv("VULKAN_SDK"), "Lib"))')
-    lines += [
-        "```",
-        "",
-        "`share/cgpui/sdk_consumer` holds a sample with both build files; it",
-        "opens a window with a client title bar and text, and with",
-        "`CGPUI_EXIT_AFTER_FIRST_FRAME=1` exits after the first frame.",
-        "",
-    ]
-    return "\n".join(lines)
 
 
 def private_header_closure(repo: Path) -> list[Path]:

@@ -56,21 +56,17 @@ int main() {
       !contains(windows_release, "Release") ||
       !contains(windows_core, "ValidateSet(\"Debug\", \"Release\")") ||
       !contains(windows_core, "windows-dependencies.ps1") ||
-      contains(windows_core, "xrepo update-repo") ||
-      !contains(windows_core, "xmake build") ||
-      !contains(windows_core, "-j 1")) return 2;
+      !contains(windows_core, "& $mcpp build --profile $profileName") ||
+      contains(windows_core, "-j 1")) return 2;
 
   if (!contains(linux_debug, "linux-package.sh") ||
       !contains(linux_debug, "debug") ||
       !contains(linux_release, "linux-package.sh") ||
       !contains(linux_release, "release") ||
       !contains(linux_core, "debug|release") ||
-      !contains(linux_core, "meson==1.11.1") ||
-      !contains(linux_core, "ninja==1.13.0") ||
       !contains(linux_core, "linux-dependencies.sh") ||
-      contains(linux_core, "xrepo update-repo") ||
-      !contains(linux_core, "xmake build") ||
-      !contains(linux_core, "-j 1")) return 3;
+      !contains(linux_core, "\"$MCPP\" build --profile \"$profile\"") ||
+      contains(linux_core, "-j 1")) return 3;
 
   const char* artifacts[]{
       "cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui",
