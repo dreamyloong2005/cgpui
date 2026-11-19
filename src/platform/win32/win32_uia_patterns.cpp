@@ -1,5 +1,5 @@
 #include "win32_internal.hpp"
-#include "win32_uia_provider_object_internal.hpp"
+#include "win32_uia_item_patterns_internal.hpp"
 
 #include <UIAutomationClient.h>
 #include <OleAuto.h>
@@ -13,7 +13,11 @@ HRESULT STDMETHODCALLTYPE Win32UiaProvider::GetPatternProvider(
     IUnknown** provider) {
   if (provider == nullptr) return E_POINTER;
   *provider = nullptr;
-  if (!snapshot().has_value()) return UIA_E_ELEMENTNOTAVAILABLE;
+  const auto state = snapshot();
+  if (!state.has_value()) return UIA_E_ELEMENTNOTAVAILABLE;
+  if (get_win32_uia_item_pattern(this, state->node, pattern, provider)) {
+    return S_OK;
+  }
   const IID* iid = nullptr;
   if (pattern == UIA_InvokePatternId) {
     iid = &IID_IInvokeProvider;

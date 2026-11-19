@@ -34,7 +34,10 @@ void TreeView::append_elements(
     builder.add(tree, WidgetNode{.role = AccessibilityRole::tree_item,
                                  .name = node.label,
                                  .patterns = patterns,
-                                 .bounds = row_rect(row)});
+                                 .bounds = row_rect(row),
+                                 .on_action = [this, item](const auto& action) {
+                                   return handle_item_action(item, action.kind);
+                                 }});
   }
 }
 

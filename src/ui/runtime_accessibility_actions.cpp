@@ -14,9 +14,13 @@ bool WindowRuntime::handle_accessibility_action_event(
   refresh_route_ancestry(*current_event_route_);
 
   EventResult result = EventResult::unhandled();
+  // Additional windows resolve the element in their own tree.
+  ElementTree* record_tree =
+      record == nullptr ? nullptr : element_tree_for_record(*record);
   Element* element = target_view_id == root_view_id_
       ? routed_element(ElementId{action->element_id})
-      : nullptr;
+      : (record_tree == nullptr ? nullptr
+                                : record_tree->get(ElementId{action->element_id}));
   if (element != nullptr && element->enabled()) {
     result = element->handle_accessibility_action(
         *action,
@@ -39,6 +43,9 @@ bool WindowRuntime::handle_accessibility_action_event(
   if (changed && record == nullptr) {
     update_platform_accessibility_tree();
     schedule_redraw();
+  } else if (changed && record->window != nullptr) {
+    record->redraw_scheduled = true;
+    record->window->request_redraw();
   }
   return true;
 }

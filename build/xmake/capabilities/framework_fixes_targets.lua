@@ -40,3 +40,21 @@ if is_plat("windows", "linux") then
         add_includedirs(path.join(os.projectdir(), public_includedirs))
         add_tests("default")
 end
+
+if is_plat("windows") then
+    target("win32_uia_item_pattern_test")
+        set_kind("binary")
+        add_files(path.join(os.projectdir(), "tests/platform/win32_uia_item_pattern_test.cpp"))
+        add_deps("cgpui_core", "cgpui_platform", "cgpui_platform_win32")
+        add_includedirs(path.join(os.projectdir(), public_includedirs),
+                        path.join(os.projectdir(), "src/platform/win32"))
+        add_syslinks("user32", "uiautomationcore", "oleaut32")
+        add_tests("default")
+end
+
+target("workbench_accessibility_actions_test")
+    set_kind("binary")
+    add_files(path.join(os.projectdir(), "tests/ui/workbench_accessibility_actions_test.cpp"))
+    add_deps("cgpui_core", "cgpui_platform", "cgpui_renderer", "cgpui_ui")
+    add_includedirs(path.join(os.projectdir(), public_includedirs))
+    add_tests("default")

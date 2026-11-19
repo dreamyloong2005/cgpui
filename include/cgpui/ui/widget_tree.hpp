@@ -4,6 +4,7 @@
 #include "cgpui/ui/element_tree.hpp"
 
 #include <cstddef>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -28,6 +29,9 @@ struct WidgetNode {
   int z_order = 0;
   // Applied with WindowRuntime::set_element_cursor by install().
   std::optional<CursorShape> cursor;
+  // Platform accessibility actions on this node (UIA Invoke / ExpandCollapse
+  // / SelectionItem, AT-SPI actions); unset means unhandled.
+  std::function<EventResult(const AccessibilityActionRequested&)> on_action;
 };
 
 // Element of one widget node. The builder stores the node's offset from its
@@ -47,6 +51,9 @@ class WidgetNodeElement final : public Element {
   [[nodiscard]] std::string accessibility_value() const override;
   [[nodiscard]] AccessibilityPatternState accessibility_patterns()
       const override;
+  [[nodiscard]] EventResult handle_accessibility_action(
+      const AccessibilityActionRequested& action,
+      const ElementEventContext& context) override;
 
  private:
   WidgetNode node_;

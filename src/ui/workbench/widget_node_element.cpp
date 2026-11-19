@@ -53,4 +53,11 @@ AccessibilityPatternState WidgetNodeElement::accessibility_patterns() const {
   return node_.patterns;
 }
 
+EventResult WidgetNodeElement::handle_accessibility_action(
+    const AccessibilityActionRequested& action,
+    const ElementEventContext& context) {
+  (void)context;
+  return node_.on_action ? node_.on_action(action) : EventResult::unhandled();
+}
+
 } // namespace cgpui

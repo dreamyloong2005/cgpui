@@ -74,6 +74,7 @@ class Win32UiaProvider final
   HRESULT STDMETHODCALLTYPE get_SmallChange(double* result) override;
 
   [[nodiscard]] std::optional<Win32UiaProviderSnapshot> snapshot() const;
+  [[nodiscard]] HRESULT request_action(AccessibilityActionKind kind) const;
   void replace_node(Win32UiaProviderNode node, bool is_root);
   void retire();
 

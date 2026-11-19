@@ -30,7 +30,14 @@ void TabStrip::append_elements(
                    .name = tab.title,
                    .value = tab.dirty ? "modified" : "",
                    .patterns = {.selected = selected_ == tab.id},
-                   .bounds = tab_rect(index)});
+                   .bounds = tab_rect(index),
+                   .on_action = [this, index](const AccessibilityActionRequested& action) {
+                     if (action.kind != AccessibilityActionKind::select) {
+                       return EventResult::unhandled();
+                     }
+                     emit(TabStripEventKind::select, index);
+                     return EventResult::consumed_event();
+                   }});
     if (tab.closable) {
       builder.add(node, WidgetNode{.role = AccessibilityRole::button,
                                    .name = "Close " + tab.title,

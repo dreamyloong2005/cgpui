@@ -216,6 +216,27 @@ void TreeView::on_event(TreeViewEventHandler handler) {
   handler_ = std::move(handler);
 }
 
+// Accessibility actions on a row (UIA ExpandCollapse / SelectionItem).
+EventResult TreeView::handle_item_action(TreeItemId item, AccessibilityActionKind kind) {
+  if (!nodes_.contains(item)) return EventResult::unhandled();
+  const bool is_selected = selected(item);
+  if (kind == AccessibilityActionKind::expand) {
+    expand(item);
+  } else if (kind == AccessibilityActionKind::collapse) {
+    collapse(item);
+  } else if (kind == AccessibilityActionKind::select) {
+    select(item, TreeSelectMode::replace);
+  } else if (kind == AccessibilityActionKind::add_to_selection && !is_selected) {
+    select(item, TreeSelectMode::toggle);
+  } else if (kind == AccessibilityActionKind::remove_from_selection && is_selected) {
+    select(item, TreeSelectMode::toggle);
+  } else if (kind != AccessibilityActionKind::add_to_selection &&
+             kind != AccessibilityActionKind::remove_from_selection) {
+    return EventResult::unhandled();
+  }
+  return EventResult::consumed_event();
+}
+
 void TreeView::emit(TreeViewEventKind kind, TreeItemId item, Point position) {
   if (handler_) handler_(TreeViewEvent{.kind = kind, .item = item, .position = position});
 }

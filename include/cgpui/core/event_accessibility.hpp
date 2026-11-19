@@ -10,6 +10,13 @@ enum class AccessibilityActionKind {
   toggle,
   set_value,
   set_range_value,
+  // UIA ExpandCollapse / SelectionItem, AT-SPI Action "expand" / "collapse"
+  // and Selection.
+  expand,
+  collapse,
+  select,
+  add_to_selection,
+  remove_from_selection,
 };
 
 struct AccessibilityActionRequested {

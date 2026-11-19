@@ -133,6 +133,7 @@ class TreeView {
   void rebuild_rows() const;
   void ensure_rows() const;
   void emit(TreeViewEventKind kind, TreeItemId item, Point position = {});
+  EventResult handle_item_action(TreeItemId item, AccessibilityActionKind kind);
   void focus_row(std::size_t row, TreeSelectMode mode);
   [[nodiscard]] float max_scroll() const;
   [[nodiscard]] std::size_t page_rows() const;

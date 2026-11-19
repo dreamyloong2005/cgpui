@@ -69,7 +69,7 @@ std::unique_ptr<ElementTree> WidgetTreeBuilder::finish() {
         : pending_[entry.parent - 1].node.bounds.origin;
     const std::optional<CursorShape> cursor = entry.node.cursor;
     ids[index + 1] = tree->append_child(
-        parent, std::make_unique<WidgetNodeElement>(entry.node, parent_origin));
+        parent, std::make_unique<WidgetNodeElement>(std::move(entry.node), parent_origin));
     if (entry.id_out != nullptr) *entry.id_out = ids[index + 1];
     if (cursor.has_value()) cursors_.emplace_back(ids[index + 1], *cursor);
     return true;

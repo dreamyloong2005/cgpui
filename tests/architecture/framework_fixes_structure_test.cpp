@@ -42,6 +42,9 @@ const std::vector<std::pair<std::string, std::size_t>> source_limits{
     {"src/ui/runtime_window_element_host_internal.hpp", 45},
     {"src/ui/runtime_window_element_trees.cpp", 120},
     {"src/ui/runtime_window_element_routing.cpp", 110},
+    {"src/platform/win32/win32_uia_item_patterns_internal.hpp", 60},
+    {"src/platform/win32/win32_uia_item_patterns.cpp", 90},
+    {"src/platform/win32/win32_uia_item_pattern_state.cpp", 90},
 };
 
 } // namespace
@@ -84,6 +87,13 @@ int main() {
                 has(read("src/renderer/vulkan/vulkan_resize.cpp"),
                     "create_render_finished_semaphores()"),
             "render-finished semaphores are indexed by the acquired image");
+    // Item 4: ExpandCollapse / SelectionItem live in a tear-off, so the
+    // provider object header stays within its limit.
+    require(has(read("src/platform/win32/win32_uia_patterns.cpp"),
+                "get_win32_uia_item_pattern(") &&
+                !has(read("src/platform/win32/win32_uia_provider_object_internal.hpp"),
+                     "IExpandCollapseProvider"),
+            "item patterns are a tear-off of the UIA provider");
     require(!has(read("xmake.lua"), "framework_fixes"),
             "framework fix targets stay out of the root xmake.lua");
   } catch (const std::exception& error) {

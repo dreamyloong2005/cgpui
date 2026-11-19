@@ -221,9 +221,18 @@ New `AccessibilityRole` values: `tab_list`, `tab`, `tree`, `tree_item`,
 | tooltip | ToolTip | tool tip (64) |
 
 AT-SPI exposes `expandable` + `expanded` / `collapsed` and `selectable` +
-`selected` states. UIA exposes `UIA_LevelPropertyId`; the UIA ExpandCollapse
-and SelectionItem patterns are not implemented, so expanded / selected state
-is not visible to UIA clients yet.
+`selected` states. UIA exposes `UIA_LevelPropertyId`, the ExpandCollapse
+pattern on nodes with `expanded` (tree items with children, submenu items)
+and the SelectionItem pattern on nodes with `selected` (tree items, tabs,
+menu items), with the matching availability and state properties
+(`src/platform/win32/win32_uia_item_patterns*.cpp`, a tear-off of the
+provider). The selection container is the parent node (tree, tab list).
+Expand / Collapse / Select / AddToSelection / RemoveFromSelection arrive as
+`AccessibilityActionKind::expand` / `collapse` / `select` /
+`add_to_selection` / `remove_from_selection` on the node; `WidgetNode::on_action`
+handles them: tree rows expand, collapse and change the selection, tabs
+report `select`. The AT-SPI backend implements only the Accessible and
+Component interfaces, so these actions have no AT-SPI equivalent yet.
 
 ## Allocation
 
