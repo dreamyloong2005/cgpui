@@ -272,6 +272,11 @@ The flex and stack containers keep the box style set on their builder, like
 background, border, radius, shadow and text style apply. Hover / active
 state styles are not applied to them.
 
+`text(...)`, `text_input(...)` and `label(...)` do the same: the text is
+drawn, hit-tested and caret-placed in the content box, above the element's
+shadow, background and border. Image, icon, svg, button, item, toggle and
+slider elements paint their box style beneath their content.
+
 Phase C Step 343 starts the built-in widget surface with button, label, and
 text-input builder spelling. Phase C Step 344 adds checkbox, radio, and switch
 builder spelling with checked/selected/on state metadata. Phase C Step 345 adds

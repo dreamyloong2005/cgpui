@@ -75,22 +75,12 @@ class TextElement : public Element {
     return std::string(text());
   }
 
-  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    // Measures the composition too, so it does not wrap while composing.
-    const TextMeasurement measurement =
-        measure_text(display_text(), font(), font_size(), input.scale);
-    const TextWrapLayout wrap_layout =
-        wrap_text_measurement(measurement, input.constraints.max_size.width);
-    const Size preferred = wrap_layout.logical_size;
-    const LayoutOutput output{
-        .size = constrain_size(preferred, input.constraints),
-    };
-    set_layout_bounds(Rect{
-        .origin = output.origin,
-        .size = output.size,
-    });
-    return output;
-  }
+  // Measures the composition too, so it does not wrap while composing.
+  // The style's size, padding and margin give a CSS content box around
+  // the text.
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
+  // The content box the text is drawn, hit-tested and caret-placed in.
+  [[nodiscard]] std::optional<Rect> text_bounds() const;
 
   void paint(PaintList& paint_list) const override;
   void inherit_text_style(const Style& style) override;
@@ -193,21 +183,8 @@ class LabelElement : public Element {
     return std::string(text_);
   }
 
-  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override {
-    const TextMeasurement measurement =
-        measure_text(text_, font(), font_size(), input.scale);
-    const TextWrapLayout wrap_layout =
-        wrap_text_measurement(measurement, input.constraints.max_size.width);
-    const Size preferred = wrap_layout.logical_size;
-    const LayoutOutput output{
-        .size = constrain_size(preferred, input.constraints),
-    };
-    set_layout_bounds(Rect{
-        .origin = output.origin,
-        .size = output.size,
-    });
-    return output;
-  }
+  [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
+  [[nodiscard]] std::optional<Rect> text_bounds() const;
 
   void paint(PaintList& paint_list) const override;
   void inherit_text_style(const Style& style) override;

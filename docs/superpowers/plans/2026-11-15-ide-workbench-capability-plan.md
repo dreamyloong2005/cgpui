@@ -87,6 +87,7 @@ and platform layers. Each has a regression test that failed before the fix.
 | `scroll(state, child)` places the child (whole subtree) at the scroll offset, re-clamped to the measured sizes, and clips it to the viewport | `5310604a` | `scroll_element_offset_test` |
 | Flex children resized by grow / shrink are laid out again at their final size, so their descendants follow the new box | `7fc15539` | `flex_grow_relayout_test` |
 | Additional windows synthesize click / keyboard activation gestures, and actions fired while their events are handled resolve focus owner, view and handler context from that window | `4740d34e` | `window_record_action_dispatch_test` |
+| `text(...)`, `text_input(...)` and `label(...)` paint their box style (shadow, background, border, radius) under the text and lay out a CSS content box (size, padding, margin) in which the text is drawn, hit-tested and caret-placed; the light bordered field in `examples/hello_window` is observed on screen. Image, icon, svg, button, item, checkbox and slider already painted their box | (this commit) | `leaf_element_box_style_test` |
 
 ## Order and rationale
 

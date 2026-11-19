@@ -101,7 +101,7 @@ bool WindowRuntime::apply_text_pointer_selection(
 std::optional<std::size_t> WindowRuntime::text_offset_for_point(
     const TextElement& element,
     Point point) const {
-  const std::optional<Rect> bounds = element.layout_bounds();
+  const std::optional<Rect> bounds = element.text_bounds();
   if (!bounds.has_value()) {
     return {};
   }

@@ -42,4 +42,26 @@ StackBox resolve_stack_box(
   };
 }
 
+Rect stack_box_content_rect(Rect outer, const Style& style) {
+  const float inset_x = style.padding.left + style.padding.right +
+                        style.margin.left + style.margin.right;
+  const float inset_y = style.padding.top + style.padding.bottom +
+                        style.margin.top + style.margin.bottom;
+  return Rect{
+      .origin = {.x = outer.origin.x + style.margin.left + style.padding.left,
+                 .y = outer.origin.y + style.margin.top + style.padding.top},
+      .size = {.width = std::max(0.0F, outer.size.width - inset_x),
+               .height = std::max(0.0F, outer.size.height - inset_y)},
+  };
+}
+
+float stack_box_content_max_width(float max_width, const Style& style) {
+  if (style.preferred_size.width > 0.0F) {
+    return style.preferred_size.width;
+  }
+  const float inset_x = style.padding.left + style.padding.right +
+                        style.margin.left + style.margin.right;
+  return std::max(0.0F, max_width - inset_x);
+}
+
 } // namespace cgpui

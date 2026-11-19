@@ -13,7 +13,7 @@ std::string TextElement::display_text() const {
 }
 
 std::optional<Rect> TextElement::caret_rect(DpiScale scale) const {
-  const std::optional<Rect> bounds = layout_bounds();
+  const std::optional<Rect> bounds = text_bounds();
   if (!bounds.has_value() || model_ == nullptr) {
     return {};
   }
@@ -35,7 +35,7 @@ std::optional<Rect> TextElement::caret_rect(DpiScale scale) const {
 
 std::optional<Rect> TextElement::composition_start_rect(
     DpiScale scale) const {
-  const std::optional<Rect> bounds = layout_bounds();
+  const std::optional<Rect> bounds = text_bounds();
   if (!bounds.has_value() || model_ == nullptr || !model_->has_composition()) {
     return {};
   }
