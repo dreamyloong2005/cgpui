@@ -3,10 +3,8 @@
 #include "runtime_task_priority_internal.hpp"
 
 #include <algorithm>
-
 namespace cgpui {
 namespace {
-
 std::size_t task_pool_worker_count() {
   const unsigned int hardware = std::thread::hardware_concurrency();
   return std::clamp<std::size_t>(hardware == 0 ? 2U : hardware, 1U, 4U);
@@ -17,9 +15,13 @@ std::size_t task_pool_worker_count() {
 WindowRuntime::RuntimeTaskPool::RuntimeTaskPool() {
   const std::size_t worker_count = task_pool_worker_count();
   workers_.reserve(worker_count);
-  for (std::size_t index = 0; index < worker_count; ++index) {
-    workers_.emplace_back(
-        [this](std::stop_token stop_token) { run_worker(stop_token); });
+  try {
+    for (std::size_t index = 0; index < worker_count; ++index) {
+      workers_.emplace_back([this] { run_worker(); });
+    }
+  } catch (...) {
+    shutdown();
+    throw;
   }
 }
 
@@ -55,7 +57,7 @@ WindowRuntime::RuntimeTaskPool::snapshot() const {
 }
 
 void WindowRuntime::RuntimeTaskPool::shutdown() {
-  std::vector<std::jthread> workers;
+  std::vector<std::thread> workers;
   {
     std::lock_guard lock(mutex_);
     if (stopping_ && workers_.empty()) return;
@@ -64,15 +66,15 @@ void WindowRuntime::RuntimeTaskPool::shutdown() {
     workers.swap(workers_);
   }
   condition_.notify_all();
-  workers.clear();
+  for (auto& worker : workers) worker.join();
 }
 
-void WindowRuntime::RuntimeTaskPool::run_worker(std::stop_token stop_token) {
+void WindowRuntime::RuntimeTaskPool::run_worker() {
   while (true) {
     Work work;
     {
       std::unique_lock lock(mutex_);
-      condition_.wait(lock, stop_token, [this] {
+      condition_.wait(lock, [this] {
         if (stopping_) return true;
         for (const auto& queue : queues_) {
           if (!queue.empty()) return true;
@@ -84,7 +86,7 @@ void WindowRuntime::RuntimeTaskPool::run_worker(std::stop_token stop_token) {
         queue_empty = queue_empty && queue.empty();
       }
       if (queue_empty) {
-        if (stopping_ || stop_token.stop_requested()) return;
+        if (stopping_) return;
         continue;
       }
       for (const TaskPriority priority : runtime_task_priorities_descending) {

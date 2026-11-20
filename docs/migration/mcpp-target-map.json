@@ -1,4 +1,4 @@
-{"generator": "scripts/migration/reconcile.py", "xmake_test_entries": {"windows": 579, "linux": 559, "macosx": 463}, "unmapped": [], "mcpp_test_programs": {"windows": 579, "linux": 559}, "targets": [
+{"generator": "scripts/migration/reconcile.py", "xmake_test_entries": {"windows": 581, "linux": 561, "macosx": 465}, "unmapped": [], "targets": [
 {"xmake":"accessibility_pattern_action_test","platforms":["linux","macosx","windows"],"member":"tests/ui","mcpp":"test program accessibility_pattern_action_test","kind":"test"},
 {"xmake":"accessibility_pattern_runtime_test","platforms":["linux","macosx","windows"],"member":"tests/ui","mcpp":"test program accessibility_pattern_runtime_test","kind":"test"},
 {"xmake":"action_bubbling_test","platforms":["linux","macosx","windows"],"member":"tests/ui","mcpp":"test program action_bubbling_test","kind":"test"},
@@ -360,6 +360,8 @@
 {"xmake":"phase_j_documentation_structure_test","platforms":["linux","macosx","windows"],"member":"tests/architecture","mcpp":"test program phase_j_documentation_structure_test","kind":"test"},
 {"xmake":"phase_j_final_closeout_structure_test","platforms":["linux","macosx","windows"],"member":"tests/architecture","mcpp":"test program phase_j_final_closeout_structure_test","kind":"test"},
 {"xmake":"phase_j_final_closeout_test","platforms":["linux","macosx","windows"],"member":"tests/api_parity","mcpp":"test program phase_j_final_closeout_test","kind":"test"},
+{"xmake":"phase_j_macos_completion_structure_test","platforms":["linux","macosx","windows"],"member":"tests/architecture","mcpp":"test program phase_j_macos_completion_structure_test","kind":"test"},
+{"xmake":"phase_j_macos_completion_test","platforms":["linux","macosx","windows"],"member":"tests/api_parity","mcpp":"test program phase_j_macos_completion_test","kind":"test"},
 {"xmake":"phase_j_official_example_audit_test","platforms":["linux","macosx","windows"],"member":"tests/api_parity","mcpp":"test program phase_j_official_example_audit_test","kind":"test"},
 {"xmake":"phase_j_official_example_structure_test","platforms":["linux","macosx","windows"],"member":"tests/architecture","mcpp":"test program phase_j_official_example_structure_test","kind":"test"},
 {"xmake":"phase_j_performance_baseline_audit_test","platforms":["linux","macosx","windows"],"member":"tests/api_parity","mcpp":"test program phase_j_performance_baseline_audit_test","kind":"test"},

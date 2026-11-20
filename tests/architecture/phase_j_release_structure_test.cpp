@@ -37,13 +37,34 @@ int main() {
       "scripts/ci/create-release-artifact.py",
       "scripts/ci/windows-phase-j-release.ps1",
       "scripts/ci/linux-phase-j-release.sh",
+      "scripts/ci/macos-architecture-header.sh",
       ".github/actions/setup-phase-j-dependencies/action.yml",
-      ".github/workflows/phase-j-windows-linux.yml"};
+      ".github/workflows/phase-j-desktop.yml"};
   for (const auto* path : paths) if (read_source(path).empty()) return 3;
   if (line_count(read_source("tests/architecture/mcpp.toml")) > 240 ||
       line_count(read_source("scripts/ci/create-release-artifact.py")) > 190 ||
       line_count(read_source("scripts/ci/windows-phase-j-release.ps1")) > 100 ||
       line_count(read_source("scripts/ci/linux-phase-j-release.sh")) > 100 ||
       line_count(read_source(".github/workflows/phase-j-windows-linux.yml")) > 260) return 4;
+  const std::string macos_package = read_source("scripts/ci/macos-package.sh");
+  if (macos_package.empty() || !contains(macos_package, "#!/usr/bin/env bash") ||
+      !contains(macos_package, "MACOSX_DEPLOYMENT_TARGET") ||
+      line_count(macos_package) > 230) return 5;
+  const std::string macos_release =
+      read_source("scripts/ci/macos-phase-j-release.sh");
+  if (macos_release.empty() ||
+      !contains(macos_release, "#!/usr/bin/env bash") ||
+      !contains(macos_release, "macos-package.sh") ||
+      !contains(macos_release, "create-release-artifact.py") ||
+      line_count(macos_release) > 150) return 6;
+  const std::string desktop_workflow =
+      read_source(".github/workflows/phase-j-desktop.yml");
+  const std::string macos_architecture =
+      read_source("scripts/ci/macos-architecture-header.sh");
+  if (!read_source(".github/workflows/phase-j-windows-linux.yml").empty() ||
+      line_count(desktop_workflow) > 360 ||
+      line_count(macos_architecture) > 100 ||
+      !contains(macos_architecture, "architecture-header-targets.txt") ||
+      !contains(macos_architecture, "\"$mcpp\" test -p tests/architecture")) return 7;
   return 0;
 }

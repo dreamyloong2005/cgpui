@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "metric_unit": "ns_per_operation",
+  "platforms": ["windows", "wayland", "x11", "macos-arm64", "macos-x86_64"],
   "metrics": {
     "startup": {"max_mean_ns": 500000000, "min_operation_count": 4},
     "first_frame": {"max_mean_ns": 500000000, "min_operation_count": 4},
@@ -14,6 +15,6 @@
   "notes": [
     "Budgets are regression tripwires, not cross-machine ranking targets.",
     "CI retains each platform report so baselines can be compared at a fixed revision.",
-    "macOS execution is excluded from the current Phase J scope."
+    "macOS arm64 and x86_64 retain separate reports at the same revision."
   ]
 }

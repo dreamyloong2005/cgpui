@@ -22,14 +22,16 @@ bool contains(const std::string& text, const char* value) {
 int main() {
   const std::string script = read_source("scripts/ci/macos-debug.sh");
   const std::string manifests = read_source("third_party/VENDORED.md");
+  const std::string dependencies =
+      read_source("scripts/ci/macos-dependencies.sh");
   const std::string targets = read_source("tests/architecture/mcpp.toml");
   const std::string manifest = read_source("scripts/ci/architecture-header-targets.txt");
   const std::string workflow = read_source(".github/workflows/phase-h-macos.yml");
   const std::string task_plan = read_source("task_plan.md");
   const std::string progress = read_source("progress.md");
   const std::string findings = read_source("findings.md");
-  if (script.empty() || manifests.empty() || targets.empty() || manifest.empty() ||
-      workflow.empty()) {
+  if (script.empty() || manifests.empty() || dependencies.empty() ||
+      targets.empty() || manifest.empty() || workflow.empty()) {
     return 1;
   }
   const std::size_t confinement = script.find("case \"$output_root/\"");
@@ -41,6 +43,10 @@ int main() {
       !contains(script, "output root must not contain parent traversal") ||
       !contains(script, "output root must not be the repository root") ||
       !contains(script, "mcpp 2026.11.18.1 or later") ||
+      !contains(script, "source \"$repo_root/scripts/ci/macos-dependencies.sh\"") ||
+      !contains(script, "cgpui_configure_macos_dependency_environment") ||
+      !contains(script, "MACOSX_DEPLOYMENT_TARGET") ||
+      !contains(dependencies, "MCPP_HOME") ||
       !contains(script, "build/phase-h-ci/macos-debug") ||
       !contains(script, "sw_vers -productVersion") ||
       !contains(script, "xcodebuild -version") ||

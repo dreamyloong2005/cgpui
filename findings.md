@@ -12948,3 +12948,151 @@
   tar.gz has SHA-256
   `a710e93f995a63fff1a6efb56d80bf1372c19a78c6bd0d6c58f677cfe3290e72`;
   all 199 content-manifest hashes match and the archive has 200 entries.
+
+## 2026-07-18 Phase J macOS Completion Planning
+
+- The approved design reopens Phase J Steps 799-840 in place; it does not use
+  the Steps 841+ upstream-drift reservation or create a Phase K.
+- macOS completion requires all 20 official examples, all performance metrics,
+  all eight stress scenarios, deterministic Release packaging, CI, and final
+  evidence on native arm64 and x86_64 runners.
+- Release artifacts remain architecture-specific, target macOS 13.0, and use
+  `macos-15` plus `macos-15-intel`; Universal 2, signing, notarization, and DMG
+  delivery remain out of scope.
+- Existing Phase H 380/380 and Windows/Linux/X11 results are immutable
+  historical evidence. Current authority remains `complete_non_macos` until
+  both native macOS architecture matrices pass and final artifacts are audited.
+- The existing dependency lock contains `macosx|arm64` but no
+  `macosx|x86_64` section. The implementation plan therefore locks the same
+  CMake, LunaSVG, Ninja, and PlutoVG versions for Intel before CI execution.
+- Unisolated Xmake repository setup can fall back to an unusable Gitee remote
+  on this host. The implementation plan creates the pinned repository-local
+  macOS dependency helper in Task 1 so every later Xmake call is deterministic.
+- Task 1 confirms Xmake wraps any intentional nonzero test-program exit as
+  command exit `255`; staged completion bands must execute the built guard
+  directly when the exact raw exit number matters.
+- The repository-local macOS dependency root successfully installs the locked
+  CMake 4.3.4, Ninja 1.13.2, PlutoVG 1.3.3, and LunaSVG 3.5.0 graph without
+  touching the user's global Xmake repository.
+- The Phase H macOS-specific example inventory was byte-identical to the shared
+  21-target inventory. Removing it eliminates duplicate ownership while the
+  Phase J runner adds native Cocoa/Metal pixel, input, service, accessibility,
+  and cross-window lifecycle groups.
+- The official-example auditor now treats macOS as an active platform and
+  reports `macos_mapped_examples: 20`; per-row `macos_tests` keeps native
+  evidence explicit instead of inferring it from general smoke coverage.
+- The performance runner needs no macOS-native implementation branch: its
+  public `TestApp` metrics are platform-neutral, while `macos-arm64` and
+  `macos-x86_64` report identities preserve architecture-specific evidence.
+- The performance wrapper's workspace path policy can be tested before a build;
+  wrong-architecture and parent-traversal probes both reject with exit 3.
+- The stress runner already contained exactly one window-churn insertion and
+  seven other scenarios; the new audit freezes that count instead of changing
+  scenario behavior.
+- The platform-neutral `TestApp` stress surface completes all eight scenarios
+  on native macOS arm64, so architecture-specific evidence belongs in report
+  identity and CI selection rather than duplicated scenario implementations.
+- The macOS package boundary needs seven archives: the five platform-neutral
+  layers plus `cgpui_platform_macos` and `cgpui_renderer_metal`. The native
+  hello-window executable is an arm64 Mach-O in the arm64 package.
+- Keeping build metadata and the exact dependency lock under `metadata/` makes
+  the package manifest self-describing without widening the public include or
+  library surface.
+- Apple Python 3.9 does not support `newline=` on `Path.write_text`; using
+  `Path.open(..., newline="\n")` preserves deterministic LF output and keeps
+  the shared archive writer compatible with the local macOS toolchain.
+- The deterministic macOS archive uses the same USTAR plus fixed-mtime gzip
+  path as Linux. Architecture and deployment target are content-manifest
+  fields, so arm64 and x86_64 artifacts cannot be mistaken for each other.
+- macOS CI needs four separate matrix owners because Debug/examples,
+  performance/stress, Release artifacts, and architecture/header validation
+  retain different outputs and failure scopes while sharing the same two
+  native runner identities.
+- The existing dependency action can remain thin on Darwin by invoking
+  `macos-dependencies.sh --github-env`; this keeps pinned repository checkout
+  ownership out of YAML and out of `macos-debug.sh`.
+- Pending authority must be additive: the historical non-macOS closure stays
+  complete, while `phase_j_required_macos_gaps: 2` prevents new implementation
+  from being mistaken for verified native arm64/x86_64 completion.
+- Steps 841+ remain reserved for upstream drift. Reopening the macOS gates under
+  Steps 805-840 keeps the pinned revision and historical Phase J evidence
+  stable while making the actual next verification work explicit.
+
+## 2026-07-18 Phase J Local arm64 Verification
+
+- The complete local native arm64 matrix passes on macOS 26.5.2 (25F84), Xcode
+  26.6 (17F113), and Xmake v3.0.9+HEAD.2b184e178 with deployment target 13.0.
+- The first full Debug run passed 399/406. All seven failures were structure
+  guards freezing pre-Phase-J root line budgets, target inventory, duplicate
+  example inventory, or dependency-helper ownership; focused repair passed 7/7
+  before the complete Debug rerun.
+- Debug passes 406/406 in 11.458 seconds. The official-example matrix builds all
+  21 canonical targets, passes eight native smoke/pixel/input tests, and passes
+  all four `hello_window` modes.
+- All eight performance metrics pass policy, and all eight stress scenarios
+  complete at scale 1. These remain separate architecture-specific reports.
+- The deterministic arm64 archive reproduces at SHA-256
+  `154e683d1eb5339d0664a7fce562ee58b2e78b4608b9d962190af77d84fa57db`;
+  its manifest covers 199 files and the archive contains 200 entries.
+- The full architecture/header inventory passes 174/174 in 84.209 seconds.
+  This closes local arm64 implementation evidence, but `x86_64` and native CI
+  remain required, so Phase J authority stays `complete_non_macos`/`pending`.
+- The focused closeout/completion gate accepts this provisional state at 4/4;
+  no checked-in authority field claims completed all-desktop verification.
+
+## 2026-07-18 Phase J Native CI Diagnosis
+
+- Workflow run `29629487926` targets local-evidence commit `3e898091` and
+  starts all eight native macOS jobs. Both architectures pass their explicit
+  host-architecture and dependency-setup steps, then multiple job groups return
+  Xmake exit 255 from their first product build/test wrapper.
+- Public run metadata identifies the failing command but GitHub requires an
+  authenticated repository session for raw job logs. A focused CI annotation
+  helper is therefore the smallest evidence-gathering boundary: it preserves
+  command output and exit status while publishing the last 80 log lines as one
+  public check annotation on failure.
+- The helper behavior test proves success passthrough, failure exit 7
+  passthrough, newline escaping, log retention, and usage rejection. The Phase
+  J structure guard requires all six macOS wrapper commands to use it.
+- Run `29629948951` proves GitHub truncates an error annotation near 4 KiB; an
+  80-line compiler tail can therefore lose its final error. The helper now
+  caps the escaped message at the last 3500 characters, with a long-log
+  regression requiring the final marker and a sub-4096 annotation.
+- The same run also executes and fails historical Windows/Linux jobs. Those
+  jobs are outside the user's macOS-only verification scope and already have
+  preserved Phase J evidence, so the active workflow now owns only the four
+  dual-architecture macOS completion matrices.
+- macOS-only run `29630347423` exposes the shared hosted-runner root cause:
+  Apple libc++ does not provide `std::stop_token` or `std::jthread` for the
+  configured target. The runtime task pool now uses explicit `std::thread`
+  workers, protected stop state, notification, queue draining, and joins.
+- A task-pool structure RED requires `std::thread`, rejects both unsupported
+  C++ library types, and requires explicit join. The focused pool/priority
+  behavior and structure matrix passes 4/4 under a fresh macOS 13.0 config.
+- `MACOSX_DEPLOYMENT_TARGET=13.0` alone did not affect Xmake: local compile
+  commands still targeted `arm64-apple-macos26.5`. All six direct macOS entry
+  scripts now pass `--target_minver="$MACOSX_DEPLOYMENT_TARGET"`; a fresh Xmake
+  compile and link use `arm64-apple-macos13.0`.
+- Replacing RAII `std::jthread` workers requires preserving constructor failure
+  cleanup. A second structure RED freezes the partial-construction catch path;
+  it reuses `shutdown()` to join created workers before rethrowing.
+- Run `29630949183` completes all eight arm64/x86_64 macOS jobs successfully at
+  head `1acd02b9`. The public API exposes four non-expired artifact records and
+  their GitHub-generated SHA-256 digests, but both REST and web download paths
+  require authentication, so their contents are not yet independently audited.
+
+## 2026-07-18 Phase J Native Artifact Audit
+
+- The authenticated GitHub session allowed all four workflow artifacts from
+  run `29630949183` to be downloaded under `build/phase-j-ci-download/`.
+- Both architecture-specific performance reports pass the checked-in policy,
+  and both stress reports pass all eight required scenarios.
+- Each Release artifact contains 200 archive entries and a manifest covering
+  199 files; all 199 content hashes match, deterministic metadata is preserved,
+  and the embedded manifest agrees with the downloaded release manifest.
+- `lipo -archs` confirms `arm64` for SHA-256
+  `9c29c096c66afcc0d864efdb05b6fc3f7f549bc0534eda0a2d756dc782ef5afa`
+  and `x86_64` for SHA-256
+  `d0911ddedefe93cd0f97838ff98c44572845b88165d8e92233c970dde7f51b78`.
+- Both packages record macOS 13.0 Release metadata. Native runner evidence is
+  macOS 15.7.7 (24G720) with Xcode 16.4 (16F6) on both architectures.

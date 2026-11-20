@@ -25744,3 +25744,193 @@
   clean: focused Xmake ownership and line budgets remain intact, all seven
   Phase J bands have guarded evidence, and the new CI workflow contains only
   Windows, Wayland, and X11/Linux jobs with no macOS execution.
+
+## 2026-07-18 Phase J macOS Completion Planning
+
+- Synchronized local `master` with `origin/master`, created
+  `codex/phase-j-macos-completion`, and committed the approved design as
+  `48ea3e83 docs: design phase j macos completion`.
+- User approved reopening Phase J Steps 799-840 for full macOS completion with
+  separate arm64/x86_64 Release artifacts, native validation on both
+  architectures, macOS 13.0 deployment target, feature-branch CI, and merge
+  only after every native matrix passes.
+- Restored the file-based planning context after session catch-up. The working
+  tree is clean and the detailed implementation plan is now in progress; no
+  product implementation has started.
+- Wrote and self-reviewed
+  `docs/superpowers/plans/2026-07-18-phase-j-macos-completion.md` with ten
+  task-level commits, exact RED/GREEN commands, native arm64/x86_64 gates,
+  fixed macOS 13.0 packaging contracts, desktop CI, and final merge procedure.
+- A submission-time Xmake verification exposed the unisolated Gitee fallback;
+  no target compiled. Moved the pinned dependency helper to Task 1 and verified
+  the unchanged source-only Phase J closeout guard directly with Apple Clang;
+  it exits 0.
+- Started inline product implementation in the current feature-branch checkout
+  after the user declined a linked worktree. Task 1 begins test-first with the
+  staged behavior/structure completion guards before the dependency helper.
+- Task 1 RED is exact: direct Apple Clang builds of both new guards exit `10`
+  while `macos-dependencies.sh` is absent. The first GREEN helper command used
+  zsh rather than Bash and failed before repository setup; subsequent helper
+  verification is constrained to its documented Bash entry surface.
+- The corrected Bash helper checks out repository commit
+  `b9256335e0b6e70808e23dfe71627d8a4dcc0abf`; the behavior guard advances to
+  exit `20` and the structure guard remains at its expected later-file exit
+  `10`. The first Xmake build then stopped only because the plan omitted `-y`
+  from a dependency-installing noninteractive command.
+- After adding `-y`, the isolated package graph installed and both completion
+  targets built successfully. Xmake wraps intentional nonzero guard exits as
+  `255`, so raw staged-band assertions now execute the built target files
+  directly; this does not change guard behavior.
+- Task 1 GREEN is complete: helper syntax and repository-root/parent-traversal/
+  outside-workspace rejection pass, the pinned checkout SHA matches, both new
+  Xmake targets compile, behavior advances from raw exit `10` to `20`, and
+  structure remains at the expected missing-later-files exit `10`.
+- Task 2 RED passed through the intended raw exit `3` in both focused guards.
+  GREEN moves the macOS runner to the canonical 21-target inventory, adds nine
+  native test groups plus four hello-window modes, and removes the duplicate
+  inventory file.
+- The regenerated official-example audit reports 20 official, 20 mapped, and
+  20 macOS-mapped examples with zero issues. Focused behavior/structure passes
+  2/2, runner deployment-target and wrong-architecture probes each reject with
+  exit 3, and the comprehensive completion guard advances to raw exit `30`.
+- Task 3 RED is exact at behavior exit 6 and structure exit 5. GREEN adds both
+  macOS report identities, active-platform validator policy, a 68-line native
+  wrapper, and preserves all eight existing metric implementations/budgets.
+- Focused performance guards pass 2/2; wrong-architecture and parent-traversal
+  wrapper probes each reject with exit 3; completion advances to raw exit 40.
+  The real Release runner graph builds in 164.587 seconds and emits a parsed
+  `macos-arm64` report with exactly eight metrics at one probe iteration.
+- Task 4 RED is exact at behavior exit 6 and structure exit 5. GREEN preserves
+  the existing eight-scenario inventory while adding both macOS report
+  identities, active-platform validation, and a focused native wrapper.
+- Focused stress guards pass 2/2; wrong-architecture and parent-traversal probes
+  each reject with exit 3; completion advances to raw exit 50. A real arm64
+  scale-1 run emits eight unique scenarios and all report `complete`.
+- Task 5 RED is exact at release behavior exit 9 and structure exit 5. GREEN
+  adds a 177-line native package owner with all destructive work gated behind
+  architecture, deployment-target, Xmake-version, and workspace checks.
+- A real arm64 Release package stages seven static libraries, one arm64 Mach-O
+  demo, two metadata files, and all 187/187 public headers. The reparsed base
+  manifest records macOS, arm64, Release, and deployment target 13.0.
+- Task 6 RED confirms the existing packer rejects `--platform macos`, while the
+  extended release guards return behavior 10 and structure 6. GREEN adds the
+  two exact artifact names and a 95-line native Release owner.
+- Two arm64 tar.gz writes from the same package tree match at SHA-256
+  `c11ea8f5784647edce1de02a95a0624cdabe956ea0fe694c4e519fb7eb5a11f4`.
+  Independent audit verifies all 199 manifest files and 200 archive entries;
+  focused release tests pass 2/2 and completion advances to raw exit 60.
+- Task 7 RED sees the unrenamed workflow at release behavior exit 1 and
+  structure exit 3. GREEN renames it to the desktop workflow, preserves all
+  existing Windows/Linux jobs, and adds four arm64/x86_64 macOS matrices.
+- The setup action now delegates Darwin roots to the shared pinned helper,
+  Intel receives the same four locked dependency versions as arm64, and the
+  architecture/header wrapper consumes the shared 173-target inventory.
+- Both YAML files parse, release tests pass 2/2, the comprehensive structure
+  guard exits 0, and behavior advances to pending-authority exit 70.
+- Task 8 closeout RED is exact at exit 30. GREEN keeps Phase J authority at
+  `complete_non_macos`, records two required macOS gaps, and marks arm64 plus
+  x86_64 native verification pending at deployment target 13.0.
+- All prior Windows, WSLg, X11, Windows/Linux Release, performance, stress, and
+  Phase H 380/380 values remain unchanged. The final closeout/completion pair
+  passes 2/2 and current user guides contain no active macOS-exclusion prose.
+
+## 2026-07-18 Phase J Local arm64 Verification
+
+- Confirmed Darwin arm64, macOS 26.5.2 (25F84), Xcode 26.6 (17F113), Xmake
+  v3.0.9+HEAD.2b184e178, the pinned Xmake repository commit, and deployment
+  target 13.0 before native execution.
+- The initial full Debug run passed 399/406 and exposed seven stale structure
+  assumptions. Updated those guards for the thin Phase J module, shared example
+  inventory, and dependency-helper ownership; the focused 7/7 regression and
+  fresh complete Debug rerun then passed.
+- The full Debug suite passes 406/406 in 11.458 seconds. The official-example
+  runner builds 21 canonical targets and passes 8/8 native tests plus all four
+  `hello_window` modes.
+- The arm64 performance and stress wrappers produce valid reports with eight
+  metrics and eight complete scenarios. Both structured validators exit 0.
+- The arm64 Release wrapper reproduces byte-for-byte at SHA-256
+  `154e683d1eb5339d0664a7fce562ee58b2e78b4608b9d962190af77d84fa57db`;
+  199 manifest files and 200 archive entries pass independent inspection.
+- The architecture/header matrix passes 174/174 in 84.209 seconds. Final
+  verification now records arm64 as `passed_local`, x86_64 remains `pending`,
+  and Task 10 native dual-architecture CI is next.
+- The final Task 9 closeout/completion gate passes 4/4 in 1.165 seconds with
+  all-desktop authority still pending.
+
+## 2026-07-18 Phase J Native CI Diagnosis
+
+- Pushed `3e898091` and identified Phase J desktop workflow run
+  `29629487926` at the exact feature-branch head SHA.
+- The first run starts all eight macOS jobs but both arm64 and x86_64 Debug
+  groups, both arm64 performance/Release groups, and arm64 architecture/header
+  return exit 255 from their first Xmake product command. Setup and explicit
+  architecture checks pass, so the failure is after runner selection.
+- Added `run-with-github-annotation.sh` and a real shell behavior test. The six
+  macOS workflow commands now retain full output, preserve the original exit
+  code, and expose the last 80 lines in a public error annotation on failure.
+- The helper RED fails at missing implementation with exit 127, then GREEN
+  passes behavior plus the updated Phase J structure guard. Workflow YAML also
+  parses successfully.
+- Follow-up run `29629948951` publishes the compiler tail, proving the public
+  annotation path works, but GitHub truncates the message before the final
+  error. Added a RED/GREEN long-log regression and cap the escaped annotation
+  to its final 3500 characters.
+- Retired the 11 historical Windows/Linux jobs from the active Phase J desktop
+  workflow. Their scripts, release policy, ledger values, and completed evidence
+  remain unchanged; the next run contains exactly eight macOS jobs as approved.
+- Run `29630347423` provided the actionable compiler failure: both native
+  architectures reject `std::stop_token` and `std::jthread` in the runtime task
+  pool. Added a structure RED, replaced the pool workers with joined
+  `std::thread` instances, and passed the pool/priority matrix 4/4.
+- Added a deployment-target structure RED for all six direct macOS Xmake entry
+  scripts. Each now configures Xmake with the requested native architecture and
+  `--target_minver="$MACOSX_DEPLOYMENT_TARGET"`; the structure guard, Bash
+  syntax, and CI annotation helper pass.
+- A fresh isolated Xmake configuration reports SDK target
+  `arm64-apple-macos13.0`; it compiles `runtime_task_pool.cpp` and passes the
+  four focused pool/priority tests 4/4 in 2.362 seconds. The next action is the
+  full focused regression/diff audit, then a normal follow-up commit and push.
+- Submission review added constructor exception safety for the explicit thread
+  pool through a verified RED `3`/GREEN cycle; partial worker creation now
+  stops and joins before rethrowing. The final focused pool, release, macOS
+  completion, and closeout matrix passes 10/10 in 1.585 seconds.
+- Committed the compatibility follow-up as `1acd02b9` and pushed the feature
+  branch. Native macOS-only workflow run `29630949183` matches that head SHA
+  and starts with exactly eight jobs; it is queued pending runner capacity.
+- Run `29630949183` completes all four arm64 jobs successfully: Debug/examples,
+  performance/stress, Release, and architecture/header. All four Intel groups
+  remain in progress, so final authority is still pending.
+- Run `29630949183` finishes with all eight native jobs successful at exact head
+  `1acd02b9`. Four expected artifacts are present and non-expired, with public
+  metadata digests, but anonymous downloads return `401 Requires authentication`.
+  Final authority remains pending until the browser is signed in and all four
+  artifact contents pass the planned independent validators and manifest audit.
+
+## 2026-07-18 Phase J Native Artifact Audit
+
+- Used the authenticated GitHub browser session to download all four artifacts
+  from run `29630949183` into `build/phase-j-ci-download/`.
+- Validated both performance reports and both eight-scenario stress reports
+  against the checked-in policies.
+- Audited both Release packages independently: 199/199 manifest hashes match,
+  each archive has 200 entries, metadata is deterministic, embedded manifests
+  match, and `lipo` reports the expected `arm64` and `x86_64` slices.
+- Recorded the exact workflow, job, artifact, report, runner, and Release hash
+  evidence in `docs/gpui-phase-j-final-verification.json`.
+- Tightened the final closeout and release audit guards first; before authority
+  updates they fail at the expected exits `20` and `8`.
+- Updated current authority to complete with zero Phase J/macOS gaps, marked all
+  macOS roadmap subitems complete, and moved the handoff to Steps 841+ only.
+- Found and repaired a stale source-matrix `macos_execution=excluded_by_user`
+  field through a verified RED exit `3`; the generator now validates the source
+  field and emits a refreshed complete report with zero issues.
+- Configured a fresh locked arm64 Release guard root at macOS 13.0, built seven
+  focused targets serially, and passed the final closeout, release, official
+  example, macOS completion, and structure matrix 7/7.
+- The remaining Phase J documentation, performance, stress, upstream, and
+  official-example structure guards pass 9/9; the CI annotation helper, JSON,
+  YAML, Bash syntax, generated audit reproducibility, and diff checks pass.
+- Submission diff review found no blocking issue and removed the only generated
+  noise (`xmake-requires.lock` EOF metadata) from the change set. Task 10 Steps
+  1-6 are complete; closeout commit, a new eight-job macOS run, and fast-forward
+  integration remain.

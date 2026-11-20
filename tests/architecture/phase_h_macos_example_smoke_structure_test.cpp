@@ -37,25 +37,25 @@ bool contains(const std::string& text, const char* value) {
 
 int main() {
   const std::string canonical = read_source("scripts/ci/example-targets.txt");
-  const std::string macos = read_source("scripts/ci/macos-example-targets.txt");
   const std::string script = read_source("scripts/ci/macos-example-smoke.sh");
   const std::string manifests = read_source("examples/hello_window/mcpp.toml");
   const std::string module = read_source("tests/platform/mcpp.toml");
   const std::string targets = read_source("tests/architecture/mcpp.toml");
   const std::string workflow = read_source(".github/workflows/phase-h-macos.yml");
   const std::vector<std::string> expected = lines(canonical);
-  const std::vector<std::string> actual = lines(macos);
-  if (expected.size() != 21 || actual != expected ||
-      std::set<std::string>(actual.begin(), actual.end()).size() != actual.size()) {
+  if (expected.size() != 21 ||
+      std::set<std::string>(expected.begin(), expected.end()).size() !=
+          expected.size()) {
     return 1;
   }
   const std::string api_parity = read_source("examples/api_parity/mcpp.toml");
-  for (const std::string& example : actual) {
+  for (const std::string& example : expected) {
     const std::string declaration = "[targets." + example + "]";
     if (api_parity.find(declaration) == std::string::npos) return 2;
   }
   if (!contains(script, "set -euo pipefail") ||
-      !contains(script, "macos-example-targets.txt") ||
+      !contains(script, "example-targets.txt") ||
+      contains(script, "macos-example-targets.txt") ||
       !contains(script, "\"$mcpp\" run -p examples/api_parity") ||
       !contains(script, "\"$mcpp\" test -p tests/platform macos_example_smoke_test") ||
       !contains(script, "macos_first_frame") ||

@@ -68,8 +68,11 @@ int main() {
     }
   }
   if (count(matrix, "\"upstream_example\":") != examples.size() ||
-      count(matrix, "\"macos\": \"excluded_by_user\"") != examples.size() ||
-      count(matrix, "\"status\": \"complete\"") != examples.size()) {
+      count(matrix, "\"macos\": \"compiled_and_smoked\"") !=
+          examples.size() ||
+      count(matrix, "\"macos_tests\":") != examples.size() ||
+      count(matrix, "\"status\": \"complete\"") != examples.size() ||
+      !contains(matrix, "\"macos_execution\": \"required\"")) {
     return 3;
   }
   if (!contains(matrix, "\"windows\": \"compiled_and_smoked\"") ||
@@ -82,8 +85,9 @@ int main() {
   if (!contains(report, "\"status\": \"complete\"") ||
       !contains(report, "\"official_examples\": 20") ||
       !contains(report, "\"mapped_examples\": 20") ||
+      !contains(report, "\"macos_mapped_examples\": 20") ||
       !contains(report, "\"issues\": []") ||
-      !contains(report, "\"macos_execution\": \"excluded_by_user\"")) {
+      !contains(report, "\"macos_execution\": \"required\"")) {
     return 5;
   }
   if (!contains(roadmap,

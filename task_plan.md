@@ -4899,14 +4899,21 @@ implementation slice.
 | The first broad PowerShell JSON audit used case-insensitive object conversion and the first debug/stale-handoff searches included historical prose | Phase I static audit | Parse tracked JSON with `ConvertFrom-Json -AsHashtable`, inspect only added debug-marker lines, and distinguish immutable Phase H history from active `phase_*_current_handoff` fields |
 | WSL has no named non-system user and the first nested `awk` user-enumeration probe was misquoted | Phase I final WSL focused verification | Use the established root-only distro entry with `XMAKE_ROOT=y` and direct `wsl.exe --cd ... -- env ... xmake` invocations; no WSL recovery or installation is needed |
 
-## 2026-07-17 Active Phase J Non-macOS Execution Goal
+## 2026-07-17 Phase J Non-macOS Baseline and Active macOS Completion Goal
 
-- Status: complete_non_macos
+- Status: complete
+- Active work status: product_implementation_task_10_closeout_ready_to_commit
+- macOS completion status: complete
+- Required macOS gaps: 0
+- macOS deployment target: 13.0
 - Authoritative scope: Phase J Steps 799-840+ in
   `docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md`.
-- User scope: complete every platform-neutral, Windows, Wayland, and X11 part
-  of Phase J. Exclude new macOS builds, tests, packaging, and CI execution;
-  preserve the completed Phase H macOS evidence without claiming a rerun.
+- Approved completion design:
+  `docs/superpowers/specs/2026-07-18-phase-j-macos-completion-design.md`.
+- Active user scope: reopen Phase J Steps 799-840 in place and complete the
+  macOS official-example, performance, stress, dual-architecture Release, CI,
+  and final-verification work. Preserve the completed Phase H 380/380 and all
+  Windows, Wayland, and X11 historical evidence unchanged.
 - Pre-agreed public seams:
   1. [x] Steps 799-804: pinned-upstream extractor output and required-row audit.
   2. [x] Steps 805-810: official-example equivalents compiled and exercised on
@@ -4921,14 +4928,32 @@ implementation slice.
      dependency bootstrap, manifests, and release artifacts.
   7. [x] Steps 835-840+: final Windows/WSL/X11 matrices, locked parity ledger,
      non-macOS closeout guard, and explicit upstream-drift policy.
+  8. [x] Write and self-review the detailed Phase J macOS completion
+     implementation plan; commit it separately before implementation.
+  9. [x] Execute the approved implementation plan on
+     `codex/phase-j-macos-completion` with RED/GREEN guards and focused commits.
+  10. [ ] Push the feature branch, require native arm64 and x86_64 macOS CI,
+      close the all-desktop authority, and merge only after every matrix passes.
 - Verification policy: keep Xmake build/test commands serial with `-j 1`, use
   RED-GREEN tracer guards at the public seams above, keep `.vscode/` untracked,
   and commit completed slices locally without pushing unless requested.
+- Task 9 local arm64 matrix: Debug 406/406, 21 official example targets plus
+  native smoke coverage, eight performance metrics, eight stress scenarios,
+  deterministic Release SHA-256
+  `154e683d1eb5339d0664a7fce562ee58b2e78b4608b9d962190af77d84fa57db`,
+  and architecture/header 174/174 all pass. Task 10 native workflow run
+  `29630949183` passes all eight jobs, and both architecture artifacts pass
+  independent report, manifest, deterministic metadata, and Mach-O audits.
 
 ### Errors Encountered During Phase J
 
 | Error | Attempt | Resolution |
 |-------|---------|------------|
+| A Phase J macOS plan self-review patch used a wrapped line-budget sentence as an exact anchor and was rejected atomically | macOS completion implementation-plan self-review | Re-read the narrow plan ranges and apply short independent anchors; no partial plan edit occurred |
+| A submission-time `xmake build phase_j_final_closeout_test` used the unisolated default repository and failed while cloning Gitee without interactive credentials | macOS completion plan verification | Move the pinned macOS dependency helper to Task 1 so every implementation Xmake call uses repository-local roots; verify the unchanged source-only closeout guard directly with the system C++ compiler |
+| The first dependency-helper GREEN command sourced the Bash helper from the default zsh, where `BASH_SOURCE` is undefined, and attempted rejected `/build` directory creation | Task 1 dependency helper verification | Keep the helper's supported entry surface as Bash, run source/function/Xmake commands inside `bash -c`, and confirm no workspace-external files were created |
+| The first isolated Xmake guard build stopped at the dependency confirmation prompt because the implementation-plan command omitted `-y` | Task 1 Xmake RED verification | Add noninteractive `-y` to implementation-plan Xmake build/test commands and rerun against the already-pinned repository-local dependency root |
+| Xmake built both Task 1 guards but `xmake run` normalized their intentional raw exits `20` and `10` to command exit `255` | Task 1 staged-band verification | Use Xmake only to prove target registration/build, then execute the target files directly with `CGPUI_SOURCE_ROOT` when asserting staged raw exit bands |
 | The first Phase J ledger probe indexed nonexistent `required_surface_summary` and exited after correctly reporting status counts | Steps 799-804 inventory | Use the live schema's `rows` array; keep the failed probe out of implementation decisions and rerun with the correct key |
 | The first planning synchronization patch used a long Phase I error-table row as an exact anchor and was rejected atomically | Steps 799-804 planning synchronization | Reapply with short section and checklist anchors, move the misplaced Phase J probe row into this table, and confirm no partial edit occurred |
 | `xmake test -j 1 -v` reported `nothing to test` when given target names without their registered test suffix | Steps 799-804 focused verification | Use the repository's exact `target/default` names; both registered tests pass 1/1, and direct `xmake run` also exits zero |
@@ -4965,3 +4990,14 @@ implementation slice.
 | The first post-closeout Windows full suite passed 492/494; only the documentation and release audits returned exits `6` and `8` | Steps 835-840 final Windows regression | Both guards still froze the completed Step 835 handoff; migrate their dynamic ledger assertion to `Phase J Steps 841+ upstream drift delta plan`, rebuild each target serially, and require the focused pair plus the full suite to pass |
 | The local Python environment does not provide `markdown_it` | Steps 835-840 final Markdown audit | Use a read-only PowerShell Markdown link-target scan for repository-local links; no dependency installation or source change is required |
 | The first fallback Markdown scan treated code-like `T&` text in `findings.md` as a link target | Steps 835-840 final Markdown audit | Restrict the documentation-link audit to README and `docs/**/*.md`; all 85 user documentation files then report zero broken local links |
+| The first local arm64 Debug run passed 399/406 because seven structure guards froze the pre-Phase-J root budget, target inventory, duplicate example inventory, or dependency-helper ownership | Task 9 local Debug verification | Align the focused guards with the thin Phase J module and current owners, pass the focused 7/7 regression, then rerun the complete Debug suite at 406/406 |
+| The first Task 9 performance invocation sourced the Bash dependency helper from the default zsh and rejected a derived `/build` path | Task 9 performance verification | Confirm the shell mismatch with a minimal source probe, then run every dependency activation explicitly under `/bin/bash`; no source change or workspace-external output was needed |
+| Native workflow run 29629487926 passes macOS runner setup but multiple arm64/x86_64 product commands return opaque Xmake exit 255; public raw logs require authenticated repository access | Task 10 native CI verification | Add a tested focused wrapper that retains the complete command log and emits its last 80 lines as one GitHub error annotation while preserving the original exit code, then push a normal follow-up commit for actionable evidence |
+| Workflow run 29629948951 emits the requested compiler annotation, but GitHub truncates the 80-line message near 4 KiB before the final error; it also reruns already-complete Windows/Linux jobs outside the approved scope | Task 10 native CI diagnosis | Add a long-log regression and cap the escaped annotation to its final 3500 characters; narrow `phase-j-desktop.yml` to the four dual-architecture macOS matrices while preserving all historical non-macOS evidence |
+| The first local target-minimum compile probe sourced the macOS Bash helper from zsh, leaving `BASH_SOURCE` undefined and deriving `/build` | Task 10 deployment-target verification | No workspace-external write succeeded; rerun the isolated probe explicitly through `/bin/bash -c`, as required by the helper's supported entry surface |
+| The local Python environment does not provide `PyYAML` for the workflow syntax probe | Task 10 focused verification | Use the system Ruby YAML parser for the same read-only syntax check; do not install an unneeded dependency |
+| The constructor exception-safety RED wrapper assigned zsh's read-only `status` parameter | Task 10 task-pool review | Keep the compiled RED guard unchanged and rerun the wrapper with the ordinary variable name `exit_code` |
+| Run 29630949183 passes all eight native jobs, but GitHub returns `401 Requires authentication` for public-repository artifact downloads | Task 10 artifact audit | Preserve the stronger independent-content audit requirement; ask the user to sign in to GitHub in the Codex browser, then download and validate all four artifacts |
+| A single `xmake build` invocation passed six target names, but this local Xmake accepts one target argument and returned exit 255 | Task 10 final local closeout | Build each focused target in its own serial `xmake build -P . -y -j 1 <target>` invocation before running the grouped registered tests |
+| The first single-target GREEN attempt used the default `~/.xmake` repository and failed cloning the unavailable Gitee mirror before compiling | Task 10 final local closeout | Obtain the source-only RED with the system C++ compiler, then run GREEN builds under the already-pinned repository-local macOS dependency environment |
+| The first seven-test GREEN matrix passed 6/7; `phase_j_macos_completion_test` returned exit 70 after the human ledger replaced its last explicit `Phase J macOS completion` phrase | Task 10 final authority wording | Preserve the all-desktop completion sentence and add an explicit verified macOS completion sentence backed by the same dual-architecture evidence |

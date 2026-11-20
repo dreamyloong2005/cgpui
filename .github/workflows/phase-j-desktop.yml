@@ -1,0 +1,114 @@
+name: Phase J macOS Completion
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CGPUI_CI_TMPDIR: ${{ github.workspace }}/build/phase-j-ci/tmp
+
+# Not run since the mcpp migration (no Mac available). The scripts build
+# with mcpp; .github/actions/setup-mcpp has no macOS step yet, so these jobs
+# need one before they can run (docs/migration/README.md, macOS follow-up).
+jobs:
+  macos-debug-examples:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    env:
+      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-phase-j-dependencies
+        with:
+          platform: macos
+      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-debug.log" -- bash ./scripts/ci/macos-debug.sh build/phase-j-ci/macos-${{ matrix.arch }}-debug
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-examples.log" -- bash ./scripts/ci/macos-example-smoke.sh
+
+  macos-performance-stress:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    env:
+      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-phase-j-dependencies
+        with:
+          platform: macos
+      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-performance.log" -- bash ./scripts/ci/macos-performance-baseline.sh
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-stress.log" -- bash ./scripts/ci/macos-stress-matrix.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase-j-macos-${{ matrix.arch }}-reports
+          path: |
+            artifacts/phase-j-performance/macos-${{ matrix.arch }}.json
+            artifacts/phase-j-stress/macos-${{ matrix.arch }}.json
+          if-no-files-found: error
+
+  macos-release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    env:
+      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-phase-j-dependencies
+        with:
+          platform: macos
+      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-release.log" -- bash ./scripts/ci/macos-phase-j-release.sh ${{ matrix.arch }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cgpui-macos-${{ matrix.arch }}-release
+          path: build/phase-j-release/macos-${{ matrix.arch }}/artifacts
+          if-no-files-found: error
+
+  macos-architecture-header:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    env:
+      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-phase-j-dependencies
+        with:
+          platform: macos
+      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-architecture.log" -- bash ./scripts/ci/macos-architecture-header.sh

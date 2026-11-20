@@ -95,6 +95,7 @@ discover = [
     "phase_i_final_closeout_test.cpp",
     "phase_j_documentation_audit_test.cpp",
     "phase_j_final_closeout_test.cpp",
+    "phase_j_macos_completion_test.cpp",
     "phase_j_official_example_audit_test.cpp",
     "phase_j_performance_baseline_audit_test.cpp",
     "phase_j_release_audit_test.cpp",

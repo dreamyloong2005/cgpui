@@ -7,6 +7,18 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
 fi
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+arch=${CGPUI_EXPECTED_ARCH:-$(uname -m)}
+if [[ ! "$arch" =~ ^(arm64|x86_64)$ || "$(uname -m)" != "$arch" ]]; then
+  echo "macos-debug.sh requires the requested native architecture" >&2
+  exit 2
+fi
+# mcpp reads MACOSX_DEPLOYMENT_TARGET before [build] macos_deployment_target
+# (mcpp docs 04, macos_deployment_target); its own default is 14.0.
+export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-13.0}"
+if [[ "$MACOSX_DEPLOYMENT_TARGET" != "13.0" ]]; then
+  echo "macos-debug.sh requires macOS deployment target 13.0" >&2
+  exit 2
+fi
 output_input="${1:-$repo_root/build/phase-h-ci/macos-debug}"
 if [[ "$output_input" != /* ]]; then
   output_input="$repo_root/$output_input"
@@ -55,7 +67,11 @@ printf 'macOS %s (%s)\n' "$(sw_vers -productVersion)" \
 xcodebuild -version
 printf '%s\n' "$mcpp_version"
 
-export TMPDIR="$output_root/tmp"
+if [[ -z "${TMPDIR:-}" ]]; then
+  source "$repo_root/scripts/ci/macos-dependencies.sh"
+  cgpui_configure_macos_dependency_environment "$output_root/dependencies"
+fi
+export TMPDIR="${TMPDIR:-$output_root/tmp}"
 mkdir -p "$TMPDIR"
 
 cd "$repo_root"

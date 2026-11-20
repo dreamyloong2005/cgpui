@@ -2,9 +2,11 @@
 
 `xmake-targets.json` is the inventory of every xmake target at `31607247`
 (`scripts/migration/build_inventory.py`); `mcpp-target-map.json` maps each
-of them to its mcpp counterpart (`scripts/migration/reconcile.py`). All 674
-targets map; none is dropped. Test programs: Windows 579 (xmake: 579 test
-entries), Linux 559 (559). macOS manifests exist but were not built; see
+of them to its mcpp counterpart (`scripts/migration/reconcile.py`). The
+merge of `origin/master` (`19c51989`) added its two new targets
+(`build/xmake/phase_j_macos_targets.lua`, recorded as `merged_targets`).
+All 676 targets map; none is dropped. Test programs: Windows 581 (xmake: 581
+test entries), Linux 561 (561). macOS manifests exist but were not built; see
 [macOS follow-up](#macos-follow-up).
 
 ## Layout
@@ -85,7 +87,9 @@ section 7).
 ## macOS follow-up
 
 No Mac was available, so nothing below has been built or run with mcpp.
-The last macOS evidence (Phase H, 380/380) was produced with xmake.
+The last macOS evidence was produced with xmake: Phase H (380/380) and the
+Phase J macOS completion of `origin/master` (`19c51989`, arm64 and x86_64
+at deployment target 13.0), merged after the migration.
 
 To do, in order:
 
@@ -108,17 +112,37 @@ To do, in order:
    - vendored `third_party/lunasvg` and `plutovg` (built so far on Windows
      and Linux only).
 3. **Test count.** The xmake inventory (`xmake-targets.json`, `31607247`)
-   has 485 macOS targets with 463 test entries. Run
+   has 487 macOS targets with 465 test entries (463 at `31607247`, plus
+   `phase_j_macos_completion_test` and
+   `phase_j_macos_completion_structure_test` from `19c51989`). Run
    `mcpp test --list` on the Mac and
    `python scripts/migration/reconcile.py --listed macosx=<file>`; the count
-   of mcpp test programs must be 463, as it is 579 / 559 on Windows / Linux.
+   of mcpp test programs must be 465, as it is 581 / 561 on Windows / Linux.
 4. **Run the tests.** `scripts/ci/macos-debug.sh` (`mcpp build`, `mcpp test`)
    and `scripts/ci/macos-example-smoke.sh` were rewritten for mcpp and
-   never run. `scripts/dev/build.sh` / `test.sh` and `mcpp-env.sh` were
+   never run. The Phase J macOS scripts merged from `19c51989` were ported
+   the same way and never run: `macos-dependencies.sh` (exports `MCPP`,
+   `MCPP_HOME`, `TMPDIR`; the xmake-repo pin is gone), `macos-package.sh`
+   (sdk-package.py workspace, `mcpp build --profile`; the package's
+   `metadata/` holds `mcpp.toml` and `VENDORED.md` instead of
+   `xmake-requires.lock`; it reads the one `target/*/*/` build directory,
+   whose triple name on macOS is unverified), `macos-phase-j-release.sh`,
+   `macos-performance-baseline.sh` and `macos-stress-matrix.sh`
+   (`mcpp test --release -p tests/performance|stress -- <runner args>`) and
+   `macos-architecture-header.sh` (`mcpp test --list` against
+   `architecture-header-targets.txt`). They rely on mcpp reading
+   `MACOSX_DEPLOYMENT_TARGET=13.0` (mcpp docs 04, `macos_deployment_target`;
+   mcpp's own default is 14.0): check `LC_BUILD_VERSION minos` of a built
+   program with `vtool -show`. The xmake smoke script also ran
+   `phase_f_multi_window_lifecycle_churn_test/default`, which is no xmake
+   target (only `phase_f_multi_window_lifecycle_churn_structure_test` and
+   `window_runtime_multi_window_churn_test` exist); the port leaves it out. `scripts/dev/build.sh` / `test.sh` and `mcpp-env.sh` were
    written for Linux; check them on macOS or add macOS wrappers.
 5. **CI.** `.github/actions/setup-mcpp` has Windows and Linux steps only;
-   add a macOS step, then the jobs of `.github/workflows/phase-h-macos.yml`
-   can run (they expect `mcpp` on `PATH`).
+   add a macOS step (arm64 and x86_64: `phase-j-desktop.yml` runs both, on
+   `macos-15` and `macos-15-intel`, and mcpp releases macOS builds for Apple
+   silicon only), then the jobs of `.github/workflows/phase-h-macos.yml` and
+   `phase-j-desktop.yml` can run.
 6. **Sanitizers.** `scripts/dev/asan_workspace.py` has flags for `windows`
    and `linux` only. Add a `macos` row (`-fsanitize=address,undefined`,
    Apple clang) if macOS should get ASan runs. The Windows ASan entry

@@ -20,6 +20,8 @@ def main() -> int:
     issues: list[str] = []
     if report.get("schema_version") != profile.get("schema_version"):
         issues.append("schema version differs from profile")
+    if report.get("platform") not in profile.get("platforms", []):
+        issues.append("report platform is not active in profile")
     if set(actual) != set(expected):
         issues.append("scenario inventory differs from profile")
     for name, requirement in expected.items():

@@ -183,6 +183,7 @@ discover = [
     "phase_i_x11_services_structure_test.cpp",
     "phase_j_documentation_structure_test.cpp",
     "phase_j_final_closeout_structure_test.cpp",
+    "phase_j_macos_completion_structure_test.cpp",
     "phase_j_official_example_structure_test.cpp",
     "phase_j_performance_baseline_structure_test.cpp",
     "phase_j_release_structure_test.cpp",
