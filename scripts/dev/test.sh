@@ -28,6 +28,11 @@ if [ "$asan" = 1 ]; then
   # reports inside the system library (every X11 test).
   export ASAN_OPTIONS="${ASAN_OPTIONS:-detect_stack_use_after_return=1}"
   export UBSAN_OPTIONS="${UBSAN_OPTIONS:-print_stacktrace=1}"
+  # Leaks inside Mesa's Vulkan drivers (scripts/dev/lsan-suppressions.txt).
+  export LSAN_OPTIONS="${LSAN_OPTIONS:-suppressions=$REPO_ROOT/scripts/dev/lsan-suppressions.txt}"
+  # Keep the Vulkan drivers loaded until exit: unloaded, their allocations
+  # are reported as leaks with unnamed ([unknown module]) frames.
+  export VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1
   if [ "$per_member" = 0 ]; then
     exec "$MCPP" test "${profile_args[@]}" ${args[@]+"${args[@]}"}
   fi

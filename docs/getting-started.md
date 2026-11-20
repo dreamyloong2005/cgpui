@@ -121,6 +121,15 @@ heap-buffer-overflow report inside that system library on every X11 test
 (reproduced by a 15-line C program; cgpui passes it nothing but the
 connection).
 
+`test.sh --asan` also sets `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1`
+(a Vulkan driver unloaded before exit leaves leak reports with unnamed
+frames) and reads `scripts/dev/lsan-suppressions.txt`, which suppresses
+leaks inside Mesa's Vulkan drivers only: `libvulkan_lvp.so` and
+`libvulkan_dzn.so` (Mesa 26.1.6) keep 96 bytes per Wayland event queue
+from `wl_display_read_events` in their WSI after
+`vkQueuePresentKHR` / `vkDestroySwapchainKHR`. A suppression names a
+system library and the report it covers; cgpui code is never suppressed.
+
 No test is skipped under ASan: every test program passes as it is. `asan_workspace.py` defines `CGPUI_ASAN` in these builds, for a
 future test that cannot run instrumented; such a test must print why it is
 skipped, and the skip must be listed here.

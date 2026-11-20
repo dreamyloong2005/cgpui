@@ -1,0 +1,12 @@
+# LeakSanitizer suppressions for scripts/dev/test.sh --asan (Linux).
+# Each entry names a system library and the measured report it covers;
+# docs/getting-started.md section 7 lists them. Never add cgpui code here.
+#
+# Mesa's Vulkan drivers (lavapipe, dzn on WSL): 96 bytes per wl_display
+# event queue allocated by wl_display_read_events inside the driver's
+# Wayland WSI during vkQueuePresentKHR / vkDestroySwapchainKHR and not freed
+# by the driver (Mesa 26.1.6). Stack: wl_display_read_events <-
+# wl_display_dispatch_queue_timeout <- libvulkan_lvp.so <- the loader <-
+# cgpui::VulkanRendererState::present_frame / destroy_swapchain_resources.
+leak:libvulkan_lvp.so
+leak:libvulkan_dzn.so
