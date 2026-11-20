@@ -105,7 +105,7 @@ to link instrumented with uninstrumented STL containers (LNK2038
 | | Windows (cl.exe) | Linux (GCC) |
 |---|---|---|
 | compile | `/fsanitize=address` | `-fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS` |
-| link | nothing extra; `-AsanSymbols` adds `/DEBUG:FULL` | `-fsanitize=address,undefined` |
+| link | `build/asan/asan_entry.obj` (below); `-AsanSymbols` adds `/DEBUG:FULL` | `-fsanitize=address,undefined` |
 | runtime | `/MD`; `clang_rt.asan_dynamic-x86_64.dll` from the MSVC toolset's `bin/Hostx64/x64`, which `test.ps1 -Asan` puts first on `PATH` (`scripts/dev/msvc-asan-runtime.ps1`) | `-static-libstdc++` as the normal build; `libasan` / `libubsan` from GCC |
 | debug info | `/Z7` (line tables) | `-g1` (`dev-lines`) |
 | leaks | not checked (MSVC ASan has no LeakSanitizer) | LeakSanitizer, on |
@@ -120,6 +120,19 @@ with it, `xkb_x11_keymap_new_from_device` of libxkbcommon-x11 1.13.2
 heap-buffer-overflow report inside that system library on every X11 test
 (reproduced by a 15-line C program; cgpui passes it nothing but the
 connection).
+
+On Windows every ASan program begins at `scripts/dev/asan_entry_windows.cpp`:
+the workspace is compiled with `/Dmain=cgpui_asan_main`, and that file's
+`main` calls the program's own, runs `_cexit()` (atexit handlers, static
+destructors) and ends the process with `TerminateProcess` and the same exit
+code. Without it a GPU test can hang forever in `ExitProcess`: Windows
+terminates the other threads first, and when a GPU driver thread (Intel
+`igvk64`, NVIDIA `nvgpucomp64`) held a lock of the ASan runtime's allocator,
+the next `free()` of the DLL detach waits on it, and the process cannot be
+killed until reboot (1 of 8 parallel copies of `vulkan_frame_lifetime_test`
+within 10 rounds, with `windows_hook_legacy_allocators` on and off). Only the
+DLL detach is skipped, and Windows ASan checks nothing there (no
+LeakSanitizer). The normal build does not use the entry.
 
 `test.sh --asan` also sets `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1`
 (a Vulkan driver unloaded before exit leaves leak reports with unnamed

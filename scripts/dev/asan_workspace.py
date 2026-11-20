@@ -35,6 +35,11 @@ FLAGS = {
         "cflags": ["/fsanitize=address"],
         "ldflags": [],
         "symbols": ["/DEBUG:FULL"],
+        # Every program begins at scripts/dev/asan_entry_windows.cpp, which
+        # ends the process without the DLL detach that hangs under ASan
+        # (see that file); test.ps1 -Asan compiles it to asan_entry.obj.
+        "defines": ["main=cgpui_asan_main"],
+        "entry_obj": "asan_entry.obj",
     },
     # _GLIBCXX_ASSERTIONS: libstdc++ precondition checks (operator[] bounds,
     # front() of an empty container, ...). _GLIBCXX_DEBUG is not used: it
@@ -47,6 +52,7 @@ FLAGS = {
                    "-fno-omit-frame-pointer"],
         "ldflags": ["-fsanitize=address,undefined"],
         "symbols": [],
+        "defines": [],
     },
 }
 
@@ -75,6 +81,8 @@ def main() -> int:
     flags = dict(FLAGS[platform])
     if "--symbols" in sys.argv[3:]:
         flags["ldflags"] = flags["ldflags"] + flags["symbols"]
+    if "entry_obj" in flags:
+        flags["ldflags"] = flags["ldflags"] + [(output / flags["entry_obj"]).as_posix()]
     text = (repo / "mcpp.toml").read_text("utf-8")
     members = tomllib.loads(text)["workspace"]["members"]
     relative = Path(os.path.relpath(repo, output)).as_posix()
@@ -86,7 +94,7 @@ def main() -> int:
              f'cflags = {toml_list(flags["cflags"])}\n'
              f'ldflags = {toml_list(flags["ldflags"])}\n'
              # Tests that cannot run under ASan test for it (CGPUI_ASAN).
-             'defines = ["CGPUI_ASAN=1"]')
+             f'defines = {toml_list(["CGPUI_ASAN=1"] + flags["defines"])}')
     text, count = re.subn(r'cxx_runtime = "[a-z-]+"', lambda _: build, text)
     if count != 1:
         raise SystemExit("mcpp.toml: expected one [workspace.build] cxx_runtime")

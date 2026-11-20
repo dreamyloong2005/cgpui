@@ -125,8 +125,17 @@ int main() {
       !has(asan, "-D_GLIBCXX_ASSERTIONS") || !has(asan, "CGPUI_ASAN=1") ||
       !has(test_ps1, "[switch]$Asan") ||
       !has(test_ps1, "Get-MsvcAsanRuntimeDir") ||
+      !has(test_ps1, "asan_entry_windows.cpp") ||
+      !has(asan, "main=cgpui_asan_main") ||
       !has(test_sh, "--asan")) {
     return fail(9, "the /MD CRT and the ASan replacement are documented");
+  }
+  // Windows ASan programs end without the DLL detach that hangs in exit.
+  const std::string entry = read_source("scripts/dev/asan_entry_windows.cpp");
+  const std::string started = read_source("docs/getting-started.md");
+  if (!has(entry, "_cexit();") || !has(entry, "TerminateProcess(GetCurrentProcess(), ") ||
+      !has(started, "asan_entry_windows.cpp")) {
+    return fail(10, "the Windows ASan entry skips the DLL detach");
   }
   if (!has(matrix, "sdk_packaging_structure_test|")) {
     return fail(7, "the test must be in architecture-header-targets.txt");

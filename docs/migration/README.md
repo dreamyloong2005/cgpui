@@ -67,9 +67,16 @@ libxkbcommon-x11 1.13.2 under `strict_string_checks` (option left off) and
 Mesa 26.1.6 Vulkan driver leaks (`scripts/dev/lsan-suppressions.txt`).
 Vendored lunasvg / plutovg: no report. No test is skipped under ASan.
 
-Open: `vulkan_frame_lifetime_test` (Windows) hung once in a full parallel
-ASan run (300 s timeout) and once in 40 runs of 8 parallel ASan copies;
-0 hangs in 24 ASan runs of 4 copies and 40 runs of 8 normal-build copies.
-The hung process has one thread in a kernel wait with the NVIDIA Vulkan
-driver loaded and cannot be terminated, so the wait is inside the driver;
-not diagnosed further (no kernel debugger on the machine).
+Windows ASan hang in process exit (fixed):
+`vulkan_frame_lifetime_test` ran past its timeout in 1 of 8 parallel ASan
+copies, in the first round each time it was measured (an earlier note here
+said "40 runs of 8 copies"; that loop had stopped in its first round).
+Stacks of the live process (cdb): the main thread in the DLL detach after
+`common_exit`, in a `free()` from `ucrtbase!destroy_fls`, `nvspcap64` or
+`nvgpucomp64`, waiting on a lock of the ASan allocator
+(`__asan_win_moveable::IsOwned`, `Quarantine::Drain`) held by a driver
+thread that `ExitProcess` had terminated. The normal build never hung (40
+runs). `windows_hook_legacy_allocators=false` moved the wait to the
+quarantine lock (round 10 of 20). Fixed by `scripts/dev/asan_entry_windows.cpp`,
+which ends ASan programs without the DLL detach (docs/getting-started.md
+section 7).

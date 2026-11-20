@@ -21,6 +21,11 @@ if ($Asan -or $AsanSymbols) {
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
   . (Join-Path $PSScriptRoot 'msvc-asan-runtime.ps1')
   $env:PATH = (Get-MsvcAsanRuntimeDir) + ';' + $env:PATH
+  # The entry every ASan program begins at (asan_entry_windows.cpp: it ends
+  # the process without the DLL detach that hangs under ASan).
+  & cl.exe /nologo /c /MD /O1 /GS- /EHs-c- (Join-Path $PSScriptRoot 'asan_entry_windows.cpp') `
+    "/Fo$(Join-Path $workDir 'asan_entry.obj')" | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw 'cl.exe failed on scripts/dev/asan_entry_windows.cpp' }
   # Members are listed relative to build/asan: -p tests/ui => ../../tests/ui.
   for ($i = 0; $i -lt $mcppArgs.Count - 1; $i++) {
     if ($mcppArgs[$i] -eq '-p' -and -not "$($mcppArgs[$i + 1])".StartsWith('..')) {
