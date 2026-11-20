@@ -47,3 +47,29 @@ entries), Linux 559 (559). macOS manifests exist but were not built.
 - A `build.mcpp` is not rebuilt when a header it includes by relative path
   changes: repro and draft issue in `D:/Dev/shots/mcpp-spike/bug-buildmcpp-header`;
   workaround: the header is a `[build-dependencies]` path package.
+
+## AddressSanitizer findings (first runs)
+
+Fixed in cgpui:
+
+- `src/ui/app_runner.cpp`: `run_app` scoped its `AppContext` to the
+  `setup_context` branch while callbacks installed there used it during
+  `run()` (stack-use-after-scope, Windows ASan, `app_runner_test`).
+- `src/ui/runtime_context.cpp`: `WindowRuntime::context()` bound the
+  context's window and renderer references to null pointers before
+  `run()` (UBSan; `async_spawn_result_conventions_test`,
+  `animation_cancellation_test`).
+- `tests/platform/wayland_test_compositor.cpp`: the test compositor leaked
+  its clients (LeakSanitizer, 25 Wayland tests).
+
+System libraries (not patched, see `docs/getting-started.md` section 7):
+libxkbcommon-x11 1.13.2 under `strict_string_checks` (option left off) and
+Mesa 26.1.6 Vulkan driver leaks (`scripts/dev/lsan-suppressions.txt`).
+Vendored lunasvg / plutovg: no report. No test is skipped under ASan.
+
+Open: `vulkan_frame_lifetime_test` (Windows) hung once in a full parallel
+ASan run (300 s timeout) and once in 40 runs of 8 parallel ASan copies;
+0 hangs in 24 ASan runs of 4 copies and 40 runs of 8 normal-build copies.
+The hung process has one thread in a kernel wait with the NVIDIA Vulkan
+driver loaded and cannot be terminated, so the wait is inside the driver;
+not diagnosed further (no kernel debugger on the machine).
