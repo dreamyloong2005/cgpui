@@ -492,6 +492,9 @@ struct WaylandTestCompositor::State {
       wl_global_destroy(text_input_manager_global);
     }
     if (display != nullptr) {
+      // wl_display_destroy leaves connected clients (and their resources)
+      // allocated; LeakSanitizer reported them in every Wayland test.
+      wl_display_destroy_clients(display);
       wl_display_destroy(display);
     }
     std::filesystem::remove_all(runtime_dir);
