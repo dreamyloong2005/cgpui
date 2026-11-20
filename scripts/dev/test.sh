@@ -23,7 +23,10 @@ if [ "$asan" = 1 ]; then
     prev=$arg
   done
   # Leak checking is on (LSan, the default on Linux); a report fails the test.
-  export ASAN_OPTIONS="${ASAN_OPTIONS:-detect_stack_use_after_return=1:strict_string_checks=1}"
+  # No strict_string_checks: libxkbcommon-x11 1.13.2 passes XCB reply strings
+  # that are not NUL-terminated to strndup-like reads, which that option
+  # reports inside the system library (every X11 test).
+  export ASAN_OPTIONS="${ASAN_OPTIONS:-detect_stack_use_after_return=1}"
   export UBSAN_OPTIONS="${UBSAN_OPTIONS:-print_stacktrace=1}"
   if [ "$per_member" = 0 ]; then
     exec "$MCPP" test "${profile_args[@]}" ${args[@]+"${args[@]}"}

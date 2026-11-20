@@ -114,7 +114,12 @@ to link instrumented with uninstrumented STL containers (LNK2038
 containers, and the system libraries a test links (HarfBuzz, FreeType, ...)
 are not built with it. A sanitizer report fails the test program (non-zero
 exit). `ASAN_OPTIONS` and `UBSAN_OPTIONS` given by the caller are kept;
-`test.sh` sets defaults otherwise.
+`test.sh` sets defaults otherwise. The default leaves `strict_string_checks` off:
+with it, `xkb_x11_keymap_new_from_device` of libxkbcommon-x11 1.13.2
+(Arch) reads an XCB reply string without a terminating NUL, a
+heap-buffer-overflow report inside that system library on every X11 test
+(reproduced by a 15-line C program; cgpui passes it nothing but the
+connection).
 
 No test is skipped under ASan: every test program passes as it is. `asan_workspace.py` defines `CGPUI_ASAN` in these builds, for a
 future test that cannot run instrumented; such a test must print why it is
