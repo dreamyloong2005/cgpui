@@ -28,7 +28,15 @@ entries), Linux 559 (559). macOS manifests exist but were not built.
   is compiled once, by `packages/platform`, and `packages/renderer` depends
   on `packages/platform`.
 - Windows dev/test builds: `/MT` (`[workspace.build] cxx_runtime`), as
-  before. SDK packages: `/MD` in both modes; mcpp has no debug CRT (`/MDd`).
+  before. SDK packages: `/MD` in both modes; mcpp has no debug CRT (`/MDd`,
+  upstream #718 closed by design). The debug package's debug information is
+  in its libraries (`/Z7`): no `.pdb` files, the consumer's PDB receives it
+  (verified, `docs/sdk-packaging.md`, Debug information).
+- The MSVC debug-CRT checks (`_ITERATOR_DEBUG_LEVEL=2`, debug heap, leak
+  report) are replaced by AddressSanitizer runs: `scripts/dev/test.ps1
+  -Asan`, `scripts/dev/test.sh --asan` (`docs/getting-started.md` section 7).
+  They build a generated workspace in `build/asan` because profile flags
+  reach only the selected member's own units.
 - xkbcommon: system library instead of the xmake source build.
 - Builds and tests run in parallel; the `-j 1` convention is gone.
 

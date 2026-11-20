@@ -77,3 +77,42 @@ is `examples/hello_window/main.cpp`; public API-only examples live under
 
 Use public contexts and capability facades from callbacks. Do not include
 `src/` headers or construct `WindowRuntime` directly in application code.
+
+## 7. AddressSanitizer
+
+```bash
+scripts/dev/test.sh --asan                     # every test, ASan + UBSan
+scripts/dev/test.sh --asan -p tests/ui         # one suite
+```
+
+On Windows: `scripts/dev/test.ps1 -Asan` with the same arguments. The run
+replaces the checks of the MSVC debug CRT, which mcpp does not build
+(`_ITERATOR_DEBUG_LEVEL=2`, debug heap, leak report; see
+[SDK packages](sdk-packaging.md#c-runtime-windows)).
+
+`scripts/dev/asan_workspace.py` writes `build/asan/mcpp.toml`: the
+repository's members, by paths relative to `build/asan`, with the sanitizer
+flags in `[workspace.build]`, so the whole graph (vendored lunasvg and
+plutovg too) is instrumented and has its own build directory under
+`build/asan/target`. An mcpp profile would not do: its `cxxflags` reach only
+the units of the selected member, not of its dependencies, and MSVC refuses
+to link instrumented with uninstrumented STL containers (LNK2038
+`annotate_vector`). `-p <member>` is rewritten to `-p ../../<member>`.
+
+| | Windows (cl.exe) | Linux (GCC) |
+|---|---|---|
+| compile | `/fsanitize=address` | `-fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS` |
+| link | `/DEBUG:FULL` (symbolized reports) | `-fsanitize=address,undefined` |
+| runtime | `/MD`; `clang_rt.asan_dynamic-x86_64.dll` from the MSVC toolset's `bin/Hostx64/x64`, which `test.ps1 -Asan` puts first on `PATH` (`scripts/dev/msvc-asan-runtime.ps1`) | `-static-libstdc++` as the normal build; `libasan` / `libubsan` from GCC |
+| debug info | `/Z7` (line tables) | `-g1` (`dev-lines`) |
+| leaks | not checked (MSVC ASan has no LeakSanitizer) | LeakSanitizer, on |
+
+`_GLIBCXX_DEBUG` is not used: it changes the layout of the standard
+containers, and the system libraries a test links (HarfBuzz, FreeType, ...)
+are not built with it. A sanitizer report fails the test program (non-zero
+exit). `ASAN_OPTIONS` and `UBSAN_OPTIONS` given by the caller are kept;
+`test.sh` sets defaults otherwise.
+
+Tests that cannot run under ASan state it with `CGPUI_ASAN` (defined in
+`build/asan` builds by `asan_workspace.py`) and print the reason; see
+`docs/migration/README.md` for the list.

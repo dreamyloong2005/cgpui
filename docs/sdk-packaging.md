@@ -128,13 +128,49 @@ Point CMake at the package with `-Dcgpui_DIR=<sdk>/lib/cmake/cgpui` or
 include directory, `cxx_std_23` and `INTERFACE_LINK_LIBRARIES` with all of
 them in link order followed by the system libraries. On Windows,
 `vulkan-1` becomes `Vulkan::Vulkan` from `find_dependency(Vulkan)` (set
-`VULKAN_SDK`). Both Windows packages use `/MD`: the config sets
-`CMAKE_MSVC_RUNTIME_LIBRARY` to `MultiThreadedDLL` when the consumer has
-not set it and refuses any other value, so a consumer's Debug build also
-uses the release CRT (`_ITERATOR_DEBUG_LEVEL=0`). Use the debug package
-(unoptimized, debug information in the libraries) for Debug builds. The version file accepts requests up to the package version
+`VULKAN_SDK`). See [C++ runtime (Windows)](#c-runtime-windows) for the
+CRT the config enforces. The version file accepts requests up to the package version
 with the same major version (same minor while the major is 0), 64-bit
 only.
+
+## C++ runtime (Windows)
+
+Both Windows packages, the debug one included, are built with the release
+DLL CRT (`/MD`, `msvc_runtime` in `manifest.json`). mcpp's CRT model has no
+debug axis: `/MTd` and `/MDd` are refused and the standard library module
+and the link use the release CRT (mcpp docs, *20 — Toolchains*, "A
+free-form CRT word is always a second statement"). A consumer must build
+every configuration, Debug too, with the same CRT:
+
+- CMake: `CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL`. `cgpuiConfig.cmake`
+  sets it when the consumer has not and stops with an error on any other
+  value (CMake's Debug default is `MultiThreadedDebugDLL`).
+- xmake: `set_runtimes("MD")` (the sample reads `msvc_runtime` from the
+  manifest).
+
+What a consumer's Debug build loses against a `/MDd` one: the
+`_ITERATOR_DEBUG_LEVEL=2` checked iterators of the MSVC STL (it is 0
+here), the debug heap (`_malloc_dbg`, guard bytes, fill patterns) and the
+`_CrtSetDbgFlag` / `_CrtDumpMemoryLeaks` leak report. CGPUI covers those
+classes of bugs by running its test suite under AddressSanitizer
+([Getting Started](getting-started.md#7-addresssanitizer)); a consumer
+can do the same with `/fsanitize=address`, which works with `/MD`.
+
+## Debug information (Windows)
+
+mcpp compiles `debug = true` with `/Z7` (it refuses `/Zi`), so the debug
+package's `.lib` files carry their debug information in each object and
+the package ships no `.pdb` files (the xmake package had 7, one per
+library). For a static library this is complete: the consumer's linker
+copies the information into the consumer's PDB. Checked on the debug
+package of `0006db52`: the CMake sample built in Debug links
+`sdk_consumer.pdb` (82 MB) whose module list (`llvm-pdbutil dump
+--modules`) holds 374 objects of the 7 `cgpui_*.lib`, with line tables for
+`src/**/*.cpp` (`dump --l`), functions (`S_GPROC32`
+`cgpui::vulkan_image_texture_format`, ...), locals (`S_REGREL32`) and
+27,613 `cgpui::` type records. Source paths point at the packaging
+worktree (`build/release/ide-workbench/worktree-debug/`); map them to a
+checkout in the debugger (Visual Studio: *Debug Source Files*).
 
 ## Consuming with xmake
 
@@ -181,9 +217,9 @@ packages above instead.
 ## Limits
 
 - Builds are parallel: a cold Windows package takes about 2 minutes.
-- mcpp has no debug CRT, so there is no `/MDd` package; the debug package
-  carries `/Z7` debug information inside the libraries (no `.pdb` files),
-  which makes them 1.4-5x larger than the xmake `/Zi` ones.
+- The Windows debug package is 1.4-5x larger than the xmake one: its
+  debug information is in the libraries (`/Z7`), see
+  [Debug information](#debug-information-windows).
 - Linux packages link the system libraries of the build machine (Arch
   Linux, versions in `system_packages`); other distributions are not
   tested.

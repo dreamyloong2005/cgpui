@@ -113,11 +113,17 @@ def readme(manifest: dict) -> str:
     ]
     if windows:
         lines += [
-            f"This package uses the /{runtime} CRT (the release DLL CRT, in the",
-            "debug package too: mcpp builds have no debug CRT). The CMake config",
-            "sets `CMAKE_MSVC_RUNTIME_LIBRARY` to `MultiThreadedDLL` when the",
-            "consumer has not, and refuses another value. Vulkan comes from",
-            "`find_package(Vulkan)` (set `VULKAN_SDK`).",
+            "Both Windows packages, debug included, use the release DLL CRT",
+            f"(/{runtime}): mcpp has no debug CRT axis (`/MDd` is refused).",
+            "Build every configuration of the consumer with it: CMake",
+            "`CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL` (the config sets it",
+            "when unset and refuses another value), xmake `set_runtimes(\"MD\")`.",
+            "A Debug build therefore has no `_ITERATOR_DEBUG_LEVEL=2` iterator",
+            "checks, no debug heap and no `_CrtSetDbgFlag` leak report; CGPUI",
+            "runs its tests under AddressSanitizer instead. The debug package",
+            "has `/Z7` debug information inside its `.lib` files and no `.pdb`",
+            "files: the consumer's linker writes it into the consumer's PDB.",
+            "Vulkan comes from `find_package(Vulkan)` (set `VULKAN_SDK`).",
         ]
     lines += [
         "",

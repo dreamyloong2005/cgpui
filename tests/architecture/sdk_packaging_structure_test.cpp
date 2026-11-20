@@ -110,6 +110,24 @@ int main() {
       line_count(linux_script) > 80) {
     return fail(6, "SDK packaging scripts exceed their line limits");
   }
+  // Both Windows packages use /MD (mcpp has no debug CRT); the docs say what
+  // a consumer must set and what is lost, and the test runs under ASan
+  // instead (scripts/dev/asan_workspace.py, test.ps1 -Asan, test.sh --asan).
+  const std::string asan = read_source("scripts/dev/asan_workspace.py");
+  const std::string test_ps1 = read_source("scripts/dev/test.ps1");
+  const std::string test_sh = read_source("scripts/dev/test.sh");
+  if (!has(doc, "## C++ runtime (Windows)") ||
+      !has(doc, "## Debug information (Windows)") ||
+      !has(doc, "_ITERATOR_DEBUG_LEVEL=2") ||
+      !has(cmake, "set_runtimes(\\\"MD\\\")") ||
+      !has(cmake, "MultiThreadedDLL") || !has(asan, "/fsanitize=address") ||
+      !has(asan, "-fsanitize=address,undefined") ||
+      !has(asan, "-D_GLIBCXX_ASSERTIONS") || !has(asan, "CGPUI_ASAN=1") ||
+      !has(test_ps1, "[switch]$Asan") ||
+      !has(test_ps1, "Get-MsvcAsanRuntimeDir") ||
+      !has(test_sh, "--asan")) {
+    return fail(9, "the /MD CRT and the ASan replacement are documented");
+  }
   if (!has(matrix, "sdk_packaging_structure_test|")) {
     return fail(7, "the test must be in architecture-header-targets.txt");
   }
