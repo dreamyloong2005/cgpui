@@ -1,6 +1,9 @@
 """Writes the AddressSanitizer workspace (docs/getting-started.md, ASan).
 
 usage: asan_workspace.py <windows|linux> <output directory> [--symbols]
+       asan_workspace.py members <repository root>
+The second form prints `<member>|<bin dir>|<obj dir>` for each member with
+a [test] table (test.sh --asan --per-member-cleanup).
 
 The workspace lists every member of the repository's mcpp.toml by a path
 relative to <output> and adds the sanitizer flags to [workspace.build].
@@ -52,7 +55,21 @@ def toml_list(words: list[str]) -> str:
     return "[" + ", ".join(f'"{word}"' for word in words) + "]"
 
 
+def list_members(repo: Path) -> int:
+    text = (repo / "mcpp.toml").read_text("utf-8")
+    for member in tomllib.loads(text)["workspace"]["members"]:
+        manifest = tomllib.loads((repo / member / "mcpp.toml").read_text("utf-8"))
+        if "test" not in manifest:
+            continue
+        package = manifest["package"]
+        obj = f'{package.get("namespace", "")}_{package["name"]}'.lstrip("_")
+        print(f'{member}|{package["name"]}|{obj}')
+    return 0
+
+
 def main() -> int:
+    if sys.argv[1] == "members":
+        return list_members(Path(sys.argv[2]).resolve())
     platform, output = sys.argv[1], Path(sys.argv[2]).resolve()
     repo = Path(__file__).resolve().parents[2]
     flags = dict(FLAGS[platform])

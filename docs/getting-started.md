@@ -83,9 +83,12 @@ Use public contexts and capability facades from callbacks. Do not include
 ```bash
 scripts/dev/test.sh --asan                     # every test, ASan + UBSan
 scripts/dev/test.sh --asan -p tests/ui         # one suite
+scripts/dev/test.sh --asan --per-member-cleanup  # member by member, low disk
 ```
 
-On Windows: `scripts/dev/test.ps1 -Asan` with the same arguments. The run
+On Windows: `scripts/dev/test.ps1 -Asan` with the same arguments, and
+`-AsanSymbols` for function, file and line in the reports (a PDB per test
+program, in `build/asan-symbols`; use it with `-p`). The run
 replaces the checks of the MSVC debug CRT, which mcpp does not build
 (`_ITERATOR_DEBUG_LEVEL=2`, debug heap, leak report; see
 [SDK packages](sdk-packaging.md#c-runtime-windows)).
@@ -102,7 +105,7 @@ to link instrumented with uninstrumented STL containers (LNK2038
 | | Windows (cl.exe) | Linux (GCC) |
 |---|---|---|
 | compile | `/fsanitize=address` | `-fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS` |
-| link | `/DEBUG:FULL` (symbolized reports) | `-fsanitize=address,undefined` |
+| link | nothing extra; `-AsanSymbols` adds `/DEBUG:FULL` | `-fsanitize=address,undefined` |
 | runtime | `/MD`; `clang_rt.asan_dynamic-x86_64.dll` from the MSVC toolset's `bin/Hostx64/x64`, which `test.ps1 -Asan` puts first on `PATH` (`scripts/dev/msvc-asan-runtime.ps1`) | `-static-libstdc++` as the normal build; `libasan` / `libubsan` from GCC |
 | debug info | `/Z7` (line tables) | `-g1` (`dev-lines`) |
 | leaks | not checked (MSVC ASan has no LeakSanitizer) | LeakSanitizer, on |
@@ -113,6 +116,12 @@ are not built with it. A sanitizer report fails the test program (non-zero
 exit). `ASAN_OPTIONS` and `UBSAN_OPTIONS` given by the caller are kept;
 `test.sh` sets defaults otherwise.
 
-Tests that cannot run under ASan state it with `CGPUI_ASAN` (defined in
-`build/asan` builds by `asan_workspace.py`) and print the reason; see
-`docs/migration/README.md` for the list.
+No test is skipped under ASan: every test program passes as it is. `asan_workspace.py` defines `CGPUI_ASAN` in these builds, for a
+future test that cannot run instrumented; such a test must print why it is
+skipped, and the skip must be listed here.
+
+A full Linux ASan build of every test program needs more disk than a small
+WSL disk has. `scripts/dev/test.sh --asan --per-member-cleanup` runs one
+member with tests at a time and deletes that member's test programs and
+objects after it (the libraries stay built); `CGPUI_ASAN_STOP_USED_GB=<n>`
+stops before the next member once the file system uses more than `n` GB.
