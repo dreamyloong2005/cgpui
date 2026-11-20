@@ -111,6 +111,7 @@ try {
   $stream.Dispose()
 }
 $hash = -join ($digest | ForEach-Object { $_.ToString("x2") })
-Set-Content -LiteralPath "$archive.sha256" -Encoding ascii `
-  -Value "$hash  $packageName.zip"
+# LF line ending, so `sha256sum -c` reads it as written.
+[System.IO.File]::WriteAllText("$archive.sha256", "$hash  $packageName.zip`n",
+  [System.Text.UTF8Encoding]::new($false))
 Write-Output "$archive $hash"

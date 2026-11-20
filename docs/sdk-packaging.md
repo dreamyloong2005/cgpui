@@ -31,7 +31,8 @@ Each run writes, under the ignored `build/release/ide-workbench/`:
 
 - `<platform>-<mode>/`: the extracted package;
 - `cgpui-sdk-<platform>-<arch>-<mode>.zip` (Windows) or `.tar.gz` (Linux);
-- the same name plus `.sha256`, in `sha256sum` format.
+- the same name plus `.sha256`, in `sha256sum` format with an LF line
+  ending on both platforms (`sha256sum -c` reads it unchanged).
 
 Steps:
 
