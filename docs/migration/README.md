@@ -4,7 +4,8 @@
 (`scripts/migration/build_inventory.py`); `mcpp-target-map.json` maps each
 of them to its mcpp counterpart (`scripts/migration/reconcile.py`). All 674
 targets map; none is dropped. Test programs: Windows 579 (xmake: 579 test
-entries), Linux 559 (559). macOS manifests exist but were not built.
+entries), Linux 559 (559). macOS manifests exist but were not built; see
+[macOS follow-up](#macos-follow-up).
 
 ## Layout
 
@@ -80,3 +81,53 @@ runs). `windows_hook_legacy_allocators=false` moved the wait to the
 quarantine lock (round 10 of 20). Fixed by `scripts/dev/asan_entry_windows.cpp`,
 which ends ASan programs without the DLL detach (docs/getting-started.md
 section 7).
+
+## macOS follow-up
+
+No Mac was available, so nothing below has been built or run with mcpp.
+The last macOS evidence (Phase H, 380/380) was produced with xmake.
+
+To do, in order:
+
+1. **mcpp on the Mac.** mcpp releases macOS builds only for Apple silicon
+   with macOS 14 or later (mcpp README). `[workspace.toolchain]` in
+   `mcpp.toml` has no `macos` entry: check which toolchain mcpp picks and
+   add one (Apple clang from Xcode) if it is not that.
+2. **Build the workspace.** `mcpp build` on macOS. The manifests written
+   for it but never built:
+   - `packages/platform-macos` (Cocoa, `.mm` sources; frameworks AppKit,
+     CoreText, UniformTypeIdentifiers, QuartzCore);
+   - `packages/renderer-metal` (frameworks Metal, QuartzCore). Its
+     `build.mcpp` embeds `src/renderer/metal/shaders.metal` and compiles it
+     with `xcrun metal` / `metallib`; a failure there is only a warning,
+     so read the build output for it;
+   - `packages/platform` (`macos_clipboard.mm`, AppKit), `packages/app`,
+     `examples/hello_window` (`macos_*` cases) and the `cfg(os = "macos")`
+     sections of `tests/platform`, `tests/renderer`, `tests/ui`,
+     `tests/api_parity`, `tests/architecture` and the other examples;
+   - vendored `third_party/lunasvg` and `plutovg` (built so far on Windows
+     and Linux only).
+3. **Test count.** The xmake inventory (`xmake-targets.json`, `31607247`)
+   has 485 macOS targets with 463 test entries. Run
+   `mcpp test --list` on the Mac and
+   `python scripts/migration/reconcile.py --listed macosx=<file>`; the count
+   of mcpp test programs must be 463, as it is 579 / 559 on Windows / Linux.
+4. **Run the tests.** `scripts/ci/macos-debug.sh` (`mcpp build`, `mcpp test`)
+   and `scripts/ci/macos-example-smoke.sh` were rewritten for mcpp and
+   never run. `scripts/dev/build.sh` / `test.sh` and `mcpp-env.sh` were
+   written for Linux; check them on macOS or add macOS wrappers.
+5. **CI.** `.github/actions/setup-mcpp` has Windows and Linux steps only;
+   add a macOS step, then the jobs of `.github/workflows/phase-h-macos.yml`
+   can run (they expect `mcpp` on `PATH`).
+6. **Sanitizers.** `scripts/dev/asan_workspace.py` has flags for `windows`
+   and `linux` only. Add a `macos` row (`-fsanitize=address,undefined`,
+   Apple clang) if macOS should get ASan runs. The Windows ASan entry
+   (`scripts/dev/asan_entry_windows.cpp`) is Windows-only and not needed.
+7. **SDK packages.** `scripts/ci/sdk-package.py` accepts `--platform
+   windows|linux` only; there is no macOS package or consumer smoke test.
+   Decide whether macOS ships one.
+8. **Docs.** Once the Mac runs pass, replace the xmake-era evidence in
+   `docs/platform-mac-readiness.md` and `docs/platform-dependencies.md`
+   (the Phase H closeout tests check some of those sentences; keep them or
+   update the tests with them) and remove the "planned only, not built"
+   comments in the macOS manifests.

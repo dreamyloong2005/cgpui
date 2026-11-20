@@ -44,3 +44,10 @@ Windows full Debug at 478/478, WSLg full Debug at 470/470, an isolated Xvfb
 X11 matrix at 11/11, cross-platform/macOS source guards, and preserved Phase H
 native macOS evidence at 380/380. Phase I required X11 gaps: 0. Phase J Step 799 re-run upstream
 extractor against the pinned revision.
+
+## Build system
+
+The repository builds with mcpp since the xmake migration. The macOS
+manifests exist but have not been built or run on a Mac; the evidence above
+is from xmake. What macOS needs is listed in
+[the migration record](migration/README.md#macos-follow-up).
