@@ -21,6 +21,12 @@
 #define main hello_window_main
 #include "../main.cpp"
 #undef main
+// The Windows ASan build compiles with /Dmain=cgpui_asan_main
+// (scripts/dev/asan_entry_windows.cpp); the #undef above removed it, so the
+// case's own main is renamed again.
+#if defined(_WIN32) && defined(CGPUI_ASAN)
+#define main cgpui_asan_main
+#endif
 
 inline int run_hello_window_case(
     std::initializer_list<std::pair<const char*, const char*>> environment) {

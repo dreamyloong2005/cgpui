@@ -2,6 +2,7 @@
 #include "win32_clipboard_test_lock.hpp"
 #include "win32_clipboard_test_open.hpp"
 
+#include <shellapi.h>
 #include <timeapi.h>
 
 #include <chrono>
@@ -82,10 +83,17 @@ long long elapsed_ms(Clock::time_point start) {
 // The Win32 clipboard retries OpenClipboard for 500 ms (clipboard_win32_open
 // .cpp). A 250 ms hold must be waited out; a hold past the budget must fail
 // within it instead of blocking the caller.
-int wmain(int argc, wchar_t** argv) {
-  if (argc == 4 && std::wstring_view{argv[1]} == L"--hold") {
-    return hold_clipboard(argv[2], argv[3]);
+// main, not wmain: the Windows ASan build renames main to the entry of
+// scripts/dev/asan_entry_windows.cpp, which has no wide form.
+int main() {
+  int argc = 0;
+  wchar_t** argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+  if (argv != nullptr && argc == 4 && std::wstring_view{argv[1]} == L"--hold") {
+    const int held = hold_clipboard(argv[2], argv[3]);
+    LocalFree(argv);
+    return held;
   }
+  if (argv != nullptr) LocalFree(argv);
   const cgpui::test::Win32ClipboardTestLock clipboard_lock;
   if (!clipboard_lock) return 10;
   // 1 ms timer resolution makes a Sleep-count retry budget its shortest.
