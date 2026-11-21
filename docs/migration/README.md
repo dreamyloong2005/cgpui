@@ -55,8 +55,9 @@ test entries), Linux 561 (561). macOS manifests exist but were not built; see
   C5050 warning reaches the log as valid UTF-8. The workspace requires
   2026.11.20.1 (`mcpp.toml`) and the wrappers no longer set `VSLANG`.
 - A `build.mcpp` is not rebuilt when a header it includes by relative path
-  changes: repro and draft issue in `D:/Dev/shots/mcpp-spike/bug-buildmcpp-header`;
-  workaround: the header is a `[build-dependencies]` path package.
+  changes (upstream #991, reported 2026-11-21; reproduced with 2026.11.20.1
+  on Windows and Linux). Workaround, kept until it is fixed: the header is a
+  `[build-dependencies]` path package (`tools/mcpp`).
 
 ## AddressSanitizer findings (first runs)
 

@@ -6,7 +6,7 @@
 // and calls the helpers it needs, so the system-dependency logic lives in one
 // place. The package names tools/mcpp in [build-dependencies]: mcpp does not
 // recompile a build program when a header it reaches by a relative path
-// changes, but it does when a path package of its graph changes.
+// changes (mcpp#991), but it does when a path package of its graph changes.
 #pragma once
 
 #include <array>
