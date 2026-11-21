@@ -3,8 +3,9 @@
 `xmake-targets.json` is the inventory of every xmake target at `31607247`
 (`scripts/migration/build_inventory.py`); `mcpp-target-map.json` maps each
 of them to its mcpp counterpart (`scripts/migration/reconcile.py`). The
-merge of `origin/master` (`19c51989`) added its two new targets
-(`build/xmake/phase_j_macos_targets.lua`, recorded as `merged_targets`).
+merge of `origin/master` (`19c51989`) added its two new targets (its
+`build/xmake/phase_j_macos_targets.lua`, recorded as `merged_targets`; the
+file itself is not kept).
 All 676 targets map; none is dropped. Test programs: Windows 581 (xmake: 581
 test entries), Linux 561 (561). macOS manifests exist but were not built; see
 [macOS follow-up](#macos-follow-up).
