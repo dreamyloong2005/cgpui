@@ -242,5 +242,7 @@ and the shared module src/renderer/shaders/cgpui_box_shadow.slang.
   to mid gray (107..148) inside the backdrop, keeps them exact outside,
   mixes a 50 % red tint, keeps a rect drawn after the backdrop sharp, and
   checks the diagnostics of a frame with and without backdrops.
-  The context menu of `example_workbench` was not opened on screen (a
-  synthetic right click was not delivered).
+  On screen (2026-11-22, 1x display): `example_workbench` with
+  `CGPUI_WORKBENCH_BLUR=1`, dark theme, right click on the tree. The menu
+  shows its shadow and, through the translucent surface, the editor text
+  behind it blurred beyond reading; outside the menu the text is sharp.

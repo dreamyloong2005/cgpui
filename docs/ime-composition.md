@@ -38,7 +38,7 @@ while composing, `caret_rect` returns the composition caret.
 | --- | --- | --- |
 | Windows (IMM32) | `ImmGetCompositionStringW(GCS_CURSORPOS)`, UTF-16 units converted to UTF-8 bytes; a caret (begin == end); none reported means the end | `GCS_COMPCLAUSE` boundaries, each styled by the `GCS_COMPATTR` byte of its first unit; without clause data, runs of equal attributes; without either, one input clause |
 | Linux (Wayland `zwp_text_input_v3`) | `preedit_string` `cursor_begin` / `cursor_end`, already UTF-8 bytes; -1 hides the caret | none in the protocol: one `input` span over the preedit |
-| macOS | marked-text cursor (existing) | one `input` span (planned only) |
+| macOS (`NSTextInputClient`) | `setMarkedText:selectedRange:` selected range, UTF-16 units converted to UTF-8 bytes | runs of `NSMarkedClauseSegmentAttributeName`, else of `NSUnderlineStyleAttributeName`; a thick underline is `selected_converted`, other clauses of a segmented or multi-run string `converted`, a single unsegmented run (or a plain string) one `input` clause |
 
 IMM32 attribute mapping: `ATTR_INPUT` and `ATTR_INPUT_ERROR` -> `input`,
 `ATTR_TARGET_CONVERTED` -> `selected_converted`, `ATTR_CONVERTED` and
@@ -49,6 +49,13 @@ start of the pair. The conversion is
 `src/platform/win32/win32_ime_composition_detail.cpp`, free of IMM calls;
 `src/platform/win32/win32_window_ime_detail.cpp` reads the IMM data.
 The IMM context is released before events are dispatched.
+
+macOS: input methods attach clause attributes only for keys the client
+lists, so `validAttributesForMarkedText` returns
+`NSUnderlineStyleAttributeName` and `NSMarkedClauseSegmentAttributeName`.
+The conversion is `macos_append_ime_clauses`
+(`src/platform/macos/macos_ime_clauses.mm`), free of window state; clauses
+beyond the span capacity merge into the last span, as on Windows.
 
 ## Widget rendering
 
@@ -93,3 +100,10 @@ Windows IME) clause attributes, caret and candidate placement have not been
 observed in a real window; neither has a Wayland input method. Clause
 attributes come only from IMM32; TSF-only details (display attributes) are
 not read.
+
+macOS (2026-11-22): `macos_ime_clauses_test` converts constructed attributed
+strings (plain, a Pinyin-style single underlined run, Japanese-style
+segments with a thick selected clause, 20 segments over the capacity) and
+sends the Japanese-style string through the content view's
+`setMarkedText:selectedRange:replacementRange:`; the app receives two
+spans and the caret at byte 9. A real input method was not driven.

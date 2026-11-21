@@ -38,8 +38,7 @@ cgpui::MacOSWindow* adapter(void* value) {
 - (BOOL)acceptsFirstResponder {
   return YES;
 }
-// Window dragging comes from the caption region only (client title bar);
-// a transparent window would otherwise move from any background click.
+// Only the caption region drags the window (client title bar).
 - (BOOL)mouseDownCanMoveWindow {
   return NO;
 }
@@ -53,9 +52,11 @@ cgpui::MacOSWindow* adapter(void* value) {
         selectedRange:(NSRange)selectedRange
       replacementRange:(NSRange)replacementRange {
   if (window_adapter_ == nullptr) return;
-  NSString* value = [string isKindOfClass:[NSAttributedString class]]
-      ? [string string] : string;
-  adapter(window_adapter_)->text_set_marked(value, selectedRange, replacementRange);
+  NSAttributedString* attributed =
+      [string isKindOfClass:[NSAttributedString class]] ? string : nil;
+  NSString* value = attributed != nil ? [attributed string] : string;
+  adapter(window_adapter_)->text_set_marked(
+      value, attributed, selectedRange, replacementRange);
 }
 - (void)unmarkText {
   if (window_adapter_ != nullptr) adapter(window_adapter_)->text_unmark();
@@ -71,8 +72,9 @@ cgpui::MacOSWindow* adapter(void* value) {
   return window_adapter_ == nullptr ? NSMakeRange(0, 0)
                                     : adapter(window_adapter_)->text_selected_range();
 }
+// Input methods send only the clause attributes listed here.
 - (NSArray<NSAttributedStringKey>*)validAttributesForMarkedText {
-  return @[];
+  return @[ NSUnderlineStyleAttributeName, NSMarkedClauseSegmentAttributeName ];
 }
 - (NSAttributedString*)attributedSubstringForProposedRange:(NSRange)range
                                                actualRange:(NSRange*)actualRange {

@@ -80,6 +80,7 @@ void MacOSWindow::text_insert(NSString* string, NSRange replacement_range) {
 
 void MacOSWindow::text_set_marked(
     NSString* string,
+    NSAttributedString* attributed,
     NSRange selected_range,
     NSRange replacement_range) {
   if (replacement_range.location != NSNotFound) {
@@ -106,7 +107,7 @@ void MacOSWindow::text_set_marked(
       .preedit_cursor_begin = static_cast<std::int32_t>(text_input_state_.marked_cursor),
       .preedit_cursor_end = static_cast<std::int32_t>(
           selected_bytes.first + selected_bytes.second)};
-  (void)append_ime_default_preedit_style(composition);
+  macos_append_ime_clauses(composition, attributed);
   callback_(composition);
 }
 

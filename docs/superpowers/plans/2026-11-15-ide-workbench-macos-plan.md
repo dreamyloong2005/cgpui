@@ -43,8 +43,9 @@ Host: macOS 27.2.1 (26B131), Xcode 27.2 (27B52), Apple M4, one 1x display.
 | C3 Backdrop | done: `NSVisualEffectView` content view wrapping the Metal view, Metal transparent surface reports premultiplied alpha; see `docs/window-backdrop.md`. Material not observed through the workbench (its root background is opaque) |
 | C4 Title bar | done: full-size content view with native traffic lights, caption drag and double-click, `caption_buttons_leading_reserved_width`; see `docs/client-title-bar.md`. Drag and double-click not driven by a test |
 | C5 Shadow | done: Metal shadow pipeline with the Vulkan math (shared Slang module); pixel test against the Vulkan references at scale 1 and 2 |
-| C6 Backdrop blur | done: offscreen scene, `MPSImageGaussianBlur` per backdrop, masked tint composite; pixel test. Not observed on screen |
+| C6 Backdrop blur | done: offscreen scene, `MPSImageGaussianBlur` per backdrop, masked tint composite; pixel test; the workbench context menu observed blurred on screen |
 | C7 Shaping | done: `core_text` backend and glyph-id rasterizer, Metal glyph placement shared with Vulkan; see `docs/native-text.md`. Text observed in `example_workbench` |
+| C8 IME | done: clause spans from `NSMarkedClauseSegmentAttributeName` / `NSUnderlineStyleAttributeName`, see `docs/ime-composition.md`. Not checked with a real Pinyin or Japanese input method |
 
 ## Order on a Mac
 

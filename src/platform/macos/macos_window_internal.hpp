@@ -71,6 +71,7 @@ class MacOSWindow final : public PlatformWindow {
   void text_insert(NSString* string, NSRange replacement_range);
   void text_set_marked(
       NSString* string,
+      NSAttributedString* attributed,
       NSRange selected_range,
       NSRange replacement_range);
   void text_unmark();

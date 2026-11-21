@@ -30,6 +30,7 @@ POST_MIGRATION = {
     "metal_box_shadow_pixel_test": {"macosx"},
     "core_text_glyph_raster_test": {"macosx"},
     "metal_backdrop_blur_pixel_test": {"macosx"},
+    "macos_ime_clauses_test": {"macosx"},
     # Migrated for Windows and Linux; macOS runs it since Core Text.
     "native_text_shaping_test": {"macosx"},
 }

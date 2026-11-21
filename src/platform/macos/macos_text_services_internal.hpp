@@ -34,6 +34,15 @@ struct MacOSTextInputState {
     std::string_view text,
     std::size_t location,
     std::size_t length);
+// Clause spans of marked text (NSTextInputClient setMarkedText:). Runs of
+// NSMarkedClauseSegmentAttributeName (else of NSUnderlineStyleAttributeName)
+// become clauses: a thick underline is the selected converted clause, other
+// clauses of a segmented or multi-run string are converted, and a single
+// unsegmented run (or no attributes) is one input clause. Spans beyond
+// kImePreeditStyleSpanCapacity merge into the last one.
+void macos_append_ime_clauses(
+    ImeComposition& composition,
+    NSAttributedString* marked);
 [[nodiscard]] Rect macos_candidate_rect_to_screen(
     Rect rect,
     Size framebuffer_size,
