@@ -27,6 +27,11 @@ POST_MIGRATION = {
     "macos_window_backdrop_test": {"macosx"},
     "metal_transparent_surface_test": {"macosx"},
     "macos_client_title_bar_test": {"macosx"},
+    "metal_box_shadow_pixel_test": {"macosx"},
+    "core_text_glyph_raster_test": {"macosx"},
+    "metal_backdrop_blur_pixel_test": {"macosx"},
+    # Migrated for Windows and Linux; macOS runs it since Core Text.
+    "native_text_shaping_test": {"macosx"},
 }
 HELPERS = {
     "tests/ui/native_text_shaping_reference.cpp",
@@ -100,9 +105,9 @@ def main():
         names = [l.strip() for l in pathlib.Path(path).read_text(encoding="utf-8").splitlines()
                  if re.fullmatch(r"[A-Za-z0-9_/]+", l.strip())]
         result.setdefault("mcpp_test_programs", {})[platform] = len(names)
-        migrated_count = sum(name not in POST_MIGRATION for name in names)
         expected = [name for name, platforms in POST_MIGRATION.items()
                     if platforms is None or platform in platforms]
+        migrated_count = sum(name not in expected for name in names)
         if (migrated_count != counts[platform] or
                 any(names.count(name) != 1 for name in expected)):
             status = 1

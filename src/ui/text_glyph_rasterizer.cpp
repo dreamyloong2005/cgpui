@@ -33,6 +33,10 @@ Result<RasterizedGlyph> rasterize_text_glyph(
   if (backend == TextShapingBackend::directwrite) {
     return rasterize_native_glyph_id(glyph);
   }
+#elif defined(__APPLE__)
+  if (backend == TextShapingBackend::core_text) {
+    return rasterize_native_glyph_id(glyph);
+  }
 #elif defined(CGPUI_HAS_FREETYPE_GLYPH_RASTERIZER)
   if (backend == TextShapingBackend::harfbuzz) {
     return rasterize_native_glyph_id(glyph);

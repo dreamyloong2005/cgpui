@@ -129,8 +129,8 @@ discover = [
     "workbench_tree_view_test.cpp",
 ]
 
-# Windows and Linux only (Vulkan, or a backend macOS does not have).
-[target.'cfg(any(os = "windows", os = "linux"))'.test]
+# Windows, Linux and macOS: needs a native shaping backend.
+[target.'cfg(any(os = "windows", os = "linux", os = "macos"))'.test]
 discover = [
     "native_text_shaping_test.cpp",
 ]

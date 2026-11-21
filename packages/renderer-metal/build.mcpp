@@ -13,9 +13,10 @@
 namespace {
 
 // The functions metal_pipeline_library.mm creates, in its order.
-constexpr std::array<std::string_view, 5> kFunctions{
-    "cgpui_vertex",           "cgpui_solid_fragment", "cgpui_rounded_fragment",
-    "cgpui_glyph_fragment",   "cgpui_image_fragment",
+constexpr std::array<std::string_view, 8> kFunctions{
+    "cgpui_vertex",            "cgpui_solid_fragment",      "cgpui_rounded_fragment",
+    "cgpui_glyph_fragment",    "cgpui_image_fragment",      "cgpui_box_shadow_vertex",
+    "cgpui_box_shadow_fragment", "cgpui_backdrop_fragment",
 };
 
 }  // namespace

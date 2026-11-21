@@ -64,5 +64,15 @@ defines = [
     "CGPUI_HAS_FREETYPE_GLYPH_RASTERIZER",
 ]
 
+[target.'cfg(os = "macos")'.build]
+sources = [
+    "../../src/ui/text_shaping_coretext_macos.cpp",
+    "../../src/ui/text_coretext_fonts_macos.cpp",
+    "../../src/ui/text_glyph_id_raster_coretext.cpp",
+]
+
+[target.'cfg(os = "macos")'.runtime]
+frameworks = ["CoreText", "CoreGraphics", "CoreFoundation"]
+
 [build-dependencies]
 cgpui.build-support = { path = "../../tools/mcpp" }

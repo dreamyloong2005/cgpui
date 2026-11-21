@@ -1,4 +1,4 @@
-#include "metal_renderer_internal.hpp"
+#include "metal_effects_internal.hpp"
 
 #include "../renderer_device_pixels_internal.hpp"
 
@@ -41,6 +41,20 @@ class MetalFrame final : public RenderFrame {
         .command_index = commands_.rounded_rects.size()});
     commands_.rounded_rects.push_back(
         renderer_to_device_pixels(rect, state_->scale));
+  }
+  void draw_box_shadow(const BoxShadowDraw& shadow) override {
+    commands_.draw_order.push_back({
+        .primitive_kind = RendererPrimitiveKind::box_shadow,
+        .command_index = commands_.box_shadows.size()});
+    commands_.box_shadows.push_back(
+        renderer_to_device_pixels(shadow, state_->scale));
+  }
+  void draw_backdrop_blur(const BackdropBlurDraw& backdrop) override {
+    commands_.draw_order.push_back({
+        .primitive_kind = RendererPrimitiveKind::backdrop_blur,
+        .command_index = commands_.backdrops.size()});
+    commands_.backdrops.push_back(
+        renderer_to_device_pixels(backdrop, state_->scale));
   }
   void draw_text(const TextDraw& text) override {
     commands_.draw_order.push_back({
@@ -92,9 +106,19 @@ class MetalFrame final : public RenderFrame {
 
     RendererFrameTimings timings = resources_.timings;
     const auto recording_started = Clock::now();
+    // A frame with a backdrop renders into the offscreen scene, which each
+    // backdrop blurs up to that point, and is copied to the drawable at the
+    // end. Other frames draw straight into the drawable.
+    const bool offscreen = !commands_.backdrops.empty();
+    if (offscreen) {
+      auto targets = metal_ensure_backdrop_targets(
+          *state_, resources_.drawable.texture.width, resources_.drawable.texture.height);
+      if (!targets) return std::unexpected(targets.error());
+    }
     MTLRenderPassDescriptor* pass =
         [MTLRenderPassDescriptor renderPassDescriptor];
-    pass.colorAttachments[0].texture = resources_.drawable.texture;
+    pass.colorAttachments[0].texture =
+        offscreen ? state_->backdrop_scene : resources_.drawable.texture;
     pass.colorAttachments[0].loadAction = MTLLoadActionClear;
     pass.colorAttachments[0].storeAction = MTLStoreActionStore;
     pass.colorAttachments[0].clearColor = MTLClearColorMake(
@@ -111,63 +135,17 @@ class MetalFrame final : public RenderFrame {
     }
     std::size_t upload_byte_count = *image_upload_bytes;
     for (const MetalFrameDrawOrderEntry entry : commands_.draw_order) {
-      Result<void> encoded;
-      switch (entry.primitive_kind) {
-        case RendererPrimitiveKind::solid_rect:
-          encoded = metal_encode_solid_rect(
-              encoder, *state_, commands_.solid_rects[entry.command_index]);
-          break;
-        case RendererPrimitiveKind::rounded_rect:
-          encoded = metal_encode_rounded_rect(
-              encoder, *state_, commands_.rounded_rects[entry.command_index]);
-          break;
-        case RendererPrimitiveKind::text: {
-          auto text_upload = metal_encode_text(
-              encoder, *state_, commands_.text_draws[entry.command_index]);
-          if (!text_upload) encoded = std::unexpected(text_upload.error());
-          else upload_byte_count += *text_upload;
-          break;
-        }
-        case RendererPrimitiveKind::text_selection: {
-          const TextSelectionDraw& selection =
-              commands_.selections[entry.command_index];
-          encoded = metal_encode_solid_rect(
-              encoder,
-              *state_,
-              SolidRect{
-                  .rect = selection.rect,
-                  .color = selection.color,
-                  .clip_rect = selection.clip_rect,
-                  .clip_stack = selection.clip_stack,
-                  .composition_stack = selection.composition_stack,
-                  .metadata = selection.metadata});
-          break;
-        }
-        case RendererPrimitiveKind::text_caret: {
-          const TextCaretDraw& caret = commands_.carets[entry.command_index];
-          encoded = metal_encode_solid_rect(
-              encoder,
-              *state_,
-              SolidRect{
-                  .rect = caret.rect,
-                  .color = caret.color,
-                  .clip_rect = caret.clip_rect,
-                  .clip_stack = caret.clip_stack,
-                  .composition_stack = caret.composition_stack,
-                  .metadata = caret.metadata});
-          break;
-        }
-        case RendererPrimitiveKind::image:
-          encoded = metal_encode_image(
-              encoder, *state_, commands_.image_draws[entry.command_index]);
-          break;
-      }
-      if (!encoded) {
-        [encoder endEncoding];
-        return std::unexpected(encoded.error());
-      }
+      auto encoded = metal_encode_frame_draw(
+          resources_.command_buffer, encoder, *state_, commands_, entry);
+      if (!encoded) return std::unexpected(encoded.error());
+      upload_byte_count += *encoded;
     }
     [encoder endEncoding];
+    if (offscreen) {
+      auto copied = metal_encode_scene_copy(
+          resources_.command_buffer, *state_, resources_.drawable.texture);
+      if (!copied) return std::unexpected(copied.error());
+    }
     renderer_add_frame_timing(
         timings,
         RendererFrameTimingStage::command_recording,

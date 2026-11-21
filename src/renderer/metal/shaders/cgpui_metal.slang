@@ -2,8 +2,10 @@
 // scripts/dev/compile_shaders.py into src/renderer/metal/generated/; the
 // registers give the indices metal_*.mm binds: vertex buffer(0) vertices,
 // buffer(1) viewport; fragment buffer(0) uniforms, texture(0), sampler(0).
-// Not run since the move to Slang (no Mac; docs/migration/README.md).
+// Box shadow: vertex buffer(0) shadow vertices, buffer(1) viewport;
+// fragment buffer(0) shadow uniforms (metal_box_shadow.mm).
 import cgpui_shared;
+import cgpui_box_shadow;
 
 struct VertexIn {
   float2 position;
@@ -94,4 +96,76 @@ float4 cgpui_glyph_fragment(VertexOut input) : SV_Target0 {
 float4 cgpui_image_fragment(VertexOut input) : SV_Target0 {
   return source_texture.Sample(source_sampler, input.texture_coordinate) *
          input.color;
+}
+
+// One shadow is one quad: `position` is the transformed device position,
+// `local` the untransformed point the shadow is evaluated at.
+struct BoxShadowVertexIn {
+  float2 position;
+  float2 local;
+  float4 color;
+};
+
+struct BoxShadowVertexOut {
+  float4 position : SV_Position;
+  float2 local : TEXCOORD0;
+  float4 color : COLOR0;
+};
+
+struct BoxShadowUniforms {
+  float4 shadow_rect;
+  float4 shadow_radii;
+  float4 box_rect;
+  float4 box_radii;
+  float sigma;
+};
+
+StructuredBuffer<BoxShadowVertexIn> shadow_vertices : register(t0);
+ConstantBuffer<BoxShadowUniforms> shadow : register(b0);
+
+[shader("vertex")]
+BoxShadowVertexOut cgpui_box_shadow_vertex(uint vertex_id : SV_VertexID) {
+  BoxShadowVertexIn input = shadow_vertices[vertex_id];
+  BoxShadowVertexOut output;
+  output.position = float4(input.position.x / viewport.x * 2.0 - 1.0,
+                           1.0 - input.position.y / viewport.y * 2.0, 0.0, 1.0);
+  output.local = input.local;
+  output.color = input.color;
+  return output;
+}
+
+[shader("fragment")]
+float4 cgpui_box_shadow_fragment(BoxShadowVertexOut input) : SV_Target0 {
+  float alpha = box_shadow_alpha(input.local, shadow.shadow_rect,
+                                 shadow.shadow_radii, shadow.box_rect,
+                                 shadow.box_radii, shadow.sigma);
+  return float4(input.color.rgb, input.color.a * alpha);
+}
+
+// Backdrop blur composite (metal_backdrop_blur.mm): the blurred scene
+// region under a rounded mask, mixed with the tint. Vertex function
+// cgpui_box_shadow_vertex; `local` is the untransformed point, the color's
+// alpha the composed opacity. Fragment buffer(0) uniforms, texture(0) the
+// blurred scene (sampled at the fragment's device position), sampler(0).
+struct BackdropUniforms {
+  float4 rect;
+  float4 radii;
+  float4 tint;
+};
+
+ConstantBuffer<BackdropUniforms> backdrop : register(b0);
+
+[shader("fragment")]
+float4 cgpui_backdrop_fragment(BoxShadowVertexOut input) : SV_Target0 {
+  float mask = clamp(
+      0.5 - rounded_rect_distance(input.local, backdrop.rect, backdrop.radii) /
+                derivative_pixel_width(input.local),
+      0.0, 1.0);
+  float width;
+  float height;
+  source_texture.GetDimensions(width, height);
+  float4 blurred = source_texture.Sample(
+      source_sampler, input.position.xy / float2(width, height));
+  float3 color = lerp(blurred.rgb, backdrop.tint.rgb, backdrop.tint.a);
+  return float4(color, mask * input.color.a);
 }

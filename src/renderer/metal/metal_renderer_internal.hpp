@@ -70,6 +70,11 @@ struct MetalPipelineLibrary {
   __strong id<MTLRenderPipelineState> rounded = nil;
   __strong id<MTLRenderPipelineState> glyph = nil;
   __strong id<MTLRenderPipelineState> image = nil;
+  __strong id<MTLRenderPipelineState> box_shadow = nil;
+  // Backdrop blur: the blurred region composited with mask and tint, and
+  // the scene copied to the drawable without blending.
+  __strong id<MTLRenderPipelineState> backdrop = nil;
+  __strong id<MTLRenderPipelineState> copy = nil;
   __strong id<MTLSamplerState> nearest_sampler = nil;
   __strong id<MTLSamplerState> linear_sampler = nil;
 };
@@ -93,6 +98,8 @@ struct MetalFrameCommands {
   std::vector<ImageAsset> image_uploads;
   std::vector<ImageAssetId> image_invalidations;
   std::vector<ImageDraw> image_draws;
+  std::vector<BoxShadowDraw> box_shadows;
+  std::vector<BackdropBlurDraw> backdrops;
   std::vector<MetalFrameDrawOrderEntry> draw_order;
   bool capture_requested = false;
 };
@@ -114,6 +121,10 @@ struct MetalRendererState {
   GlyphCache glyph_cache;
   std::vector<MetalGlyphPageResource> glyph_pages;
   std::unordered_map<std::uint64_t, MetalImageTextureResource> images;
+  // Offscreen scene and blur target, allocated by the first frame with a
+  // backdrop and reused while the drawable size stays the same.
+  __strong id<MTLTexture> backdrop_scene = nil;
+  __strong id<MTLTexture> backdrop_blurred = nil;
   RendererFrameDiagnosticSnapshot last_snapshot{};
   RendererFramePixels last_pixels{};
   bool has_snapshot = false;
@@ -182,6 +193,10 @@ Result<std::size_t> metal_encode_text(
 Result<std::size_t> metal_upload_images(
     MetalRendererState& state,
     const MetalFrameCommands& commands);
+Result<void> metal_encode_box_shadow(
+    id<MTLRenderCommandEncoder> encoder,
+    MetalRendererState& state,
+    const BoxShadowDraw& shadow);
 Result<void> metal_encode_image(
     id<MTLRenderCommandEncoder> encoder,
     MetalRendererState& state,

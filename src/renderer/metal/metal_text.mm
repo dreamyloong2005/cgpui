@@ -1,5 +1,8 @@
 #include "metal_renderer_internal.hpp"
 
+#include "../renderer_text_glyph_placement_internal.hpp"
+#include "cgpui/ui/text_glyph_rasterizer.hpp"
+
 #include <algorithm>
 
 namespace cgpui {
@@ -70,14 +73,27 @@ Result<std::size_t> metal_encode_text(
 
   std::size_t uploaded_bytes = 0;
   for (const TextGlyphPaint& glyph : text.glyphs) {
-    GlyphCacheLookup lookup = state.glyph_cache.lookup(glyph.key);
+    // As vulkan_build_textured_glyph_quads: native glyphs by glyph id with
+    // the pen and baseline snapped, deterministic glyphs by cluster text.
+    const bool native =
+        glyph.key.shaping_backend != TextShapingBackend::deterministic_fallback;
+    const GlyphPlacement placement = native
+        ? native_glyph_placement(glyph)
+        : cell_glyph_placement(glyph, text.content);
+    const TextGlyphPaint& raster_glyph = placement.raster;
+    GlyphCacheLookup lookup = state.glyph_cache.lookup(raster_glyph.key);
     GlyphAtlasEntry entry;
     RasterizedGlyph rasterized;
     bool created = false;
     if (lookup.hit && lookup.entry) {
       entry = *lookup.entry;
     } else {
-      rasterized = rasterize_fallback_glyph(glyph);
+      auto raster = rasterize_text_glyph(raster_glyph, raster_glyph.key.text);
+      if (!raster) {
+        state.glyph_cache.set_rasterization_error(raster.error());
+        return std::unexpected(raster.error());
+      }
+      rasterized = std::move(*raster);
       const GlyphAtlasAllocation allocation =
           state.glyph_cache.allocate(rasterized);
       created = allocation.created;
@@ -85,11 +101,14 @@ Result<std::size_t> metal_encode_text(
           .key = allocation.key,
           .page_index = allocation.page_index,
           .atlas_bounds = allocation.atlas_bounds,
-          .advance = glyph.device_advance};
+          .advance = glyph.device_advance,
+          .left_bearing = rasterized.left_bearing,
+          .top_bearing = rasterized.top_bearing,
+          .baseline = rasterized.baseline};
     }
     auto page = ensure_page(state, entry.page_index);
     if (!page) return std::unexpected(page.error());
-    if (created) {
+    if (created && rasterized.bitmap.width > 0 && rasterized.bitmap.height > 0) {
       [(*page)->texture
           replaceRegion:MTLRegionMake2D(
                             static_cast<NSUInteger>(entry.atlas_bounds.origin.x),
@@ -101,8 +120,13 @@ Result<std::size_t> metal_encode_text(
           bytesPerRow:rasterized.bitmap.stride];
       uploaded_bytes += rasterized.bitmap.alpha.size();
     }
+    if (entry.atlas_bounds.size.width <= 0.0F ||
+        entry.atlas_bounds.size.height <= 0.0F) {
+      continue;
+    }
     const Rect bounds{
-        .origin = glyph.device_origin,
+        .origin = {placement.device_pen.x + entry.left_bearing,
+                   placement.device_pen.y + entry.top_bearing},
         .size = entry.atlas_bounds.size};
     const auto vertices = metal_rect_vertices(
         bounds,

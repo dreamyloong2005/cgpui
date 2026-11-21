@@ -34,6 +34,12 @@ RendererCommandStreamItem stream_item(
     case RendererPrimitiveKind::image:
       assign(commands.image_draws[entry.command_index]);
       break;
+    case RendererPrimitiveKind::box_shadow:
+      assign(commands.box_shadows[entry.command_index]);
+      break;
+    case RendererPrimitiveKind::backdrop_blur:
+      assign(commands.backdrops[entry.command_index]);
+      break;
   }
   return item;
 }

@@ -1,4 +1,4 @@
-#include "vulkan_text_glyph_placement.hpp"
+#include "renderer_text_glyph_placement_internal.hpp"
 
 #include <cmath>
 

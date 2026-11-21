@@ -7,6 +7,11 @@
 #include <windows.h>
 #include <dwrite.h>
 #include <wrl/client.h>
+#elif defined(__APPLE__)
+#include <CoreText/CoreText.h>
+
+#include <initializer_list>
+#include <string>
 #elif defined(CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND)
 #include <hb.h>
 #include <hb-ot.h>
@@ -63,6 +68,35 @@ float reference_layout_width(const cgpui::TextShapeRun& run) {
   hb_font_destroy(font);
   hb_face_destroy(hb_face);
   hb_blob_destroy(blob);
+  return width;
+}
+#elif defined(__APPLE__)
+// Typographic width of a CTLine of the string in the run's primary face,
+// looked up by its PostScript name.
+float reference_layout_width(const cgpui::TextShapeRun& run) {
+  if (run.font_fallback_faces.empty()) return -1.0F;
+  const std::string& name = run.font_fallback_faces.front().postscript_name;
+  CFStringRef ps = CFStringCreateWithBytes(
+      nullptr, reinterpret_cast<const UInt8*>(name.data()),
+      static_cast<CFIndex>(name.size()), kCFStringEncodingUTF8, false);
+  CTFontRef font = CTFontCreateWithName(ps, run.font_size, nullptr);
+  CFStringRef text = CFStringCreateWithBytes(
+      nullptr, reinterpret_cast<const UInt8*>(run.text.data()),
+      static_cast<CFIndex>(run.text.size()), kCFStringEncodingUTF8, false);
+  const void* keys[]{kCTFontAttributeName};
+  const void* values[]{font};
+  CFDictionaryRef attributes = CFDictionaryCreate(
+      nullptr, keys, values, 1, &kCFTypeDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks);
+  CFAttributedStringRef attributed = CFAttributedStringCreate(nullptr, text, attributes);
+  CTLineRef line = CTLineCreateWithAttributedString(attributed);
+  const auto width = static_cast<float>(
+      CTLineGetTypographicBounds(line, nullptr, nullptr, nullptr));
+  for (CFTypeRef object : {static_cast<CFTypeRef>(line), static_cast<CFTypeRef>(attributed),
+                           static_cast<CFTypeRef>(attributes), static_cast<CFTypeRef>(text),
+                           static_cast<CFTypeRef>(font), static_cast<CFTypeRef>(ps)}) {
+    CFRelease(object);
+  }
   return width;
 }
 #else

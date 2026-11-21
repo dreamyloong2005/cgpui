@@ -56,8 +56,12 @@ const std::vector<std::pair<std::string, std::size_t>> limits{
     {"src/ui/text_fontconfig_linux_internal.hpp", 50},
     {"src/ui/text_fontconfig_faces_linux.cpp", 210},
     {"src/ui/text_glyph_id_raster_freetype.cpp", 110},
-    {"src/renderer/vulkan/vulkan_text_glyph_placement.cpp", 80},
-    {"src/renderer/vulkan/vulkan_text_glyph_placement.hpp", 40},
+    {"src/renderer/renderer_text_glyph_placement.cpp", 80},
+    {"src/renderer/renderer_text_glyph_placement_internal.hpp", 40},
+    {"src/ui/text_shaping_coretext_macos.cpp", 200},
+    {"src/ui/text_coretext_fonts_macos.cpp", 230},
+    {"src/ui/text_coretext_macos_internal.hpp", 45},
+    {"src/ui/text_glyph_id_raster_coretext.cpp", 100},
 };
 
 } // namespace
@@ -110,6 +114,22 @@ int main() {
     require(has(freetype, "FT_Load_Glyph(") && has(freetype, "FT_Render_Glyph(") &&
                 !has(freetype, "hb_shape"),
             "FreeType rasterizes by glyph id without reshaping");
+    const std::string core_text = read("src/ui/text_shaping_coretext_macos.cpp");
+    const std::string core_text_fonts = read("src/ui/text_coretext_fonts_macos.cpp");
+    const std::string core_text_raster = read("src/ui/text_glyph_id_raster_coretext.cpp");
+    require(has(core_text, "CTLineCreateWithAttributedString(") &&
+                has(core_text, "NativeShapeBuilder") && !has(core_text, "CTFontDrawGlyphs"),
+            "Core Text shaping must use the shared builder and not rasterize");
+    require(has(core_text_fonts, "core_text_register_face(") &&
+                has(core_text_fonts, "kCTFontFeatureSettingsAttribute"),
+            "Core Text face identity and features belong to the fonts module");
+    require(has(core_text_raster, "CTFontDrawGlyphs(") &&
+                !has(core_text_raster, "CTLineCreate"),
+            "Core Text rasterizes by glyph id without reshaping");
+    const std::string metal_text = read("src/renderer/metal/metal_text.mm");
+    require(has(metal_text, "native_glyph_placement(") &&
+                has(metal_text, "rasterize_text_glyph("),
+            "Metal text must place native glyphs by glyph id");
     const std::string dispatch = read("src/ui/text_shaping_dispatch.cpp");
     require(has(dispatch, "find_cached_text_shape(") && has(dispatch, "store_cached_text_shape(") &&
                 has(dispatch, "unsupported_font_source"),

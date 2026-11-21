@@ -30,7 +30,13 @@ void MetalRendererState::record_frame(
       .upload_bytes = uploads,
       .planned_draws = draws,
       .submitted_draws = draws,
-      .timings = timings};
+      .timings = timings,
+      // One offscreen scene pass plus one blur pass per backdrop.
+      .backdrop_blur = {
+          .blurred_backdrop_count = commands.backdrops.size(),
+          .offscreen_pass_count =
+              commands.backdrops.empty() ? 0 : commands.backdrops.size() + 1,
+          .offscreen_targets_allocated = backdrop_scene != nil}};
   has_snapshot = true;
 }
 

@@ -17,6 +17,8 @@ bool backend_available(
       return capabilities.harfbuzz_available;
     case TextShapingBackend::directwrite:
       return capabilities.directwrite_available;
+    case TextShapingBackend::core_text:
+      return capabilities.core_text_available;
     case TextShapingBackend::native:
       return false;
   }
@@ -27,6 +29,9 @@ TextShapingBackend platform_native_backend(
     const TextShapingBackendCapabilities& capabilities) {
   if (capabilities.directwrite_available) {
     return TextShapingBackend::directwrite;
+  }
+  if (capabilities.core_text_available) {
+    return TextShapingBackend::core_text;
   }
   if (capabilities.harfbuzz_available) {
     return TextShapingBackend::harfbuzz;
@@ -47,6 +52,9 @@ TextShapingBackendCapabilities text_shaping_backend_capabilities() {
 #endif
 #if defined(_WIN32)
   capabilities.directwrite_available = true;
+#endif
+#if defined(__APPLE__)
+  capabilities.core_text_available = true;
 #endif
   return capabilities;
 }

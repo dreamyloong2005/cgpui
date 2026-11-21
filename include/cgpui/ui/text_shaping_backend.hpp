@@ -5,13 +5,15 @@
 namespace cgpui {
 
 // `native` requests the platform shaper: DirectWrite on Windows, HarfBuzz
-// (with FreeType and fontconfig) on Linux. Platforms without a compiled
-// backend use `deterministic_fallback` with `backend_unavailable`.
+// (with FreeType and fontconfig) on Linux, Core Text on macOS. Platforms
+// without a compiled backend use `deterministic_fallback` with
+// `backend_unavailable`.
 enum class TextShapingBackend {
   deterministic_fallback,
   harfbuzz,
   directwrite,
   native,
+  core_text,
 };
 
 enum class TextShapingFallbackReason {
@@ -59,6 +61,7 @@ struct TextShapingBackendCapabilities {
   // True only when a real HarfBuzz shaping backend is compiled in.
   bool harfbuzz_available = false;
   bool directwrite_available = false;
+  bool core_text_available = false;
 };
 
 struct TextShapingBackendSelection {

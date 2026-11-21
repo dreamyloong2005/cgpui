@@ -1,7 +1,7 @@
 # Box shadow and backdrop blur (C5, C6)
 
-Both effects live in the shared Vulkan renderer (Win32 and Wayland). Metal
-does not implement them yet; see the macOS plan.
+Both effects live in the shared Vulkan renderer (Win32 and Wayland) and in
+the Metal renderer (macOS); see [Metal](#metal) for the differences.
 
 ## C5 box shadow
 
@@ -115,7 +115,7 @@ does not implement them yet; see the macOS plan.
 - Without support the frame draws the tint as a plain rounded rect. Vulkan
   reports `supported = false` with a reason when the swapchain format lacks
   optimal-tiling `COLOR_ATTACHMENT`, `SAMPLED_IMAGE` or
-  `SAMPLED_IMAGE_FILTER_LINEAR`; backends without an override (Metal today)
+  `SAMPLED_IMAGE_FILTER_LINEAR`; backends without an override
   use the same tint-only default.
 
 ### Implementation and scheduling
@@ -203,10 +203,44 @@ the next frame's pacing wait (+0.1 to 0.3 ms here).
 ### Not verified
 
 - Wayland real window and Linux pixel output (only headless tests run in
-  WSL); Metal (tint-only default, see the macOS plan).
+  WSL); Metal: see below.
 - The tint-only fallback on a device lacking the format features (none
   available; covered by the headless support test and the default
   `RenderFrame` test).
 - GPU cost on an integrated GPU; large sigma (factor 8) visually; a
   release build.
 - Box shadows in a real window beyond the example panel.
+
+## Metal
+
+Source: src/renderer/metal/metal_box_shadow.mm, metal_backdrop_blur.mm,
+metal_frame_draws.mm; shaders in src/renderer/metal/shaders/cgpui_metal.slang
+and the shared module src/renderer/shaders/cgpui_box_shadow.slang.
+
+- Box shadow: the same CSS semantics and quad as Vulkan (sigma = blur / 2,
+  spread radii, quad = shape + 3 sigma + 1 px, untransformed `local` point,
+  composed opacity in the color). `cgpui_box_shadow_fragment` evaluates the
+  same erf formula through `cgpui_box_shadow.slang`; the Vulkan shader keeps
+  its own copy until its SPIR-V is regenerated and checked with spirv-val.
+  Device pixels come from `renderer_to_device_pixels`, like every Metal draw.
+- Backdrop blur: a frame with a backdrop draws into an offscreen scene
+  texture (allocated once per drawable size). At each backdrop the encoder
+  ends, `MPSImageGaussianBlur` (sigma = blur radius in device pixels, edge
+  clamp) blurs the transformed rect's bounds plus 3 sigma into a second
+  texture, and a new encoder on the scene composites the blurred texels
+  under the rounded mask with `mix(blurred, tint, tint.a)` and the composed
+  opacity. So each backdrop blurs what precedes it. At the end the scene is
+  copied to the drawable without blending. Frames without a backdrop draw
+  straight into the drawable and do no offscreen work.
+  `backdrop_blur_support()` reports supported; the frame snapshot reports
+  the backdrop count, one scene pass plus one per backdrop, and whether the
+  targets exist.
+- Tests (macOS 27.2.1, Apple M4, 2026-11-22): `metal_box_shadow_pixel_test`
+  compares the falloff at scale 1 and 2, a rounded corner at scale 2 and a
+  clip against the same references as `vulkan_box_shadow_pixel_test`
+  (tolerance 3 of 255). `metal_backdrop_blur_pixel_test` blurs 2 px stripes
+  to mid gray (107..148) inside the backdrop, keeps them exact outside,
+  mixes a 50 % red tint, keeps a rect drawn after the backdrop sharp, and
+  checks the diagnostics of a frame with and without backdrops.
+  The context menu of `example_workbench` was not opened on screen (a
+  synthetic right click was not delivered).

@@ -30,6 +30,10 @@ struct TextShapingRequest {
 [[nodiscard]] TextShapeRun shape_text_with_directwrite(
     TextShapingRequest request);
 
+// Core Text on macOS (text_shaping_coretext_macos.cpp).
+[[nodiscard]] TextShapeRun shape_text_with_core_text(
+    TextShapingRequest request);
+
 [[nodiscard]] TextShapeRun shape_text_with_deterministic_fallback(
     TextShapingRequest request);
 

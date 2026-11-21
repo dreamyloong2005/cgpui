@@ -28,6 +28,17 @@ std::string resolve_platform_font_family(std::string_view family) {
   if (family == "serif" || family == "ui-serif") {
     return "Times New Roman";
   }
+#elif defined(__APPLE__)
+  // Core Text maps "system-ui" to the system UI font (San Francisco).
+  if (is_generic_sans(family)) {
+    return "system-ui";
+  }
+  if (is_generic_monospace(family)) {
+    return "Menlo";
+  }
+  if (family == "serif" || family == "ui-serif") {
+    return "Times New Roman";
+  }
 #else
   if (family.empty()) {
     return "sans-serif";

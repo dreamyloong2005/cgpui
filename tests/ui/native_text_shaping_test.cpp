@@ -22,6 +22,9 @@ bool near(float a, float b, float tolerance) {
 #if defined(_WIN32)
 const cgpui::FontDescriptor proportional{.family = "Segoe UI"};
 const cgpui::FontDescriptor ligature_font{.family = "Calibri"};
+#elif defined(__APPLE__)
+const cgpui::FontDescriptor proportional{.family = "Helvetica Neue"};
+const cgpui::FontDescriptor ligature_font{.family = "Helvetica Neue"};
 #else
 const cgpui::FontDescriptor proportional{.family = "DejaVu Sans"};
 const cgpui::FontDescriptor ligature_font{.family = "DejaVu Sans"};

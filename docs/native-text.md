@@ -1,7 +1,8 @@
 # Native text
 
 CGPUI shapes text with the platform text stack, measures it with real font
-metrics, and rasterizes glyphs by glyph id into the Vulkan glyph atlas.
+metrics, and rasterizes glyphs by glyph id into the Vulkan or Metal glyph
+atlas.
 Paragraph layout, wrapping, caret positions, hit testing and selection all
 consume the shaped advances. Applications keep calling `PaintList::fill_text`,
 `measure_text` and `shape_text`; the public API is unchanged apart from
@@ -11,14 +12,14 @@ additive fields.
 | --- | --- | --- | --- | --- |
 | Windows | DirectWrite `IDWriteTextAnalyzer` (`AnalyzeScript`, `AnalyzeBidi`, `GetGlyphs`, `GetGlyphPlacements`) | `IDWriteFontFallback::MapCharacters`; CJK prefers "Microsoft YaHei UI" unless the language is `ja`/`ko` | `IDWriteFontFace::GetMetrics` | `CreateGlyphRunAnalysis` on a one-glyph `DWRITE_GLYPH_RUN` |
 | Linux | HarfBuzz `hb_shape` on file-backed faces | fontconfig `FcFontSort` + per-character `FcCharSetHasChar` | FreeType face, OS/2 table | FreeType `FT_Load_Glyph` + `FT_Render_Glyph` grayscale |
-| macOS | deterministic fallback (no backend) | coverage-declared test chains only | none | placeholder |
+| macOS | Core Text `CTLineCreateWithAttributedString` (`CTRunGetGlyphs`, `CTRunGetPositions`, `CTRunGetAdvances`, `CTRunGetStringIndices`) | Core Text's own font cascade (CJK -> PingFang SC) | `CTFontGetAscent` and related | `CTFontDrawGlyphs` into an 8-bit gray `CGBitmapContext` |
 
 ## Backend selection
 
 `TextShapingOptions::preferred_backend` defaults to `TextShapingBackend::native`,
-which resolves to `directwrite` on Windows and `harfbuzz` on Linux.
-`text_shaping_backend_capabilities()` reports `directwrite_available` and
-`harfbuzz_available`. A platform without a compiled backend returns the
+which resolves to `directwrite` on Windows, `harfbuzz` on Linux and
+`core_text` on macOS. `text_shaping_backend_capabilities()` reports
+`directwrite_available`, `harfbuzz_available` and `core_text_available`. A platform without a compiled backend returns the
 deterministic fallback with `fallback_reason = backend_unavailable`; a backend
 that cannot open a face or shape returns `shaping_failed`. Explicit fallback
 chains containing `FontSource::test` faces have no native font file and shape
@@ -40,6 +41,13 @@ requests use for the process. Tests that assert fixed half-em advances set
 | `""`, `sans-serif`, `system-ui` | Segoe UI | fontconfig `sans-serif` |
 | `monospace`, `ui-monospace` | Cascadia Mono when installed, else Consolas | fontconfig `monospace` |
 | `serif` | Times New Roman | fontconfig `serif` |
+
+macOS: `""`, `sans-serif` and `system-ui` resolve to `system-ui`, which
+Core Text maps to the system UI font (`CTFontCreateUIFontForLanguage`,
+San Francisco); `monospace` to Menlo; `serif` to Times New Roman. CSS
+weights map to the Core Text weight trait (400 = 0, 700 = 0.4, AppKit's
+`NSFontWeight` values), italic to `kCTFontTraitItalic`, and features to
+`kCTFontFeatureSettingsAttribute` OpenType tags.
 
 `default_ui_font_descriptor()` and `default_code_font_descriptor()` return
 these defaults; the code descriptor disables `liga` and `calt`. Any monospaced
@@ -166,8 +174,14 @@ which module calls which native API.
   DirectWrite uses the face's default instance.
 - Rasterization takes the FreeType lock for every glyph on Linux; glyphs are
   cached in the atlas, so this is per new glyph, not per frame.
-- macOS has no native backend yet; it reports `backend_unavailable` and keeps
-  the deterministic fallback.
+- macOS: Core Text itemizes and resolves fallback fonts itself, so script
+  runs are not split separately; glyphs come back from its runs (visual
+  order) and are put back in logical order by cluster. Face identity is
+  in-process: `face_index` carries a registry slot in its upper 16 bits
+  (`src/ui/text_coretext_fonts_macos.cpp`), because the variable system
+  font has every weight in one file. `synthetic_bold` / `synthetic_oblique`
+  are not reported; Core Text applies its own synthesis inside the font.
+  Color emoji draw as grayscale coverage.
 
 ## Measured results (2026-11-18)
 
@@ -197,3 +211,24 @@ Real window: `example_backdrop_blur` captured on Windows at 1350 x 900 shows
 width. The final "r" of the title looks cut at 150 % because its arm ends at
 logical x 484, over the black stripe at 480..486; drawing the title in green
 shows the arm's ink continuing over the stripe (2026-11-18). The Linux Wayland window was not captured.
+
+## macOS (2026-11-21)
+
+macOS 27.2.1, Apple M4. `native_text_shaping_test` runs on macOS too, with
+Helvetica Neue as the proportional and ligature font and a Core Text
+reference width (`CTLineGetTypographicBounds` of the same string):
+
+| Check | macOS (Core Text) |
+| --- | --- |
+| "Floating panel" at 28 px: shaped vs `CTLine` width | 176.316 vs 176.316 px (Helvetica Neue) |
+| CJK fallback face for U+4E2D U+6587 | PingFang SC |
+| Code font cell at 16 px | Menlo, 9.633 px |
+
+`core_text_glyph_raster_test` rasterizes "H", "g" and a space at 48 px:
+ink with bearings relative to the baseline pen ("g" descends below it),
+no ink for the space, and the quarter-pixel bucket 2 moves the ink
+centroid by 0.35 to 0.65 px. The Metal glyph path uses the same placement
+as Vulkan (`src/renderer/renderer_text_glyph_placement.cpp`): native glyphs
+are keyed by glyph id and face, the pen snaps to a whole pixel with a
+quarter-pixel bucket, the baseline to a whole row, and the quad is offset
+by the raster's bearings.

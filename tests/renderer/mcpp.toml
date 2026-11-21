@@ -143,4 +143,4 @@ discover = [
 ]
 
 [target.'cfg(os = "macos")'.test]
-discover = ["metal/metal_*.mm"]
+discover = ["metal/metal_*.mm", "core_text_glyph_raster_test.cpp"]

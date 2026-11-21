@@ -63,6 +63,9 @@ int main() {
       "src/renderer/metal/generated/cgpui_rounded_fragment.metal",
       "src/renderer/metal/generated/cgpui_glyph_fragment.metal",
       "src/renderer/metal/generated/cgpui_image_fragment.metal",
+      "src/renderer/metal/generated/cgpui_box_shadow_vertex.metal",
+      "src/renderer/metal/generated/cgpui_box_shadow_fragment.metal",
+      "src/renderer/metal/generated/cgpui_backdrop_fragment.metal",
   };
   std::set<std::string> named;
   for (const std::string_view output : outputs) {

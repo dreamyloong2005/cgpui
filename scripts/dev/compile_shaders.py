@@ -3,6 +3,8 @@
 
   python scripts/dev/compile_shaders.py           regenerate every output
   python scripts/dev/compile_shaders.py --check   exit 1 if an output differs
+  --metal  only the Metal outputs (a Mac without the Vulkan SDK; spirv-val
+           is not needed)
 
 Vulkan: SPIR-V 1.3 (the renderer requests Vulkan 1.1), checked with
 spirv-val --target-env vulkan1.1, written as uint32 arrays to
@@ -71,6 +73,9 @@ METAL = [
     ("cgpui_rounded_fragment", "fragment"),
     ("cgpui_glyph_fragment", "fragment"),
     ("cgpui_image_fragment", "fragment"),
+    ("cgpui_box_shadow_vertex", "vertex"),
+    ("cgpui_box_shadow_fragment", "fragment"),
+    ("cgpui_backdrop_fragment", "fragment"),
 ]
 
 
@@ -168,14 +173,14 @@ def metal_output(slangc: str, version: str, entry: str, stage: str,
     return "\n".join(lines) + "\n"
 
 
-def outputs() -> dict[str, str]:
+def outputs(metal_only: bool) -> dict[str, str]:
     slangc = tool("SLANGC", "slangc")
-    validator = tool("SPIRV_VAL", "spirv-val")
     version = slangc_version(slangc)
     result: dict[str, str] = {}
     with tempfile.TemporaryDirectory() as directory:
         scratch = Path(directory)
-        for pipeline in VULKAN:
+        validator = "" if metal_only else tool("SPIRV_VAL", "spirv-val")
+        for pipeline in ([] if metal_only else VULKAN):
             path = f"src/renderer/vulkan/generated/{pipeline}_spirv.inc"
             result[path] = vulkan_output(slangc, validator, version, pipeline, scratch)
         for entry, stage in METAL:
@@ -187,7 +192,7 @@ def outputs() -> dict[str, str]:
 def main() -> int:
     check = "--check" in sys.argv[1:]
     stale = []
-    for path, text in outputs().items():
+    for path, text in outputs("--metal" in sys.argv[1:]).items():
         target = REPO / path
         current = target.read_text("utf-8").replace("\r\n", "\n") if target.exists() else None
         if current == text:

@@ -1,6 +1,6 @@
 #include "vulkan_report_internal.hpp"
 #include "cgpui/ui/text_glyph_rasterizer.hpp"
-#include "vulkan_text_glyph_placement.hpp"
+#include "../renderer_text_glyph_placement_internal.hpp"
 
 #include <cstddef>
 

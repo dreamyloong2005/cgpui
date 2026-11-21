@@ -9,6 +9,7 @@ After editing one, run
 ```bash
 python scripts/dev/compile_shaders.py           # writes the outputs below
 python scripts/dev/compile_shaders.py --check   # exit 1 if one is stale
+python scripts/dev/compile_shaders.py --metal   # Metal outputs only (no spirv-val)
 ```
 
 with `slangc` and `spirv-val` from the Vulkan SDK (`VULKAN_SDK`, or `SLANGC` /
@@ -32,3 +33,9 @@ slangc's SPIR-V backend starts at 1.3 (it warns that 1.0 to 1.2 are not
 supported, or goes through GLSL with `-emit-spirv-via-glsl`, which is not
 used). `vulkan_instance_surface.cpp` refuses a Vulkan 1.0 loader and
 `vulkan_physical_device.cpp` skips devices below 1.1.
+
+The Metal outputs were last generated on macOS with slangc 2026.1 (the
+`shader-slang/slang` v2026.1 release, macOS arm64) and `--metal`. That
+slangc rejects `fwidth` for the Metal target, so
+`src/renderer/shaders/cgpui_box_shadow.slang` spells the pixel width with
+`ddx` / `ddy` (`derivative_pixel_width`, the same value).

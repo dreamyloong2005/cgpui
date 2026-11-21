@@ -25,6 +25,10 @@ class MetalRenderer final : public Renderer {
     return state_->pixels();
   }
 
+  RendererEffectSupport backdrop_blur_support() const override {
+    return RendererEffectSupport{.supported = true};
+  }
+
   RendererSurfaceComposition surface_composition() const override {
     return metal_surface_composition(*state_);
   }

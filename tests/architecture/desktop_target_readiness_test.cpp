@@ -125,7 +125,7 @@ int main() {
       !contains(metal_manifest_text, "[targets.cgpui_renderer_metal]") ||
       !contains(metal_manifest_text, "\"../../src/renderer/metal/*.mm\"") ||
       !contains(metal_manifest_text,
-                "frameworks = [\"Metal\", \"QuartzCore\"]")) {
+                "frameworks = [\"Metal\", \"MetalPerformanceShaders\", \"QuartzCore\"]")) {
     return 15;
   }
   if (!contains(manifests_text, "\"desktop_target_readiness_test.cpp\"") ||

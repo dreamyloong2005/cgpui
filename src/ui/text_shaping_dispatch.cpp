@@ -23,6 +23,9 @@ TextShapeRun shape_text_natively(TextShapingRequest request) {
   if (request.backend.used == TextShapingBackend::harfbuzz) {
     return shape_text_with_harfbuzz(std::move(request));
   }
+  if (request.backend.used == TextShapingBackend::core_text) {
+    return shape_text_with_core_text(std::move(request));
+  }
   return shape_text_with_deterministic_fallback(std::move(request));
 }
 

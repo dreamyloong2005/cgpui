@@ -28,4 +28,4 @@ sources = ["../../src/renderer/metal/*.mm"]
 sources = ["../../tools/mcpp/empty_library.cpp"]
 
 [target.'cfg(os = "macos")'.runtime]
-frameworks = ["Metal", "QuartzCore"]
+frameworks = ["Metal", "MetalPerformanceShaders", "QuartzCore"]
