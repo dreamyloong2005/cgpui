@@ -6,6 +6,8 @@ check-clean  refuses a checkout with tracked changes (and, unless
 workspace    writes a packaging workspace: the root mcpp.toml's library and
              example members, read from another directory, with the C++
              runtime the package needs (the CRT is one setting per graph).
+stage-macos  adds the link and header closure, CMake config, sample and
+             manifest to a native Phase J package (no clean-tree claim).
 finalize     turns a windows-package.ps1 / linux-package.sh package into an
              SDK: bundled vendored static libraries, link order from the
              example_workbench dependency graph, system libraries from its
@@ -70,6 +72,10 @@ def write_workspace(repo: Path, output: Path, cxx_runtime: str) -> None:
     listing = "".join(f'    "{relative}/{m}",\n' for m in chosen)
     text = re.sub(r"members = \[\n.*?\n\]", "members = [\n" + listing + "]",
                   text, count=1, flags=re.S)
+    # mcpp resolves tool paths relative to this generated manifest, not the
+    # source workspace. Keep the Xcode response-file adapter reachable.
+    text = text.replace('ar = "scripts/dev/macos-ar.py"',
+                        f'ar = "{relative}/scripts/dev/macos-ar.py"')
     text, count = re.subn(r'cxx_runtime = "[a-z-]+"',
                           f'cxx_runtime = "{cxx_runtime}"', text)
     if count != 1:
@@ -300,6 +306,49 @@ def copy_programs(args, package_root: Path) -> list[str]:
     return executables
 
 
+def write_cmake(package_root: Path, version: str, platform: str, mode: str,
+                runtime: str | None, libraries: list[dict], system: list[str]) -> None:
+    cmake_root = package_root / "lib" / "cmake" / "cgpui"
+    write_text(cmake_root / "cgpuiConfig.cmake",
+               cmake_config(platform, mode, runtime, libraries, system))
+    write_text(cmake_root / "cgpuiConfigVersion.cmake", cmake_version_file(version))
+
+
+def stage_macos(args) -> None:
+    repo, root = args.repo_root.resolve(), args.package_root
+    libraries = link_order(repo, "macos")
+    copy_libraries(args, libraries, root)
+    for lib in libraries:
+        if sha256(root / lib["path"]) != sha256(library_file(args.build_dir, lib, "macos")):
+            raise SystemExit(f"staged library differs from build output: {lib['path']}")
+    words = link_edge(args.build_dir, "example_workbench")
+    system, _ = system_libraries(words, "macos", {lib["name"] for lib in libraries})
+    frameworks = list(dict.fromkeys(name.strip('"') for flag, name in zip(words, words[1:])
+                                    if flag == "-framework"))
+    version = project_version(repo)
+    write_cmake(root, version, "macos", args.mode, None, libraries,
+                system + [f"-framework {name}" for name in frameworks])
+    manifest = {
+        "schema_version": 1, "package": f"cgpui-macos-{args.arch}-{args.mode}",
+        "platform": "macos", "architecture": args.arch, "mode": args.mode,
+        "deployment_target": "13.0", "version": version, "cxx_standard": "c++23",
+        "header_root": "include/cgpui", "private_headers": copy_private_headers(repo, root),
+        "libraries": [lib["path"] for lib in libraries],
+        "link_names": [lib["name"] for lib in libraries],
+        "system_libraries": system, "frameworks": frameworks,
+        "cmake_config": "lib/cmake/cgpui/cgpuiConfig.cmake",
+        "executables": copy_programs(args, root), "consumer_sample": "share/cgpui/sdk_consumer",
+        "documents": ["README.md"],
+        "metadata": ["metadata/build.json", "metadata/mcpp.toml", "metadata/VENDORED.md"],
+    }
+    for license_path in ("lunasvg/LICENSE", "plutovg/LICENSE", "plutovg/source/FTL.TXT"):
+        relative = f"metadata/licenses/{license_path}"
+        (root / relative).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(repo / "third_party" / license_path, root / relative)
+        manifest["metadata"].append(relative)
+    write_text(root / "manifest.json", json.dumps(manifest, indent=2) + "\n")
+
+
 def finalize(args) -> None:
     repo, package_root = args.repo_root, args.package_root
     check_clean(repo, allow_untracked=False)
@@ -355,11 +404,8 @@ def finalize(args) -> None:
     else:
         manifest["system_packages"] = pacman_versions()
     write_text(package_root / "README.md", readme(manifest))
-    cmake_root = package_root / "lib" / "cmake" / "cgpui"
-    write_text(cmake_root / "cgpuiConfig.cmake", cmake_config(
-        args.platform, args.mode, args.runtime, libraries, system))
-    write_text(cmake_root / "cgpuiConfigVersion.cmake",
-               cmake_version_file(manifest["version"]))
+    write_cmake(package_root, manifest["version"], args.platform, args.mode,
+                args.runtime, libraries, system)
     manifest["files"] = file_entries(package_root)
     write_text(package_root / "manifest.json",
                json.dumps(manifest, indent=2) + "\n")
@@ -378,6 +424,13 @@ def main() -> int:
     workspace.add_argument("--output", type=Path, required=True)
     workspace.add_argument("--cxx-runtime", required=True,
                            choices=("self-contained", "toolchain-coupled", "host-coupled"))
+    mac = commands.add_parser("stage-macos")
+    mac.set_defaults(platform="macos", executable=["hello-window/hello_window"])
+    mac.add_argument("--arch", choices=("arm64", "x86_64"), required=True)
+    mac.add_argument("--mode", choices=("debug", "release"), required=True)
+    mac.add_argument("--repo-root", type=Path, required=True)
+    mac.add_argument("--build-dir", type=Path, required=True)
+    mac.add_argument("--package-root", type=Path, required=True)
     final = commands.add_parser("finalize")
     final.add_argument("--platform", choices=("windows", "linux"), required=True)
     final.add_argument("--mode", choices=("debug", "release"), required=True)
@@ -396,6 +449,9 @@ def main() -> int:
         return 0
     if args.command == "workspace":
         write_workspace(args.repo_root.resolve(), args.output.resolve(), args.cxx_runtime)
+        return 0
+    if args.command == "stage-macos":
+        stage_macos(args)
         return 0
     if args.platform == "windows" and args.runtime is None:
         parser.error("--runtime is required on Windows")

@@ -21,8 +21,7 @@ if [[ "${MACOSX_DEPLOYMENT_TARGET:-}" != "13.0" ]]; then
   exit 3
 fi
 cd "$repo_root"
-# Not run since the mcpp migration (no Mac available); mcpp runs the
-# programs it builds, and test names are those of tests/platform,
+# mcpp runs the programs it builds, and test names are those of tests/platform,
 # tests/renderer, tests/ui and examples/hello_window.
 mcpp="${MCPP:-mcpp}"
 

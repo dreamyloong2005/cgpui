@@ -1,9 +1,7 @@
 name: Setup mcpp
 description: Install the pinned mcpp release and expose it as MCPP / MCPP_HOME.
 
-# Not exercised since the mcpp migration: the workflows have not run on
-# GitHub (verified locally with the same mcpp release only). Release tags
-# are v<version>; the archives' SHA-256 are those of the release's .sha256.
+# Release tags are v<version>; archive digests come from the release's .sha256.
 runs:
   using: composite
   steps:
@@ -33,9 +31,21 @@ runs:
         mkdir -p "$RUNNER_TEMP/mcpp" && tar -xzf "$archive" -C "$RUNNER_TEMP/mcpp"
         echo "MCPP=$(find "$RUNNER_TEMP/mcpp" -type f -name mcpp -perm -u+x | head -1)" >> "$GITHUB_ENV"
         echo "MCPP_HOME=$RUNNER_TEMP/mcpp-home" >> "$GITHUB_ENV"
+    - name: Locate the Mach-O linker used for mcpp host build programs
+      if: runner.os == 'macOS' && runner.arch == 'ARM64'
+      shell: bash
+      run: |
+        set -euo pipefail
+        command -v ld64.lld >/dev/null && exit 0
+        if command -v rustc >/dev/null; then
+          host=$(rustc -vV | sed -n 's/^host: //p')
+          bin="$(rustc --print sysroot)/lib/rustlib/$host/bin/gcc-ld"
+          if [[ -x "$bin/ld64.lld" ]]; then echo "$bin" >> "$GITHUB_PATH"; exit 0; fi
+        fi
+        brew install lld
+        bin="$(brew --prefix lld)/bin"
+        test -x "$bin/ld64.lld" && echo "$bin" >> "$GITHUB_PATH"
     # mcpp publishes macOS builds for Apple silicon only (macOS 14 or later).
-    # Not run yet: no Mac was available (docs/migration/README.md, macOS
-    # follow-up).
     - name: Install mcpp 2026.11.20.1 (macOS arm64)
       if: runner.os == 'macOS' && runner.arch == 'ARM64'
       shell: bash

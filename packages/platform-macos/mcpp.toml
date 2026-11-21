@@ -1,5 +1,4 @@
-# Cocoa backend (macOS; planned only, not built or verified on a Mac since
-# the mcpp migration). The clipboard source is part of packages/platform.
+# Cocoa backend. The clipboard source is part of packages/platform.
 [package]
 namespace = "cgpui"
 name = "platform-macos"

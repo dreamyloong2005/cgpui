@@ -35,7 +35,7 @@ include_dirs = [
     ".",
 ]
 
-# macOS (planned only; not run since the mcpp migration).
+# Private headers for the native Metal pixel tests.
 [target.'cfg(os = "macos")'.build]
 include_dirs = ["../../src/renderer/metal", "metal"]
 

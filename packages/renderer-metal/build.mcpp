@@ -2,8 +2,7 @@
 // generates from src/renderer/metal/shaders/cgpui_metal.slang, one source per
 // entry point in src/renderer/metal/generated/, as raw strings in
 // metal_shaders_source.hpp; compile each with xcrun as a check that it
-// builds (the .air files are not shipped). Not run since the move to Slang
-// (no Mac; docs/migration/README.md, macOS follow-up).
+// builds (the .air files are not shipped).
 #include <cgpui_build.hpp>
 
 #include <array>

@@ -11,10 +11,9 @@ permissions:
 env:
   CGPUI_CI_TMPDIR: ${{ github.workspace }}/build/phase-j-ci/tmp
 
-# Not run since the mcpp migration (no Mac available). The scripts build
-# with mcpp, which .github/actions/setup-mcpp installs on the arm64 runners;
-# mcpp has no Intel macOS release, so the x86_64 jobs stop at that step
-# (docs/migration/README.md, macOS follow-up).
+# For local arm64 verification, see docs/migration/README.md (macOS follow-up).
+# .github/actions/setup-mcpp installs the pinned release on arm64; it has
+# no Intel macOS binary, so the x86_64 jobs stop at that step.
 jobs:
   macos-debug-examples:
     strategy:

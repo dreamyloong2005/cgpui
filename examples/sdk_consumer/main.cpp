@@ -4,6 +4,7 @@
 // CGPUI_EXIT_AFTER_FIRST_FRAME=1 it exits after the first presented frame
 // and returns 0 only if that frame was presented.
 #include "cgpui/cgpui.hpp"
+#include "cgpui/renderer/svg_rasterization.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -12,6 +13,17 @@ namespace {
 
 constexpr float caption_height = 32.0F;
 constexpr float button_width = 46.0F;
+
+bool svg_pixel_ok() {
+  const auto result = cgpui::rasterize_svg({
+      .asset_id = cgpui::ImageAssetId{1},
+      .logical_size = {1, 1},
+      .svg_source = R"(<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="red"/></svg>)",
+  });
+  const auto& pixels = result.image.bitmap.pixels;
+  return result.ready() && pixels.size() == 4 && pixels[0] == 255 &&
+         pixels[1] == 0 && pixels[2] == 0 && pixels[3] == 255;
+}
 
 class ConsumerView final : public cgpui::View {
  public:
@@ -45,14 +57,18 @@ class ConsumerView final : public cgpui::View {
 } // namespace
 
 int main() {
+  const bool exit_after_first_frame =
+      std::getenv("CGPUI_EXIT_AFTER_FIRST_FRAME") != nullptr;
+  if (exit_after_first_frame && !svg_pixel_ok()) {
+    std::cerr << "SDK SVG rasterization did not produce a red pixel\n";
+    return 1;
+  }
   auto app = cgpui::Application::create();
   if (!app) {
     std::cerr << app.error().message << '\n';
     return 1;
   }
   ConsumerView view;
-  const bool exit_after_first_frame =
-      std::getenv("CGPUI_EXIT_AFTER_FIRST_FRAME") != nullptr;
   bool presented = false;
   cgpui::AppRunnerOptions options;
   options.window = cgpui::WindowOptions{}
@@ -63,6 +79,10 @@ int main() {
   options.setup_context = [&](cgpui::AppContext& app_context) {
     app_context.runtime.set_after_frame_callback(
         [&](const cgpui::ViewContext& context) {
+          if (!presented) {
+            // Cocoa may terminate the process inside quit(), before run returns.
+            std::cout << "sdk_consumer: first frame presented" << std::endl;
+          }
           presented = true;
           if (exit_after_first_frame) {
             context.application.quit();
@@ -78,9 +98,6 @@ int main() {
   if (exit_after_first_frame && !presented) {
     std::cerr << "first frame was not presented\n";
     return 1;
-  }
-  if (presented) {
-    std::cout << "sdk_consumer: first frame presented\n";
   }
   return result;
 }

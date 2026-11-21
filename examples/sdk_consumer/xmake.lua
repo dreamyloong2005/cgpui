@@ -23,6 +23,9 @@ target("sdk_consumer")
         for _, name in ipairs(manifest.system_libraries) do
             target:add("syslinks", name)
         end
+        for _, name in ipairs(manifest.frameworks or {}) do
+            target:add("frameworks", name)
+        end
         if manifest.platform == "windows" then
             -- The package's CRT (/MD in both packages: mcpp has no debug CRT).
             target:set("runtimes", manifest.msvc_runtime)

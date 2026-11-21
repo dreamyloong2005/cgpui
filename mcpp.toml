@@ -47,6 +47,8 @@ standard = "c++23"
 [workspace.toolchain]
 windows = "msvc@system"
 linux = { path = "/usr" }
+# Apple's /usr/bin compiler drivers follow xcode-select / DEVELOPER_DIR.
+macos = { path = "/usr", family = "llvm", tools = { ld = "/usr/bin/ld", ar = "scripts/dev/macos-ar.py" } }
 
 # Builds and tests use the static C++ runtime: /MT on Windows, and mcpp's
 # default -static-libstdc++ on Linux. `mcpp test` has no --static and the CRT
@@ -57,6 +59,10 @@ cxx_runtime = "self-contained"
 
 [workspace.target.'cfg(os = "windows")'.build]
 cxxflags = ["/Zc:__cplusplus"]
+
+# The Cocoa and Metal sources (including their .mm tests) use ARC.
+[workspace.target.'cfg(os = "macos")'.build]
+cxxflags = ["-fobjc-arc"]
 
 # Linux test builds: line tables only (-g1). Full -g debug information for
 # ~560 test programs once filled the WSL disk; scripts/dev/*.sh use this.

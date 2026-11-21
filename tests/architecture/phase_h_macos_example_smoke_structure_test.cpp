@@ -82,7 +82,8 @@ int main() {
   }
   if (!contains(workflow, "runs-on: macos-latest") ||
       !contains(workflow, "scripts/ci/macos-example-smoke.sh") ||
-      !contains(workflow, "an mcpp on PATH")) {
+      !contains(workflow, "uses: ./.github/actions/setup-mcpp") ||
+      !contains(workflow, "MACOSX_DEPLOYMENT_TARGET: \"13.0\"")) {
     return 6;
   }
   return 0;

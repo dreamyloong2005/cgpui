@@ -6,9 +6,6 @@ root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
 arch=${CGPUI_EXPECTED_ARCH:-$(uname -m)}
 [[ "$arch" =~ ^(arm64|x86_64)$ && "$(uname -m)" == "$arch" ]] || exit 3
 [[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "13.0" ]] || exit 3
-# Not run since the mcpp migration (no Mac available). mcpp reads
-# MACOSX_DEPLOYMENT_TARGET (the xmake script passed it as
-# --target_minver="$MACOSX_DEPLOYMENT_TARGET").
 mcpp="${MCPP:-mcpp}"
 [[ "$("$mcpp" --version | sed -n '1p')" == "mcpp 2026."* ]] || exit 3
 
@@ -33,7 +30,7 @@ mkdir -p "$output_path"
 
 cd "$root"
 # The runner is the test program of tests/stress (arguments after --).
-"$mcpp" test --release -p tests/stress phase_j_stress_runner -- --platform "macos-$arch" \
+"$mcpp" test --profile release -p tests/stress phase_j_stress_runner -- --platform "macos-$arch" \
   --output "$output_path/macos-$arch.json" --scale "$scale"
 python3 tools/gpui_parity/validate_stress_report.py \
   --profile docs/gpui-stress-profile.json \

@@ -7,8 +7,7 @@ repo_root=$(cd "$script_dir/../.." && pwd -P)
 arch=${1:-}
 [[ "$arch" =~ ^(arm64|x86_64)$ && "$(uname -m)" == "$arch" ]] || exit 2
 [[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "13.0" ]] || exit 2
-# The mcpp release pinned by .github/actions/setup-mcpp (macos-package.sh
-# builds with it). Not run since the mcpp migration (no Mac available).
+# macos-package.sh builds with the mcpp release pinned by .github/actions/setup-mcpp.
 [[ "$("${MCPP:-mcpp}" --version | sed -n '1p')" == "mcpp 2026."* ]] || exit 3
 
 output_input=${2:-build/phase-j-release/macos-$arch}
@@ -78,6 +77,9 @@ with tarfile.open(archive_path, mode="r:gz") as archive:
     members = archive.getmembers()
     if len(members) != len(expected) or {member.name for member in members} != expected:
         raise SystemExit("archive entry set mismatch")
+    content = archive.extractfile(f"{package_name}/release-manifest.json")
+    if content is None or content.read() != manifest_path.read_bytes():
+        raise SystemExit("archived release manifest mismatch")
     for relative, row in rows.items():
         member = archive.getmember(f"{package_name}/{relative}")
         source = archive.extractfile(member)
@@ -93,5 +95,7 @@ with tarfile.open(archive_path, mode="r:gz") as archive:
 PY
 
 rm -f -- "$verification_archive"
+python3 "$script_dir/macos-sdk-consumer.py" "$archive" "$arch"
 cp "$package_root/release-manifest.json" "$artifact_root/release-manifest.json"
+(cd "$artifact_root" && shasum -a 256 "$archive_name" >"$archive_name.sha256")
 printf '%s\n' "$archive"

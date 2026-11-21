@@ -6,9 +6,10 @@ of them to its mcpp counterpart (`scripts/migration/reconcile.py`). The
 merge of `origin/master` (`19c51989`) added its two new targets (its
 `build/xmake/phase_j_macos_targets.lua`, recorded as `merged_targets`; the
 file itself is not kept).
-All 676 targets map; none is dropped. Test programs: Windows 581 (xmake: 581
-test entries), Linux 561 (561). macOS manifests exist but were not built; see
-[macOS follow-up](#macos-follow-up).
+All 676 targets map; none is dropped. At migration time Windows listed 581
+test programs and Linux 561, matching xmake. On arm64 macOS, mcpp now lists
+466: the 465 migrated entries plus `shader_source_structure_test`. Listing
+does not run the tests; see [macOS follow-up](#macos-follow-up).
 
 ## Layout
 
@@ -94,89 +95,79 @@ section 7).
 
 ## macOS follow-up
 
-No Mac was available, so nothing below has been built or run with mcpp.
-The last macOS evidence was produced with xmake: Phase H (380/380) and the
+The pre-migration macOS evidence was produced with xmake: Phase H (380/380) and the
 Phase J macOS completion of `origin/master` (`19c51989`, arm64 and x86_64
 at deployment target 13.0), merged after the migration.
 
-To do, in order:
+Native arm64 evidence (2026-11-21) and remaining work:
 
-1. **mcpp on the Mac.** mcpp releases macOS builds only for Apple silicon
-   with macOS 14 or later (mcpp README). `[workspace.toolchain]` in
-   `mcpp.toml` has no `macos` entry: check which toolchain mcpp picks and
-   add one (Apple clang from Xcode) if it is not that.
-2. **Build the workspace.** `mcpp build` on macOS. The manifests written
-   for it but never built:
-   - `packages/platform-macos` (Cocoa, `.mm` sources; frameworks AppKit,
-     CoreText, UniformTypeIdentifiers, QuartzCore);
-   - `packages/renderer-metal` (frameworks Metal, QuartzCore). Its
-     `build.mcpp` embeds the five sources in `src/renderer/metal/generated/`
-     (from Slang, below) and compiles each with `xcrun metal -c`; a failure
-     there is only a warning, so read the build output for it;
-   - `packages/platform` (`macos_clipboard.mm`, AppKit), `packages/app`,
-     `examples/hello_window` (`macos_*` cases) and the `cfg(os = "macos")`
-     sections of `tests/platform`, `tests/renderer`, `tests/ui`,
-     `tests/api_parity`, `tests/architecture` and the other examples;
-   - vendored `third_party/lunasvg` and `plutovg` (built so far on Windows
-     and Linux only).
+1. **mcpp on the Mac.** The arm64 check used mcpp 2026.11.20.1 on macOS
+   27.2.1 (26B131), Xcode 26.6 (17F113). The workspace selects Xcode's
+   compiler through `/usr/bin` and enables ARC for its Objective-C++ sources.
+   This mcpp version also invokes `clang++ -fuse-ld=lld` for the generated
+   **host build programs**, even when the workspace specifies Apple's linker.
+   Put a real `ld64.lld` on `PATH` for them. If Rust is installed, one option is
+   `export PATH="$(rustc --print sysroot)/lib/rustlib/$(rustc -vV | sed -n 's/^host: //p')/bin/gcc-ld:$PATH"`.
+2. **Workspace build: passed.** All 33 members build in Debug, including
+   the Cocoa and Metal Objective-C++ files and vendored LunaSVG and plutovg.
+   Xcode's `ar` does not expand mcpp's `@objects.rsp`; the workspace selects
+   `scripts/dev/macos-ar.py` to expand it before invoking the native archiver.
+   The shared backend-selection test needs `linux_backend_selection.cpp` in
+   macOS test support, just as on Windows; it has no Linux system dependencies.
 3. **Test count.** The xmake inventory (`xmake-targets.json`, `31607247`)
    has 487 macOS targets with 465 test entries (463 at `31607247`, plus
    `phase_j_macos_completion_test` and
    `phase_j_macos_completion_structure_test` from `19c51989`). Run
-   `mcpp test --list` on the Mac and
-   `python scripts/migration/reconcile.py --listed macosx=<file>`; the count
-   of mcpp test programs must be 465, as it is 581 / 561 on Windows / Linux.
-4. **Run the tests.** `scripts/ci/macos-debug.sh` (`mcpp build`, `mcpp test`)
-   and `scripts/ci/macos-example-smoke.sh` were rewritten for mcpp and
-   never run. The Phase J macOS scripts merged from `19c51989` were ported
-   the same way and never run: `macos-dependencies.sh` (exports `MCPP`,
-   `MCPP_HOME`, `TMPDIR`; the xmake-repo pin is gone), `macos-package.sh`
-   (sdk-package.py workspace, `mcpp build --profile`; the package's
-   `metadata/` holds `mcpp.toml` and `VENDORED.md` instead of
-   `xmake-requires.lock`; it reads the one `target/*/*/` build directory,
-   whose triple name on macOS is unverified), `macos-phase-j-release.sh`,
-   `macos-performance-baseline.sh` and `macos-stress-matrix.sh`
-   (`mcpp test --release -p tests/performance|stress -- <runner args>`) and
-   `macos-architecture-header.sh` (`mcpp test --list` against
-   `architecture-header-targets.txt`). They rely on mcpp reading
-   `MACOSX_DEPLOYMENT_TARGET=13.0` (mcpp docs 04, `macos_deployment_target`;
-   mcpp's own default is 14.0): check `LC_BUILD_VERSION minos` of a built
-   program with `vtool -show`. The xmake smoke script also ran
-   `phase_f_multi_window_lifecycle_churn_test/default`, which is no xmake
-   target (only `phase_f_multi_window_lifecycle_churn_structure_test` and
-   `window_runtime_multi_window_churn_test` exist); the port leaves it out. `scripts/dev/build.sh` / `test.sh` and `mcpp-env.sh` were
-   written for Linux; check them on macOS or add macOS wrappers.
-5. **CI.** `.github/actions/setup-mcpp` installs mcpp on macOS arm64
-   runners (2026.11.20.1, `mcpp-macosx-arm64.tar.gz`, not run yet), and
-   `phase-h-macos.yml` and `phase-j-desktop.yml` use it. mcpp has no Intel
-   macOS release, so the `macos-15-intel` (x86_64) jobs of
-   `phase-j-desktop.yml` stop at that step with an error: drop them, or
-   build mcpp from source for them.
+   `mcpp test --list > macos-tests.txt` on the Mac and
+   `python3.11 scripts/migration/reconcile.py --listed macosx=macos-tests.txt`
+   (Python 3.11 or newer). Verified on arm64: 466 programs, including
+   `shader_source_structure_test` added after migration. The checker accounts
+   for that test separately; the historical xmake count stays 465.
+4. **Debug and example smoke: passed.** `scripts/ci/macos-debug.sh` reports
+   466 passed, 0 failed. With `MACOSX_DEPLOYMENT_TARGET=13.0`,
+   `scripts/ci/macos-example-smoke.sh` runs 21 examples and 12 focused tests
+   (8 native platform/renderer tests and 4 window lifecycle modes). The `hello_window`
+   executable under `target/aarch64-macos/` reports `LC_BUILD_VERSION minos
+   13.0` in `xcrun vtool -show-build`. A macOS 13 runtime is unavailable:
+   keep the deployment-target check, but do not require a macOS 13 run
+   for sign-off or claim runtime compatibility from the Mach-O metadata.
+5. **Hosted CI: fixes await a new run.** On `f56ce548`, the
+   [Phase H run](https://github.com/dreamyloong2005/cgpui/actions/runs/44864775450)
+   installed mcpp on arm64, but the examples step exited 3. The workflow
+   did not set `MACOSX_DEPLOYMENT_TARGET`; it now sets `13.0` for both jobs.
+   In the [Phase J run](https://github.com/dreamyloong2005/cgpui/actions/runs/44864775416),
+   arm64 annotations show the missing ARC flag and the unsupported
+   `mcpp test --release` option. Local fixes address both; rerunning the old
+   SHA does not test those fixes. Intel jobs stopped at setup because the
+   pinned mcpp release has no native x86_64 macOS binary.
 6. **Sanitizers.** `scripts/dev/asan_workspace.py` has flags for `windows`
    and `linux` only. Add a `macos` row (`-fsanitize=address,undefined`,
    Apple clang) if macOS should get ASan runs. The Windows ASan entry
    (`scripts/dev/asan_entry_windows.cpp`) is Windows-only and not needed.
-7. **SDK packages.** `scripts/ci/sdk-package.py` accepts `--platform
-   windows|linux` only; there is no macOS package or consumer smoke test.
-   Decide whether macOS ships one.
-8. **Metal shaders from Slang (2026-11-21).** `shaders.metal` was
-   replaced by `src/renderer/metal/shaders/cgpui_metal.slang`, compiled by
-   slangc into one Metal source per function; none of it has been compiled
-   by Apple's compiler or run. Check on the Mac:
-   - each `generated/*.metal` compiles (`xcrun -sdk macosx metal -c`), and
-     `metal_pipeline_library.mm` (one `MTLLibrary` per function now) creates
-     the four pipelines;
-   - the vertex function reads `vertices` as `device VertexIn_0*` at
-     `[[buffer(0)]]` (slangc's form of a `StructuredBuffer`; `shaders.metal`
-     had `constant VertexIn*`) while `metal_geometry.mm`, `metal_text.mm` and
-     `metal_image.mm` still pass it with `setVertexBytes`; if Metal refuses
-     that for a `device` argument, pass an `MTLBuffer` instead;
-   - the vertex outputs and fragment inputs match by
-     `[[user(TEXCOORD)]]` / `[[user(COLOR)]]` across the separate sources;
-   - the Metal pixel tests: the glyph fragment now clamps coverage and
-     applies the shared `coverage_gamma` (1.0), as Vulkan does.
-9. **Docs.** Once the Mac runs pass, replace the xmake-era evidence in
-   `docs/platform-mac-readiness.md` and `docs/platform-dependencies.md`
-   (the Phase H closeout tests check some of those sentences; keep them or
-   update the tests with them) and remove the "planned only, not built"
-   comments in the macOS manifests.
+7. **Phase J Release SDK: passed on native arm64.** The original archive
+   passed its hash checks but a standalone consumer could not include
+   `cgpui.hpp` or link `rasterize_svg`. The package now includes the 16
+   transitive `src/ui` headers and all nine link archives, including LunaSVG
+   and plutovg. `scripts/ci/macos-phase-j-release.sh` compares two archives
+   of the same staged tree, checks entries against the release manifest,
+   then extracts the archive outside the checkout and builds its CMake
+   sample. The sample checked an SVG pixel and presented a Cocoa/Metal
+   frame; a separate xmake consumer run also passed. The demo and consumer
+   report `minos 13.0` and only system dynamic dependencies. This was a
+   local working-tree build, not a published C10 SDK or a run on macOS 13.
+   Intel Release and hosted CI are unverified. See the [SDK instructions](../macos-sdk.md).
+8. **Metal shaders from Slang.** All five generated sources compile with
+   Apple's `metal -c`. The four runtime pipelines initialize; the bootstrap,
+   primitive, clip/transform and text/image pixel tests pass on this Mac.
+   The generated vertex shader still warns about a writable device buffer.
+   This run does not verify Retina scaling across displays.
+9. **Phase J architecture, performance and stress: passed on native arm64.**
+   `macos-architecture-header.sh` matched the checked-in target list and
+   passed 183 architecture tests and 31 public-header tests (214 total).
+   `macos-performance-baseline.sh` passed all eight metric budgets at the
+   default 64 iterations; `macos-stress-matrix.sh` completed all eight
+   scenarios at scale 1. Both produced fresh `macos-arm64.json` reports
+   accepted by the repository validators. With mcpp 2026.11.20.1 both
+   runners require `mcpp test --profile release`, not `mcpp test --release`.
+   The timings are regression measurements using `TestApp`, not native
+   Cocoa startup or Metal presentation latency.

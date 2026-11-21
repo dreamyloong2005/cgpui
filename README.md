@@ -15,8 +15,8 @@ without a Rust FFI layer.
 Phase J all-desktop verification is complete. Native macOS arm64 and x86_64
 matrices pass at a macOS 13.0 deployment target; the completed Phase H 380/380
 evidence remains recorded separately in the parity ledger. That macOS
-evidence was produced with xmake (`19c51989`); the mcpp build has not run on
-a Mac yet ([macOS follow-up](docs/migration/README.md#macos-follow-up)).
+evidence was produced with xmake. For native arm64 mcpp results and remaining
+work, see the [macOS migration record](docs/migration/README.md#macos-follow-up).
 
 ## Quick Start
 

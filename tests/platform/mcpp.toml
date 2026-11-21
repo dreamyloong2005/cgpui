@@ -60,8 +60,10 @@ include_dirs = [
     ".",
 ]
 
-# macOS (planned only; not run since the mcpp migration).
 [target.'cfg(os = "macos")'.build]
+# The backend-selection policy test is shared and needs no Linux libraries.
+# On Linux the platform package already compiles this translation unit.
+sources = ["../../src/platform/linux/linux_backend_selection.cpp"]
 include_dirs = ["../../src/platform/macos"]
 
 [test]

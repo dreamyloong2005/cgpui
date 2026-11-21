@@ -2,12 +2,12 @@
 """Map every xmake target of docs/migration/xmake-targets.json to its mcpp
 counterpart and write docs/migration/mcpp-target-map.json.
 
-  python scripts/migration/reconcile.py [--listed windows=<file>] [--listed linux=<file>]
+  python scripts/migration/reconcile.py [--listed macosx=<file>] [--listed linux=<file>] [--listed windows=<file>]
 
 A <file> holds `mcpp test --list` output of the workspace (one test name per
 line, members in order); with it the script also checks that the number of
-mcpp test programs per platform equals the xmake test entries. Exit status 1
-when a target has no counterpart or a count differs.
+migrated test programs per platform equals the historical xmake test entries,
+and that the named post-migration additions are present exactly once.
 """
 import argparse
 import json
@@ -17,6 +17,9 @@ import sys
 import tomllib
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+# Shared tests added after the xmake inventory was frozen. Do not increase the
+# historical baseline or let one of these programs hide a missing migrated test.
+POST_MIGRATION = {"shader_source_structure_test"}
 HELPERS = {
     "tests/ui/native_text_shaping_reference.cpp",
     "tests/platform/wayland_test_compositor.cpp",
@@ -89,9 +92,12 @@ def main():
         names = [l.strip() for l in pathlib.Path(path).read_text(encoding="utf-8").splitlines()
                  if re.fullmatch(r"[A-Za-z0-9_/]+", l.strip())]
         result.setdefault("mcpp_test_programs", {})[platform] = len(names)
-        if len(names) != counts[platform]:
+        migrated_count = sum(name not in POST_MIGRATION for name in names)
+        if (migrated_count != counts[platform] or
+                any(names.count(name) != 1 for name in POST_MIGRATION)):
             status = 1
-        print(f"{platform}: xmake {counts[platform]} test entries, mcpp {len(names)} test programs")
+        print(f"{platform}: xmake {counts[platform]} test entries, mcpp {len(names)} "
+              f"test programs ({migrated_count} migrated)")
     lines = [json.dumps({k: v for k, v in result.items() if k != "targets"})[:-1] + ', "targets": [']
     lines += [json.dumps(r, separators=(",", ":")) + "," for r in rows]
     lines[-1] = lines[-1][:-1]

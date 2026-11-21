@@ -47,7 +47,7 @@ extractor against the pinned revision.
 
 ## Build system
 
-The repository builds with mcpp since the xmake migration. The macOS
-manifests exist but have not been built or run on a Mac; the evidence above
-is from xmake. What macOS needs is listed in
+The historical evidence above is from xmake. The mcpp Debug workspace builds
+on native arm64; `vtool -show-build` reports `minos 13.0` for `hello_window`.
+For test results and remaining work see
 [the migration record](migration/README.md#macos-follow-up).

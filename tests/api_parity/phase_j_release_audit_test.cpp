@@ -80,13 +80,11 @@ int main() {
   if (!contains(roadmap, "- [x] Steps 829-834: Package Windows/Linux builds") ||
       !contains(ledger, "\"phase_j_steps_829_834_status\": \"complete\"") ||
       !contains(ledger, "Phase J Steps 841+ upstream drift delta plan")) return 8;
-  constexpr std::array macos_libraries{
-      "libcgpui_core.a", "libcgpui_platform.a", "libcgpui_platform_macos.a",
-      "libcgpui_renderer.a", "libcgpui_renderer_metal.a", "libcgpui_ui.a",
-      "libcgpui_app.a"};
-  for (const auto* library : macos_libraries)
-    if (!contains(macos_package, library)) return 9;
-  if (!contains(macos_package, "hello_window") ||
+  // The library list comes from the workbench's native dependency graph;
+  // verifying the extracted consumer exercises the public header and link closure.
+  if (!contains(macos_package, "sdk-package.py\" stage-macos") ||
+      !contains(macos_release, "macos-sdk-consumer.py") ||
+      !contains(macos_package, "hello_window") ||
       !contains(macos_package, "deployment_target") ||
       !contains(macos_package, "metadata/build.json") ||
       !contains(macos_package, "metadata/mcpp.toml") ||

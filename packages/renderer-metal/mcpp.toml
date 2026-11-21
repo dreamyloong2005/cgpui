@@ -1,5 +1,4 @@
-# Metal renderer (macOS; planned only, not built or verified on a Mac since
-# the mcpp migration). build.mcpp embeds the Metal sources generated from
+# Metal renderer (macOS). build.mcpp embeds the Metal sources generated from
 # Slang (src/renderer/metal/generated, scripts/dev/compile_shaders.py) as
 # metal_shaders_source.hpp.
 [package]

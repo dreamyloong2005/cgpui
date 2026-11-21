@@ -74,11 +74,12 @@ int main() {
   }
   if (!contains(performance, "\"macos-arm64\"") ||
       !contains(performance, "\"macos-x86_64\"") ||
-      performance_script.empty()) {
+      !contains(performance_script, "test --profile release")) {
     return 30;
   }
   if (!contains(stress, "\"macos-arm64\"") ||
-      !contains(stress, "\"macos-x86_64\"") || stress_script.empty()) {
+      !contains(stress, "\"macos-x86_64\"") ||
+      !contains(stress_script, "test --profile release")) {
     return 40;
   }
   if (package.empty() || release_script.empty() ||

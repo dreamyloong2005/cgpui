@@ -16,9 +16,6 @@ if [[ "${MACOSX_DEPLOYMENT_TARGET:-}" != "13.0" ]]; then
   echo "MACOSX_DEPLOYMENT_TARGET must be 13.0" >&2
   exit 3
 fi
-# Not run since the mcpp migration (no Mac available). mcpp reads
-# MACOSX_DEPLOYMENT_TARGET (the xmake script passed it as
-# --target_minver="$MACOSX_DEPLOYMENT_TARGET").
 mcpp="${MCPP:-mcpp}"
 if [[ "$("$mcpp" --version | sed -n '1p')" != "mcpp 2026."* ]]; then
   echo "macos-performance-baseline.sh requires mcpp 2026.11.20.1 or later" >&2
@@ -59,7 +56,7 @@ mkdir -p "$output_path"
 cd "$root"
 # The runner is the test program of tests/performance; mcpp test passes the
 # arguments after -- to it (as linux-performance-baseline.sh).
-"$mcpp" test --release -p tests/performance phase_j_performance_runner -- \
+"$mcpp" test --profile release -p tests/performance phase_j_performance_runner -- \
   --platform "macos-$arch" --output "$output_path/macos-$arch.json" \
   --iterations "$iterations"
 python3 tools/gpui_parity/validate_performance_baseline.py \

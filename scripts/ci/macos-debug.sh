@@ -54,7 +54,6 @@ esac
 mkdir -p "$output_root"
 output_root="$(cd "$output_root" && pwd -P)"
 
-# Not run since the mcpp migration (no Mac available).
 mcpp="${MCPP:-mcpp}"
 mcpp_version="$("$mcpp" --version | sed -n '1p')"
 if [[ "$mcpp_version" != "mcpp 2026."* ]]; then

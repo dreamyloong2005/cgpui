@@ -6,9 +6,6 @@ repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
 arch=${CGPUI_EXPECTED_ARCH:-$(uname -m)}
 [[ "$arch" =~ ^(arm64|x86_64)$ && "$(uname -m)" == "$arch" ]] || exit 3
 [[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "13.0" ]] || exit 3
-# Not run since the mcpp migration (no Mac available). mcpp reads
-# MACOSX_DEPLOYMENT_TARGET (the xmake script passed it as
-# --target_minver="$MACOSX_DEPLOYMENT_TARGET").
 mcpp="${MCPP:-mcpp}"
 [[ "$("$mcpp" --version | sed -n '1p')" == "mcpp 2026."* ]] || exit 3
 

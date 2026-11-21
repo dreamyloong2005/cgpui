@@ -8,13 +8,14 @@ on:
 permissions:
   contents: read
 
+env:
+  MACOSX_DEPLOYMENT_TARGET: "13.0"
+
 jobs:
   macos-full-debug:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      # setup-mcpp sets MCPP (Apple silicon runners only); without it the
-      # scripts need an mcpp on PATH. Not run since the mcpp migration.
       - uses: ./.github/actions/setup-mcpp
       - name: Run complete macOS Debug verification
         run: bash ./scripts/ci/macos-debug.sh
@@ -23,8 +24,6 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      # setup-mcpp sets MCPP (Apple silicon runners only); without it the
-      # scripts need an mcpp on PATH. Not run since the mcpp migration.
       - uses: ./.github/actions/setup-mcpp
       - name: Build and run macOS examples and smoke tests
         run: bash ./scripts/ci/macos-example-smoke.sh
