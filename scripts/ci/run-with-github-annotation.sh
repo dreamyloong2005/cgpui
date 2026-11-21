@@ -30,7 +30,7 @@ if [[ $status -ne 0 && "${GITHUB_ACTIONS:-}" == "true" ]]; then
   fi
   # Parallel builds can bury the first compiler, linker or mcpp diagnostic.
   first=$(awk '
-    /(^|[[:space:]])(fatal )?error:|undefined reference to/ { found=1 }
+    /(^|[[:space:]])(fatal )?error:|undefined reference to| \.\.\. FAIL \(/ { found=1 }
     found { print substr($0, 1, 1200); if (++lines == 3) exit }
   ' "$log_path")
   first=$(escape_message "$first")

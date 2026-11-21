@@ -50,6 +50,15 @@ annotation_line=$(printf '%s\n' "$early_output" | sed -n '/^::error/p')
 [[ ${#annotation_line} -lt 4096 ]] || exit 1
 
 local_status=0
+test_output=$(GITHUB_ACTIONS=true "$helper" "$test_root/test.log" -- bash -c '
+  echo "cocoa_window ... FAIL (exit 9, 0.41s)"
+  for ((i=0; i<120; ++i)); do printf "%0100d\n" "$i"; done
+  echo "error: workspace test: 1 member failed"; exit 1' 2>&1) || local_status=$?
+[[ "$local_status" -eq 1 ]] || exit 1
+annotation_line=$(printf '%s\n' "$test_output" | sed -n '/^::error/p')
+[[ "$annotation_line" == *'First diagnostic: cocoa_window ... FAIL (exit 9, 0.41s)'* ]] || exit 1
+
+local_status=0
 local_output=$(GITHUB_ACTIONS=false "$helper" "$test_root/local.log" -- \
   bash -c 'echo "error: local failure" >&2; exit 4' 2>&1) || local_status=$?
 [[ "$local_status" -eq 4 && "$local_output" == 'error: local failure' ]] || exit 1
