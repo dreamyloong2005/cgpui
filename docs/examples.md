@@ -43,7 +43,6 @@ first-frame, resize, close, and complete interaction modes are documented in
 - macOS: `scripts/ci/macos-example-smoke.sh`
 
 The scripts build targets serially, run noninteractive public entrypoints, and
-execute registered/native smoke modes. macOS arm64 and x86_64 execution passes
-in the Phase J native CI matrix (with xmake, `19c51989`; the mcpp port of
-the script has not run, see
-[macOS follow-up](migration/README.md#macos-follow-up)).
+execute registered/native smoke modes. The macOS example and native smoke tests run on
+arm64 only. See [macOS follow-up](migration/README.md#macos-follow-up) for
+local and hosted mcpp results.

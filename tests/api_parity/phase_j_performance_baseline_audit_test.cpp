@@ -62,9 +62,9 @@ int main() {
     return 5;
   }
   if (!contains(policy, "\"macos-arm64\"") ||
-      !contains(policy, "\"macos-x86_64\"") ||
+      contains(policy, "\"macos-x86_64\"") ||
       !contains(runner, "platform == \"macos-arm64\"") ||
-      !contains(runner, "platform == \"macos-x86_64\"") ||
+      contains(runner, "platform == \"macos-x86_64\"") ||
       !contains(validator, "report.get(\"platform\")") ||
       !contains(macos, "phase_j_performance_runner")) {
     return 6;

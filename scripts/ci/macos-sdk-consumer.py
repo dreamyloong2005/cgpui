@@ -72,7 +72,7 @@ def verify(archive, arch, work):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("archive", type=Path)
-    parser.add_argument("arch", choices=("arm64", "x86_64"))
+    parser.add_argument("arch", choices=("arm64",))
     args = parser.parse_args()
     # The macOS CI bootstrap sets TMPDIR *inside* the checkout.
     with tempfile.TemporaryDirectory(prefix="cgpui-sdk-", dir="/private/tmp") as tmp:

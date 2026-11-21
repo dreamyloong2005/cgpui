@@ -263,7 +263,7 @@ int main(int argc, char** argv) {
   const bool valid_platform =
       platform == "portable" || platform == "windows" ||
       platform == "wayland" || platform == "x11" ||
-      platform == "macos-arm64" || platform == "macos-x86_64";
+      platform == "macos-arm64";
   if (scale == 0 || scale > 100 || !valid_platform) return 3;
   const auto results = run_scenarios(scale);
   bool complete = true;

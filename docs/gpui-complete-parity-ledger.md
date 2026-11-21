@@ -24,7 +24,8 @@ Required Surface Summary, it denotes an unresolved candidate gap; after Step
 
 - Windows: Win32 + Vulkan.
 - Linux: Wayland + Vulkan.
-- macOS: Cocoa + Metal production parity completed in Phase H.
+- macOS: Cocoa + Metal on native arm64 only. The dual-architecture Phase J
+  results below are historical xmake evidence, not the current release matrix.
 - X11: XCB + Vulkan strict Linux backend parity completed in Phase I.
 
 | platform_surface | status |

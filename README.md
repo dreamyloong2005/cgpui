@@ -10,13 +10,12 @@ without a Rust FFI layer.
 - Windows: Win32 + Vulkan
 - Linux: Wayland + Vulkan
 - Linux: X11/XCB + Vulkan
-- macOS: Cocoa + Metal
+- macOS: Cocoa + Metal on Apple Silicon (arm64) only
 
-Phase J all-desktop verification is complete. Native macOS arm64 and x86_64
-matrices pass at a macOS 13.0 deployment target; the completed Phase H 380/380
-evidence remains recorded separately in the parity ledger. That macOS
-evidence was produced with xmake. For native arm64 mcpp results and remaining
-work, see the [macOS migration record](docs/migration/README.md#macos-follow-up).
+The [macOS SDK](docs/macos-sdk.md) targets arm64; no Intel (x86_64) or
+Universal SDK is provided. The macOS 13.0 deployment target is a build
+setting, not a runtime certification. See the
+[macOS migration record](docs/migration/README.md#macos-follow-up) for verified configurations.
 
 ## Quick Start
 

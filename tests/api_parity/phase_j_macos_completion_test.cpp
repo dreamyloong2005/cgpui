@@ -73,34 +73,32 @@ int main() {
     return 20;
   }
   if (!contains(performance, "\"macos-arm64\"") ||
-      !contains(performance, "\"macos-x86_64\"") ||
+      contains(performance, "\"macos-x86_64\"") ||
       !contains(performance_script, "test --profile release")) {
     return 30;
   }
   if (!contains(stress, "\"macos-arm64\"") ||
-      !contains(stress, "\"macos-x86_64\"") ||
+      contains(stress, "\"macos-x86_64\"") ||
       !contains(stress_script, "test --profile release")) {
     return 40;
   }
   if (package.empty() || release_script.empty() ||
       !contains(release, "cgpui-macos-arm64-release.tar.gz") ||
-      !contains(release, "cgpui-macos-x86_64-release.tar.gz") ||
+      contains(release, "cgpui-macos-x86_64-release.tar.gz") ||
       !contains(packer, "\"macos\"")) {
     return 50;
   }
-  if (workflow.empty() || architecture_script.empty() ||
-      !contains(workflow, "macos-15-intel") ||
+  if (count(workflow, "runs-on: macos-15\n") != 4 || architecture_script.empty() ||
+      contains(workflow, "macos-15-intel") ||
       !contains(workflow, "MACOSX_DEPLOYMENT_TARGET: \"13.0\"")) {
     return 60;
   }
-  const bool pending = contains(
-      ledger, "\"phase_j_macos_completion_status\": "
-              "\"pending_native_dual_arch_verification\"");
+  // The final verification is an xmake-era snapshot, not today's support matrix.
   const bool complete =
       contains(ledger, "\"phase_j_status\": \"complete\"") &&
       contains(verification, "\"scope\": \"all_desktop\"") &&
       contains(verification, "\"status\": \"passed\"");
-  if ((!pending && !complete) ||
+  if (!complete ||
       !contains(ledger_md, "Phase J macOS completion") ||
       !contains(verification, "\"arm64\"") ||
       !contains(verification, "\"x86_64\"")) {

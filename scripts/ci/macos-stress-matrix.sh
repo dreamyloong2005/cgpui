@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-[[ "$(uname -s)" == "Darwin" ]] || { echo "macOS required" >&2; exit 2; }
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
-arch=${CGPUI_EXPECTED_ARCH:-$(uname -m)}
-[[ "$arch" =~ ^(arm64|x86_64)$ && "$(uname -m)" == "$arch" ]] || exit 3
+source "$root/scripts/ci/macos-dependencies.sh"
+arch=${CGPUI_EXPECTED_ARCH:-arm64}
+cgpui_require_macos_arm64 "$arch"
 [[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "13.0" ]] || exit 3
 mcpp="${MCPP:-mcpp}"
 [[ "$("$mcpp" --version | sed -n '1p')" == "mcpp 2026."* ]] || exit 3

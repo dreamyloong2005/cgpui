@@ -17,6 +17,7 @@
       "status": "required"
     },
     "macos": {
+      "architectures": ["arm64"],
       "backend": "cocoa",
       "renderer": "metal",
       "status": "required"

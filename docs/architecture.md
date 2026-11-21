@@ -62,12 +62,11 @@ only the surface extension required by the selected native handle.
 
 ## macOS Verification Boundary
 
-Cocoa and Metal share the public runtime and renderer contracts while native
-evidence remains architecture-specific. Phase J retains separate arm64 and
-x86_64 reports and Release artifacts at deployment target 13.0. Both native
-CI matrices pass and are recorded in the final verification authority.
-Those runs used xmake; native arm64 mcpp results are recorded separately in
-the [macOS migration record](migration/README.md#macos-follow-up).
+Cocoa and Metal share the public runtime and renderer contracts. Native CI,
+performance and stress reports, and Release SDKs target only arm64, with a
+macOS 13.0 deployment target. The historical Phase J verification records
+both architectures under xmake. For current mcpp evidence see the
+[macOS migration record](migration/README.md#macos-follow-up).
 
 ## Structure Enforcement
 

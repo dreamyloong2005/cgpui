@@ -1,21 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Reject unsupported hosts and targets before any build or output cleanup.
+cgpui_require_macos_arm64() {
+  local target="${1-${CGPUI_EXPECTED_ARCH:-arm64}}"
+  local host
+  host=$(uname -sm)
+  if [[ "$host" != "Darwin arm64" || "$target" != arm64 ]]; then
+    echo "CGPUI requires native macOS arm64 (host: $host, target: $target)" >&2
+    return 2
+  fi
+}
+
 # The mcpp environment of the macOS CI scripts: MCPP_HOME, the mcpp
 # executable ($MCPP) and a TMPDIR inside the dependency root. Dependencies
 # are Xcode's toolchain and frameworks (Cocoa, Metal, CoreText) and the
 # vendored third_party/ libraries; mcpp downloads nothing for them. (The
 # xmake version pinned an xmake-repo commit here; mcpp has no package
-# repository to pin.) Not run since the mcpp migration (no Mac available).
+# repository to pin.)
 cgpui_configure_macos_dependency_environment() {
-  if [[ "$(uname -s)" != "Darwin" ]]; then
-    echo "macos-dependencies.sh requires macOS" >&2
-    return 2
-  fi
+  cgpui_require_macos_arm64 || return 2
 
   local repo_root input candidate probe suffix root export_github
   repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-  input="${1:-build/phase-j-ci/dependencies/macos-$(uname -m)}"
+  input="${1:-build/phase-j-ci/dependencies/macos-arm64}"
   export_github="${2:-}"
   case "/$input/" in
     */../*)

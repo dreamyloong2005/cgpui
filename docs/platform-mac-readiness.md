@@ -7,7 +7,7 @@ the public authoring model used by Windows and Linux.
 
 - Windows: Win32 + Vulkan, completed before Phase H.
 - Linux: Wayland + Vulkan, completed before Phase H.
-- macOS: Cocoa + Metal, completed in Phase H.
+- macOS: Cocoa + Metal on Apple Silicon (arm64) only.
 - X11: XCB + Vulkan, completed in Phase I.
 
 ## Production Coverage

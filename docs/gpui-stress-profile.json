@@ -10,5 +10,5 @@
     "asset_reload": {"min_operation_count": 2000},
     "task_cancellation": {"min_operation_count": 2000}
   },
-  "platforms": ["windows", "wayland", "x11", "macos-arm64", "macos-x86_64"]
+  "platforms": ["windows", "wayland", "x11", "macos-arm64"]
 }

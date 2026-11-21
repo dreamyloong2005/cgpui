@@ -45,7 +45,7 @@ runs:
         brew install lld
         bin="$(brew --prefix lld)/bin"
         test -x "$bin/ld64.lld" && echo "$bin" >> "$GITHUB_PATH"
-    # mcpp publishes macOS builds for Apple silicon only (macOS 14 or later).
+    # The pinned mcpp binary runs on Apple Silicon (macOS 14 or later).
     - name: Install mcpp 2026.11.20.1 (macOS arm64)
       if: runner.os == 'macOS' && runner.arch == 'ARM64'
       shell: bash
@@ -58,9 +58,9 @@ runs:
         mkdir -p "$RUNNER_TEMP/mcpp" && tar -xzf "$archive" -C "$RUNNER_TEMP/mcpp"
         echo "MCPP=$(find "$RUNNER_TEMP/mcpp" -type f -name mcpp -perm -u+x | head -1)" >> "$GITHUB_ENV"
         echo "MCPP_HOME=$RUNNER_TEMP/mcpp-home" >> "$GITHUB_ENV"
-    - name: No mcpp release for this macOS runner
+    - name: Reject unsupported macOS runner
       if: runner.os == 'macOS' && runner.arch != 'ARM64'
       shell: bash
       run: |
-        echo "::error::mcpp publishes macOS builds for Apple silicon only; this runner is $RUNNER_ARCH"
+        echo "::error::CGPUI supports only native arm64 on macOS; this runner is $RUNNER_ARCH"
         exit 1

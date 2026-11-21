@@ -39,7 +39,7 @@ int main() {
       script.find("output root must not contain parent traversal");
   const std::size_t output_creation = script.find("mkdir -p \"$output_root\"");
   if (!contains(script, "set -euo pipefail") ||
-      !contains(script, "macos-debug.sh requires macOS") ||
+      !contains(script, "cgpui_require_macos_arm64") ||
       !contains(script, "output root must not contain parent traversal") ||
       !contains(script, "output root must not be the repository root") ||
       !contains(script, "mcpp 2026.11.20.1 or later") ||

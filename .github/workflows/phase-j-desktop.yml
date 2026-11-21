@@ -9,106 +9,58 @@ permissions:
   contents: read
 
 env:
+  CGPUI_EXPECTED_ARCH: arm64
+  MACOSX_DEPLOYMENT_TARGET: "13.0"
   CGPUI_CI_TMPDIR: ${{ github.workspace }}/build/phase-j-ci/tmp
 
-# For local arm64 verification, see docs/migration/README.md (macOS follow-up).
-# .github/actions/setup-mcpp installs the pinned release on arm64; it has
-# no Intel macOS binary, so the x86_64 jobs stop at that step.
 jobs:
   macos-debug-examples:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: macos-15
-            arch: arm64
-          - runner: macos-15-intel
-            arch: x86_64
-    runs-on: ${{ matrix.runner }}
-    env:
-      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
-      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-phase-j-dependencies
         with:
           platform: macos
-      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
-      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-debug.log" -- bash ./scripts/ci/macos-debug.sh build/phase-j-ci/macos-${{ matrix.arch }}-debug
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-debug.log" -- bash ./scripts/ci/macos-debug.sh build/phase-j-ci/macos-arm64-debug
       - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-examples.log" -- bash ./scripts/ci/macos-example-smoke.sh
 
   macos-performance-stress:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: macos-15
-            arch: arm64
-          - runner: macos-15-intel
-            arch: x86_64
-    runs-on: ${{ matrix.runner }}
-    env:
-      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
-      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-phase-j-dependencies
         with:
           platform: macos
-      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
       - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-performance.log" -- bash ./scripts/ci/macos-performance-baseline.sh
       - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-stress.log" -- bash ./scripts/ci/macos-stress-matrix.sh
       - uses: actions/upload-artifact@v4
         with:
-          name: phase-j-macos-${{ matrix.arch }}-reports
+          name: phase-j-macos-arm64-reports
           path: |
-            artifacts/phase-j-performance/macos-${{ matrix.arch }}.json
-            artifacts/phase-j-stress/macos-${{ matrix.arch }}.json
+            artifacts/phase-j-performance/macos-arm64.json
+            artifacts/phase-j-stress/macos-arm64.json
           if-no-files-found: error
 
   macos-release:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: macos-15
-            arch: arm64
-          - runner: macos-15-intel
-            arch: x86_64
-    runs-on: ${{ matrix.runner }}
-    env:
-      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
-      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-phase-j-dependencies
         with:
           platform: macos
-      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
-      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-release.log" -- bash ./scripts/ci/macos-phase-j-release.sh ${{ matrix.arch }}
+      - run: python3 tests/ci/macos_sdk_arch_test.py
+      - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-release.log" -- bash ./scripts/ci/macos-phase-j-release.sh arm64
       - uses: actions/upload-artifact@v4
         with:
-          name: cgpui-macos-${{ matrix.arch }}-release
-          path: build/phase-j-release/macos-${{ matrix.arch }}/artifacts
+          name: cgpui-macos-arm64-release
+          path: build/phase-j-release/macos-arm64/artifacts
           if-no-files-found: error
 
   macos-architecture-header:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: macos-15
-            arch: arm64
-          - runner: macos-15-intel
-            arch: x86_64
-    runs-on: ${{ matrix.runner }}
-    env:
-      CGPUI_EXPECTED_ARCH: ${{ matrix.arch }}
-      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-phase-j-dependencies
         with:
           platform: macos
-      - run: test "$(uname -m)" = "$CGPUI_EXPECTED_ARCH"
       - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-architecture.log" -- bash ./scripts/ci/macos-architecture-header.sh

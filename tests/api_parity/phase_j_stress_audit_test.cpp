@@ -63,9 +63,9 @@ int main() {
     return 5;
   }
   if (!contains(profile, "\"macos-arm64\"") ||
-      !contains(profile, "\"macos-x86_64\"") ||
+      contains(profile, "\"macos-x86_64\"") ||
       !contains(runner, "platform == \"macos-arm64\"") ||
-      !contains(runner, "platform == \"macos-x86_64\"") ||
+      contains(runner, "platform == \"macos-x86_64\"") ||
       count(runner, "results.push_back(") != 8 ||
       !contains(validator, "report.get(\"platform\")") ||
       !contains(macos, "phase_j_stress_runner")) {

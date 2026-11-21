@@ -86,9 +86,7 @@ from the full Wayland suite.
 ## macOS: Cocoa + Metal
 
 The production target uses Xcode, AppKit, QuartzCore, CoreText, and Metal.
-Phase J pins Xmake 3.0.9 and targets macOS 13.0 on native arm64 and x86_64
-runners. `scripts/ci/macos-dependencies.sh` owns repository-local dependency
-roots; both architectures pass final native verification.
-That was the xmake build. The arm64 mcpp Debug build uses Xcode's clang,
+Only native arm64 is supported. `scripts/ci/macos-dependencies.sh` configures
+the CI environment. The mcpp build uses Xcode's clang,
 `ld64.lld` for host build programs, and `MACOSX_DEPLOYMENT_TARGET=13.0`.
 See the [macOS migration record](migration/README.md#macos-follow-up).

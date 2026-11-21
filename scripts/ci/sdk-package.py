@@ -426,7 +426,7 @@ def main() -> int:
                            choices=("self-contained", "toolchain-coupled", "host-coupled"))
     mac = commands.add_parser("stage-macos")
     mac.set_defaults(platform="macos", executable=["hello-window/hello_window"])
-    mac.add_argument("--arch", choices=("arm64", "x86_64"), required=True)
+    mac.add_argument("--arch", choices=("arm64",), required=True)
     mac.add_argument("--mode", choices=("debug", "release"), required=True)
     mac.add_argument("--repo-root", type=Path, required=True)
     mac.add_argument("--build-dir", type=Path, required=True)

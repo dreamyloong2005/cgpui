@@ -1,6 +1,7 @@
 # Using the macOS Phase J SDK
 
-Extract the entire `cgpui-macos-<arch>-release.tar.gz` archive. Keep `src/ui/`
+The SDK supports only Apple Silicon (arm64). There is no Intel or Universal build.
+Extract the entire `cgpui-macos-arm64-release.tar.gz` archive. Keep `src/ui/`
 alongside `include/`: some public headers include these implementation headers.
 Use a C++23-capable Xcode toolchain, libc++, and the architecture named in
 `manifest.json`. The SDK is built with a macOS 13.0 deployment target.
@@ -9,7 +10,7 @@ The demo and consumer were verified on macOS 27.2.1 (arm64), not on macOS 13.
 To compile the included consumer in a directory outside the checkout:
 
 ```sh
-sdk="$PWD/cgpui-macos-$(uname -m)-release"  # extracted package
+sdk="$PWD/cgpui-macos-arm64-release"  # extracted package
 cmake -S "$sdk/share/cgpui/sdk_consumer" -B consumer-build \
   -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
   -Dcgpui_DIR="$sdk/lib/cmake/cgpui"

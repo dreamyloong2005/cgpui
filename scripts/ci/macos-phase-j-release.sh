@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-[[ "$(uname -s)" == "Darwin" ]] || exit 2
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
-repo_root=$(cd "$script_dir/../.." && pwd -P)
+source "$script_dir/macos-dependencies.sh"
 arch=${1:-}
-[[ "$arch" =~ ^(arm64|x86_64)$ && "$(uname -m)" == "$arch" ]] || exit 2
+cgpui_require_macos_arm64 "$arch"
+repo_root=$(cd "$script_dir/../.." && pwd -P)
 [[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "13.0" ]] || exit 2
 # macos-package.sh builds with the mcpp release pinned by .github/actions/setup-mcpp.
 [[ "$("${MCPP:-mcpp}" --version | sed -n '1p')" == "mcpp 2026."* ]] || exit 3

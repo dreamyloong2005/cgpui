@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ "$(uname -s)" != "Darwin" ]]; then
-  echo "macos-performance-baseline.sh requires macOS" >&2
-  exit 2
-fi
-
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-arch="${CGPUI_EXPECTED_ARCH:-$(uname -m)}"
-if [[ ! "$arch" =~ ^(arm64|x86_64)$ ]] || [[ "$(uname -m)" != "$arch" ]]; then
-  echo "macOS host architecture does not match: $arch" >&2
-  exit 3
-fi
+source "$root/scripts/ci/macos-dependencies.sh"
+arch=${CGPUI_EXPECTED_ARCH:-arm64}
+cgpui_require_macos_arm64 "$arch"
 if [[ "${MACOSX_DEPLOYMENT_TARGET:-}" != "13.0" ]]; then
   echo "MACOSX_DEPLOYMENT_TARGET must be 13.0" >&2
   exit 3

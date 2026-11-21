@@ -95,6 +95,9 @@ section 7).
 
 ## macOS follow-up
 
+Only native arm64 is supported for macOS builds, CI, and the Release SDK.
+Intel (x86_64) and Universal SDKs are not deliverables or sign-off requirements.
+
 The pre-migration macOS evidence was produced with xmake: Phase H (380/380) and the
 Phase J macOS completion of `origin/master` (`19c51989`, arm64 and x86_64
 at deployment target 13.0), merged after the migration.
@@ -131,15 +134,22 @@ Native arm64 evidence (2026-11-21) and remaining work:
    13.0` in `xcrun vtool -show-build`. A macOS 13 runtime is unavailable:
    keep the deployment-target check, but do not require a macOS 13 run
    for sign-off or claim runtime compatibility from the Mach-O metadata.
-5. **Hosted CI: fixes await a new run.** On `f56ce548`, the
+5. **Hosted arm64 CI: passed at `5385aaaa`.** Both
+   [Phase H jobs](https://github.com/dreamyloong2005/cgpui/actions/runs/44876227518)
+   (full Debug and example smoke) and all four arm64 jobs in
+   [Phase J](https://github.com/dreamyloong2005/cgpui/actions/runs/44876227613)
+   (Debug/examples, architecture/headers, Release SDK and performance/stress)
+   passed. Phase J uploaded the arm64 SDK and reports; the overall workflow
+   still failed because all four Intel jobs stopped at mcpp setup (no native
+   x86_64 macOS binary in the pinned release).
+
+   On `f56ce548`, the
    [Phase H run](https://github.com/dreamyloong2005/cgpui/actions/runs/44864775450)
    installed mcpp on arm64, but the examples step exited 3. The workflow
    did not set `MACOSX_DEPLOYMENT_TARGET`; it now sets `13.0` for both jobs.
    In the [Phase J run](https://github.com/dreamyloong2005/cgpui/actions/runs/44864775416),
-   arm64 annotations show the missing ARC flag and the unsupported
-   `mcpp test --release` option. Local fixes address both; rerunning the old
-   SHA does not test those fixes. Intel jobs stopped at setup because the
-   pinned mcpp release has no native x86_64 macOS binary.
+   arm64 annotations showed the missing ARC flag and the unsupported
+   `mcpp test --release` option.
 6. **Sanitizers.** `scripts/dev/asan_workspace.py` has flags for `windows`
    and `linux` only. Add a `macos` row (`-fsanitize=address,undefined`,
    Apple clang) if macOS should get ASan runs. The Windows ASan entry
@@ -155,7 +165,9 @@ Native arm64 evidence (2026-11-21) and remaining work:
    frame; a separate xmake consumer run also passed. The demo and consumer
    report `minos 13.0` and only system dynamic dependencies. This was a
    local working-tree build, not a published C10 SDK or a run on macOS 13.
-   Intel Release and hosted CI are unverified. See the [SDK instructions](../macos-sdk.md).
+   The [hosted arm64 Release job](https://github.com/dreamyloong2005/cgpui/actions/runs/44876227613/job/136761411061)
+   also passed on `5385aaaa` and uploaded `cgpui-macos-arm64-release`.
+   See the [SDK instructions](../macos-sdk.md).
 8. **Metal shaders from Slang.** All five generated sources compile with
    Apple's `metal -c`. The four runtime pipelines initialize; the bootstrap,
    primitive, clip/transform and text/image pixel tests pass on this Mac.

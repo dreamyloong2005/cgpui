@@ -9,6 +9,9 @@ dependencies for your target. Use
 requirements. LunaSVG and plutovg are vendored under `third_party/`; the
 Vulkan SDK (Windows) and the display libraries (Linux) are host-owned.
 
+On macOS use a native arm64 shell on Apple Silicon. See
+[macOS dependencies](platform-dependencies.md#macos-cocoa--metal) for the Xcode and linker requirements.
+
 On Windows, `scripts/dev/build.ps1` and `scripts/dev/test.ps1` set
 `MCPP_HOME` for their own process; set it yourself to run `mcpp` directly.
 The compiler may speak any language: mcpp 2026.11.19.1 and later record

@@ -1,18 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ "$(uname -s)" != "Darwin" ]]; then
-  echo "macos-example-smoke.sh requires macOS" >&2
-  exit 2
-fi
-
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-expected_arch="${CGPUI_EXPECTED_ARCH:-$(uname -m)}"
-if [[ "$(uname -m)" != "$expected_arch" ]] ||
-   [[ ! "$expected_arch" =~ ^(arm64|x86_64)$ ]]; then
-  echo "macOS host architecture does not match: $expected_arch" >&2
-  exit 3
-fi
+source "$repo_root/scripts/ci/macos-dependencies.sh"
+cgpui_require_macos_arm64
 # mcpp reads MACOSX_DEPLOYMENT_TARGET as the minimum macOS of what it links
 # (mcpp docs 04, macos_deployment_target); the xmake script passed it as
 # --target_minver="$MACOSX_DEPLOYMENT_TARGET".

@@ -1,17 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ "$(uname -s)" != "Darwin" ]]; then
-  echo "macos-debug.sh requires macOS" >&2
-  exit 2
-fi
-
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-arch=${CGPUI_EXPECTED_ARCH:-$(uname -m)}
-if [[ ! "$arch" =~ ^(arm64|x86_64)$ || "$(uname -m)" != "$arch" ]]; then
-  echo "macos-debug.sh requires the requested native architecture" >&2
-  exit 2
-fi
+source "$repo_root/scripts/ci/macos-dependencies.sh"
+cgpui_require_macos_arm64
 # mcpp reads MACOSX_DEPLOYMENT_TARGET before [build] macos_deployment_target
 # (mcpp docs 04, macos_deployment_target); its own default is 14.0.
 export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-13.0}"
@@ -67,7 +59,6 @@ xcodebuild -version
 printf '%s\n' "$mcpp_version"
 
 if [[ -z "${TMPDIR:-}" ]]; then
-  source "$repo_root/scripts/ci/macos-dependencies.sh"
   cgpui_configure_macos_dependency_environment "$output_root/dependencies"
 fi
 export TMPDIR="${TMPDIR:-$output_root/tmp}"

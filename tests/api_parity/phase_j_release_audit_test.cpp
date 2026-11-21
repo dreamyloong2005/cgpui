@@ -62,8 +62,7 @@ int main() {
       !contains(policy, "\"dependency_provenance\": \"third_party/VENDORED.md\"") ||
       !contains(policy, "\"mcpp_version\": \"2026.11.20.1\"") ||
       !contains(bootstrap, "build/phase-j-ci/dependencies")) return 5;
-  // The Phase J workflow runs the macOS matrices only (b697808e); the
-  // Windows and Linux release jobs and their scripts are kept elsewhere.
+  // Phase J runs only macOS arm64 jobs here. Non-macOS jobs stay separate.
   constexpr std::array retired_non_macos_jobs{
       "  windows-release:\n", "  linux-release:\n",
       "  windows-performance:\n", "  linux-wayland-performance:\n",
@@ -88,12 +87,12 @@ int main() {
       !contains(macos_package, "deployment_target") ||
       !contains(macos_package, "metadata/build.json") ||
       !contains(macos_package, "metadata/mcpp.toml") ||
-      !contains(macos_package, "arm64|x86_64")) return 9;
+      !contains(macos_package, "cgpui_require_macos_arm64")) return 9;
   if (!contains(packer, "\"macos\"") ||
       !contains(packer, "architecture") ||
       !contains(packer, "deployment_target") ||
       !contains(policy, "cgpui-macos-arm64-release.tar.gz") ||
-      !contains(policy, "cgpui-macos-x86_64-release.tar.gz") ||
+      contains(policy, "cgpui-macos-x86_64-release.tar.gz") ||
       !contains(policy, "\"macos_deployment_target\": \"13.0\"") ||
       !contains(macos_release, "macos-package.sh") ||
       !contains(macos_release, "create-release-artifact.py") ||
@@ -104,11 +103,11 @@ int main() {
   for (const auto* job : macos_jobs)
     if (!contains(workflow, job)) return 11;
   if (!old_workflow.empty() ||
-      !contains(workflow, "macos-15") ||
-      !contains(workflow, "macos-15-intel") ||
-      !contains(workflow, "CGPUI_EXPECTED_ARCH") ||
+      !contains(workflow, "runs-on: macos-15\n") ||
+      contains(workflow, "macos-15-intel") ||
+      !contains(workflow, "CGPUI_EXPECTED_ARCH: arm64") ||
       !contains(workflow, "MACOSX_DEPLOYMENT_TARGET: \"13.0\"") ||
-      !contains(workflow, "cgpui-macos-${{ matrix.arch }}-release") ||
+      !contains(workflow, "cgpui-macos-arm64-release") ||
       !contains(bootstrap, "Configure the macOS mcpp environment") ||
       !contains(bootstrap, "macos-dependencies.sh") ||
       !contains(root_manifest, "\"packages/platform-macos\",") ||

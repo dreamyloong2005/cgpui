@@ -12,12 +12,12 @@ on Windows).
 | `cgpui-sdk-linux-x86_64-release` | Linux x86_64, Wayland (+ X11) + Vulkan | GCC, libstdc++ |
 
 macOS uses the separate **Phase J** archive format, not the C10 clean-tree
-release pipeline above. On a native Mac with mcpp, Python 3.12+, CMake, and a
-Metal-capable graphical session, run
-`MACOSX_DEPLOYMENT_TARGET=13.0 scripts/ci/macos-phase-j-release.sh "$(uname -m)"`.
+release pipeline above. On an Apple Silicon Mac with a native arm64 shell, mcpp,
+Python 3.12+, CMake, and a Metal-capable graphical session, run
+`MACOSX_DEPLOYMENT_TARGET=13.0 scripts/ci/macos-phase-j-release.sh arm64`.
 It verifies the release archive and builds and runs its CMake consumer outside
 the checkout. The archive, SHA-256 sidecar and content manifest are under
-`build/phase-j-release/macos-<arch>/artifacts/`. See
+`build/phase-j-release/macos-arm64/artifacts/`. See
 [using the macOS SDK](macos-sdk.md) for the consumer commands.
 
 ## Building the packages

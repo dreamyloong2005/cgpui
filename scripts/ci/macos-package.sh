@@ -1,18 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build with mcpp in a packaging workspace and stage a relocatable SDK.
-[[ "$(uname -s)" == "Darwin" ]] || exit 2
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
+source "$repo_root/scripts/ci/macos-dependencies.sh"
 arch=${1:-}
+cgpui_require_macos_arm64 "$arch"
 mode=${2:-}
-[[ "$arch" =~ ^(arm64|x86_64)$ ]] || { echo "invalid architecture" >&2; exit 2; }
 [[ "$mode" =~ ^(debug|release)$ ]] || { echo "invalid mode" >&2; exit 2; }
-[[ "$(uname -m)" == "$arch" ]] || { echo "native architecture required" >&2; exit 2; }
 # mcpp reads MACOSX_DEPLOYMENT_TARGET as the minimum macOS it links for; the
 # xmake script passed --target_minver="$MACOSX_DEPLOYMENT_TARGET".
 [[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "13.0" ]] || exit 2
 
-repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
 output_input=${3:-build/phase-j-release/macos-$arch}
 [[ "/$output_input/" != */../* ]] || exit 2
 if [[ "$output_input" == /* ]]; then
@@ -39,7 +37,6 @@ mkdir -p "$workspace_root" "$include_root" \
   "$metadata_root"
 
 if [[ -z "${MCPP:-}" ]]; then
-  source "$repo_root/scripts/ci/macos-dependencies.sh"
   cgpui_configure_macos_dependency_environment "$output_root/dependencies"
 fi
 mcpp_version=$("$MCPP" --version | sed -n '1p')

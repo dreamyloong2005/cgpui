@@ -235,7 +235,7 @@ int main(int argc, char** argv) {
   const bool valid_platform =
       platform == "portable" || platform == "windows" ||
       platform == "wayland" || platform == "x11" ||
-      platform == "macos-arm64" || platform == "macos-x86_64";
+      platform == "macos-arm64";
   if (iterations == 0 || iterations > 10000 || !valid_platform) return 3;
   const auto metrics = run_baselines(iterations);
   if (metrics.size() != 8 || metric_sink == 0) return 4;

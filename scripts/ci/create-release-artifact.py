@@ -68,8 +68,8 @@ def write_content_manifest(
     if not isinstance(architecture, str) or not architecture:
         raise SystemExit("package manifest architecture is missing")
     if platform == "macos":
-        if architecture not in {"arm64", "x86_64"}:
-            raise SystemExit("unsupported macOS package architecture")
+        if architecture != "arm64":
+            raise SystemExit("macOS packages must target arm64")
         if base_manifest.get("deployment_target") != "13.0":
             raise SystemExit("macOS package deployment target must be 13.0")
     entries = [
@@ -140,9 +140,9 @@ def main() -> int:
     if not package_root.is_dir() or "/" in args.package_name or "\\" in args.package_name:
         raise SystemExit("invalid package root or package name")
     epoch = int(os.environ.get("SOURCE_DATE_EPOCH", DEFAULT_SOURCE_DATE_EPOCH))
-    args.output.parent.mkdir(parents=True, exist_ok=True)
     write_content_manifest(package_root, args.package_name, args.platform,
                            args.archive_name, epoch, args.mode)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
     if args.platform == "windows":
         write_zip(args.output, package_root, args.package_name, epoch)
     else:
