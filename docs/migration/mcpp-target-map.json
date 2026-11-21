@@ -1,4 +1,4 @@
-{"generator": "scripts/migration/reconcile.py", "xmake_test_entries": {"windows": 581, "linux": 561, "macosx": 465}, "unmapped": [], "mcpp_test_programs": {"macosx": 467}, "targets": [
+{"generator": "scripts/migration/reconcile.py", "xmake_test_entries": {"windows": 581, "linux": 561, "macosx": 465}, "unmapped": [], "mcpp_test_programs": {"macosx": 468}, "targets": [
 {"xmake":"accessibility_pattern_action_test","platforms":["linux","macosx","windows"],"member":"tests/ui","mcpp":"test program accessibility_pattern_action_test","kind":"test"},
 {"xmake":"accessibility_pattern_runtime_test","platforms":["linux","macosx","windows"],"member":"tests/ui","mcpp":"test program accessibility_pattern_runtime_test","kind":"test"},
 {"xmake":"action_bubbling_test","platforms":["linux","macosx","windows"],"member":"tests/ui","mcpp":"test program action_bubbling_test","kind":"test"},

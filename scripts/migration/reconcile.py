@@ -23,6 +23,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 POST_MIGRATION = {
     "shader_source_structure_test": None,
     "metal_device_pixel_scale_test": {"macosx"},
+    "macos_system_appearance_test": {"macosx"},
 }
 HELPERS = {
     "tests/ui/native_text_shaping_reference.cpp",

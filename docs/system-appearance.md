@@ -215,9 +215,51 @@ the same poll and dispatch calls the event loop makes. It skips if
 `dbus-daemon` is not installed. `wayland_dpi_awareness_test` uses the test
 compositor. None of them talk to a real desktop portal.
 
+## macOS sources
+
+`src/platform/macos/macos_system_appearance.mm` reads the snapshot on demand
+on the main thread (`backend = "macos"`):
+
+| Value | Source |
+| --- | --- |
+| `mode` | `NSApp.effectiveAppearance` `bestMatchFromAppearancesWithNames:` Aqua / DarkAqua. This is the app's appearance, so an app that sets `NSApp.appearance` sees its own choice |
+| `accent_color` | `NSColor.controlAccentColor`, resolved under that appearance (`performAsCurrentDrawingAppearance:`) and converted to sRGB. Alpha is reported as 1 |
+| `transparency_effects_enabled` | not `NSWorkspace.accessibilityDisplayShouldReduceTransparency` |
+| `client_area_animation_enabled` | not `accessibilityDisplayShouldReduceMotion` |
+| `high_contrast` | `accessibilityDisplayShouldIncreaseContrast` |
+
+Changes (`src/platform/macos/macos_appearance_monitor.mm`, started by the
+first `set_system_appearance_callback()`):
+
+| Notification | `source` |
+| --- | --- |
+| KVO on `NSApp.effectiveAppearance` | `color_set` |
+| `NSSystemColorsDidChangeNotification` | `colorization` |
+| `NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification` | the first setting that differs from the previous snapshot: `high_contrast`, then `client_area_animation`; otherwise `color_set` (transparency, as on Windows, or nothing) |
+
+All three arrive on the main thread. AppKit also reacts to the accessibility
+notification, so one toggle can produce several callbacks; as elsewhere,
+`changed` says whether the snapshot differs. Title bars follow the app
+appearance without CGPUI code.
+
+DPI awareness: AppKit has no process-wide switch. Each window reports
+`NSWindow.backingScaleFactor` as `WindowState::scale` and its backing-store
+size as `framebuffer_size`; `windowDidChangeBackingProperties:` sends
+`WindowResized` with the new scale when the window moves to another
+display. `dpi_awareness()` reports `per_monitor_aware_v2`,
+`declared_by_framework = true`, `backend = "macos"`.
+
+Tests: `macos_system_appearance_test` checks the snapshot and the DPI state,
+switches `NSApp.appearance` between Aqua and DarkAqua (real KVO
+delivery), posts the two notifications, and checks that an empty callback
+stops delivery. The test machine (2026-11-21, macOS 27.2.1) had one 1x
+display, so moving a window between displays of different scales was not
+observed; `metal_device_pixel_scale_test` covers drawing at scale 2.
+Toggling the System Settings switches was not tried.
+
 ## Other platforms and limits
 
-- X11, macOS, and test applications inherit the base implementation:
+- X11 and test applications inherit the base implementation:
   `supported = false`, `backend = "unsupported"`, light mode, no accent color,
   and an `unsupported_reason`. The callback setter accepts a callback but never
   calls it. DPI awareness reports `unsupported`.

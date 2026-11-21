@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
+#include "macos_system_appearance_internal.hpp"
 #include "macos_text_services_internal.hpp"
 
 #import <AppKit/AppKit.h>
@@ -51,6 +52,10 @@ class MacOSApplication final : public PlatformApplication {
   void quit() override;
   [[nodiscard]] PlatformFontDiscoveryResult discover_font_discovery()
       const override;
+  [[nodiscard]] SystemAppearance system_appearance() const override;
+  void set_system_appearance_callback(
+      SystemAppearanceCallback callback) override;
+  [[nodiscard]] PlatformDpiAwarenessState dpi_awareness() const override;
 
   void dispatch_wakeup();
   void reopened();
@@ -62,6 +67,7 @@ class MacOSApplication final : public PlatformApplication {
 
  private:
   std::vector<MacOSWindow*> windows_;
+  MacOSAppearanceMonitor appearance_monitor_;
   __strong CGPUIMacOSApplicationDelegate* delegate_ = nil;
   __strong CGPUIMacOSWakeupTarget* wakeup_target_ = nil;
   __strong id menu_target_ = nil;

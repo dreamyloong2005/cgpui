@@ -1,7 +1,7 @@
 # IDE Workbench Capabilities: macOS Plan
 
 Date: 2026-11-15
-Status: plan only. No Cocoa or Metal code in this plan has been written.
+Status: in progress on a Mac since 2026-11-21; see [Status](#status).
 Companion to `2026-11-15-ide-workbench-capability-plan.md` (Windows and
 Linux implementation).
 
@@ -31,6 +31,15 @@ or WSL. Until it runs on a Mac, each row stays "planned".
 | C8 IME | `NSTextInputClient`: `setMarkedText:selectedRange:replacementRange:` gives the composition caret; underline/clause styles from `NSUnderlineStyleAttributeName` and `NSMarkedClauseSegmentAttributeName`, filling the public `ImeComposition` fields from C8: `preedit_cursor_begin` / `preedit_cursor_end` (UTF-8 bytes) and one `ImePreeditStyleSpan` per clause with `ImeClauseStyle` (thick underline -> `selected_converted`, else `converted` / `input`; see `docs/ime-composition.md`) | `macos_text_input.mm`, `macos_ime_placement.mm` | Pinyin and Japanese IME: caret inside preedit, clause underline, candidate window position |
 | C9 Widgets | Splitter / tabs / tree are cross-platform; tooltip and context menu need popups: child `NSPanel` (non-activating) for tooltip/popover, `NSMenu popUpMenuPositioningItem:` for native context menus | `macos_window_factory.mm` (popup kind), `macos_native_menu.mm` | Popup placement at screen edges, focus not stolen, dismissal on outside click |
 | C10 SDK | `scripts/ci/macos-package.sh` mirroring the Windows/Linux packages: universal or arm64 static libs, headers, manifest with toolchain and commit | new script | Package consumed by a clean sample project on a second Mac |
+
+## Status
+
+Host: macOS 27.2.1 (26B131), Xcode 27.2 (27B52), Apple M4, one 1x display.
+
+| ID | State |
+|---|---|
+| C1 DPI | done: `dpi_awareness()` reports `per_monitor_aware_v2` / `macos`; the existing backing-scale path sends `WindowResized` with the new scale. Moving a window between displays of different scales not observed (one display) |
+| C2 Appearance | done: `macos_system_appearance.mm` (snapshot), `macos_appearance_monitor.mm` (KVO + notifications), see `docs/system-appearance.md`. System Settings toggles not tried; the test switches `NSApp.appearance` and posts the notifications |
 
 ## Order on a Mac
 
