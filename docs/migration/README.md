@@ -46,8 +46,14 @@ test entries), Linux 561 (561). macOS manifests exist but were not built; see
 
 ## mcpp issues met
 
-- MSVC localized `/showIncludes` => no header dependencies (upstream #970):
-  wrappers set `VSLANG=1033`.
+- MSVC localized `/showIncludes` => no header dependencies, and mcpp
+  crashed on GBK diagnostics (upstream #970, reported 2026-11-19). The
+  wrappers set `VSLANG=1033` until the fix: mcpp 2026.11.19.1 takes cl.exe's
+  inputs from `/sourceDependencies` and decodes the compiler's text in the
+  console code page. Checked with 2026.11.20.1 on the reference machine
+  (zh-CN Build Tools, `VSLANG=2052`): a header edit rebuilds and a localized
+  C5050 warning reaches the log as valid UTF-8. The workspace requires
+  2026.11.20.1 (`mcpp.toml`) and the wrappers no longer set `VSLANG`.
 - A `build.mcpp` is not rebuilt when a header it includes by relative path
   changes: repro and draft issue in `D:/Dev/shots/mcpp-spike/bug-buildmcpp-header`;
   workaround: the header is a `[build-dependencies]` path package.
@@ -139,11 +145,12 @@ To do, in order:
    target (only `phase_f_multi_window_lifecycle_churn_structure_test` and
    `window_runtime_multi_window_churn_test` exist); the port leaves it out. `scripts/dev/build.sh` / `test.sh` and `mcpp-env.sh` were
    written for Linux; check them on macOS or add macOS wrappers.
-5. **CI.** `.github/actions/setup-mcpp` has Windows and Linux steps only;
-   add a macOS step (arm64 and x86_64: `phase-j-desktop.yml` runs both, on
-   `macos-15` and `macos-15-intel`, and mcpp releases macOS builds for Apple
-   silicon only), then the jobs of `.github/workflows/phase-h-macos.yml` and
-   `phase-j-desktop.yml` can run.
+5. **CI.** `.github/actions/setup-mcpp` installs mcpp on macOS arm64
+   runners (2026.11.20.1, `mcpp-macosx-arm64.tar.gz`, not run yet), and
+   `phase-h-macos.yml` and `phase-j-desktop.yml` use it. mcpp has no Intel
+   macOS release, so the `macos-15-intel` (x86_64) jobs of
+   `phase-j-desktop.yml` stop at that step with an error: drop them, or
+   build mcpp from source for them.
 6. **Sanitizers.** `scripts/dev/asan_workspace.py` has flags for `windows`
    and `linux` only. Add a `macos` row (`-fsanitize=address,undefined`,
    Apple clang) if macOS should get ASan runs. The Windows ASan entry

@@ -58,7 +58,7 @@ output_root="$(cd "$output_root" && pwd -P)"
 mcpp="${MCPP:-mcpp}"
 mcpp_version="$("$mcpp" --version | sed -n '1p')"
 if [[ "$mcpp_version" != "mcpp 2026."* ]]; then
-  echo "macos-debug.sh requires mcpp 2026.11.18.1 or later: $mcpp_version" >&2
+  echo "macos-debug.sh requires mcpp 2026.11.20.1 or later: $mcpp_version" >&2
   exit 3
 fi
 

@@ -1,6 +1,6 @@
 function Set-CgpuiWindowsDependencyEnvironment {
   # The mcpp environment of the CI scripts (scripts/dev/mcpp-env.ps1):
-  # MCPP_HOME, VSLANG=1033 and the mcpp executable, which it returns.
+  # MCPP_HOME and the mcpp executable, which it returns.
   # Dependencies are the MSVC toolset (msvc@system), the LunarG Vulkan SDK
   # (VULKAN_SDK) and the vendored third_party/ libraries; mcpp downloads
   # nothing for them.
@@ -25,7 +25,7 @@ function Set-CgpuiWindowsDependencyEnvironment {
       throw "GITHUB_ENV is required when exporting dependency variables"
     }
     $utf8 = [System.Text.UTF8Encoding]::new($false)
-    foreach ($name in @("MCPP_HOME", "VSLANG")) {
+    foreach ($name in @("MCPP_HOME")) {
       [System.IO.File]::AppendAllText(
         $env:GITHUB_ENV,
         "$name=$([System.Environment]::GetEnvironmentVariable($name))`n",

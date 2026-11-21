@@ -2,7 +2,7 @@
 
 ## Common
 
-- [mcpp](https://github.com/mcpp-community/mcpp) 2026.11.18.1 or later
+- [mcpp](https://github.com/mcpp-community/mcpp) 2026.11.20.1 or later
   (`[workspace.package] mcpp` in `mcpp.toml`)
 - Git
 - A C++23 compiler
@@ -24,12 +24,12 @@ the workspace uses the installed one (`[workspace.toolchain]`).
   from it
 - A Vulkan-capable driver
 
-The toolchain is `msvc@system` (the installed Build Tools). mcpp reads
-MSVC's `/showIncludes` notes to record header dependencies and needs them
-in English: run it with `VSLANG=1033` (the English language pack of Visual
-Studio must be installed). `scripts/dev/mcpp-env.ps1`, used by the dev
-wrappers and `scripts/ci/windows-dependencies.ps1`, sets `VSLANG` and
-`MCPP_HOME` for its own process only. `scripts/ci/windows-package.ps1` is
+The toolchain is `msvc@system` (the installed Build Tools), in any UI
+language: mcpp takes header dependencies from cl.exe's `/sourceDependencies`
+record and decodes the compiler's text in the console code page (mcpp
+2026.11.19.1, issue #970). `scripts/dev/mcpp-env.ps1`, used by the dev
+wrappers and `scripts/ci/windows-dependencies.ps1`, sets `MCPP_HOME` for its
+own process only. `scripts/ci/windows-package.ps1` is
 the package entrypoint.
 
 ## Linux: Wayland + Vulkan

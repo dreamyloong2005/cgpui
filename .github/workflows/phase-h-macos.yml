@@ -13,8 +13,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      # mcpp has no macOS row in .github/actions/setup-mcpp yet; these
-      # jobs need an mcpp on PATH (not run since the mcpp migration).
+      # setup-mcpp sets MCPP (Apple silicon runners only); without it the
+      # scripts need an mcpp on PATH. Not run since the mcpp migration.
+      - uses: ./.github/actions/setup-mcpp
       - name: Run complete macOS Debug verification
         run: bash ./scripts/ci/macos-debug.sh
 
@@ -22,7 +23,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      # mcpp has no macOS row in .github/actions/setup-mcpp yet; these
-      # jobs need an mcpp on PATH (not run since the mcpp migration).
+      # setup-mcpp sets MCPP (Apple silicon runners only); without it the
+      # scripts need an mcpp on PATH. Not run since the mcpp migration.
+      - uses: ./.github/actions/setup-mcpp
       - name: Build and run macOS examples and smoke tests
         run: bash ./scripts/ci/macos-example-smoke.sh

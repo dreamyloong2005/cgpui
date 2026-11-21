@@ -28,8 +28,7 @@ scripts/dev/build.sh -p examples/hello_window      # Windows: scripts/dev/build.
 mcpp run -p examples/hello_window hello_window     # builds, then starts it
 ```
 
-On Windows run `mcpp` with `VSLANG=1033` (see
-[Getting Started](docs/getting-started.md)). On
+See [Getting Started](docs/getting-started.md) for the environment. On
 Linux, select a backend explicitly when both display environments exist:
 
 ```bash

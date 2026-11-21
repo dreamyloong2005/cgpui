@@ -2,33 +2,55 @@ name: Setup mcpp
 description: Install the pinned mcpp release and expose it as MCPP / MCPP_HOME.
 
 # Not exercised since the mcpp migration: the workflows have not run on
-# GitHub (verified locally with the same mcpp release only).
+# GitHub (verified locally with the same mcpp release only). Release tags
+# are v<version>; the archives' SHA-256 are those of the release's .sha256.
 runs:
   using: composite
   steps:
-    - name: Install mcpp 2026.11.18.1 (Windows)
+    - name: Install mcpp 2026.11.20.1 (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        $version = "2026.11.18.1"
+        $version = "2026.11.20.1"
         $archive = Join-Path $env:RUNNER_TEMP "mcpp-windows-x86_64.zip"
-        Invoke-WebRequest -Uri "https://github.com/mcpp-community/mcpp/releases/download/$version/mcpp-windows-x86_64.zip" -OutFile $archive
+        Invoke-WebRequest -Uri "https://github.com/mcpp-community/mcpp/releases/download/v$version/mcpp-windows-x86_64.zip" -OutFile $archive
         $digest = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive).Hash.ToLowerInvariant()
-        if ($digest -ne "0800f2a7f3979c35f7c5a8f24c3470c8fdc8d53cdcd93b3faf0c9800b4502e42") { throw "mcpp archive digest mismatch: $digest" }
+        if ($digest -ne "b0e71cbaf8943ea06a0c10417efd7f724ab6c888edf0e0ec5fa6ee07717ba8aa") { throw "mcpp archive digest mismatch: $digest" }
         $root = Join-Path $env:RUNNER_TEMP "mcpp"
         Expand-Archive -LiteralPath $archive -DestinationPath $root
         $mcpp = (Get-ChildItem -LiteralPath $root -Recurse -Filter mcpp.exe | Select-Object -First 1).FullName
         "MCPP=$mcpp" >> $env:GITHUB_ENV
         "MCPP_HOME=$(Join-Path $env:RUNNER_TEMP 'mcpp-home')" >> $env:GITHUB_ENV
-    - name: Install mcpp 2026.11.18.1 (Linux)
+    - name: Install mcpp 2026.11.20.1 (Linux)
       if: runner.os == 'Linux'
       shell: bash
       run: |
         set -euo pipefail
-        version=2026.11.18.1
+        version=2026.11.20.1
         archive="$RUNNER_TEMP/mcpp-linux-x86_64.tar.gz"
-        curl -fsSL -o "$archive" "https://github.com/mcpp-community/mcpp/releases/download/$version/mcpp-linux-x86_64.tar.gz"
-        echo "344ee725639f62daedb1a18a62542af58a6a04c3fb9dc2b0c8dd879ddf232970  $archive" | sha256sum -c -
+        curl -fsSL -o "$archive" "https://github.com/mcpp-community/mcpp/releases/download/v$version/mcpp-linux-x86_64.tar.gz"
+        echo "410053964917d54ca1baf74909a13089629a1aef5d8eefee994debcdd63bc840  $archive" | sha256sum -c -
         mkdir -p "$RUNNER_TEMP/mcpp" && tar -xzf "$archive" -C "$RUNNER_TEMP/mcpp"
         echo "MCPP=$(find "$RUNNER_TEMP/mcpp" -type f -name mcpp -perm -u+x | head -1)" >> "$GITHUB_ENV"
         echo "MCPP_HOME=$RUNNER_TEMP/mcpp-home" >> "$GITHUB_ENV"
+    # mcpp publishes macOS builds for Apple silicon only (macOS 14 or later).
+    # Not run yet: no Mac was available (docs/migration/README.md, macOS
+    # follow-up).
+    - name: Install mcpp 2026.11.20.1 (macOS arm64)
+      if: runner.os == 'macOS' && runner.arch == 'ARM64'
+      shell: bash
+      run: |
+        set -euo pipefail
+        version=2026.11.20.1
+        archive="$RUNNER_TEMP/mcpp-macosx-arm64.tar.gz"
+        curl -fsSL -o "$archive" "https://github.com/mcpp-community/mcpp/releases/download/v$version/mcpp-macosx-arm64.tar.gz"
+        echo "43f4fa908122d696c080094d097f87ad8395eab077f4345d0b599108b2bd19ff  $archive" | shasum -a 256 -c -
+        mkdir -p "$RUNNER_TEMP/mcpp" && tar -xzf "$archive" -C "$RUNNER_TEMP/mcpp"
+        echo "MCPP=$(find "$RUNNER_TEMP/mcpp" -type f -name mcpp -perm -u+x | head -1)" >> "$GITHUB_ENV"
+        echo "MCPP_HOME=$RUNNER_TEMP/mcpp-home" >> "$GITHUB_ENV"
+    - name: No mcpp release for this macOS runner
+      if: runner.os == 'macOS' && runner.arch != 'ARM64'
+      shell: bash
+      run: |
+        echo "::error::mcpp publishes macOS builds for Apple silicon only; this runner is $RUNNER_ARCH"
+        exit 1

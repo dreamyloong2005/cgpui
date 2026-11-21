@@ -2,7 +2,7 @@
 # the sources in src/ in place; examples in examples/*/mcpp.toml; tests in
 # tests/<suite>/mcpp.toml; vendored dependencies in third_party/*/mcpp.toml.
 # Build and test through scripts/dev/build.* and scripts/dev/test.* (they set
-# MCPP_HOME, VSLANG and the static CRT); see docs/getting-started.md.
+# MCPP_HOME and the static CRT); see docs/getting-started.md.
 [workspace]
 members = [
     "third_party/plutovg",
@@ -41,7 +41,7 @@ members = [
 ]
 
 [workspace.package]
-mcpp = ">=2026.11.18.1"
+mcpp = ">=2026.11.20.1"
 standard = "c++23"
 
 [workspace.toolchain]

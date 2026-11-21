@@ -58,9 +58,9 @@ int main() {
   // and the vendored dependency trees.
   if (!contains(bootstrap, "uses: ./.github/actions/setup-mcpp") ||
       !contains(read_source(".github/actions/setup-mcpp/action.yml"),
-                "version=2026.11.18.1") ||
+                "version=2026.11.20.1") ||
       !contains(policy, "\"dependency_provenance\": \"third_party/VENDORED.md\"") ||
-      !contains(policy, "\"mcpp_version\": \"2026.11.18.1\"") ||
+      !contains(policy, "\"mcpp_version\": \"2026.11.20.1\"") ||
       !contains(bootstrap, "build/phase-j-ci/dependencies")) return 5;
   // The Phase J workflow runs the macOS matrices only (b697808e); the
   // Windows and Linux release jobs and their scripts are kept elsewhere.

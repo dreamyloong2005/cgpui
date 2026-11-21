@@ -42,7 +42,7 @@ int main() {
       !contains(script, "macos-debug.sh requires macOS") ||
       !contains(script, "output root must not contain parent traversal") ||
       !contains(script, "output root must not be the repository root") ||
-      !contains(script, "mcpp 2026.11.18.1 or later") ||
+      !contains(script, "mcpp 2026.11.20.1 or later") ||
       !contains(script, "source \"$repo_root/scripts/ci/macos-dependencies.sh\"") ||
       !contains(script, "cgpui_configure_macos_dependency_environment") ||
       !contains(script, "MACOSX_DEPLOYMENT_TARGET") ||

@@ -2,17 +2,18 @@
 
 ## 1. Install Dependencies
 
-Install [mcpp](https://github.com/mcpp-community/mcpp) 2026.11.18.1 or later,
+Install [mcpp](https://github.com/mcpp-community/mcpp) 2026.11.20.1 or later,
 a C++23 compiler (MSVC 14.44 on Windows, GCC 16 on Linux) and the native
 dependencies for your target. Use
 [Platform Dependencies](platform-dependencies.md) for exact Windows and Linux
 requirements. LunaSVG and plutovg are vendored under `third_party/`; the
 Vulkan SDK (Windows) and the display libraries (Linux) are host-owned.
 
-On Windows, mcpp needs `VSLANG=1033` (English compiler notes; without it
-mcpp records no header dependencies, mcpp issue #970) and a `MCPP_HOME`.
-`scripts/dev/build.ps1` and `scripts/dev/test.ps1` set both for their own
-process; set them yourself to run `mcpp` directly.
+On Windows, `scripts/dev/build.ps1` and `scripts/dev/test.ps1` set
+`MCPP_HOME` for their own process; set it yourself to run `mcpp` directly.
+The compiler may speak any language: mcpp 2026.11.19.1 and later record
+header dependencies and read MSVC's diagnostics in every language and code
+page (mcpp issue #970).
 
 ## 2. Build
 
