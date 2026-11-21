@@ -33,10 +33,6 @@ jobs:
       - uses: ./.github/actions/setup-phase-g-dependencies
         with:
           platform: linux
-      - name: Install Linux dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev libwayland-dev meson ninja-build python3-venv
       - name: Build and package Linux Debug
         run: bash ./scripts/ci/linux-debug.sh
       - name: Upload Linux Debug package
@@ -70,10 +66,6 @@ jobs:
       - uses: ./.github/actions/setup-phase-g-dependencies
         with:
           platform: linux
-      - name: Install Linux dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev libwayland-dev meson ninja-build python3-venv
       - name: Build and package Linux Release
         run: bash ./scripts/ci/linux-release.sh
       - name: Upload Linux Release package
@@ -101,10 +93,8 @@ jobs:
       - uses: ./.github/actions/setup-phase-g-dependencies
         with:
           platform: linux
-      - name: Install Linux display and build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev libwayland-dev mesa-vulkan-drivers meson ninja-build python3-venv weston
+      - name: Install the headless Wayland smoke environment
+        run: sudo apt-get install -y mesa-vulkan-drivers weston fonts-dejavu-core fonts-wqy-zenhei
       - name: Build and run Linux examples and smoke tests
         run: bash ./scripts/ci/linux-example-smoke.sh
 
@@ -126,9 +116,5 @@ jobs:
       - uses: ./.github/actions/setup-phase-g-dependencies
         with:
           platform: linux
-      - name: Install Linux build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libvulkan-dev libwayland-dev meson ninja-build python3-venv
       - name: Build and run Linux architecture and header tests
         run: bash ./scripts/ci/linux-architecture-header.sh

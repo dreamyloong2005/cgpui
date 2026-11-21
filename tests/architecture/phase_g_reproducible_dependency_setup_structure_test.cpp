@@ -122,6 +122,24 @@ int main() {
       !contains(action, "linux-dependencies.sh") ||
       count(workflow, "uses: ./.github/actions/setup-phase-g-dependencies") != 8) return 7;
 
+  // A fresh hosted runner must have the native dependencies *before* the
+  // environment checks run. Installing them later in each job is too late.
+  const auto before = [&](const char* first, const char* second) {
+    const auto end = action.find(second);
+    return end != std::string::npos && action.find(first) < end;
+  };
+  if (!before("sudo apt-get install", "linux-dependencies.sh --github-env") ||
+      !before("Get-FileHash", "Start-Process") ||
+      !before("Start-Process", "VULKAN_SDK=$sdk") ||
+      !before("VULKAN_SDK=$sdk", ". ./scripts/ci/windows-dependencies.ps1")) return 12;
+  const char* linux_packages[]{
+      "pkg-config", "libwayland-dev", "libdbus-1-dev", "libxkbcommon-dev",
+      "libxkbcommon-x11-dev", "libxcb1-dev", "libxcb-xkb-dev", "libxcb-cursor-dev",
+      "libharfbuzz-dev", "libfreetype-dev", "libfontconfig1-dev", "libvulkan-dev",
+      "meson ninja-build python3-venv"};
+  for (const auto* package : linux_packages)
+    if (!contains(action, package)) return 12;
+
   if (!contains(previous, "Phase G Step 671 adds Windows and Linux CI") ||
       !contains(manifest,
           "phase_g_reproducible_dependency_setup_structure_test|") ||

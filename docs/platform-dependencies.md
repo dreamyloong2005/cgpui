@@ -31,8 +31,10 @@ language: mcpp takes header dependencies from cl.exe's `/sourceDependencies`
 record and decodes the compiler's text in the console code page (mcpp
 2026.11.19.1, issue #970). `scripts/dev/mcpp-env.ps1`, used by the dev
 wrappers and `scripts/ci/windows-dependencies.ps1`, sets `MCPP_HOME` for its
-own process only. `scripts/ci/windows-package.ps1` is
-the package entrypoint.
+own process only. On hosted Phase G runners the shared setup action installs
+the SHA-256-pinned x64 Vulkan SDK 1.4.341.1 and exports `VULKAN_SDK` before
+checking the build environment. `scripts/ci/windows-package.ps1` is the package
+entrypoint.
 
 ## Linux: Wayland + Vulkan
 
@@ -56,7 +58,9 @@ pacman -S --needed gcc pkgconf wayland libxkbcommon libxkbcommon-x11 \
   vulkan-headers ttf-dejavu wqy-zenhei xorg-server-xvfb xorg-xdpyinfo
 ```
 
-Ubuntu CI installs:
+On Ubuntu the Phase G setup action installs the build dependencies before
+checking pkg-config. The example smoke job additionally installs the software
+Vulkan driver, fonts, and headless Weston. To install both sets:
 
 ```bash
 sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libfreetype-dev \

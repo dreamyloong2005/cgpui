@@ -10,12 +10,43 @@ runs:
   using: composite
   steps:
     - uses: ./.github/actions/setup-mcpp
+    - name: Install the Windows x64 Vulkan SDK
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $version = '1.4.341.1'
+        $file = "vulkansdk-windows-X64-$version.exe"
+        $installer = Join-Path $env:RUNNER_TEMP $file
+        $sdk = Join-Path $env:RUNNER_TEMP "VulkanSDK\$version"
+        Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/$version/windows/$file" -OutFile $installer
+        # SHA-256 from LunarG's sdk/files.json entry for this installer.
+        if ((Get-FileHash $installer -Algorithm SHA256).Hash -ne 'bcf2d75aa9556889ab974858666e20b3655b6055a0db704ccb47279ff33b5bfe') {
+          throw 'LunarG Vulkan SDK installer digest mismatch'
+        }
+        $arguments = "--root `"$sdk`" --accept-licenses --default-answer --confirm-command install"
+        $process = Start-Process -FilePath $installer -ArgumentList $arguments -Wait -PassThru
+        if ($process.ExitCode -ne 0) { throw "Vulkan SDK installer exited $($process.ExitCode)" }
+        foreach ($relative in 'Include\vulkan\vulkan.h', 'Lib\vulkan-1.lib') {
+          if (-not (Test-Path -LiteralPath (Join-Path $sdk $relative) -PathType Leaf)) {
+            throw "Missing Vulkan SDK file: $relative"
+          }
+        }
+        "VULKAN_SDK=$sdk" >> $env:GITHUB_ENV
     - name: Configure the Windows mcpp environment
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
         . ./scripts/ci/windows-dependencies.ps1
         Set-CgpuiWindowsDependencyEnvironment -ExportGitHubEnvironment | Out-Null
+    - name: Install Linux build dependencies before checking pkg-config
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y pkg-config libwayland-dev libdbus-1-dev \
+          libxkbcommon-dev libxkbcommon-x11-dev libxcb1-dev libxcb-xkb-dev \
+          libxcb-cursor-dev libharfbuzz-dev libfreetype-dev libfontconfig1-dev \
+          libvulkan-dev meson ninja-build python3-venv
     - name: Configure the Linux mcpp environment
       if: runner.os == 'Linux'
       shell: bash

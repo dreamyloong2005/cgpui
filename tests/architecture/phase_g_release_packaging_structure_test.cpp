@@ -84,8 +84,7 @@ int main() {
       !contains(workflow, "linux-release:") ||
       !contains(workflow, "scripts/ci/linux-release.sh") ||
       !contains(workflow, "build/phase-g-ci/linux-release/package") ||
-      !contains(workflow, "libwayland-dev") ||
-      !contains(workflow, "meson ninja-build python3-venv") ||
+      !contains(workflow, "uses: ./.github/actions/setup-phase-g-dependencies") ||
       !contains(workflow, "cgpui-windows-release") ||
       !contains(workflow, "cgpui-linux-release")) return 5;
 

@@ -134,14 +134,20 @@ Native arm64 evidence (2026-11-21) and remaining work:
    13.0` in `xcrun vtool -show-build`. A macOS 13 runtime is unavailable:
    keep the deployment-target check, but do not require a macOS 13 run
    for sign-off or claim runtime compatibility from the Mach-O metadata.
-5. **Hosted arm64 CI: passed at `5385aaaa`.** Both
-   [Phase H jobs](https://github.com/dreamyloong2005/cgpui/actions/runs/44876227518)
-   (full Debug and example smoke) and all four arm64 jobs in
-   [Phase J](https://github.com/dreamyloong2005/cgpui/actions/runs/44876227613)
-   (Debug/examples, architecture/headers, Release SDK and performance/stress)
-   passed. Phase J uploaded the arm64 SDK and reports; the overall workflow
-   still failed because all four Intel jobs stopped at mcpp setup (no native
-   x86_64 macOS binary in the pinned release).
+5. **Hosted arm64-only CI: 6/6 passed at `d5013518`.**
+   [Phase H](https://github.com/dreamyloong2005/cgpui/actions/runs/44880423975)
+   passed full Debug and example smoke.
+   [Phase J](https://github.com/dreamyloong2005/cgpui/actions/runs/44880423908)
+   passed Debug/examples, architecture/headers, Release SDK and performance/stress;
+   no Intel job was scheduled. Both the
+   [arm64 Release SDK](https://github.com/dreamyloong2005/cgpui/actions/runs/44880423908/artifacts/14697923104)
+   and the [performance/stress reports](https://github.com/dreamyloong2005/cgpui/actions/runs/44880423908/artifacts/14697961504)
+   were uploaded for that commit.
+
+   At `5385aaaa`, [Phase H](https://github.com/dreamyloong2005/cgpui/actions/runs/44876227518)
+   and all four arm64 jobs in [Phase J](https://github.com/dreamyloong2005/cgpui/actions/runs/44876227613)
+   passed, but Phase J still failed overall because the pinned mcpp release had
+   no native Intel binary for its four Intel jobs.
 
    On `f56ce548`, the
    [Phase H run](https://github.com/dreamyloong2005/cgpui/actions/runs/44864775450)
