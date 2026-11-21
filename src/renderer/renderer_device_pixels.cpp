@@ -1,4 +1,4 @@
-#include "vulkan_device_pixels_internal.hpp"
+#include "renderer_device_pixels_internal.hpp"
 
 #include <cmath>
 
@@ -45,14 +45,14 @@ void scale_common(Draw& draw, float s) {
 
 } // namespace
 
-SolidRect vulkan_to_device_pixels(SolidRect draw, DpiScale scale) {
+SolidRect renderer_to_device_pixels(SolidRect draw, DpiScale scale) {
   if (!scales(scale)) return draw;
   draw.rect = scaled(draw.rect, scale.value);
   scale_common(draw, scale.value);
   return draw;
 }
 
-RoundedRectDraw vulkan_to_device_pixels(RoundedRectDraw draw, DpiScale scale) {
+RoundedRectDraw renderer_to_device_pixels(RoundedRectDraw draw, DpiScale scale) {
   if (!scales(scale)) return draw;
   const float s = scale.value;
   draw.rect = scaled(draw.rect, s);
@@ -62,14 +62,14 @@ RoundedRectDraw vulkan_to_device_pixels(RoundedRectDraw draw, DpiScale scale) {
   return draw;
 }
 
-TextDraw vulkan_to_device_pixels(TextDraw draw, DpiScale scale) {
+TextDraw renderer_to_device_pixels(TextDraw draw, DpiScale scale) {
   if (!scales(scale)) return draw;
   draw.bounds = scaled(draw.bounds, scale.value);
   scale_common(draw, scale.value);
   return draw;
 }
 
-TextSelectionDraw vulkan_to_device_pixels(
+TextSelectionDraw renderer_to_device_pixels(
     TextSelectionDraw draw, DpiScale scale) {
   if (!scales(scale)) return draw;
   draw.rect = scaled(draw.rect, scale.value);
@@ -77,7 +77,7 @@ TextSelectionDraw vulkan_to_device_pixels(
   return draw;
 }
 
-TextCaretDraw vulkan_to_device_pixels(TextCaretDraw draw, DpiScale scale) {
+TextCaretDraw renderer_to_device_pixels(TextCaretDraw draw, DpiScale scale) {
   if (!scales(scale)) return draw;
   draw.rect = scaled(draw.rect, scale.value);
   scale_common(draw, scale.value);
@@ -85,7 +85,7 @@ TextCaretDraw vulkan_to_device_pixels(TextCaretDraw draw, DpiScale scale) {
 }
 
 // source_rect is in image space and is not a screen coordinate.
-ImageDraw vulkan_to_device_pixels(ImageDraw draw, DpiScale scale) {
+ImageDraw renderer_to_device_pixels(ImageDraw draw, DpiScale scale) {
   if (!scales(scale)) return draw;
   draw.bounds = scaled(draw.bounds, scale.value);
   scale_common(draw, scale.value);
@@ -93,7 +93,7 @@ ImageDraw vulkan_to_device_pixels(ImageDraw draw, DpiScale scale) {
 }
 
 // Offset, blur and spread are lengths, so they scale with the rect.
-BoxShadowDraw vulkan_to_device_pixels(BoxShadowDraw draw, DpiScale scale) {
+BoxShadowDraw renderer_to_device_pixels(BoxShadowDraw draw, DpiScale scale) {
   if (!scales(scale)) return draw;
   const float s = scale.value;
   draw.rect = scaled(draw.rect, s);
@@ -107,7 +107,7 @@ BoxShadowDraw vulkan_to_device_pixels(BoxShadowDraw draw, DpiScale scale) {
 }
 
 // The blur radius is a length (standard deviation) and scales too.
-BackdropBlurDraw vulkan_to_device_pixels(BackdropBlurDraw draw, DpiScale scale) {
+BackdropBlurDraw renderer_to_device_pixels(BackdropBlurDraw draw, DpiScale scale) {
   if (!scales(scale)) return draw;
   draw.rect = scaled(draw.rect, scale.value);
   draw.radius = scaled(draw.radius, scale.value);

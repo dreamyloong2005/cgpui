@@ -17,9 +17,13 @@ import sys
 import tomllib
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-# Shared tests added after the xmake inventory was frozen. Do not increase the
-# historical baseline or let one of these programs hide a missing migrated test.
-POST_MIGRATION = {"shader_source_structure_test"}
+# Tests added after the xmake inventory was frozen, with the platforms that
+# build them (None: every platform). Do not increase the historical baseline
+# or let one of these programs hide a missing migrated test.
+POST_MIGRATION = {
+    "shader_source_structure_test": None,
+    "metal_device_pixel_scale_test": {"macosx"},
+}
 HELPERS = {
     "tests/ui/native_text_shaping_reference.cpp",
     "tests/platform/wayland_test_compositor.cpp",
@@ -93,8 +97,10 @@ def main():
                  if re.fullmatch(r"[A-Za-z0-9_/]+", l.strip())]
         result.setdefault("mcpp_test_programs", {})[platform] = len(names)
         migrated_count = sum(name not in POST_MIGRATION for name in names)
+        expected = [name for name, platforms in POST_MIGRATION.items()
+                    if platforms is None or platform in platforms]
         if (migrated_count != counts[platform] or
-                any(names.count(name) != 1 for name in POST_MIGRATION)):
+                any(names.count(name) != 1 for name in expected)):
             status = 1
         print(f"{platform}: xmake {counts[platform]} test entries, mcpp {len(names)} "
               f"test programs ({migrated_count} migrated)")

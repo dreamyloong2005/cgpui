@@ -135,7 +135,9 @@ Native arm64 evidence (2026-11-21) and remaining work:
    `python3.11 scripts/migration/reconcile.py --listed macosx=macos-tests.txt`
    (Python 3.11 or newer). Verified on arm64: 466 programs, including
    `shader_source_structure_test` added after migration. The checker accounts
-   for that test separately; the historical xmake count stays 465.
+   for that test separately; the historical xmake count stays 465. Tests
+   added later are listed in `POST_MIGRATION` with their platforms
+   (`metal_device_pixel_scale_test`, macOS only: 467 programs).
 4. **Debug and example smoke: passed.** `scripts/ci/macos-debug.sh` reports
    466 passed, 0 failed. With `MACOSX_DEPLOYMENT_TARGET=13.0`,
    `scripts/ci/macos-example-smoke.sh` runs 21 examples and 12 focused tests

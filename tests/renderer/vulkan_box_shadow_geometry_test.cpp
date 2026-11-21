@@ -1,5 +1,5 @@
 #include "vulkan_box_shadow_geometry_internal.hpp"
-#include "vulkan_device_pixels_internal.hpp"
+#include "renderer_device_pixels_internal.hpp"
 #include "vulkan_frame_draw_order_internal.hpp"
 #include "vulkan_frame_pipeline_switch_internal.hpp"
 
@@ -60,7 +60,7 @@ int test_geometry() {
 
 // Logical lengths become device pixels at the surface scale.
 int test_device_pixels() {
-  const auto device = cgpui::vulkan_to_device_pixels(
+  const auto device = cgpui::renderer_to_device_pixels(
       sample_shadow(), cgpui::DpiScale{1.5F});
   return close_to(device.rect.origin.x, 15.0F) &&
                  close_to(device.radius.top_left, 9.0F) &&

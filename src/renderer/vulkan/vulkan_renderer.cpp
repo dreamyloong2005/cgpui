@@ -1,4 +1,4 @@
-#include "vulkan_device_pixels_internal.hpp"
+#include "../renderer_device_pixels_internal.hpp"
 #include "vulkan_internal.hpp"
 
 #include <algorithm>
@@ -57,7 +57,7 @@ class VulkanFrame final : public RenderFrame {
         .command_index = draws.size(),
     });
     // Draws are logical pixels; the swapchain is device pixels.
-    draws.push_back(vulkan_to_device_pixels(draw, state_->scale()));
+    draws.push_back(renderer_to_device_pixels(draw, state_->scale()));
   }
 
   std::shared_ptr<VulkanRendererState> state_;

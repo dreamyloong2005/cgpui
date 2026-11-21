@@ -41,12 +41,15 @@ std::optional<cgpui::RendererFramePixels> capture_metal_pixels(
     MetalPixelTestSurface& surface,
     cgpui::Color clear,
     Paint&& paint,
-    const std::function<void(cgpui::Renderer&)>& inspect = {}) {
+    const std::function<void(cgpui::Renderer&)>& inspect = {},
+    cgpui::DpiScale scale = {1.0F}) {
   if (!surface.valid()) return std::nullopt;
+  // The drawable is 64 x 64 device pixels; draws are logical pixels, so at
+  // scale 2 the frame is 32 x 32 logical pixels.
   auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = surface.surface(),
       .framebuffer_size = {64.0F, 64.0F},
-      .scale = {1.0F}});
+      .scale = scale});
   if (!renderer) return std::nullopt;
   auto frame = (*renderer)->begin_frame();
   if (!frame || !(*frame)->request_pixel_capture()) return std::nullopt;

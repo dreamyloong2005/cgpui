@@ -1,5 +1,5 @@
 #include "vulkan_backdrop_blur_plan_internal.hpp"
-#include "vulkan_device_pixels_internal.hpp"
+#include "renderer_device_pixels_internal.hpp"
 
 #include <cmath>
 #include <vector>
@@ -73,7 +73,7 @@ int test_support_and_scale() {
   if (missing.supported || missing.reason.empty() || !present.supported) {
     return 20;
   }
-  const auto device = cgpui::vulkan_to_device_pixels(
+  const auto device = cgpui::renderer_to_device_pixels(
       draw({.origin = {10, 10}, .size = {20, 20}}, 6.0F), cgpui::DpiScale{1.5F});
   return close_to(device.blur_radius, 9.0F) && close_to(device.rect.origin.x, 15.0F) &&
                  close_to(device.radius.top_left, 12.0F)

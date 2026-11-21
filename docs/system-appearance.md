@@ -126,9 +126,9 @@ physical (900x600 logical), measured with `GetWindowRect` /
 
 Rendering scale: views paint in logical pixels, and the runtime hands
 `RenderFrame` logical-pixel draws together with the surface `DpiScale`
-(`Renderer::resize`). The Vulkan frame converts every recorded draw to
-device pixels once, in `vulkan_to_device_pixels`
-(`src/renderer/vulkan/vulkan_device_pixels.cpp`): rects, radii, border
+(`Renderer::resize`). The Vulkan and Metal frames convert every recorded
+draw to device pixels once, in `renderer_to_device_pixels`
+(`src/renderer/renderer_device_pixels.cpp`): rects, radii, border
 widths, clip rects and clip stacks, and the translation of paint and
 composition transforms (a uniform scale commutes with the linear part).
 Text glyph `device_*` positions are already device pixels and are kept.

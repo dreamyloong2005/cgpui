@@ -1,5 +1,7 @@
 #include "metal_renderer_internal.hpp"
 
+#include "../renderer_device_pixels_internal.hpp"
+
 #include <algorithm>
 #include <chrono>
 
@@ -30,31 +32,36 @@ class MetalFrame final : public RenderFrame {
     commands_.draw_order.push_back({
         .primitive_kind = RendererPrimitiveKind::solid_rect,
         .command_index = commands_.solid_rects.size()});
-    commands_.solid_rects.push_back(rect);
+    commands_.solid_rects.push_back(
+        renderer_to_device_pixels(rect, state_->scale));
   }
   void draw_rounded_rect(const RoundedRectDraw& rect) override {
     commands_.draw_order.push_back({
         .primitive_kind = RendererPrimitiveKind::rounded_rect,
         .command_index = commands_.rounded_rects.size()});
-    commands_.rounded_rects.push_back(rect);
+    commands_.rounded_rects.push_back(
+        renderer_to_device_pixels(rect, state_->scale));
   }
   void draw_text(const TextDraw& text) override {
     commands_.draw_order.push_back({
         .primitive_kind = RendererPrimitiveKind::text,
         .command_index = commands_.text_draws.size()});
-    commands_.text_draws.push_back(text);
+    commands_.text_draws.push_back(
+        renderer_to_device_pixels(text, state_->scale));
   }
   void draw_text_selection(const TextSelectionDraw& selection) override {
     commands_.draw_order.push_back({
         .primitive_kind = RendererPrimitiveKind::text_selection,
         .command_index = commands_.selections.size()});
-    commands_.selections.push_back(selection);
+    commands_.selections.push_back(
+        renderer_to_device_pixels(selection, state_->scale));
   }
   void draw_text_caret(const TextCaretDraw& caret) override {
     commands_.draw_order.push_back({
         .primitive_kind = RendererPrimitiveKind::text_caret,
         .command_index = commands_.carets.size()});
-    commands_.carets.push_back(caret);
+    commands_.carets.push_back(
+        renderer_to_device_pixels(caret, state_->scale));
   }
   void upload_image(const ImageAsset& image) override {
     commands_.image_uploads.push_back(image);
@@ -66,7 +73,8 @@ class MetalFrame final : public RenderFrame {
     commands_.draw_order.push_back({
         .primitive_kind = RendererPrimitiveKind::image,
         .command_index = commands_.image_draws.size()});
-    commands_.image_draws.push_back(image);
+    commands_.image_draws.push_back(
+        renderer_to_device_pixels(image, state_->scale));
   }
   Result<void> request_pixel_capture() override {
     commands_.capture_requested = true;

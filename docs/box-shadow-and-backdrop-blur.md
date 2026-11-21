@@ -38,7 +38,7 @@ does not implement them yet; see the macOS plan.
 
 ### Implementation
 
-- `vulkan_to_device_pixels(BoxShadowDraw)` scales rect, radii, offset,
+- `renderer_to_device_pixels(BoxShadowDraw)` scales rect, radii, offset,
   blur and spread by the surface DPI scale (like `530a6e96`).
 - `vulkan_build_box_shadow_geometry` emits one quad per shadow covering the
   shape plus `3 sigma + 1` px, with composed opacity applied to the color

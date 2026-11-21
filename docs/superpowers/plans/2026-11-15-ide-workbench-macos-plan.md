@@ -62,7 +62,11 @@ or WSL. Until it runs on a Mac, each row stays "planned".
   translations are drawn 1:1 in device pixels (half size at 2x), while
   text glyphs (already device pixels) are right. Fix by converting each
   recorded draw with `state.scale` in one place, matching
-  `vulkan_to_device_pixels`. Not changed and not observed.
+  `vulkan_to_device_pixels`. Fixed 2026-11-21: the conversion moved to
+  `src/renderer/renderer_device_pixels.cpp` (`renderer_to_device_pixels`)
+  and `MetalFrame` applies it to every recorded draw;
+  `metal_device_pixel_scale_test` checks rects, radii, clips, transform
+  translations and image bounds at scale 2 (it fails without the fix).
 - Color encoding: Metal already uses `MTLPixelFormatBGRA8Unorm` for the layer
   and pipelines and `RGBA8Unorm` / `R8Unorm` textures, so it does not have
   the double sRGB encoding that the Vulkan `B8G8R8A8_SRGB` swapchain had.

@@ -30,6 +30,7 @@ cgpui.build-support = { path = "../../tools/mcpp" }
 [build]
 sources = []
 include_dirs = [
+    "../../src/renderer",
     "../../src/renderer/vulkan",
     "../../src/ui",
     ".",
