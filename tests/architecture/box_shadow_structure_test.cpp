@@ -44,7 +44,7 @@ int main() {
     limit("src/renderer/vulkan/vulkan_frame_effects.cpp", 90);
     limit("src/renderer/vulkan/vulkan_box_shadow_shader_binaries.cpp", 360);
     const auto effects = read("include/cgpui/renderer/renderer_effect_draws.hpp");
-    const auto fragment = read("src/renderer/vulkan/shaders/box_shadow.frag.glsl");
+    const auto fragment = read("src/renderer/vulkan/shaders/box_shadow.slang");
     const auto binaries =
         read("src/renderer/vulkan/vulkan_box_shadow_shader_binaries.cpp");
     const auto geometry = read("src/renderer/vulkan/vulkan_box_shadow_geometry.cpp");
@@ -56,10 +56,11 @@ int main() {
     require(has(effects, "struct BoxShadowDraw") && !has(effects, "vulkan"),
             "the shadow draw is a backend-neutral public leaf");
     require(has(fragment, "erf_approx(") && has(fragment, "1.0 - box") &&
-                has(read("src/renderer/vulkan/shaders/box_shadow.vert.glsl"),
-                    "out_local"),
+                has(fragment, "output.local = input.local"),
             "the analytic erf shadow and its CSS clip-out live in the shader");
-    require(has(binaries, "glslc -O") && has(binaries, "0x07230203U"),
+    require(has(binaries, "generated/box_shadow_spirv.inc") &&
+                has(read("src/renderer/vulkan/generated/box_shadow_spirv.inc"),
+                    "0x07230203U"),
             "embedded SPIR-V records how it was generated");
     require(has(geometry, "blur_radius) * 0.5F") &&
                 has(geometry, "vulkan_apply_composed_transform(") &&

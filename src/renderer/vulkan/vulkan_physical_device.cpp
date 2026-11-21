@@ -108,8 +108,14 @@ Result<void> VulkanRendererState::select_physical_device() {
 
   // Enumeration order wins, except that a transparent surface prefers the
   // first suitable device whose surface can composite premultiplied alpha.
+  // Devices below Vulkan 1.1 cannot run the SPIR-V 1.3 shaders.
   std::optional<VulkanDeviceCandidate> selected;
   for (VkPhysicalDevice device : devices) {
+    VkPhysicalDeviceProperties properties{};
+    vkGetPhysicalDeviceProperties(device, &properties);
+    if (properties.apiVersion < VK_API_VERSION_1_1) {
+      continue;
+    }
     auto queue_families = find_queue_families(device);
     if (!queue_families) {
       return std::unexpected(queue_families.error());
@@ -142,7 +148,8 @@ Result<void> VulkanRendererState::select_physical_device() {
   if (!selected) {
     return std::unexpected(vulkan_error(
         ErrorCode::renderer_initialization_failed,
-        "No Vulkan physical device supports graphics, present, and swapchain"));
+        "No Vulkan 1.1 physical device supports graphics, present, and "
+        "swapchain"));
   }
   physical_device_ = selected->device;
   graphics_queue_family_ = selected->families.graphics;

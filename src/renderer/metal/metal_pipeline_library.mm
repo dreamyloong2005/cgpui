@@ -1,22 +1,53 @@
 #include "metal_renderer_internal.hpp"
 #include "metal_shaders_source.hpp"
 
+#include <string_view>
+
 namespace cgpui {
 namespace {
 
-NSString* metal_shader_source() {
-  return [NSString stringWithUTF8String:kCgpuiMetalShaderSource];
+// The shaders are compiled from Slang one entry point per source
+// (scripts/dev/compile_shaders.py), so each function has its own library.
+Result<id<MTLFunction>> make_function(MetalRendererState& state,
+                                      std::string_view name) {
+  for (const CgpuiMetalShader& shader : kCgpuiMetalShaders) {
+    if (name != shader.function) {
+      continue;
+    }
+    NSError* error = nil;
+    id<MTLLibrary> library = [state.device
+        newLibraryWithSource:[NSString stringWithUTF8String:shader.source]
+                     options:nil
+                       error:&error];
+    id<MTLFunction> function =
+        library == nil ? nil
+                       : [library newFunctionWithName:
+                              [NSString stringWithUTF8String:shader.function]];
+    if (function == nil) {
+      return std::unexpected(Error{
+          .code = ErrorCode::renderer_initialization_failed,
+          .message = error == nil
+                         ? "Metal shader compilation failed: " + std::string(name)
+                         : std::string(error.localizedDescription.UTF8String)});
+    }
+    return function;
+  }
+  return std::unexpected(Error{
+      .code = ErrorCode::renderer_initialization_failed,
+      .message = "Metal shader not embedded: " + std::string(name)});
 }
 
 Result<id<MTLRenderPipelineState>> make_pipeline(
     MetalRendererState& state,
-    NSString* fragment_name) {
+    std::string_view fragment_name) {
+  auto fragment = make_function(state, fragment_name);
+  if (!fragment) {
+    return std::unexpected(fragment.error());
+  }
   MTLRenderPipelineDescriptor* descriptor =
       [[MTLRenderPipelineDescriptor alloc] init];
-  descriptor.vertexFunction =
-      [state.pipelines.library newFunctionWithName:@"cgpui_vertex"];
-  descriptor.fragmentFunction =
-      [state.pipelines.library newFunctionWithName:fragment_name];
+  descriptor.vertexFunction = state.pipelines.vertex_function;
+  descriptor.fragmentFunction = *fragment;
   descriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
   descriptor.colorAttachments[0].blendingEnabled = YES;
   descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
@@ -52,22 +83,13 @@ id<MTLSamplerState> make_sampler(
 }  // namespace
 
 Result<void> initialize_metal_pipeline_library(MetalRendererState& state) {
-  NSError* error = nil;
-  state.pipelines.library =
-      [state.device newLibraryWithSource:metal_shader_source()
-                                 options:nil
-                                   error:&error];
-  if (state.pipelines.library == nil) {
-    return std::unexpected(Error{
-        .code = ErrorCode::renderer_initialization_failed,
-        .message = error == nil
-                       ? "Metal shader compilation failed"
-                       : std::string(error.localizedDescription.UTF8String)});
-  }
-  auto solid = make_pipeline(state, @"cgpui_solid_fragment");
-  auto rounded = make_pipeline(state, @"cgpui_rounded_fragment");
-  auto glyph = make_pipeline(state, @"cgpui_glyph_fragment");
-  auto image = make_pipeline(state, @"cgpui_image_fragment");
+  auto vertex = make_function(state, "cgpui_vertex");
+  if (!vertex) return std::unexpected(vertex.error());
+  state.pipelines.vertex_function = *vertex;
+  auto solid = make_pipeline(state, "cgpui_solid_fragment");
+  auto rounded = make_pipeline(state, "cgpui_rounded_fragment");
+  auto glyph = make_pipeline(state, "cgpui_glyph_fragment");
+  auto image = make_pipeline(state, "cgpui_image_fragment");
   if (!solid) return std::unexpected(solid.error());
   if (!rounded) return std::unexpected(rounded.error());
   if (!glyph) return std::unexpected(glyph.error());

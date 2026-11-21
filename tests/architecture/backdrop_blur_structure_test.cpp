@@ -52,7 +52,7 @@ int main() {
     const auto recording = read("src/renderer/vulkan/vulkan_command_recording.cpp");
     const auto renderer = read("src/renderer/vulkan/vulkan_renderer.cpp");
     const auto fallback = read("src/renderer/renderer_effect_fallback.cpp");
-    const auto blur = read("src/renderer/vulkan/shaders/backdrop_blur.frag.glsl");
+    const auto blur = read("src/renderer/vulkan/shaders/backdrop.slang");
     const auto binaries =
         read("src/renderer/vulkan/vulkan_backdrop_blur_shader_binaries.cpp");
     const auto module = read("tests/renderer/mcpp.toml") +
@@ -66,7 +66,9 @@ int main() {
     require(has(renderer, "backdrop_blur_support().supported") &&
                 has(fallback, "draw_rounded_rect("),
             "without support the backdrop falls back to the tint only");
-    require(has(blur, "push_constants.direction") && has(binaries, "glslc -O"),
+    require(has(blur, "push_constants.direction") && has(binaries, "generated/backdrop_blur_spirv.inc") &&
+                has(read("src/renderer/vulkan/generated/backdrop_blur_spirv.inc"),
+                    "scripts/dev/compile_shaders.py"),
             "the blur is separable and its SPIR-V records how it was generated");
     require(has(module, "\"vulkan_backdrop_blur_pixel_test.cpp\"") &&
                 has(module, "\"vulkan_backdrop_blur_plan_test.cpp\"") &&

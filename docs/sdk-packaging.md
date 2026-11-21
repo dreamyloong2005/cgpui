@@ -89,8 +89,10 @@ copies that header closure to the same relative path and lists it in
 `private_headers`. Moving those members behind a pimpl would remove the
 need; it is not done here.
 
-Shaders are compiled to SPIR-V at development time and embedded in
-`cgpui_renderer_vulkan`; there are no separate shader files.
+Shaders are written in Slang and compiled to SPIR-V at development time
+(`scripts/dev/compile_shaders.py`); the SPIR-V is embedded in
+`cgpui_renderer_vulkan`, and the package has no shader files. The Vulkan
+renderer requires Vulkan 1.1 (SPIR-V 1.3).
 
 ## manifest.json
 

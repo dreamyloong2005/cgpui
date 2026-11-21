@@ -235,8 +235,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_resource_binding.cpp",
       "src/renderer/vulkan/vulkan_image_color_internal.hpp",
       "src/renderer/vulkan/vulkan_image_color.cpp",
-      "src/renderer/vulkan/shaders/image.vert.glsl",
-      "src/renderer/vulkan/shaders/image.frag.glsl",
+      "src/renderer/vulkan/shaders/image.slang",
+      "src/renderer/vulkan/generated/image_spirv.inc",
       "src/renderer/vulkan/vulkan_image_pipeline_internal.hpp",
       "src/renderer/vulkan/vulkan_image_pipeline_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_image_pipeline_state.cpp",
@@ -991,11 +991,11 @@ int main(int argc, char** argv) {
   }
   const std::string pixel_output_manifest = read_source("tests/renderer/mcpp.toml");
   const std::string pixel_image_vertex_shader =
-      read_source("src/renderer/vulkan/shaders/image.vert.glsl");
+      read_source("src/renderer/vulkan/shaders/image.slang");
   const std::string pixel_text_vertex_shader =
-      read_source("src/renderer/vulkan/shaders/text.vert.glsl");
+      read_source("src/renderer/vulkan/shaders/text.slang");
   const std::string pixel_rounded_vertex_shader =
-      read_source("src/renderer/vulkan/shaders/rounded_rect.vert.glsl");
+      read_source("src/renderer/vulkan/shaders/rounded_rect.slang");
   // Wayland pixel capture is a Linux test program; the Vulkan pixel cases
   // are Windows test programs (tests/renderer/mcpp.toml).
   const std::size_t linux_tests =
@@ -1723,22 +1723,22 @@ int main(int argc, char** argv) {
   const std::string text_shader_modules =
       read_source("src/renderer/vulkan/vulkan_text_shader_modules.cpp");
   const std::string text_vertex_shader =
-      read_source("src/renderer/vulkan/shaders/text.vert.glsl");
+      read_source("src/renderer/vulkan/shaders/text.slang");
   const std::string text_fragment_shader =
-      read_source("src/renderer/vulkan/shaders/text.frag.glsl");
+      read_source("src/renderer/vulkan/shaders/text.slang");
   if (line_count(text_shader_binaries) > 130 ||
       line_count(text_shader_modules) > 100 ||
       line_count(text_vertex_shader) > 60 ||
-      line_count(text_fragment_shader) > 40 ||
+      line_count(text_fragment_shader) > 60 ||
       !contains(text_shader_binaries,
                 "vulkan_text_vertex_shader_spirv(") ||
       !contains(text_shader_binaries,
                 "vulkan_text_fragment_shader_spirv(") ||
       !contains(text_shader_modules, "vkCreateShaderModule") ||
       !contains(text_shader_modules, "vkDestroyShaderModule") ||
-      !contains(text_vertex_shader, "layout(push_constant)") ||
+      !contains(text_vertex_shader, "[[vk::push_constant]]") ||
       !contains(text_fragment_shader,
-                "layout(set = 0, binding = 0)") ||
+                "[[vk::binding(0, 0)]]") ||
       contains(command_recording, "vkCreateShaderModule")) {
     return 62;
   }
@@ -2106,9 +2106,9 @@ int main(int argc, char** argv) {
     return 74;
   }
   const std::string image_vertex_shader =
-      read_source("src/renderer/vulkan/shaders/image.vert.glsl");
+      read_source("src/renderer/vulkan/shaders/image.slang");
   const std::string image_fragment_shader =
-      read_source("src/renderer/vulkan/shaders/image.frag.glsl");
+      read_source("src/renderer/vulkan/shaders/image.slang");
   const std::string image_color_header = read_source(
       "src/renderer/vulkan/vulkan_image_color_internal.hpp");
   const std::string image_color =
@@ -2157,9 +2157,9 @@ int main(int argc, char** argv) {
       line_count(image_draw_recording) > 180 ||
       !contains(image_color_header, "vulkan_resolve_image_tint(") ||
       !contains(image_color, "vulkan_apply_composed_opacity(") ||
-      !contains(image_vertex_shader, "out_color") ||
+      !contains(image_vertex_shader, "output.color") ||
       !contains(image_fragment_shader,
-                "texture(image_texture, in_image_uv) *") ||
+                "image_texture.Sample(input.image_uv) *") ||
       !contains(image_pipeline_header, "struct VulkanImageVertex") ||
       !contains(image_pipeline_resources,
                 "vkCreateGraphicsPipelines") ||

@@ -99,9 +99,9 @@ int test_shader_module_structure() {
   const std::string modules =
       read_source("src/renderer/vulkan/vulkan_text_shader_modules.cpp");
   const std::string vertex =
-      read_source("src/renderer/vulkan/shaders/text.vert.glsl");
+      read_source("src/renderer/vulkan/shaders/text.slang");
   const std::string fragment =
-      read_source("src/renderer/vulkan/shaders/text.frag.glsl");
+      read_source("src/renderer/vulkan/shaders/text.slang");
   if (internal.empty() || binaries.empty() || modules.empty() ||
       vertex.empty() || fragment.empty()) {
     return 30;
@@ -111,8 +111,8 @@ int test_shader_module_structure() {
       !contains(binaries, "vulkan_text_fragment_shader_spirv(") ||
       !contains(modules, "vulkan_create_text_shader_modules(") ||
       !contains(modules, "vulkan_destroy_text_shader_modules(") ||
-      !contains(vertex, "layout(push_constant)") ||
-      !contains(fragment, "layout(set = 0, binding = 0)")) {
+      !contains(vertex, "[[vk::push_constant]]") ||
+      !contains(fragment, "[[vk::binding(0, 0)]]")) {
     return 31;
   }
   return 0;

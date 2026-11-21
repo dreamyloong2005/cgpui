@@ -86,13 +86,13 @@ int main() {
           "src/renderer/vulkan/vulkan_frame_pixel_capture_readback.cpp",
           "vkMapMemory"},
       SourceEvidence{
-          "src/renderer/vulkan/shaders/text.vert.glsl",
+          "src/renderer/vulkan/shaders/text.slang",
           "normalized.y * 2.0 - 1.0"},
       SourceEvidence{
-          "src/renderer/vulkan/shaders/rounded_rect.vert.glsl",
+          "src/renderer/vulkan/shaders/rounded_rect.slang",
           "normalized.y * 2.0 - 1.0"},
       SourceEvidence{
-          "src/renderer/vulkan/shaders/image.vert.glsl",
+          "src/renderer/vulkan/shaders/image.slang",
           "normalized.y * 2.0 - 1.0"},
   };
   for (std::size_t index = 0; index < module_evidence.size(); ++index) {

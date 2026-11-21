@@ -19,7 +19,7 @@ inline double blurred_rect_coverage(
          (gaussian_cdf(y1 - y, sigma) - gaussian_cdf(y0 - y, sigma));
 }
 
-// C++ port of box_shadow.frag.glsl's blurred_coverage for a uniform corner
+// C++ port of box_shadow.slang's blurred_coverage for a uniform corner
 // radius (Evan Wallace's rounded-rect shadow with 4 y samples).
 inline double rounded_shadow_x(
     double x, double y, double sigma, double corner, double hx, double hy) {

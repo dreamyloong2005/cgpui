@@ -21,8 +21,10 @@ the workspace uses the installed one (`[workspace.toolchain]`).
 - PowerShell 7 for CI scripts
 - The LunarG Vulkan SDK (1.4.341.1 here) with `VULKAN_SDK` set;
   `packages/renderer-vulkan/build.mcpp` takes the headers and `vulkan-1.lib`
-  from it
-- A Vulkan-capable driver
+  from it. Its `slangc` and `spirv-val` are needed only to compile edited
+  shaders ([Getting Started](shaders.md)).
+- A driver and loader with Vulkan 1.1 or later: the shaders are SPIR-V 1.3,
+  and the renderer skips devices below 1.1.
 
 The toolchain is `msvc@system` (the installed Build Tools), in any UI
 language: mcpp takes header dependencies from cl.exe's `/sourceDependencies`

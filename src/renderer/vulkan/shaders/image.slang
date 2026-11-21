@@ -1,0 +1,38 @@
+// Image pipeline (vulkan_image_*): textured quads; the vertex color carries
+// the resolved tint and the composed opacity (vulkan_resolve_image_tint).
+struct PushConstants {
+  float2 framebuffer_size;
+};
+[[vk::push_constant]] ConstantBuffer<PushConstants> push_constants;
+
+[[vk::binding(0, 0)]] Sampler2D image_texture;
+
+struct VertexInput {
+  [[vk::location(0)]] float2 position : POSITION;
+  [[vk::location(1)]] float2 image_uv : TEXCOORD;
+  [[vk::location(2)]] float4 color : COLOR;
+};
+
+struct Varyings {
+  float4 position : SV_Position;
+  [[vk::location(0)]] float2 image_uv : TEXCOORD;
+  [[vk::location(1)]] float4 color : COLOR;
+};
+
+[shader("vertex")]
+Varyings vertex_main(VertexInput input) {
+  float2 framebuffer_size = max(push_constants.framebuffer_size, float2(1.0));
+  float2 normalized = input.position / framebuffer_size;
+  Varyings output;
+  // Vulkan clip space has y down, like the framebuffer: no flip.
+  output.position = float4(normalized.x * 2.0 - 1.0,
+                           normalized.y * 2.0 - 1.0, 0.0, 1.0);
+  output.image_uv = input.image_uv;
+  output.color = input.color;
+  return output;
+}
+
+[shader("fragment")]
+float4 fragment_main(Varyings input) : SV_Target0 {
+  return image_texture.Sample(input.image_uv) * input.color;
+}

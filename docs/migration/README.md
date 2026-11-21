@@ -110,9 +110,9 @@ To do, in order:
    - `packages/platform-macos` (Cocoa, `.mm` sources; frameworks AppKit,
      CoreText, UniformTypeIdentifiers, QuartzCore);
    - `packages/renderer-metal` (frameworks Metal, QuartzCore). Its
-     `build.mcpp` embeds `src/renderer/metal/shaders.metal` and compiles it
-     with `xcrun metal` / `metallib`; a failure there is only a warning,
-     so read the build output for it;
+     `build.mcpp` embeds the five sources in `src/renderer/metal/generated/`
+     (from Slang, below) and compiles each with `xcrun metal -c`; a failure
+     there is only a warning, so read the build output for it;
    - `packages/platform` (`macos_clipboard.mm`, AppKit), `packages/app`,
      `examples/hello_window` (`macos_*` cases) and the `cfg(os = "macos")`
      sections of `tests/platform`, `tests/renderer`, `tests/ui`,
@@ -159,7 +159,23 @@ To do, in order:
 7. **SDK packages.** `scripts/ci/sdk-package.py` accepts `--platform
    windows|linux` only; there is no macOS package or consumer smoke test.
    Decide whether macOS ships one.
-8. **Docs.** Once the Mac runs pass, replace the xmake-era evidence in
+8. **Metal shaders from Slang (2026-11-21).** `shaders.metal` was
+   replaced by `src/renderer/metal/shaders/cgpui_metal.slang`, compiled by
+   slangc into one Metal source per function; none of it has been compiled
+   by Apple's compiler or run. Check on the Mac:
+   - each `generated/*.metal` compiles (`xcrun -sdk macosx metal -c`), and
+     `metal_pipeline_library.mm` (one `MTLLibrary` per function now) creates
+     the four pipelines;
+   - the vertex function reads `vertices` as `device VertexIn_0*` at
+     `[[buffer(0)]]` (slangc's form of a `StructuredBuffer`; `shaders.metal`
+     had `constant VertexIn*`) while `metal_geometry.mm`, `metal_text.mm` and
+     `metal_image.mm` still pass it with `setVertexBytes`; if Metal refuses
+     that for a `device` argument, pass an `MTLBuffer` instead;
+   - the vertex outputs and fragment inputs match by
+     `[[user(TEXCOORD)]]` / `[[user(COLOR)]]` across the separate sources;
+   - the Metal pixel tests: the glyph fragment now clamps coverage and
+     applies the shared `coverage_gamma` (1.0), as Vulkan does.
+9. **Docs.** Once the Mac runs pass, replace the xmake-era evidence in
    `docs/platform-mac-readiness.md` and `docs/platform-dependencies.md`
    (the Phase H closeout tests check some of those sentences; keep them or
    update the tests with them) and remove the "planned only, not built"

@@ -153,3 +153,9 @@ WSL disk has. `scripts/dev/test.sh --asan --per-member-cleanup` runs one
 member with tests at a time and deletes that member's test programs and
 objects after it (the libraries stay built); `CGPUI_ASAN_STOP_USED_GB=<n>`
 stops before the next member once the file system uses more than `n` GB.
+
+## 8. Shaders
+
+Shaders are written in Slang and compiled outside the build; after editing
+one, run `python scripts/dev/compile_shaders.py` and commit its outputs with
+the source. See [Shaders](shaders.md).

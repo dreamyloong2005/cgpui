@@ -131,9 +131,9 @@ int test_rounded_rect_pipeline_structure() {
   const std::string resources = read_source(
       "src/renderer/vulkan/vulkan_rounded_rect_pipeline_resources.cpp");
   const std::string vertex = read_source(
-      "src/renderer/vulkan/shaders/rounded_rect.vert.glsl");
+      "src/renderer/vulkan/shaders/rounded_rect.slang");
   const std::string fragment = read_source(
-      "src/renderer/vulkan/shaders/rounded_rect.frag.glsl");
+      "src/renderer/vulkan/shaders/rounded_rect.slang");
   const std::string swapchain =
       read_source("src/renderer/vulkan/vulkan_swapchain_internal.hpp");
   const std::string create =
@@ -150,8 +150,8 @@ int test_rounded_rect_pipeline_structure() {
       !contains(binaries, "vulkan_rounded_rect_vertex_shader_spirv(") ||
       !contains(modules, "vulkan_create_rounded_rect_shader_modules(") ||
       !contains(resources, "vkCreateGraphicsPipelines") ||
-      !contains(vertex, "layout(push_constant)") ||
-      !contains(fragment, "in_color.a * clamp(in_coverage") ||
+      !contains(vertex, "[[vk::push_constant]]") ||
+      !contains(fragment, "input.color.a * clamp(input.coverage") ||
       !contains(swapchain, "VulkanRoundedRectPipelineResources rounded_rect_pipeline") ||
       !contains(create, "vulkan_create_rounded_rect_pipeline_resources(") ||
       !contains(lifecycle, "vulkan_destroy_rounded_rect_pipeline_resources(")) {

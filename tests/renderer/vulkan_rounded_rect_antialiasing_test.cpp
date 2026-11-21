@@ -91,13 +91,13 @@ int test_pipeline_and_shader_carry_coverage() {
     return 30;
   }
   const std::string vertex = read_source(
-      "src/renderer/vulkan/shaders/rounded_rect.vert.glsl");
+      "src/renderer/vulkan/shaders/rounded_rect.slang");
   const std::string fragment = read_source(
-      "src/renderer/vulkan/shaders/rounded_rect.frag.glsl");
-  if (!contains(vertex, "in_coverage") ||
-      !contains(vertex, "out_coverage = in_coverage") ||
-      !contains(fragment, "in_coverage") ||
-      !contains(fragment, "in_color.a * clamp(in_coverage")) {
+      "src/renderer/vulkan/shaders/rounded_rect.slang");
+  if (!contains(vertex, "input.coverage") ||
+      !contains(vertex, "output.coverage = input.coverage") ||
+      !contains(fragment, "clamp(input.coverage") ||
+      !contains(fragment, "input.color.a * clamp(input.coverage")) {
     return 31;
   }
   return 0;

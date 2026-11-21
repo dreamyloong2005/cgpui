@@ -33,7 +33,8 @@ int main() {
       "src/renderer/metal/metal_image.mm",
       "src/renderer/metal/metal_clip_transform.mm",
       "src/renderer/metal/metal_command_batches.mm",
-      "src/renderer/metal/shaders.metal"};
+      "src/renderer/metal/shaders/cgpui_metal.slang",
+      "src/renderer/metal/generated/cgpui_vertex.metal"};
   for (const char* file : files) {
     if (read_source(file).empty()) return 1;
   }
@@ -56,7 +57,7 @@ int main() {
   return contains(manifests, "\"packages/renderer-metal\",") &&
                  contains(manifests, "\"tests/architecture\",") &&
                  !module.empty() && !targets.empty() && contains(targets, "\"phase_h_metal_primitives_structure_test.cpp\"") &&
-                 contains(module, "xcrun") && contains(module, "metallib") &&
+                 contains(module, "xcrun") && contains(module, "src/renderer/metal/generated") &&
                  contains(module, "\"metal/metal_*.mm\"") &&
                  contains(module, "\"metal/metal_*.mm\"") &&
                  contains(module, "\"metal/metal_*.mm\"") &&

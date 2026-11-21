@@ -128,12 +128,12 @@ int test_tint_remains_draw_time() {
   const std::string color_source =
       read_source("src/renderer/vulkan/vulkan_image_color.cpp");
   const std::string fragment_shader =
-      read_source("src/renderer/vulkan/shaders/image.frag.glsl");
+      read_source("src/renderer/vulkan/shaders/image.slang");
   const std::string cache_header =
       read_source("include/cgpui/renderer/svg_raster_cache.hpp");
   return contains(color_source, "vulkan_resolve_image_tint(") &&
                  contains(fragment_shader,
-                          "texture(image_texture, in_image_uv) * in_color") &&
+                          "image_texture.Sample(input.image_uv) * input.color") &&
                  !contains(cache_header, "tint")
              ? 0
              : 40;

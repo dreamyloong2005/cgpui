@@ -64,7 +64,8 @@ struct MetalRoundedRectUniforms {
 };
 
 struct MetalPipelineLibrary {
-  __strong id<MTLLibrary> library = nil;
+  // The vertex function every pipeline shares (metal_pipeline_library.mm).
+  __strong id<MTLFunction> vertex_function = nil;
   __strong id<MTLRenderPipelineState> solid = nil;
   __strong id<MTLRenderPipelineState> rounded = nil;
   __strong id<MTLRenderPipelineState> glyph = nil;

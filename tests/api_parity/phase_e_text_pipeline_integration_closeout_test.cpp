@@ -59,7 +59,7 @@ int main() {
   const std::string coverage = read_source(
       "src/renderer/vulkan/vulkan_text_coverage_internal.hpp");
   const std::string fragment =
-      read_source("src/renderer/vulkan/shaders/text.frag.glsl");
+      read_source("src/renderer/shaders/cgpui_shared.slang");
   const std::string frame_test =
       read_source("tests/renderer/vulkan_frame_lifetime_test.cpp");
 

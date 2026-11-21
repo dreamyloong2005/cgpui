@@ -193,6 +193,7 @@ discover = [
     "platform_source_structure_test.cpp",
     "renderer_source_structure_test.cpp",
     "sdk_packaging_structure_test.cpp",
+    "shader_source_structure_test.cpp",
     "system_appearance_structure_test.cpp",
     "ui_source_structure_test.cpp",
     "wayland_system_appearance_structure_test.cpp",

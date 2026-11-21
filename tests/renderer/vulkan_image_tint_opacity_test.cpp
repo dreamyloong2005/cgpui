@@ -119,9 +119,9 @@ int test_structure_and_documentation() {
   const std::string vertex_source =
       read_source("src/renderer/vulkan/vulkan_image_vertex_buffer.cpp");
   const std::string vertex_shader =
-      read_source("src/renderer/vulkan/shaders/image.vert.glsl");
+      read_source("src/renderer/vulkan/shaders/image.slang");
   const std::string fragment_shader =
-      read_source("src/renderer/vulkan/shaders/image.frag.glsl");
+      read_source("src/renderer/vulkan/shaders/image.slang");
   const std::string structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
   if (color_header.empty() || color_source.empty() || vertex_source.empty() ||
@@ -131,8 +131,8 @@ int test_structure_and_documentation() {
   if (!contains(color_header, "vulkan_resolve_image_tint(") ||
       !contains(color_source, "vulkan_apply_composed_opacity(") ||
       !contains(vertex_source, "vulkan_resolve_image_tint(") ||
-      !contains(vertex_shader, "out_color") ||
-      !contains(fragment_shader, "texture(image_texture, in_image_uv) *") ||
+      !contains(vertex_shader, "output.color") ||
+      !contains(fragment_shader, "image_texture.Sample(input.image_uv) *") ||
       !contains(structure, "vulkan_image_color.cpp")) {
     return 41;
   }

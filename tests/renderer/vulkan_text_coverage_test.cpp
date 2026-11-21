@@ -77,11 +77,14 @@ int test_coverage_transfer_and_alpha() {
 }
 
 int test_shader_and_blend_contract() {
+  // The text fragment shader applies the shared glyph coverage helper.
   const std::string fragment =
-      read_source("src/renderer/vulkan/shaders/text.frag.glsl");
+      read_source("src/renderer/shaders/cgpui_shared.slang");
+  const std::string text = read_source("src/renderer/vulkan/shaders/text.slang");
   if (fragment.empty() || !contains(fragment, "coverage_gamma") ||
       !contains(fragment, "pow(") || !contains(fragment, "clamp(") ||
-      !contains(fragment, "in_color.a * coverage")) {
+      !contains(fragment, "color.a * coverage") ||
+      !contains(text, "glyph_color(")) {
     return 30;
   }
   const VkPipelineColorBlendAttachmentState blend =

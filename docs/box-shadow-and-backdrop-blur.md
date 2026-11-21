@@ -44,7 +44,7 @@ does not implement them yet; see the macOS plan.
   shape plus `3 sigma + 1` px, with composed opacity applied to the color
   and composed transforms applied to the corners. Each vertex also carries
   the untransformed local point, the shadow and box rects/radii and sigma.
-- `shaders/box_shadow.frag.glsl` evaluates the closed-form Gaussian-blurred
+- `shaders/box_shadow.slang` evaluates the closed-form Gaussian-blurred
   rounded rect from Evan Wallace's "Fast rounded rectangle shadows" (the
   approach GPUI/Zed uses): an erf approximation integrates along x exactly,
   4 samples integrate along y. Sigma < 0.05 uses a sharp signed-distance
@@ -54,10 +54,11 @@ does not implement them yet; see the macOS plan.
   batching as `VulkanFrameDrawResourceKind::box_shadow`, so they keep paint
   order and clip scissors. Shadow buffers and draws are part of the
   command-reuse signature.
-- SPIR-V is embedded in `vulkan_box_shadow_shader_binaries.cpp`, generated
-  with `glslc -O --target-env=vulkan1.0` and checked with `spirv-val`
-  (SDK 1.4.341.1), like the other embedded shaders. GLSL compilation is not
-  a build step.
+- SPIR-V is embedded in `vulkan_box_shadow_shader_binaries.cpp` from
+  `generated/box_shadow_spirv.inc`, which `scripts/dev/compile_shaders.py`
+  writes with slangc (SPIR-V 1.3) and checks with `spirv-val`, like the
+  other embedded shaders ([Getting Started](shaders.md)).
+  Shader compilation is not a build step.
 
 ### Tests
 
@@ -147,10 +148,9 @@ does not implement them yet; see the macOS plan.
   pipelines and three render passes are kept and reused, and are recreated
   only when the swapchain format or extent changes.
 - Backdrop frames are never replayed by command-buffer reuse.
-- SPIR-V for `shaders/backdrop_*.glsl` is embedded in
-  `vulkan_backdrop_blur_shader_binaries.cpp`, generated with
-  `glslc -fshader-stage=<stage> -O --target-env=vulkan1.0` and checked with
-  `spirv-val`.
+- The six passes are entry points of `shaders/backdrop.slang`; their SPIR-V
+  (`generated/backdrop_blur_spirv.inc`) is embedded in
+  `vulkan_backdrop_blur_shader_binaries.cpp`.
 
 ### Tests
 

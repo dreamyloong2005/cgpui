@@ -19,13 +19,31 @@ Result<void> VulkanRendererState::create_instance() {
   };
 #endif
 
+  // The shaders are SPIR-V 1.3 (compiled from Slang), which needs Vulkan
+  // 1.1. A Vulkan 1.0 loader has no vkEnumerateInstanceVersion and would
+  // refuse apiVersion 1.1, so ask for it by name first.
+  const auto enumerate_instance_version =
+      reinterpret_cast<PFN_vkEnumerateInstanceVersion>(
+          vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion"));
+  std::uint32_t loader_version = VK_API_VERSION_1_0;
+  if (enumerate_instance_version != nullptr &&
+      enumerate_instance_version(&loader_version) != VK_SUCCESS) {
+    loader_version = VK_API_VERSION_1_0;
+  }
+  if (loader_version < VK_API_VERSION_1_1) {
+    return std::unexpected(vulkan_error(
+        ErrorCode::renderer_initialization_failed,
+        "The Vulkan renderer requires Vulkan 1.1; the installed loader "
+        "supports Vulkan 1.0 only"));
+  }
+
   const VkApplicationInfo app_info{
       .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
       .pApplicationName = "CGPUI",
       .applicationVersion = VK_MAKE_VERSION(0, 1, 0),
       .pEngineName = "CGPUI",
       .engineVersion = VK_MAKE_VERSION(0, 1, 0),
-      .apiVersion = VK_API_VERSION_1_0,
+      .apiVersion = VK_API_VERSION_1_1,
   };
   const VkInstanceCreateInfo create_info{
       .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
