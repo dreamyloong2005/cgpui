@@ -53,7 +53,7 @@ Arch (the WSL2 `archlinux` gate) installs:
 ```bash
 pacman -S --needed gcc pkgconf wayland libxkbcommon libxkbcommon-x11 \
   libxcb xcb-util-cursor dbus harfbuzz freetype2 fontconfig vulkan-icd-loader \
-  vulkan-headers ttf-dejavu wqy-zenhei
+  vulkan-headers ttf-dejavu wqy-zenhei xorg-server-xvfb xorg-xdpyinfo
 ```
 
 Ubuntu CI installs:
@@ -71,8 +71,13 @@ Use a real Wayland session, WSLg, or Weston for native smoke and pixel tests.
 ## Linux: X11/XCB + Vulkan
 
 The X11 backend additionally requires XCB and XKB Common's X11 integration.
-Headless tests require Xvfb. Typical packages are `libxcb`/`libxcb1-dev`,
-`libxkbcommon-x11`/`libxkbcommon-x11-dev`, and `xorg-server-xvfb`/`xvfb`.
+Typical packages are `libxcb`/`libxcb1-dev`, `libxkbcommon-x11`/
+`libxkbcommon-x11-dev`, and `xorg-server-xvfb`/`xvfb` with `xorg-xdpyinfo`/
+`x11-utils`. `scripts/dev/test.sh` runs the X11 tests on a private Xvfb
+display (`scripts/dev/test-display.sh`), not the session's: on WSLg or a
+desktop, `x11_clipboard_test` would replace the host clipboard (WSLg copies
+the X11 selection into Windows) and fail Windows clipboard tests running at
+the same time. `CGPUI_TEST_DISPLAY=session` uses the session's `DISPLAY`.
 
 Use `CGPUI_LINUX_BACKEND=x11`; do not force that override across
 Wayland-specific tests. The repository's X11 runners isolate Xvfb acceptance

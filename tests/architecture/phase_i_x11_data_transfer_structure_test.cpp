@@ -60,5 +60,16 @@ int main() {
       !contains(module, "\"x11_drag_drop_test.cpp\"")) {
     return 3;
   }
+  // The X11 tests own selections: test.sh runs them on a private Xvfb
+  // display so they never replace the host (WSLg: Windows) clipboard.
+  const std::string test_sh = read_source("scripts/dev/test.sh");
+  const std::string display = read_source("scripts/dev/test-display.sh");
+  if (!contains(test_sh, "scripts/dev/test-display.sh") ||
+      !contains(test_sh, "cgpui_start_test_display") ||
+      contains(test_sh, "exec \"$MCPP\"") ||
+      !contains(display, "Xvfb \":$number\"") ||
+      !contains(display, "export DISPLAY=\":$number\"")) {
+    return 4;
+  }
   return 0;
 }

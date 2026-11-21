@@ -11,6 +11,11 @@ per_member=0
 if [ "${1:-}" = --asan ]; then asan=1; shift; fi
 if [ "$asan" = 1 ] && [ "${1:-}" = --per-member-cleanup ]; then per_member=1; shift; fi
 source "$(dirname "${BASH_SOURCE[0]}")/mcpp-env.sh"
+# The X11 tests run on a private Xvfb display, never on the session's DISPLAY:
+# x11_clipboard_test owns the CLIPBOARD selection, which a desktop (WSLg too)
+# copies into the host clipboard. CGPUI_TEST_DISPLAY=session keeps DISPLAY.
+source "$REPO_ROOT/scripts/dev/test-display.sh"
+cgpui_start_test_display
 if [ "$asan" = 1 ]; then
   python3 "$REPO_ROOT/scripts/dev/asan_workspace.py" linux "$REPO_ROOT/build/asan"
   cd "$REPO_ROOT/build/asan"
@@ -34,7 +39,9 @@ if [ "$asan" = 1 ]; then
   # are reported as leaks with unnamed ([unknown module]) frames.
   export VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1
   if [ "$per_member" = 0 ]; then
-    exec "$MCPP" test "${profile_args[@]}" ${args[@]+"${args[@]}"}
+    status=0
+    "$MCPP" test "${profile_args[@]}" ${args[@]+"${args[@]}"} || status=$?
+    exit "$status"
   fi
   # --per-member-cleanup: one member with tests at a time, then its test
   # programs and objects are deleted (the libraries' objects are kept). A
@@ -56,4 +63,7 @@ if [ "$asan" = 1 ]; then
 fi
 cd "$REPO_ROOT"
 export MCPP_COMPILE_COMMANDS="${MCPP_COMPILE_COMMANDS:-compile_commands.json}"
-exec "$MCPP" test "${profile_args[@]}" "$@"
+# Not exec: the EXIT trap of test-display.sh stops Xvfb after the tests.
+status=0
+"$MCPP" test "${profile_args[@]}" "$@" || status=$?
+exit "$status"
