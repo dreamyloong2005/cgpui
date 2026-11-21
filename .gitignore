@@ -7,3 +7,6 @@ __pycache__/
 # mcpp
 target/
 /compile_commands.json
+
+# Local agent instructions (not tracked)
+/AGENTS.md
