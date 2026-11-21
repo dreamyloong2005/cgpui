@@ -87,8 +87,8 @@ jobs:
         with:
           platform: windows
       - name: Build and run Windows examples and smoke tests
-        shell: pwsh
-        run: ./scripts/ci/windows-example-smoke.ps1
+        shell: bash
+        run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/windows-smoke.log" -- pwsh -NoProfile -File ./scripts/ci/windows-example-smoke.ps1
 
   linux-examples-smoke:
     runs-on: ubuntu-latest

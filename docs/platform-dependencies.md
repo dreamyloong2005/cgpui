@@ -45,8 +45,11 @@ fontconfig and at least one installed font; CJK text needs a CJK font. The
 toolchain is the system GCC. `tools/linux-gcc/bin` exposes the installed GNU
 tools from `/usr/bin`, but not Clang. Both the main workspace and mcpp's
 native `build.mcpp` sub-build therefore select `g++`: the latter receives the
-toolchain path, not the manifest's `family` setting. This does not change the
-system compiler or `PATH`.
+toolchain path, not the manifest's `family` or `sysroot` settings. Targets
+use `/usr/bin/g++` and the distribution sysroot (`/`), where pkg-config's
+libraries were built. For `build.mcpp` only, the driver in the prefix adds
+the native kernel headers after mcpp's glibc headers and statically links the
+compiler runtimes. This does not change the system compiler or `PATH`.
 Each library's `build.mcpp` asks pkg-config for the modules it uses
 (`wayland-client`, `wayland-cursor`, `wayland-server` (tests), `dbus-1`,
 `xkbcommon`, `xkbcommon-x11`, `xcb`, `xcb-xkb`, `xcb-cursor`, `harfbuzz`,

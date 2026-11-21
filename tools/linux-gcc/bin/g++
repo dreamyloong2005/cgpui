@@ -1,1 +1,13 @@
-/usr/bin/g++
+#!/bin/sh
+# Host build.mcpp driver for mcpp 2026.11.20.1. The host sub-build does not
+# inherit the target's sysroot and links against mcpp's private glibc. Keep
+# its headers first, then supply the system's kernel UAPI headers (linux/asm).
+# Link GCC's C++ and unwind runtimes into these short-lived host tools: their
+# private ELF interpreter does not search the distribution's default libdir.
+# The workspace target names /usr/bin/g++ directly and never needs these flags.
+set -eu
+multiarch=$(/usr/bin/g++ -print-multiarch)
+if [ -n "$multiarch" ] && [ -d "/usr/include/$multiarch" ]; then
+    set -- "$@" -idirafter "/usr/include/$multiarch"
+fi
+exec /usr/bin/g++ "$@" -idirafter /usr/include -static-libstdc++ -static-libgcc

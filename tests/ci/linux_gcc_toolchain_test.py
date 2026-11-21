@@ -29,11 +29,14 @@ class LinuxGCCTest(unittest.TestCase):
                 with self.subTest(workspace=workspace):
                     tools = linux_tools(workspace)
                     self.assertEqual(tools["family"], "gcc")
+                    self.assertEqual(tools["sysroot"], "/")
+                    self.assertEqual(tools["tools"]["cxx"], "/usr/bin/g++")
                     prefix = (workspace / tools["path"]).resolve()
                     self.assertEqual(prefix, ROOT / "tools/linux-gcc")
                     self.assertFalse(os.path.lexists(prefix / "bin/clang++"))
                     if os.name == "posix":
-                        for tool in ("gcc", "g++", "ar", "as", "ld"):
+                        self.assertTrue(os.access(prefix / "bin/g++", os.X_OK))
+                        for tool in ("gcc", "ar", "as", "ld"):
                             self.assertEqual((prefix / "bin" / tool).readlink(), Path("/usr/bin") / tool)
 
     @unittest.skipUnless(sys.platform.startswith("linux"), "requires a native Linux toolchain")
@@ -46,13 +49,15 @@ class LinuxGCCTest(unittest.TestCase):
             (project / "mcpp.toml").write_text(
                 '[package]\nname = "gcc-probe"\nversion = "0.1.0"\nstandard = "c++23"\n'
                 f'[toolchain]\nlinux = {{ path = "{(ROOT / tools["path"]).as_posix()}", '
-                f'family = "{tools["family"]}" }}\n'
+                f'family = "{tools["family"]}", sysroot = "{tools["sysroot"]}", '
+                f'tools = {{ cxx = "{tools["tools"]["cxx"]}" }} }}\n'
                 '[targets.probe]\nkind = "bin"\nmain = "main.cpp"\n')
             for name in ("build.mcpp", "main.cpp"):
                 (project / name).write_text(
                     '#if !defined(__GNUC__) || defined(__clang__)\n#error Expected GCC\n#endif\n'
-                    '#include <array>\nint main() { return std::array<int, 1>{0}[0]; }\n')
-            subprocess.run([os.environ.get("MCPP", "mcpp"), "build", "--profile", "dev"],
+                    '#include <array>\n#include <filesystem>\n#include <linux/errno.h>\n'
+                    'int main() { return std::filesystem::exists(".") ? std::array<int, 1>{0}[0] : 1; }\n')
+            subprocess.run([os.environ.get("MCPP", "mcpp"), "run", "probe"],
                            cwd=project, check=True)
 
 

@@ -46,9 +46,9 @@ standard = "c++23"
 
 [workspace.toolchain]
 windows = "msvc@system"
-# mcpp passes only the toolchain path to the build.mcpp sub-build. Keep both
-# resolutions on the system GCC even when /usr/bin also contains clang++.
-linux = { path = "tools/linux-gcc", family = "gcc" }
+# Targets use the native compiler and libc. mcpp passes only the prefix to
+# its separate build.mcpp sub-build; see the host-only driver in that prefix.
+linux = { path = "tools/linux-gcc", family = "gcc", sysroot = "/", tools = { cxx = "/usr/bin/g++" } }
 # Apple's /usr/bin compiler drivers follow xcode-select / DEVELOPER_DIR.
 macos = { path = "/usr", family = "llvm", tools = { ld = "/usr/bin/ld", ar = "scripts/dev/macos-ar.py" } }
 
