@@ -4,7 +4,7 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
 source "$repo_root/scripts/ci/macos-dependencies.sh"
 cgpui_require_macos_arm64
-[[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "13.0" ]] || exit 3
+[[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "26.0" ]] || exit 3
 mcpp="${MCPP:-mcpp}"
 [[ "$("$mcpp" --version | sed -n '1p')" == "mcpp 2026."* ]] || exit 3
 

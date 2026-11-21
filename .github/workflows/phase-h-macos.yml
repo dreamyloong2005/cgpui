@@ -9,11 +9,11 @@ permissions:
   contents: read
 
 env:
-  MACOSX_DEPLOYMENT_TARGET: "13.0"
+  MACOSX_DEPLOYMENT_TARGET: "26.0"
 
 jobs:
   macos-full-debug:
-    runs-on: macos-latest
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-mcpp
@@ -21,7 +21,7 @@ jobs:
         run: bash ./scripts/ci/macos-debug.sh
 
   macos-examples-smoke:
-    runs-on: macos-latest
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-mcpp

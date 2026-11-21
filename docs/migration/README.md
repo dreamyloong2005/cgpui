@@ -98,6 +98,11 @@ section 7).
 Only native arm64 is supported for macOS builds, CI, and the Release SDK.
 Intel (x86_64) and Universal SDKs are not deliverables or sign-off requirements.
 
+The minimum macOS was raised from 13.0 to 26.0 on 2026-11-21, because no
+macOS 13 machine was available for runtime testing. CI runs on `macos-26`
+runners, so the minimum is now tested at runtime. The evidence below was
+recorded at 13.0 and has not been re-run at 26.0.
+
 The pre-migration macOS evidence was produced with xmake: Phase H (380/380) and the
 Phase J macOS completion of `origin/master` (`19c51989`, arm64 and x86_64
 at deployment target 13.0), merged after the migration.
@@ -111,6 +116,11 @@ Native arm64 evidence (2026-11-21) and remaining work:
    **host build programs**, even when the workspace specifies Apple's linker.
    Put a real `ld64.lld` on `PATH` for them. If Rust is installed, one option is
    `export PATH="$(rustc --print sysroot)/lib/rustlib/$(rustc -vV | sed -n 's/^host: //p')/bin/gcc-ld:$PATH"`.
+   With Xcode 27 this does not work: its SDK `.tbd` files list an
+   `arm64e.x1` target that LLD 22.1.2 (rust-lld) rejects as an unknown
+   architecture, so a host build program that has to be relinked fails.
+   An `ld64.lld` on `PATH` that runs `exec /usr/bin/ld "$@"` links them
+   with Apple's linker instead (used for the 2026-11-21 runs).
 2. **Workspace build: passed.** All 33 members build in Debug, including
    the Cocoa and Metal Objective-C++ files and vendored LunaSVG and plutovg.
    Xcode's `ar` does not expand mcpp's `@objects.rsp`; the workspace selects
@@ -156,9 +166,12 @@ Native arm64 evidence (2026-11-21) and remaining work:
    In the [Phase J run](https://github.com/dreamyloong2005/cgpui/actions/runs/44864775416),
    arm64 annotations showed the missing ARC flag and the unsupported
    `mcpp test --release` option.
-6. **Sanitizers.** `scripts/dev/asan_workspace.py` has flags for `windows`
-   and `linux` only. Add a `macos` row (`-fsanitize=address,undefined`,
-   Apple clang) if macOS should get ASan runs. The Windows ASan entry
+6. **Sanitizers: passed on native arm64.** `scripts/dev/asan_workspace.py`
+   has a `macos` row (Apple clang, `-fsanitize=address,undefined`, libc++
+   extensive hardening) and `scripts/dev/test.sh --asan` selects it on macOS.
+   On 2026-11-21 (macOS 27.2.1, Xcode 27.2, deployment target 26.0) it
+   passed 466/466 with no sanitizer report. Leaks are not checked: Apple's
+   ASan has no LeakSanitizer on arm64. The Windows ASan entry
    (`scripts/dev/asan_entry_windows.cpp`) is Windows-only and not needed.
 7. **Phase J Release SDK: passed on native arm64.** The original archive
    passed its hash checks but a standalone consumer could not include

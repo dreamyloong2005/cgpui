@@ -6,7 +6,7 @@ source "$script_dir/macos-dependencies.sh"
 arch=${1:-}
 cgpui_require_macos_arm64 "$arch"
 repo_root=$(cd "$script_dir/../.." && pwd -P)
-[[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "13.0" ]] || exit 2
+[[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "26.0" ]] || exit 2
 # macos-package.sh builds with the mcpp release pinned by .github/actions/setup-mcpp.
 [[ "$("${MCPP:-mcpp}" --version | sed -n '1p')" == "mcpp 2026."* ]] || exit 3
 
@@ -62,7 +62,7 @@ if manifest.get("platform") != "macos":
     raise SystemExit("release manifest platform mismatch")
 if manifest.get("architecture") != architecture:
     raise SystemExit("release manifest architecture mismatch")
-if manifest.get("deployment_target") != "13.0":
+if manifest.get("deployment_target") != "26.0":
     raise SystemExit("release manifest deployment target mismatch")
 base = json.loads((manifest_path.parent / "manifest.json").read_text(encoding="utf-8"))
 if base.get("mode") != "release":

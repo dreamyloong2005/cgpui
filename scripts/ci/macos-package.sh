@@ -9,7 +9,7 @@ mode=${2:-}
 [[ "$mode" =~ ^(debug|release)$ ]] || { echo "invalid mode" >&2; exit 2; }
 # mcpp reads MACOSX_DEPLOYMENT_TARGET as the minimum macOS it links for; the
 # xmake script passed --target_minver="$MACOSX_DEPLOYMENT_TARGET".
-[[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "13.0" ]] || exit 2
+[[ "${MACOSX_DEPLOYMENT_TARGET:-}" == "26.0" ]] || exit 2
 
 output_input=${3:-build/phase-j-release/macos-$arch}
 [[ "/$output_input/" != */../* ]] || exit 2
@@ -78,7 +78,7 @@ path = pathlib.Path(sys.argv[1])
 metadata = {
     "schema_version": 2,
     "architecture": sys.argv[2],
-    "deployment_target": "13.0",
+    "deployment_target": "26.0",
     "mcpp_version": sys.argv[3],
     "macos_product_version": sys.argv[4],
     "macos_build_version": sys.argv[5],

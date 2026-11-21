@@ -80,10 +80,10 @@ int main() {
       !contains(targets, "\"phase_h_macos_example_smoke_structure_test.cpp\"")) {
     return 5;
   }
-  if (!contains(workflow, "runs-on: macos-latest") ||
+  if (!contains(workflow, "runs-on: macos-26") ||
       !contains(workflow, "scripts/ci/macos-example-smoke.sh") ||
       !contains(workflow, "uses: ./.github/actions/setup-mcpp") ||
-      !contains(workflow, "MACOSX_DEPLOYMENT_TARGET: \"13.0\"")) {
+      !contains(workflow, "MACOSX_DEPLOYMENT_TARGET: \"26.0\"")) {
     return 6;
   }
   return 0;

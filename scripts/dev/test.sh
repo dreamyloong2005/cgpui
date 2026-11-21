@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Build and run the cgpui tests on Linux:
+# Build and run the cgpui tests on Linux or macOS:
 #   scripts/dev/test.sh [--asan [--per-member-cleanup]] [mcpp test args]
 # --asan builds in build/asan (scripts/dev/asan_workspace.py: every member,
-# -fsanitize=address,undefined, _GLIBCXX_ASSERTIONS); --per-member-cleanup
+# -fsanitize=address,undefined, libstdc++ or libc++ assertions); --per-member-cleanup
 # runs one test member at a time and deletes its output after it.
 # docs/getting-started.md section 7.
 set -euo pipefail
@@ -14,10 +14,17 @@ source "$(dirname "${BASH_SOURCE[0]}")/mcpp-env.sh"
 # The X11 tests run on a private Xvfb display, never on the session's DISPLAY:
 # x11_clipboard_test owns the CLIPBOARD selection, which a desktop (WSLg too)
 # copies into the host clipboard. CGPUI_TEST_DISPLAY=session keeps DISPLAY.
-source "$REPO_ROOT/scripts/dev/test-display.sh"
-cgpui_start_test_display
+platform=linux
+if [ "$(uname -s)" = Darwin ]; then
+  platform=macos
+  # The minimum macOS (docs/macos-sdk.md); mcpp's own default is 14.0.
+  export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-26.0}"
+else
+  source "$REPO_ROOT/scripts/dev/test-display.sh"
+  cgpui_start_test_display
+fi
 if [ "$asan" = 1 ]; then
-  python3 "$REPO_ROOT/scripts/dev/asan_workspace.py" linux "$REPO_ROOT/build/asan"
+  python3 "$REPO_ROOT/scripts/dev/asan_workspace.py" "$platform" "$REPO_ROOT/build/asan"
   cd "$REPO_ROOT/build/asan"
   # Members are listed relative to build/asan: -p tests/ui => ../../tests/ui.
   args=()
@@ -50,7 +57,7 @@ if [ "$asan" = 1 ]; then
   # uses more than that many GB.
   status=0
   while IFS='|' read -r member bin_dir obj_dir; do
-    used=$(df -BG --output=used . | tail -1 | tr -dc 0-9)
+    used=$(df -Pk . | awk 'NR == 2 { print int($3 / 1048576) }')
     if [ -n "${CGPUI_ASAN_STOP_USED_GB:-}" ] && [ "$used" -gt "$CGPUI_ASAN_STOP_USED_GB" ]; then
       echo "asan: ${used} GB used > ${CGPUI_ASAN_STOP_USED_GB} GB; stopping before $member" >&2
       exit 3

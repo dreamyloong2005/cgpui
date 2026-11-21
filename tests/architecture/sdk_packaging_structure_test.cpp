@@ -123,6 +123,7 @@ int main() {
       !has(cmake, "MultiThreadedDLL") || !has(asan, "/fsanitize=address") ||
       !has(asan, "-fsanitize=address,undefined") ||
       !has(asan, "-D_GLIBCXX_ASSERTIONS") || !has(asan, "CGPUI_ASAN=1") ||
+      !has(asan, "_LIBCPP_HARDENING_MODE_EXTENSIVE") ||
       !has(test_ps1, "[switch]$Asan") ||
       !has(test_ps1, "Get-MsvcAsanRuntimeDir") ||
       !has(test_ps1, "asan_entry_windows.cpp") ||

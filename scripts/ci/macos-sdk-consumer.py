@@ -17,13 +17,13 @@ def check_binary(path, arch):
     if output("xcrun", "lipo", "-archs", path) != arch:
         raise SystemExit(f"{path}: expected {arch}")
     build = output("xcrun", "vtool", "-show-build", path).splitlines()
-    if "minos 13.0" not in [line.strip() for line in build]:
-        raise SystemExit(f"{path}: expected macOS deployment target 13.0")
+    if "minos 26.0" not in [line.strip() for line in build]:
+        raise SystemExit(f"{path}: expected macOS deployment target 26.0")
     deps = output("xcrun", "otool", "-L", path).splitlines()[1:]
     for dep in deps:
         if not dep.strip().startswith(("/usr/lib/", "/System/Library/")):
             raise SystemExit(f"{path}: non-system runtime dependency: {dep}")
-    print(f"{path.name}: {arch}, minos 13.0, system runtime dependencies only", flush=True)
+    print(f"{path.name}: {arch}, minos 26.0, system runtime dependencies only", flush=True)
 
 
 def verify(archive, arch, work):
@@ -54,7 +54,7 @@ def verify(archive, arch, work):
     subprocess.run([
         "cmake", "-S", sdk / manifest["consumer_sample"], "-B", build,
         "-G", "Unix Makefiles", "-DCMAKE_BUILD_TYPE=Release",
-        f"-DCMAKE_OSX_ARCHITECTURES={arch}", "-DCMAKE_OSX_DEPLOYMENT_TARGET=13.0",
+        f"-DCMAKE_OSX_ARCHITECTURES={arch}", "-DCMAKE_OSX_DEPLOYMENT_TARGET=26.0",
         f"-DCMAKE_CXX_COMPILER={output('xcrun', '--find', 'clang++')}",
         f"-Dcgpui_DIR={config.parent}",
     ], cwd=work, env=env, check=True)

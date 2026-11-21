@@ -7,8 +7,8 @@ cgpui_require_macos_arm64
 # mcpp reads MACOSX_DEPLOYMENT_TARGET as the minimum macOS of what it links
 # (mcpp docs 04, macos_deployment_target); the xmake script passed it as
 # --target_minver="$MACOSX_DEPLOYMENT_TARGET".
-if [[ "${MACOSX_DEPLOYMENT_TARGET:-}" != "13.0" ]]; then
-  echo "MACOSX_DEPLOYMENT_TARGET must be 13.0" >&2
+if [[ "${MACOSX_DEPLOYMENT_TARGET:-}" != "26.0" ]]; then
+  echo "MACOSX_DEPLOYMENT_TARGET must be 26.0" >&2
   exit 3
 fi
 cd "$repo_root"

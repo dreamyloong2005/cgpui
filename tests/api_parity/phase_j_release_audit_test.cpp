@@ -93,7 +93,7 @@ int main() {
       !contains(packer, "deployment_target") ||
       !contains(policy, "cgpui-macos-arm64-release.tar.gz") ||
       contains(policy, "cgpui-macos-x86_64-release.tar.gz") ||
-      !contains(policy, "\"macos_deployment_target\": \"13.0\"") ||
+      !contains(policy, "\"macos_deployment_target\": \"26.0\"") ||
       !contains(macos_release, "macos-package.sh") ||
       !contains(macos_release, "create-release-artifact.py") ||
       !contains(macos_release, "cmp -s")) return 10;
@@ -103,10 +103,10 @@ int main() {
   for (const auto* job : macos_jobs)
     if (!contains(workflow, job)) return 11;
   if (!old_workflow.empty() ||
-      !contains(workflow, "runs-on: macos-15\n") ||
+      !contains(workflow, "runs-on: macos-26\n") ||
       contains(workflow, "macos-15-intel") ||
       !contains(workflow, "CGPUI_EXPECTED_ARCH: arm64") ||
-      !contains(workflow, "MACOSX_DEPLOYMENT_TARGET: \"13.0\"") ||
+      !contains(workflow, "MACOSX_DEPLOYMENT_TARGET: \"26.0\"") ||
       !contains(workflow, "cgpui-macos-arm64-release") ||
       !contains(bootstrap, "Configure the macOS mcpp environment") ||
       !contains(bootstrap, "macos-dependencies.sh") ||

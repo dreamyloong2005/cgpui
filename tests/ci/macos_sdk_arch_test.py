@@ -26,7 +26,7 @@ class MacOSSDKArchTest(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=build) as temp:
             root = Path(temp)
             manifest = {"platform": "macos", "mode": "release", "architecture": "x86_64",
-                        "deployment_target": "13.0"}
+                        "deployment_target": "26.0"}
             (root / "manifest.json").write_text(json.dumps(manifest))
             self.rejected("requires native macOS arm64", CI / "macos-package.sh",
                           "x86_64", "release", root)

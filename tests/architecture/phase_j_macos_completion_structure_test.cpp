@@ -66,7 +66,7 @@ int main() {
     if (read_source(path).empty()) return 10;
   }
   // mcpp reads MACOSX_DEPLOYMENT_TARGET itself; each script checks it is
-  // 13.0 (the xmake scripts passed --target_minver="$MACOSX_DEPLOYMENT_TARGET").
+  // 26.0 (the xmake scripts passed --target_minver="$MACOSX_DEPLOYMENT_TARGET").
   constexpr std::array target_minver_scripts{
       "scripts/ci/macos-debug.sh", "scripts/ci/macos-example-smoke.sh",
       "scripts/ci/macos-package.sh",
@@ -75,7 +75,7 @@ int main() {
       "scripts/ci/macos-architecture-header.sh"};
   for (const auto* path : target_minver_scripts) {
     if (!contains(read_source(path), "MACOSX_DEPLOYMENT_TARGET") ||
-        !contains(read_source(path), "13.0") ||
+        !contains(read_source(path), "26.0") ||
         contains(read_source(path), "xmake f ")) return 15;
   }
   if (!contains(root, "\"phase_j_macos_completion_test.cpp\"") ||

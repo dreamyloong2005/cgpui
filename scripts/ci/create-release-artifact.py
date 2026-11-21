@@ -70,8 +70,8 @@ def write_content_manifest(
     if platform == "macos":
         if architecture != "arm64":
             raise SystemExit("macOS packages must target arm64")
-        if base_manifest.get("deployment_target") != "13.0":
-            raise SystemExit("macOS package deployment target must be 13.0")
+        if base_manifest.get("deployment_target") != "26.0":
+            raise SystemExit("macOS package deployment target must be 26.0")
     entries = [
         {
             "path": relative,
@@ -91,7 +91,7 @@ def write_content_manifest(
         "files": entries,
     }
     if platform == "macos":
-        manifest["deployment_target"] = "13.0"
+        manifest["deployment_target"] = "26.0"
     path = package_root / CONTENT_MANIFEST
     with path.open("w", encoding="utf-8", newline="\n") as output:
         output.write(json.dumps(manifest, indent=2) + "\n")

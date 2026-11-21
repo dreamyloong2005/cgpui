@@ -333,7 +333,7 @@ def stage_macos(args) -> None:
     manifest = {
         "schema_version": 1, "package": f"cgpui-macos-{args.arch}-{args.mode}",
         "platform": "macos", "architecture": args.arch, "mode": args.mode,
-        "deployment_target": "13.0", "version": version, "cxx_standard": "c++23",
+        "deployment_target": "26.0", "version": version, "cxx_standard": "c++23",
         "header_root": "include/cgpui", "private_headers": copy_private_headers(repo, root),
         "libraries": [lib["path"] for lib in libraries],
         "link_names": [lib["name"] for lib in libraries],

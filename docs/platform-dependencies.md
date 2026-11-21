@@ -104,5 +104,5 @@ from the full Wayland suite.
 The production target uses Xcode, AppKit, QuartzCore, CoreText, and Metal.
 Only native arm64 is supported. `scripts/ci/macos-dependencies.sh` configures
 the CI environment. The mcpp build uses Xcode's clang,
-`ld64.lld` for host build programs, and `MACOSX_DEPLOYMENT_TARGET=13.0`.
+`ld64.lld` for host build programs, and `MACOSX_DEPLOYMENT_TARGET=26.0`.
 See the [macOS migration record](migration/README.md#macos-follow-up).

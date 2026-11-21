@@ -106,13 +106,13 @@ the units of the selected member, not of its dependencies, and MSVC refuses
 to link instrumented with uninstrumented STL containers (LNK2038
 `annotate_vector`). `-p <member>` is rewritten to `-p ../../<member>`.
 
-| | Windows (cl.exe) | Linux (GCC) |
-|---|---|---|
-| compile | `/fsanitize=address` | `-fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS` |
-| link | `build/asan/asan_entry.obj` (below); `-AsanSymbols` adds `/DEBUG:FULL` | `-fsanitize=address,undefined` |
-| runtime | `/MD`; `clang_rt.asan_dynamic-x86_64.dll` from the MSVC toolset's `bin/Hostx64/x64`, which `test.ps1 -Asan` puts first on `PATH` (`scripts/dev/msvc-asan-runtime.ps1`) | `-static-libstdc++` as the normal build; `libasan` / `libubsan` from GCC |
-| debug info | `/Z7` (line tables) | `-g1` (`dev-lines`) |
-| leaks | not checked (MSVC ASan has no LeakSanitizer) | LeakSanitizer, on |
+| | Windows (cl.exe) | Linux (GCC) | macOS (Apple clang, arm64) |
+|---|---|---|---|
+| compile | `/fsanitize=address` | `-fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -D_GLIBCXX_ASSERTIONS` | as Linux, with `-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE` instead of `_GLIBCXX_ASSERTIONS` |
+| link | `build/asan/asan_entry.obj` (below); `-AsanSymbols` adds `/DEBUG:FULL` | `-fsanitize=address,undefined` | `-fsanitize=address,undefined` |
+| runtime | `/MD`; `clang_rt.asan_dynamic-x86_64.dll` from the MSVC toolset's `bin/Hostx64/x64`, which `test.ps1 -Asan` puts first on `PATH` (`scripts/dev/msvc-asan-runtime.ps1`) | `-static-libstdc++` as the normal build; `libasan` / `libubsan` from GCC | `libclang_rt.asan_osx_dynamic.dylib` from Xcode's toolchain, found by the linked rpath |
+| debug info | `/Z7` (line tables) | `-g1` (`dev-lines`) | `-g1` (`dev-lines`) |
+| leaks | not checked (MSVC ASan has no LeakSanitizer) | LeakSanitizer, on | not checked (Apple's ASan has no LeakSanitizer on arm64) |
 
 `_GLIBCXX_DEBUG` is not used: it changes the layout of the standard
 containers, and the system libraries a test links (HarfBuzz, FreeType, ...)

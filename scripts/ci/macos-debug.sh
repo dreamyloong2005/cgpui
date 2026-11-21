@@ -6,9 +6,9 @@ source "$repo_root/scripts/ci/macos-dependencies.sh"
 cgpui_require_macos_arm64
 # mcpp reads MACOSX_DEPLOYMENT_TARGET before [build] macos_deployment_target
 # (mcpp docs 04, macos_deployment_target); its own default is 14.0.
-export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-13.0}"
-if [[ "$MACOSX_DEPLOYMENT_TARGET" != "13.0" ]]; then
-  echo "macos-debug.sh requires macOS deployment target 13.0" >&2
+export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-26.0}"
+if [[ "$MACOSX_DEPLOYMENT_TARGET" != "26.0" ]]; then
+  echo "macos-debug.sh requires macOS deployment target 26.0" >&2
   exit 2
 fi
 output_input="${1:-$repo_root/build/phase-h-ci/macos-debug}"

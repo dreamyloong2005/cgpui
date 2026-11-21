@@ -10,12 +10,12 @@ permissions:
 
 env:
   CGPUI_EXPECTED_ARCH: arm64
-  MACOSX_DEPLOYMENT_TARGET: "13.0"
+  MACOSX_DEPLOYMENT_TARGET: "26.0"
   CGPUI_CI_TMPDIR: ${{ github.workspace }}/build/phase-j-ci/tmp
 
 jobs:
   macos-debug-examples:
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-phase-j-dependencies
@@ -25,7 +25,7 @@ jobs:
       - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-examples.log" -- bash ./scripts/ci/macos-example-smoke.sh
 
   macos-performance-stress:
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-phase-j-dependencies
@@ -42,7 +42,7 @@ jobs:
           if-no-files-found: error
 
   macos-release:
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-phase-j-dependencies
@@ -57,7 +57,7 @@ jobs:
           if-no-files-found: error
 
   macos-architecture-header:
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-phase-j-dependencies

@@ -5,8 +5,8 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 source "$root/scripts/ci/macos-dependencies.sh"
 arch=${CGPUI_EXPECTED_ARCH:-arm64}
 cgpui_require_macos_arm64 "$arch"
-if [[ "${MACOSX_DEPLOYMENT_TARGET:-}" != "13.0" ]]; then
-  echo "MACOSX_DEPLOYMENT_TARGET must be 13.0" >&2
+if [[ "${MACOSX_DEPLOYMENT_TARGET:-}" != "26.0" ]]; then
+  echo "MACOSX_DEPLOYMENT_TARGET must be 26.0" >&2
   exit 3
 fi
 mcpp="${MCPP:-mcpp}"

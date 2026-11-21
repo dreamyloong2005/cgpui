@@ -13,8 +13,8 @@ without a Rust FFI layer.
 - macOS: Cocoa + Metal on Apple Silicon (arm64) only
 
 The [macOS SDK](docs/macos-sdk.md) targets arm64; no Intel (x86_64) or
-Universal SDK is provided. The macOS 13.0 deployment target is a build
-setting, not a runtime certification. See the
+Universal SDK is provided. The minimum macOS is 26.0 and CI runs on
+`macos-26` runners, so the minimum version is tested at runtime. See the
 [macOS migration record](docs/migration/README.md#macos-follow-up) for verified configurations.
 
 ## Quick Start

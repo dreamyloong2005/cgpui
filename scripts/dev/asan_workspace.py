@@ -1,6 +1,6 @@
 """Writes the AddressSanitizer workspace (docs/getting-started.md, ASan).
 
-usage: asan_workspace.py <windows|linux> <output directory> [--symbols]
+usage: asan_workspace.py <windows|linux|macos> <output directory> [--symbols]
        asan_workspace.py members <repository root>
 The second form prints `<member>|<bin dir>|<obj dir>` for each member with
 a [test] table (test.sh --asan --per-member-cleanup).
@@ -54,6 +54,21 @@ FLAGS = {
         "symbols": [],
         "defines": [],
     },
+    # Apple clang, arm64. _LIBCPP_HARDENING_MODE_EXTENSIVE: libc++'s
+    # precondition checks, the counterpart of _GLIBCXX_ASSERTIONS (the debug
+    # mode would change the ABI of the containers). Apple's ASan has no
+    # LeakSanitizer on arm64 macOS, so leaks are not checked.
+    "macos": {
+        "cxx_runtime": "self-contained",
+        "cxxflags": ["-fsanitize=address,undefined", "-fno-sanitize-recover=undefined",
+                     "-fno-omit-frame-pointer",
+                     "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE"],
+        "cflags": ["-fsanitize=address,undefined", "-fno-sanitize-recover=undefined",
+                   "-fno-omit-frame-pointer"],
+        "ldflags": ["-fsanitize=address,undefined"],
+        "symbols": [],
+        "defines": [],
+    },
 }
 
 
@@ -91,6 +106,8 @@ def main() -> int:
                   text, count=1, flags=re.S)
     text = text.replace('path = "tools/linux-gcc"',
                         f'path = "{relative}/tools/linux-gcc"')
+    text = text.replace('ar = "scripts/dev/macos-ar.py"',
+                        f'ar = "{relative}/scripts/dev/macos-ar.py"')
     build = (f'cxx_runtime = "{flags["cxx_runtime"]}"\n'
              f'cxxflags = {toml_list(flags["cxxflags"])}\n'
              f'cflags = {toml_list(flags["cflags"])}\n'

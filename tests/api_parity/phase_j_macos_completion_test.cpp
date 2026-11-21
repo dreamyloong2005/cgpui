@@ -88,9 +88,9 @@ int main() {
       !contains(packer, "\"macos\"")) {
     return 50;
   }
-  if (count(workflow, "runs-on: macos-15\n") != 4 || architecture_script.empty() ||
+  if (count(workflow, "runs-on: macos-26\n") != 4 || architecture_script.empty() ||
       contains(workflow, "macos-15-intel") ||
-      !contains(workflow, "MACOSX_DEPLOYMENT_TARGET: \"13.0\"")) {
+      !contains(workflow, "MACOSX_DEPLOYMENT_TARGET: \"26.0\"")) {
     return 60;
   }
   // The final verification is an xmake-era snapshot, not today's support matrix.

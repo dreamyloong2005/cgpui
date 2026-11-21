@@ -14,7 +14,7 @@ on Windows).
 macOS uses the separate **Phase J** archive format, not the C10 clean-tree
 release pipeline above. On an Apple Silicon Mac with a native arm64 shell, mcpp,
 Python 3.12+, CMake, and a Metal-capable graphical session, run
-`MACOSX_DEPLOYMENT_TARGET=13.0 scripts/ci/macos-phase-j-release.sh arm64`.
+`MACOSX_DEPLOYMENT_TARGET=26.0 scripts/ci/macos-phase-j-release.sh arm64`.
 It verifies the release archive and builds and runs its CMake consumer outside
 the checkout. The archive, SHA-256 sidecar and content manifest are under
 `build/phase-j-release/macos-arm64/artifacts/`. See
