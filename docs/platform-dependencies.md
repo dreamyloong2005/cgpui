@@ -36,6 +36,11 @@ the SHA-256-pinned x64 Vulkan SDK 1.4.341.1 and exports `VULKAN_SDK` before
 checking the build environment. `scripts/ci/windows-package.ps1` is the package
 entrypoint.
 
+For the hosted Win32 example tests only, CI selects the SwiftShader Vulkan
+driver bundled with the runner's x64 Chrome, verifies it with `vulkaninfo`,
+then exercises actual Win32 surfaces and presents frames. The SDK does not
+ship this driver and local builds do not change Vulkan driver registration.
+
 ## Linux: Wayland + Vulkan
 
 Required development/runtime components are a C++ compiler, Vulkan loader and

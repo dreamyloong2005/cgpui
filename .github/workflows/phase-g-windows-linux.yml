@@ -86,6 +86,9 @@ jobs:
       - uses: ./.github/actions/setup-phase-g-dependencies
         with:
           platform: windows
+      - name: Enable software Vulkan for the hosted Win32 smoke tests
+        shell: bash
+        run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/windows-vulkan.log" -- pwsh -NoProfile -File ./scripts/ci/windows-software-vulkan.ps1
       - name: Build and run Windows examples and smoke tests
         shell: bash
         run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/windows-smoke.log" -- pwsh -NoProfile -File ./scripts/ci/windows-example-smoke.ps1

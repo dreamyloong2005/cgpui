@@ -56,6 +56,9 @@ int main() {
                        .size(cgpui::Size{500.0F, 500.0F})
                        .to_descriptor();
   options.setup_context = [](cgpui::AppContext& app_context) {
+    app_context.runtime.set_error_callback([](const cgpui::Error& error) {
+      std::cerr << error.message << '\n';
+    });
     app_context.runtime.set_after_frame_callback(
         [](const cgpui::ViewContext& context) {
           if (std::getenv("CGPUI_EXIT_AFTER_FIRST_FRAME") != nullptr) {
