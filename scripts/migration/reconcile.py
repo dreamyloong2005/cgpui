@@ -24,6 +24,8 @@ POST_MIGRATION = {
     "shader_source_structure_test": None,
     "metal_device_pixel_scale_test": {"macosx"},
     "macos_system_appearance_test": {"macosx"},
+    "macos_window_backdrop_test": {"macosx"},
+    "metal_transparent_surface_test": {"macosx"},
 }
 HELPERS = {
     "tests/ui/native_text_shaping_reference.cpp",

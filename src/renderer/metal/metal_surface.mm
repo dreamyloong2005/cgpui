@@ -44,6 +44,31 @@ Result<void> configure_metal_surface(
   return {};
 }
 
+// CAMetalLayer composites premultiplied alpha when it is not opaque; the
+// pipelines blend to premultiplied output (metal_pipeline_library.mm).
+// supported_composite_alpha is a Vulkan mask and stays 0 here.
+RendererSurfaceComposition metal_surface_composition(
+    const MetalRendererState& state) {
+  const bool transparent = state.layer != nil && !state.layer.opaque;
+  return RendererSurfaceComposition{
+      .supported = state.layer != nil,
+      .transparent_requested = transparent,
+      .composite_alpha = transparent ? RendererCompositeAlpha::pre_multiplied
+                                     : RendererCompositeAlpha::opaque};
+}
+
+Result<RendererSurfaceComposition> metal_set_transparent_surface(
+    MetalRendererState& state,
+    bool transparent) {
+  if (state.layer == nil) {
+    return std::unexpected(Error{
+        .code = ErrorCode::renderer_initialization_failed,
+        .message = "Metal renderer has no CAMetalLayer"});
+  }
+  state.layer.opaque = transparent ? NO : YES;
+  return metal_surface_composition(state);
+}
+
 Result<void> MetalRendererState::resize(
     Size framebuffer_size,
     DpiScale scale) {

@@ -142,6 +142,11 @@ Result<void> configure_metal_surface(
     Size framebuffer_size,
     DpiScale scale,
     bool transparent_background);
+[[nodiscard]] RendererSurfaceComposition metal_surface_composition(
+    const MetalRendererState& state);
+Result<RendererSurfaceComposition> metal_set_transparent_surface(
+    MetalRendererState& state,
+    bool transparent);
 Result<std::shared_ptr<MetalRendererState>> create_metal_renderer_state(
     const RenderSurfaceDescriptor& descriptor);
 Result<void> initialize_metal_pipeline_library(MetalRendererState& state);

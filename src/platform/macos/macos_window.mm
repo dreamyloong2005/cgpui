@@ -35,6 +35,7 @@ MacOSWindow::MacOSWindow(
       accessibility_state_(this, content_view) {}
 
 MacOSWindow::~MacOSWindow() {
+  observe_backdrop_settings(false);
   accessibility_state_.detach();
   if (unregister_) unregister_(this);
   drag_exited(drag_position_);
@@ -64,7 +65,7 @@ void MacOSWindow::refresh_state() {
 }
 
 void MacOSWindow::request_redraw() {
-  [[window_ contentView] setNeedsDisplay:YES];
+  [content_view_ setNeedsDisplay:YES];
   callback_(WindowRedrawRequested{});
 }
 

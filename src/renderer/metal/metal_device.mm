@@ -25,6 +25,15 @@ class MetalRenderer final : public Renderer {
     return state_->pixels();
   }
 
+  RendererSurfaceComposition surface_composition() const override {
+    return metal_surface_composition(*state_);
+  }
+
+  Result<RendererSurfaceComposition> set_transparent_surface(
+      bool transparent) override {
+    return metal_set_transparent_surface(*state_, transparent);
+  }
+
  private:
   std::shared_ptr<MetalRendererState> state_;
 };

@@ -59,7 +59,7 @@ Entry points:
 `App` reaches a window through `App::root_window()` and `App::window(id)`.
 `Window::descriptor().backdrop` stays the creation-time request; the live
 state comes from `Window::backdrop()`. The base `PlatformWindow` and
-`Renderer` report `supported = false` with a reason (X11, macOS, test
+`Renderer` report `supported = false` with a reason (X11, test
 platforms, headless renderers).
 
 ```cpp
@@ -215,6 +215,45 @@ and `src/protocols/blur.xml` (plasma-wayland-protocols), version 1 of each.
   callback (see docs/system-appearance.md).
 - Capability changes after startup are stored but not pushed to existing
   windows; re-apply to pick them up.
+
+## macOS
+
+Source: src/platform/macos/macos_window_backdrop.mm (decision and view),
+src/renderer/metal/metal_surface.mm (composition).
+
+| Request | `NSVisualEffectView.material` | `applied` |
+| --- | --- | --- |
+| `none` | no view | `none` |
+| `mica` | `windowBackground` | `mica` |
+| `mica_alt` | `underWindowBackground` | `mica_alt` |
+| `acrylic` | `popover` | `acrylic` |
+| `blur` | `sidebar` | `blur` |
+
+- The view uses `blendingMode = behindWindow` and
+  `state = followsWindowActiveState`. It becomes the window's content view,
+  and CGPUI's content view (with the `CAMetalLayer`) is its only subview,
+  resized with it. First responder, input and the framebuffer size are
+  unchanged. `none` puts CGPUI's view back as the content view.
+- Decision order: `none` removes the view; Reduce Transparency
+  (`accessibilityDisplayShouldReduceTransparency`) gives `applied = none`
+  with a reason; an opaque renderer surface gives `applied = none` with a
+  reason; otherwise the material is shown.
+- While a material is requested, the window observes
+  `NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification` and re-runs
+  the decision, then requests a redraw so the clear color follows.
+- Metal: `Renderer::set_transparent_surface` sets `CAMetalLayer.opaque`
+  (no swapchain to recreate). A non-opaque layer composites premultiplied
+  alpha, which the pipelines produce, so `surface_composition()` reports
+  `pre_multiplied`; `supported_composite_alpha` is a Vulkan mask and stays 0.
+  `apply_window_chrome` keeps the layer non-opaque while a material is shown.
+- Tests: `macos_window_backdrop_test` (decision table, view hierarchy, first
+  responder, material switch, removal); `metal_transparent_surface_test`
+  (composition report, a cleared pixel captured as alpha 0 and a
+  half-transparent red rect as premultiplied `128, 0, 0, 128`).
+- Observed 2026-11-21 (macOS 27.2.1, one 1x display): `example_workbench`
+  with `CGPUI_EXAMPLE_BACKDROP=1` opens and draws, but its root paints an
+  opaque background, so the material is not visible through it; no pixel
+  of the material itself was measured.
 
 ## What this machine reports (2026-11-17)
 

@@ -46,7 +46,12 @@ PlatformWindowChromeState MacOSWindow::apply_window_chrome(
   [window_ setOpaque:!options.transparent_background];
   [window_ setBackgroundColor:options.transparent_background
       ? [NSColor clearColor] : [NSColor windowBackgroundColor]];
-  [layer_ setOpaque:!options.transparent_background];
+  // A shown backdrop needs the renderer's transparent surface; keep it.
+  if (options.transparent_background) {
+    [layer_ setOpaque:NO];
+  } else if (backdrop_state_.applied == WindowBackdrop::none) {
+    [layer_ setOpaque:YES];
+  }
   [window_ setContentSize:content_size];
   refresh_state();
   return result;

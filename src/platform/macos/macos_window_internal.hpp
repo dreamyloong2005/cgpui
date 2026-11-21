@@ -54,6 +54,10 @@ class MacOSWindow final : public PlatformWindow {
       std::optional<ImeTextInputPlacement> placement) override;
   PlatformWindowChromeState apply_window_chrome(
       WindowChromeOptions options) override;
+  PlatformWindowBackdropState apply_window_backdrop(
+      WindowBackdrop backdrop, bool transparent_surface) override;
+  [[nodiscard]] PlatformWindowBackdropState window_backdrop_state()
+      const override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
 
@@ -115,11 +119,19 @@ class MacOSWindow final : public PlatformWindow {
   [[nodiscard]] CursorShape cursor_shape() const { return cursor_shape_; }
 
  private:
+  void install_backdrop_view(NSVisualEffectMaterial material);
+  void remove_backdrop_view();
+  void observe_backdrop_settings(bool observe);
+
   __strong NSWindow* window_ = nil;
   __strong CGPUIMacOSContentView* content_view_ = nil;
   __strong CAMetalLayer* layer_ = nil;
   __strong CGPUIMacOSWindowDelegate* delegate_ = nil;
   __strong id pointer_monitor_ = nil;
+  // Content view while a backdrop is shown; CGPUI's view is its subview.
+  __strong NSVisualEffectView* backdrop_view_ = nil;
+  __strong id backdrop_observer_ = nil;
+  PlatformWindowBackdropState backdrop_state_{.supported = true, .backend = "macos"};
   PlatformEventCallback callback_;
   WindowState state_;
   PlatformWindowCloseController close_controller_;

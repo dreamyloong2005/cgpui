@@ -40,6 +40,7 @@ Host: macOS 27.2.1 (26B131), Xcode 27.2 (27B52), Apple M4, one 1x display.
 |---|---|
 | C1 DPI | done: `dpi_awareness()` reports `per_monitor_aware_v2` / `macos`; the existing backing-scale path sends `WindowResized` with the new scale. Moving a window between displays of different scales not observed (one display) |
 | C2 Appearance | done: `macos_system_appearance.mm` (snapshot), `macos_appearance_monitor.mm` (KVO + notifications), see `docs/system-appearance.md`. System Settings toggles not tried; the test switches `NSApp.appearance` and posts the notifications |
+| C3 Backdrop | done: `NSVisualEffectView` content view wrapping the Metal view, Metal transparent surface reports premultiplied alpha; see `docs/window-backdrop.md`. Material not observed through the workbench (its root background is opaque) |
 
 ## Order on a Mac
 
