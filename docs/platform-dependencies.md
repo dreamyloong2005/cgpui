@@ -42,7 +42,11 @@ Required development/runtime components are a C++ compiler, Vulkan loader and
 driver, Wayland client/server/cursor development files, DBus, libxkbcommon
 and pkg-config. Native text shaping requires HarfBuzz, FreeType and
 fontconfig and at least one installed font; CJK text needs a CJK font. The
-toolchain is the system GCC (`[toolchain] linux = { path = "/usr" }`).
+toolchain is the system GCC. `tools/linux-gcc/bin` exposes the installed GNU
+tools from `/usr/bin`, but not Clang. Both the main workspace and mcpp's
+native `build.mcpp` sub-build therefore select `g++`: the latter receives the
+toolchain path, not the manifest's `family` setting. This does not change the
+system compiler or `PATH`.
 Each library's `build.mcpp` asks pkg-config for the modules it uses
 (`wayland-client`, `wayland-cursor`, `wayland-server` (tests), `dbus-1`,
 `xkbcommon`, `xkbcommon-x11`, `xcb`, `xcb-xkb`, `xcb-cursor`, `harfbuzz`,
@@ -63,7 +67,7 @@ checking pkg-config. The example smoke job additionally installs the software
 Vulkan driver, fonts, and headless Weston. To install both sets:
 
 ```bash
-sudo apt-get install -y libdbus-1-dev libfontconfig1-dev libfreetype-dev \
+sudo apt-get install -y g++ binutils libdbus-1-dev libfontconfig1-dev libfreetype-dev \
   libharfbuzz-dev libvulkan-dev fonts-dejavu-core fonts-wqy-zenhei \
   libwayland-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb1-dev \
   libxcb-xkb-dev libxcb-cursor-dev pkg-config mesa-vulkan-drivers \

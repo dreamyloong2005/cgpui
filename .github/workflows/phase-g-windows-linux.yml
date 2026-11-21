@@ -35,6 +35,8 @@ jobs:
       - uses: ./.github/actions/setup-phase-g-dependencies
         with:
           platform: linux
+      - name: Verify GCC for the Linux build program and target
+        run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/linux-gcc-probe.log" -- python3 ./tests/ci/linux_gcc_toolchain_test.py
       - name: Build and package Linux Debug
         run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/linux-debug.log" -- bash ./scripts/ci/linux-debug.sh
       - name: Upload Linux Debug package

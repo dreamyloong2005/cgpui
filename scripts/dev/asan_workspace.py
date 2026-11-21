@@ -89,6 +89,8 @@ def main() -> int:
     listing = "".join(f'    "{relative}/{m}",\n' for m in members)
     text = re.sub(r"members = \[\n.*?\n\]", "members = [\n" + listing + "]",
                   text, count=1, flags=re.S)
+    text = text.replace('path = "tools/linux-gcc"',
+                        f'path = "{relative}/tools/linux-gcc"')
     build = (f'cxx_runtime = "{flags["cxx_runtime"]}"\n'
              f'cxxflags = {toml_list(flags["cxxflags"])}\n'
              f'cflags = {toml_list(flags["cflags"])}\n'

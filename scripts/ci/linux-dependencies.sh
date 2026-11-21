@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # The mcpp environment of the CI scripts (scripts/dev/mcpp-env.sh): MCPP_HOME
-# and the mcpp executable ($MCPP). Dependencies are the system GCC (toolchain
-# path /usr) and system libraries found through pkg-config (see
+# and the mcpp executable ($MCPP). Dependencies are the system GCC (selected
+# through tools/linux-gcc) and system libraries found through pkg-config (see
 # docs/platform-dependencies.md); mcpp downloads no toolchain for them.
 cgpui_configure_linux_dependency_environment() {
   if [[ "$(uname -s)" != "Linux" ]]; then

@@ -73,9 +73,11 @@ def write_workspace(repo: Path, output: Path, cxx_runtime: str) -> None:
     text = re.sub(r"members = \[\n.*?\n\]", "members = [\n" + listing + "]",
                   text, count=1, flags=re.S)
     # mcpp resolves tool paths relative to this generated manifest, not the
-    # source workspace. Keep the Xcode response-file adapter reachable.
+    # source workspace. Keep the Xcode archiver and Linux GCC prefix reachable.
     text = text.replace('ar = "scripts/dev/macos-ar.py"',
                         f'ar = "{relative}/scripts/dev/macos-ar.py"')
+    text = text.replace('path = "tools/linux-gcc"',
+                        f'path = "{relative}/tools/linux-gcc"')
     text, count = re.subn(r'cxx_runtime = "[a-z-]+"',
                           f'cxx_runtime = "{cxx_runtime}"', text)
     if count != 1:
