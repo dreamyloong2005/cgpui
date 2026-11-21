@@ -25,6 +25,8 @@ class TitleBarView final : public cgpui::View {
     const Rect command_box{{width / 2 - 120, 4}, {240, caption_height - 8}};
     paint_list.fill_rect(command_box, cgpui::rgb(52, 55, 61));
     paint_list.add_window_control_region(WindowControlArea::client, command_box);
+    // macOS keeps its native traffic lights at the left of the caption row.
+    if (leading_reserved_ > 0.0F) return;
     const WindowControlArea buttons[]{
         WindowControlArea::minimize_button, WindowControlArea::maximize_button,
         WindowControlArea::close_button};
@@ -55,8 +57,17 @@ class TitleBarView final : public cgpui::View {
     return cgpui::EventResult::unhandled();
   }
 
+  // Width the platform's own caption buttons keep at the left (macOS).
+  // Returns true when it changed and the view must be painted again.
+  bool set_leading_reserved(float width) {
+    if (width == leading_reserved_) return false;
+    leading_reserved_ = width;
+    return true;
+  }
+
  private:
   cgpui::Point pointer_{-1, -1};
+  float leading_reserved_ = 0.0F;
 };
 
 } // namespace
@@ -77,9 +88,14 @@ int main() {
                                      ? cgpui::WindowBackdrop::mica
                                      : cgpui::WindowBackdrop::none)
                        .to_descriptor();
-  options.setup_context = [](cgpui::AppContext& app_context) {
+  options.setup_context = [&view](cgpui::AppContext& app_context) {
     app_context.runtime.set_after_frame_callback(
-        [](const cgpui::ViewContext& context) {
+        [&view](const cgpui::ViewContext& context) {
+          if (view.set_leading_reserved(context.platform_window.frame_metrics()
+                                            .caption_buttons_leading_reserved_width)) {
+            context.request_paint();
+            return;
+          }
           if (std::getenv("CGPUI_EXIT_AFTER_FIRST_FRAME") != nullptr) {
             context.application.quit();
           }

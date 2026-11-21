@@ -38,6 +38,7 @@ struct PlatformWindowFrameMetrics {
   float resize_border;           // resize band used for hit tests
   WindowFrameInsets client_resize_border;  // part of the band inside the client area
   float caption_buttons_reserved_width;    // native buttons left in the row (0 here)
+  float caption_buttons_leading_reserved_width;  // native buttons at the left (macOS)
   std::string mechanism, reason;
 };
 enum class PlatformWindowAction {
@@ -61,7 +62,7 @@ The base `PlatformWindow::perform_window_action` implements `minimize` and
 `toggle_maximize` with the existing `request_display_state` and `close` with
 `request_close`. `show_window_menu`, `begin_move` and `begin_resize` need
 native support; the base returns `supported = false` with a reason, and so
-does `frame_metrics()` (X11, macOS, test platforms).
+does `frame_metrics()` (X11, test platforms).
 
 ### Declaring regions
 
@@ -204,6 +205,47 @@ xdg-shell.xml), and the hook in wayland_application_pointer.cpp.
   `caption_button_size` are 0 and `reason` says so; pick your own row height.
 - The cursor does not change over the resize band (the runtime sets the
   cursor from elements only).
+
+## macOS
+
+Source: src/platform/macos/macos_window_title_bar.mm (regions, input,
+metrics, actions) and macos_window_chrome.mm (style mask).
+
+- Style: client mode adds `NSWindowStyleMaskTitled |
+  NSWindowStyleMaskFullSizeContentView`, hides the title and makes the title
+  bar transparent. The content view covers the whole window; the native
+  traffic lights stay over the top-left of the caption row and keep their
+  own behavior (close through `windowShouldClose:` and the close policy,
+  minimize, zoom, the full-screen menu). `WindowDescriptor::size` is the
+  client size in both modes.
+- `caption_buttons_leading_reserved_width` is the traffic lights' width
+  plus the same margin on their right (78 at the 2026-11-21 measurement);
+  keep caption content out of it. An app that sees a non-zero value should
+  not draw its own minimize, maximize and close buttons:
+  `examples/workbench` and `examples/client_title_bar` read the metrics
+  after each frame and skip them.
+- Input: AppKit sends every click to the content view, which no longer
+  moves the window by itself (`mouseDownCanMoveWindow` is `NO`). After the
+  app received a left press, the regions (last first) decide: `caption`
+  starts `performWindowDragWithEvent:`, or on a double click follows the
+  global `AppleActionOnDoubleClick` default (`Maximize` or unset: zoom,
+  `Minimize`: miniaturize, `None`). A release over the button region the
+  press started on minimizes, toggles zoom, or closes (source
+  `window_manager`), for apps that draw their own buttons.
+- Metrics: `caption_height` is the frame height minus
+  `contentLayoutRect` (32 here), `caption_button_size` the traffic-light
+  size (14 x 14). AppKit resizes from the window edge before the content
+  view sees the event, so `resize_border` and `client_resize_border` are 0.
+- Actions: `begin_move` drags with the mouse event being handled (`NSApp
+  currentEvent`, a left press or drag in this window), otherwise it is
+  not performed. `show_window_menu` (macOS has no window menu) and
+  `begin_resize` are unsupported with a reason.
+- Tests: `macos_client_title_bar_test` checks the style, metrics, actions,
+  a close button release and a release outside the button, and switching
+  back to the system title bar. Window dragging and double-click zoom were
+  not driven by a test; `example_workbench` was captured on screen
+  (2026-11-21, macOS 27.2.1, 1x): caption row flush with the window top,
+  traffic lights at the left, title text after them, no system title bar.
 
 X11 is not implemented. The X11 backend has no title bar support, so
 `frame_metrics()` and the interactive actions return the base

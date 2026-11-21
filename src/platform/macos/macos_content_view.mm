@@ -38,6 +38,11 @@ cgpui::MacOSWindow* adapter(void* value) {
 - (BOOL)acceptsFirstResponder {
   return YES;
 }
+// Window dragging comes from the caption region only (client title bar);
+// a transparent window would otherwise move from any background click.
+- (BOOL)mouseDownCanMoveWindow {
+  return NO;
+}
 - (void)insertText:(id)string replacementRange:(NSRange)replacementRange {
   if (window_adapter_ == nullptr) return;
   NSString* value = [string isKindOfClass:[NSAttributedString class]]

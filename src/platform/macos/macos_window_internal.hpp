@@ -10,6 +10,8 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
+#include <vector>
 
 @interface CGPUIMacOSWindowDelegate : NSObject <NSWindowDelegate> {
  @private
@@ -58,6 +60,11 @@ class MacOSWindow final : public PlatformWindow {
       WindowBackdrop backdrop, bool transparent_surface) override;
   [[nodiscard]] PlatformWindowBackdropState window_backdrop_state()
       const override;
+  void set_window_control_regions(
+      std::vector<WindowControlRegion> regions) override;
+  [[nodiscard]] PlatformWindowFrameMetrics frame_metrics() const override;
+  PlatformWindowActionResult perform_window_action(
+      PlatformWindowActionRequest request) override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
 
@@ -119,6 +126,8 @@ class MacOSWindow final : public PlatformWindow {
   [[nodiscard]] CursorShape cursor_shape() const { return cursor_shape_; }
 
  private:
+  // Client title bar: caption drag, double-click, caption buttons.
+  void title_bar_pointer_button(NSEvent* event, Point position, bool pressed);
   void install_backdrop_view(NSVisualEffectMaterial material);
   void remove_backdrop_view();
   void observe_backdrop_settings(bool observe);
@@ -131,6 +140,9 @@ class MacOSWindow final : public PlatformWindow {
   // Content view while a backdrop is shown; CGPUI's view is its subview.
   __strong NSVisualEffectView* backdrop_view_ = nil;
   __strong id backdrop_observer_ = nil;
+  bool client_title_bar_ = false;
+  std::vector<WindowControlRegion> control_regions_;
+  std::optional<WindowControlArea> pressed_control_;
   PlatformWindowBackdropState backdrop_state_{.supported = true, .backend = "macos"};
   PlatformEventCallback callback_;
   WindowState state_;

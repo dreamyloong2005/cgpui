@@ -160,7 +160,17 @@ class WorkbenchView final : public View {
     return EventResult::unhandled();
   }
 
+  // Width the platform's own caption buttons keep at the left (macOS).
+  // Returns true when it changed and the view must be painted again.
+  bool set_leading_reserved(float width) {
+    if (width == leading_reserved_) return false;
+    leading_reserved_ = width;
+    return true;
+  }
+
  private:
+  [[nodiscard]] bool native_buttons() const { return leading_reserved_ > 0.0F; }
+
   static WorkbenchTheme theme_for(const ViewContext& context) {
     SystemAppearance appearance = context.runtime.system_appearance();
     if (const char* forced = std::getenv("CGPUI_WORKBENCH_THEME")) {
@@ -171,7 +181,8 @@ class WorkbenchView final : public View {
   }
 
   [[nodiscard]] Rect agent_button() const {
-    return Rect{{viewport_.width - button_width * 3.0F - 44.0F, 4.0F},
+    const float buttons = native_buttons() ? 0.0F : button_width * 3.0F;
+    return Rect{{viewport_.width - buttons - 44.0F, 4.0F},
                 {36.0F, caption_height - 8.0F}};
   }
 
@@ -200,7 +211,8 @@ class WorkbenchView final : public View {
     const Rect bar{{0, 0}, {viewport.width, caption_height}};
     paint_list.fill_rect(bar, theme_.tab_strip);
     paint_list.add_window_control_region(WindowControlArea::caption, bar);
-    text(paint_list, {14, 9}, "CodeStudio Next \xE2\x80\x94 cgpui workbench", theme_.text,
+    text(paint_list, {14 + leading_reserved_, 9},
+         "CodeStudio Next \xE2\x80\x94 cgpui workbench", theme_.text,
          theme_.font_size);
     const Rect agent = agent_button();
     paint_list.add_window_control_region(WindowControlArea::client, agent);
@@ -212,6 +224,9 @@ class WorkbenchView final : public View {
     paint_list.stroke_rounded_rect(icon, theme_.text_muted, BorderRadii::all(2.0F), 1.0F);
     paint_list.fill_rect(Rect{{icon.origin.x + 10, icon.origin.y}, {6, 14}},
                          splitter_.collapsed(2) ? theme_.text_muted : theme_.accent);
+    paint_list.fill_rect(Rect{{0, caption_height - 1}, {viewport.width, 1}}, theme_.border);
+    // macOS keeps its native traffic lights at the left of the caption row.
+    if (native_buttons()) return;
     const WindowControlArea areas[]{WindowControlArea::minimize_button,
                                     WindowControlArea::maximize_button,
                                     WindowControlArea::close_button};
@@ -233,7 +248,6 @@ class WorkbenchView final : public View {
       }
       paint_list.add_window_control_region(areas[index], bounds);
     }
-    paint_list.fill_rect(Rect{{0, caption_height - 1}, {viewport.width, 1}}, theme_.border);
   }
 
   void paint_panes(PaintList& paint_list) const {
@@ -290,6 +304,7 @@ class WorkbenchView final : public View {
   WorkbenchTheme theme_ = workbench_theme(SystemAppearance{});
   Size viewport_;
   Point pointer_{-1, -1};
+  float leading_reserved_ = 0.0F;
   std::optional<Point> pending_menu_;
   std::vector<float> saved_fractions_;
   std::string last_action_;
@@ -313,8 +328,13 @@ int main() {
                                      ? WindowBackdrop::mica
                                      : WindowBackdrop::none)
                        .to_descriptor();
-  options.setup_context = [](AppContext& app_context) {
-    app_context.runtime.set_after_frame_callback([](const ViewContext& context) {
+  options.setup_context = [&view](AppContext& app_context) {
+    app_context.runtime.set_after_frame_callback([&view](const ViewContext& context) {
+      if (view.set_leading_reserved(context.platform_window.frame_metrics()
+                                        .caption_buttons_leading_reserved_width)) {
+        context.request_paint();
+        return;
+      }
       if (std::getenv("CGPUI_EXIT_AFTER_FIRST_FRAME") != nullptr) {
         context.application.quit();
       }

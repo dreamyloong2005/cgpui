@@ -39,12 +39,14 @@ void MacOSWindow::pointer_exited(NSEvent* event) {
 
 void MacOSWindow::pointer_button(NSEvent* event, bool pressed) {
   const auto clicks = std::clamp<NSInteger>([event clickCount], 1, 255);
+  const Point position = event_position(event);
   callback_(PointerButton{
       .button = macos_mouse_button([event buttonNumber]),
       .pressed = pressed,
       .click_count = static_cast<std::uint8_t>(clicks),
-      .position = event_position(event),
+      .position = position,
   });
+  title_bar_pointer_button(event, position, pressed);
 }
 
 PlatformPointerCaptureState MacOSWindow::pointer_capture_state() const {

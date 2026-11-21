@@ -28,6 +28,8 @@ struct PlatformWindowFrameMetrics {
   WindowFrameInsets client_resize_border;
   // Width at the right of the caption row still used by native buttons.
   float caption_buttons_reserved_width = 0.0F;
+  // Width at the left still used by native buttons (macOS traffic lights).
+  float caption_buttons_leading_reserved_width = 0.0F;
   std::string mechanism;
   std::string reason;
 };
