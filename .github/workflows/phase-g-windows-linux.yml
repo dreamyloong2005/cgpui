@@ -30,11 +30,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Test CI error annotations
+        run: bash ./tests/ci/run_with_github_annotation_test.sh
       - uses: ./.github/actions/setup-phase-g-dependencies
         with:
           platform: linux
       - name: Build and package Linux Debug
-        run: bash ./scripts/ci/linux-debug.sh
+        run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/linux-debug.log" -- bash ./scripts/ci/linux-debug.sh
       - name: Upload Linux Debug package
         uses: actions/upload-artifact@v4
         with:
@@ -67,7 +69,7 @@ jobs:
         with:
           platform: linux
       - name: Build and package Linux Release
-        run: bash ./scripts/ci/linux-release.sh
+        run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/linux-release.log" -- bash ./scripts/ci/linux-release.sh
       - name: Upload Linux Release package
         uses: actions/upload-artifact@v4
         with:
@@ -96,7 +98,7 @@ jobs:
       - name: Install the headless Wayland smoke environment
         run: sudo apt-get install -y mesa-vulkan-drivers weston fonts-dejavu-core fonts-wqy-zenhei
       - name: Build and run Linux examples and smoke tests
-        run: bash ./scripts/ci/linux-example-smoke.sh
+        run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/linux-example-smoke.log" -- bash ./scripts/ci/linux-example-smoke.sh
 
   windows-architecture-header:
     runs-on: windows-latest
@@ -117,4 +119,4 @@ jobs:
         with:
           platform: linux
       - name: Build and run Linux architecture and header tests
-        run: bash ./scripts/ci/linux-architecture-header.sh
+        run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/linux-architecture-header.log" -- bash ./scripts/ci/linux-architecture-header.sh

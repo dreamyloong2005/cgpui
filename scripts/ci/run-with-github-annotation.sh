@@ -15,13 +15,28 @@ set +e
 status=${PIPESTATUS[0]}
 set -e
 
+escape_message() {
+  local message=$1
+  message=${message//%/%25}
+  message=${message//$'\r'/%0D}
+  message=${message//$'\n'/%0A}
+  printf '%s' "$message"
+}
+
 if [[ $status -ne 0 && "${GITHUB_ACTIONS:-}" == "true" ]]; then
-  message=$(tail -n 80 "$log_path")
-  message=${message//'%'/'%25'}
-  message=${message//$'\r'/'%0D'}
-  message=${message//$'\n'/'%0A'}
+  message=$(escape_message "$(tail -n 80 "$log_path")")
   if [[ ${#message} -gt 3500 ]]; then
     message=${message: -3500}
+  fi
+  # Parallel builds can bury the first compiler, linker or mcpp diagnostic.
+  first=$(awk '
+    /(^|[[:space:]])(fatal )?error:|undefined reference to/ { found=1 }
+    found { print substr($0, 1, 1200); if (++lines == 3) exit }
+  ' "$log_path")
+  first=$(escape_message "$first")
+  if [[ -n "$first" && "$message" != *"$first"* ]]; then
+    if [[ ${#message} -gt 2000 ]]; then message=${message: -2000}; fi
+    message="First diagnostic: ${first:0:1400}%0A...%0A$message"
   fi
   printf '::error title=CI command failed (exit %s)::%s\n' \
     "$status" "$message" >&2
