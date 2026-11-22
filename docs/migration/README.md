@@ -13,7 +13,7 @@ Tests are now registered only in the `tests/*/mcpp.toml` manifests.
 | `cgpui_<lib>` static targets | `packages/<lib>/mcpp.toml`, sources in `src/` in place |
 | OS-specific backends (`platform_win32`, `platform_linux_*`, `renderer_vulkan`, macOS) | same members, sources in `[target.'cfg(os = ...)'.build]`; `tools/mcpp/empty_library.cpp` on the other OSes (mcpp refuses an empty archive) |
 | `add_requires("lunasvg")` (+ plutovg) | `third_party/{lunasvg,plutovg}` vendored, `VENDORED.md` |
-| `vulkansdk`, system packages | `build.mcpp` per member: `VULKAN_SDK` (Windows), pkg-config (Linux), via `tools/mcpp/cgpui_build.hpp` (a `[build-dependencies]` package) |
+| `vulkansdk`, system packages | `build.mcpp` per member: `VULKAN_SDK` (Windows), pkg-config (Linux), via the module `cgpui.build` (`tools/mcpp/cgpui_build.cppm`, a `[build-dependencies]` package) |
 | examples | `examples/*/mcpp.toml` bin members, same target names |
 | `hello_window` test cases with run envs | `examples/hello_window/tests/<case>.cpp`, one program per case |
 | test targets | `tests/<dir>/mcpp.toml`, one member per directory, every test in `[test] discover` |
@@ -48,12 +48,21 @@ Tests are now registered only in the `tests/*/mcpp.toml` manifests.
   inputs from `/sourceDependencies` and decodes the compiler's text in the
   console code page. Checked with 2026.11.20.1 on the reference machine
   (zh-CN Build Tools, `VSLANG=2052`): a header edit rebuilds and a localized
-  C5050 warning reaches the log as valid UTF-8. The workspace requires
-  2026.11.20.1 (`mcpp.toml`) and the wrappers no longer set `VSLANG`.
+  C5050 warning reaches the log as valid UTF-8. The wrappers no longer set
+  `VSLANG`.
 - A `build.mcpp` is not rebuilt when a header it includes by relative path
   changes (upstream #991, reported 2026-11-21; reproduced with 2026.11.20.1
-  on Windows and Linux). Workaround, kept until it is fixed: the header is a
-  `[build-dependencies]` path package (`tools/mcpp`).
+  on Windows and Linux). Fixed in 2026.11.21.1, which the workspace now
+  requires (`mcpp.toml`). The `[build-dependencies]` path package
+  `tools/mcpp` (`cgpui.build-support`) stays: 2026.11.21.1 recommends a path
+  package for a build program's shared code, and warns
+  (`MCPP_BUILD_PROGRAM_READS_OUTSIDE`) when a program includes a file outside
+  its package instead. Its header became the module `cgpui.build`
+  (`cgpui_build.cppm`), which every `build.mcpp` imports without including a
+  header, so the `MCPP_BUILD_PROGRAM_INCLUDES_HEADER` note does not
+  appear. The module keeps the standard headers in its global module
+  fragment, so no program needs `import std;`, which depends on the
+  toolchain shipping the std module (not checked for Xcode's libc++).
 
 ## AddressSanitizer findings (first runs)
 
@@ -191,3 +200,9 @@ Native arm64 evidence (2026-11-21) and remaining work:
    runners require `mcpp test --profile release`, not `mcpp test --release`.
    The timings are regression measurements using `TestApp`, not native
    Cocoa startup or Metal presentation latency.
+10. **mcpp 2026.11.21.1: not yet checked on the Mac.** The workspace now
+   requires it, and every `build.mcpp` imports the module `cgpui.build`
+   (`tools/mcpp/cgpui_build.cppm`). Windows and Linux build and test with
+   it; on the Mac, check that the build programs compile with Xcode's
+   clang, including `packages/renderer-metal/build.mcpp`, whose shader
+   embedding moved into the module as `metal_shaders`.

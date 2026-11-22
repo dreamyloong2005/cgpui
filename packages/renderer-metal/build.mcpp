@@ -2,60 +2,18 @@
 // generates from src/renderer/metal/shaders/cgpui_metal.slang, one source per
 // entry point in src/renderer/metal/generated/, as raw strings in
 // metal_shaders_source.hpp; compile each with xcrun as a check that it
-// builds (the .air files are not shipped).
-#include <cgpui_build.hpp>
-
-#include <array>
-#include <fstream>
-#include <iterator>
-#include <string_view>
-
-namespace {
-
-// The functions metal_pipeline_library.mm creates, in its order.
-constexpr std::array<std::string_view, 8> kFunctions{
-    "cgpui_vertex",            "cgpui_solid_fragment",      "cgpui_rounded_fragment",
-    "cgpui_glyph_fragment",    "cgpui_image_fragment",      "cgpui_box_shadow_vertex",
-    "cgpui_box_shadow_fragment", "cgpui_backdrop_fragment",
-};
-
-}  // namespace
+// builds (the .air files are not shipped). See metal_shaders in
+// tools/mcpp/cgpui_build.cppm.
+import cgpui.build;
 
 int main() {
   if (!cgpui_build::target_is("macos")) {
     return 0;
   }
-  const std::filesystem::path root =
-      std::filesystem::path{cgpui_build::env("MCPP_MANIFEST_DIR")} / ".." / "..";
-  const std::filesystem::path out{cgpui_build::env("MCPP_OUT_DIR")};
-  std::filesystem::create_directories(out);
-  std::string header =
-      "#pragma once\n\nstruct CgpuiMetalShader {\n  const char* function;\n"
-      "  const char* source;\n};\n\n";
-  std::string table = "inline constexpr CgpuiMetalShader kCgpuiMetalShaders[] = {\n";
-  for (const std::string_view function : kFunctions) {
-    const std::string name{function};
-    const std::filesystem::path source =
-        (root / "src/renderer/metal/generated" / (name + ".metal")).lexically_normal();
-    std::ifstream input{source, std::ios::binary};
-    const std::string text{std::istreambuf_iterator<char>{input}, {}};
-    if (text.empty()) {
-      cgpui_build::warning("missing " + source.generic_string() +
-                           " (run scripts/dev/compile_shaders.py)");
-    }
-    header += "inline constexpr char kCgpuiMetalShader_" + name +
-              "[] = R\"CGPUI_METAL(\n" + text + "\n)CGPUI_METAL\";\n";
-    table += "    {\"" + name + "\", kCgpuiMetalShader_" + name + "},\n";
-    cgpui_build::directive("rerun-if-changed", source.generic_string());
-    bool ok = false;
-    const std::string air = (out / (name + ".air")).string();
-    cgpui_build::capture("xcrun -sdk macosx metal -c '" + source.string() +
-                             "' -o '" + air + "'", ok);
-    if (!ok) {
-      cgpui_build::warning("xcrun could not compile " + source.generic_string());
-    }
-  }
-  std::ofstream{out / "metal_shaders_source.hpp", std::ios::binary}
-      << header << "\n" << table << "};\n";
-  cgpui_build::directive("include-dir", out.generic_string());
+  // The functions metal_pipeline_library.mm creates, in its order.
+  cgpui_build::metal_shaders(
+      "src/renderer/metal/generated",
+      {"cgpui_vertex", "cgpui_solid_fragment", "cgpui_rounded_fragment",
+       "cgpui_glyph_fragment", "cgpui_image_fragment", "cgpui_box_shadow_vertex",
+       "cgpui_box_shadow_fragment", "cgpui_backdrop_fragment"});
 }

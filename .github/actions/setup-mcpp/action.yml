@@ -5,29 +5,29 @@ description: Install the pinned mcpp release and expose it as MCPP / MCPP_HOME.
 runs:
   using: composite
   steps:
-    - name: Install mcpp 2026.11.20.1 (Windows)
+    - name: Install mcpp 2026.11.21.1 (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        $version = "2026.11.20.1"
+        $version = "2026.11.21.1"
         $archive = Join-Path $env:RUNNER_TEMP "mcpp-windows-x86_64.zip"
         Invoke-WebRequest -Uri "https://github.com/mcpp-community/mcpp/releases/download/v$version/mcpp-windows-x86_64.zip" -OutFile $archive
         $digest = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive).Hash.ToLowerInvariant()
-        if ($digest -ne "b0e71cbaf8943ea06a0c10417efd7f724ab6c888edf0e0ec5fa6ee07717ba8aa") { throw "mcpp archive digest mismatch: $digest" }
+        if ($digest -ne "a39c91c15f082458210e76874ed6ee88b3402c357ac723fb2faa12c2b82bcff4") { throw "mcpp archive digest mismatch: $digest" }
         $root = Join-Path $env:RUNNER_TEMP "mcpp"
         Expand-Archive -LiteralPath $archive -DestinationPath $root
         $mcpp = (Get-ChildItem -LiteralPath $root -Recurse -Filter mcpp.exe | Select-Object -First 1).FullName
         "MCPP=$mcpp" >> $env:GITHUB_ENV
         "MCPP_HOME=$(Join-Path $env:RUNNER_TEMP 'mcpp-home')" >> $env:GITHUB_ENV
-    - name: Install mcpp 2026.11.20.1 (Linux)
+    - name: Install mcpp 2026.11.21.1 (Linux)
       if: runner.os == 'Linux'
       shell: bash
       run: |
         set -euo pipefail
-        version=2026.11.20.1
+        version=2026.11.21.1
         archive="$RUNNER_TEMP/mcpp-linux-x86_64.tar.gz"
         curl -fsSL -o "$archive" "https://github.com/mcpp-community/mcpp/releases/download/v$version/mcpp-linux-x86_64.tar.gz"
-        echo "410053964917d54ca1baf74909a13089629a1aef5d8eefee994debcdd63bc840  $archive" | sha256sum -c -
+        echo "bafefffb6651b47e3e1be0c85f12df091a9e60d8f635537c6812295dc2327ac2  $archive" | sha256sum -c -
         mkdir -p "$RUNNER_TEMP/mcpp" && tar -xzf "$archive" -C "$RUNNER_TEMP/mcpp"
         echo "MCPP=$(find "$RUNNER_TEMP/mcpp" -type f -name mcpp -perm -u+x | head -1)" >> "$GITHUB_ENV"
         echo "MCPP_HOME=$RUNNER_TEMP/mcpp-home" >> "$GITHUB_ENV"
@@ -46,15 +46,15 @@ runs:
         bin="$(brew --prefix lld)/bin"
         test -x "$bin/ld64.lld" && echo "$bin" >> "$GITHUB_PATH"
     # The pinned mcpp binary runs on Apple Silicon (macOS 14 or later).
-    - name: Install mcpp 2026.11.20.1 (macOS arm64)
+    - name: Install mcpp 2026.11.21.1 (macOS arm64)
       if: runner.os == 'macOS' && runner.arch == 'ARM64'
       shell: bash
       run: |
         set -euo pipefail
-        version=2026.11.20.1
+        version=2026.11.21.1
         archive="$RUNNER_TEMP/mcpp-macosx-arm64.tar.gz"
         curl -fsSL -o "$archive" "https://github.com/mcpp-community/mcpp/releases/download/v$version/mcpp-macosx-arm64.tar.gz"
-        echo "43f4fa908122d696c080094d097f87ad8395eab077f4345d0b599108b2bd19ff  $archive" | shasum -a 256 -c -
+        echo "9d535e4f89dc63f58d122527b4441f46c52fe6b4d5b386f3672494b10c55a35d  $archive" | shasum -a 256 -c -
         mkdir -p "$RUNNER_TEMP/mcpp" && tar -xzf "$archive" -C "$RUNNER_TEMP/mcpp"
         echo "MCPP=$(find "$RUNNER_TEMP/mcpp" -type f -name mcpp -perm -u+x | head -1)" >> "$GITHUB_ENV"
         echo "MCPP_HOME=$RUNNER_TEMP/mcpp-home" >> "$GITHUB_ENV"

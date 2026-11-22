@@ -2,7 +2,7 @@
 
 ## 1. Install Dependencies
 
-Install [mcpp](https://github.com/mcpp-community/mcpp) 2026.11.20.1 or later,
+Install [mcpp](https://github.com/mcpp-community/mcpp) 2026.11.21.1 or later,
 a C++23 compiler (MSVC 14.44 on Windows, GCC 16 on Linux) and the native
 dependencies for your target. Use
 [Platform Dependencies](platform-dependencies.md) for exact Windows and Linux

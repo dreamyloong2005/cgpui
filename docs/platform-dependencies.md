@@ -2,7 +2,7 @@
 
 ## Common
 
-- [mcpp](https://github.com/mcpp-community/mcpp) 2026.11.20.1 or later
+- [mcpp](https://github.com/mcpp-community/mcpp) 2026.11.21.1 or later
   (`[workspace.package] mcpp` in `mcpp.toml`)
 - Git
 - A C++23 compiler

@@ -11,7 +11,7 @@ if [[ "${MACOSX_DEPLOYMENT_TARGET:-}" != "26.0" ]]; then
 fi
 mcpp="${MCPP:-mcpp}"
 if [[ "$("$mcpp" --version | sed -n '1p')" != "mcpp 2026."* ]]; then
-  echo "macos-performance-baseline.sh requires mcpp 2026.11.20.1 or later" >&2
+  echo "macos-performance-baseline.sh requires mcpp 2026.11.21.1 or later" >&2
   exit 3
 fi
 

@@ -87,7 +87,7 @@ int main() {
       !contains(lock, "2b0d17a6e016f47b86f9c00e2cb82600041b1ea1f7d2a00c2d46ae542cbfed3c") ||
       !contains(read_source("third_party/lunasvg/mcpp.toml"), "version = \"3.5.0\"") ||
       !contains(read_source("third_party/plutovg/mcpp.toml"), "version = \"1.3.3\"")) return 2;
-  if (!contains(read_source("mcpp.toml"), "mcpp = \">=2026.11.20.1\"")) return 2;
+  if (!contains(read_source("mcpp.toml"), "mcpp = \">=2026.11.21.1\"")) return 2;
 
   if (!contains(windows_dependencies, "mcpp-env.ps1") ||
       !contains(windows_dependencies, "MCPP_HOME") ||
@@ -111,10 +111,10 @@ int main() {
 
   const std::string setup_mcpp = read_source(".github/actions/setup-mcpp/action.yml");
   if (!contains(action, "uses: ./.github/actions/setup-mcpp") ||
-      !contains(setup_mcpp, "version=2026.11.20.1") ||
-      !contains(setup_mcpp, "b0e71cbaf8943ea06a0c10417efd7f724ab6c888edf0e0ec5fa6ee07717ba8aa") ||
-      !contains(setup_mcpp, "410053964917d54ca1baf74909a13089629a1aef5d8eefee994debcdd63bc840") ||
-      !contains(setup_mcpp, "43f4fa908122d696c080094d097f87ad8395eab077f4345d0b599108b2bd19ff") ||
+      !contains(setup_mcpp, "version=2026.11.21.1") ||
+      !contains(setup_mcpp, "a39c91c15f082458210e76874ed6ee88b3402c357ac723fb2faa12c2b82bcff4") ||
+      !contains(setup_mcpp, "bafefffb6651b47e3e1be0c85f12df091a9e60d8f635537c6812295dc2327ac2") ||
+      !contains(setup_mcpp, "9d535e4f89dc63f58d122527b4441f46c52fe6b4d5b386f3672494b10c55a35d") ||
       // Release tags are v<version>; without the v every download is a 404.
       count(setup_mcpp, "releases/download/v$version/") != 3 ||
       contains(setup_mcpp, "releases/download/$version/") ||

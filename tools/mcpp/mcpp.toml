@@ -1,15 +1,18 @@
-# Header-only library of the workspace's build.mcpp programs, named in their
-# [build-dependencies]. Being a package (rather than a header included by a
-# relative path) makes its content part of every build program's identity,
-# so editing it recompiles and reruns them; see cgpui_build.hpp.
+# Library of the workspace's build.mcpp programs, named in their
+# [build-dependencies]: the module cgpui.build (cgpui_build.cppm), which each
+# program imports. mcpp 2026.11.21.1 recommends this form for a program's
+# shared code (docs/30-build-mcpp.md, "Headers or modules"). As a path
+# package its content is part of every build program's identity, so an edit
+# recompiles and reruns them. empty_library.cpp in this directory is a
+# source of other packages, not of this one.
 [package]
 namespace = "cgpui"
 name = "build-support"
 version = "0.1.0"
+standard = "c++23"
 
 [targets.cgpui_build_support]
 kind = "lib"
 
 [build]
-sources = []
-include_dirs = ["."]
+sources = ["cgpui_build.cppm"]

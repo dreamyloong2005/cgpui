@@ -58,9 +58,9 @@ int main() {
   // and the vendored dependency trees.
   if (!contains(bootstrap, "uses: ./.github/actions/setup-mcpp") ||
       !contains(read_source(".github/actions/setup-mcpp/action.yml"),
-                "version=2026.11.20.1") ||
+                "version=2026.11.21.1") ||
       !contains(policy, "\"dependency_provenance\": \"third_party/VENDORED.md\"") ||
-      !contains(policy, "\"mcpp_version\": \"2026.11.20.1\"") ||
+      !contains(policy, "\"mcpp_version\": \"2026.11.21.1\"") ||
       !contains(bootstrap, "build/phase-j-ci/dependencies")) return 5;
   // Phase J runs only macOS arm64 jobs here. Non-macOS jobs stay separate.
   constexpr std::array retired_non_macos_jobs{
