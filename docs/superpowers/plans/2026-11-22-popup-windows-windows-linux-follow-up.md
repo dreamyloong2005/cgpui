@@ -1,7 +1,7 @@
 # Popup Windows: Windows and Linux Follow-up
 
 Date: 2026-11-22
-Status: to do. macOS is done; see
+Status: to do. Covers popup windows and native context menus. macOS is done; see
 `docs/superpowers/plans/2026-11-22-native-popup-windows-plan.md` (Progress)
 and `docs/workbench-widgets.md` (Popup windows).
 
@@ -118,6 +118,53 @@ math, y-down, with a unit table in `macos_popup_window_test`),
 - No compositor grab: outside clicks need a pointer grab while a menu is
   open, or the root window's focus-out (already closes menus).
 - Pointer transparency: an empty input shape (XFixes / Shape extension).
+
+## Native context menus (`show_context_menu`)
+
+Separate from popup windows: `PlatformWindow::show_context_menu(NativeMenuModel,
+Point)` shows the system's own menu, and `PopoverMenuOptions::prefer_native_menu`
+makes `PopoverMenu::open_at` try it first. The base implementation returns
+`supported = false`, and the widget then opens its own menu (popup window
+or overlay). Contract, as on macOS (`src/platform/macos/macos_context_menu.mm`,
+`macos_context_menu_test`):
+
+- `position` is in the window's logical client pixels.
+- The call returns when the menu closes. `shown` is true when it was shown;
+  `action_name` holds the chosen command, if any.
+- A chosen command is also sent as `NativeMenuCommand` with source
+  `NativeMenuCommandSource::context_menu`, one event-loop turn later, so it
+  does not re-enter the click handler that opened the menu. Guard it
+  against the window being destroyed meanwhile (macOS uses a lifetime
+  token, `MacOSWindow::lifetime_`).
+- Item `enabled` and `checked` come from the model; separators and submenus
+  as in the model. An empty model returns `shown = false` with a reason.
+- Accelerators are not shown: `PopoverMenu` converts `MenuItem::accelerator`
+  (a display string) to no `NativeMenuAccelerator`.
+
+Win32 (recommended; small):
+- Build the menu with `CreatePopupMenu` and the existing item code in
+  `src/platform/win32/win32_native_menu_tree.cpp` (it builds the menu bar
+  with `CreateMenu` today; add a popup root). Map command ids to action
+  names as `win32_native_menu_command.cpp` does.
+- Show it with `TrackPopupMenuEx(menu, TPM_RETURNCMD | TPM_RIGHTBUTTON |
+  TPM_NONOTIFY, x, y, hwnd, nullptr)`, the point converted with the window
+  scale and `ClientToScreen`, as the title bar's `show_window_menu` does
+  (`win32_window_title_bar_actions.cpp`). `TPM_RETURNCMD` returns the chosen
+  id instead of posting `WM_COMMAND`, so the menu command is not dispatched
+  twice; post the `NativeMenuCommand` afterwards (for example with a private
+  `PostMessageW` the window procedure turns into the event).
+- Call `SetForegroundWindow(hwnd)` before tracking and post `WM_NULL`
+  after it (documented `TrackPopupMenu` requirement for a menu that closes
+  on outside clicks).
+- Tests: a `win32_context_menu_test` that cancels the menu from a timer
+  (`EndMenu`) and chooses an item through `WM_MENUSELECT` / keyboard input,
+  like `macos_context_menu_test` does with `NSMenu` tracking.
+
+Wayland and X11: no system context menu exists without a toolkit (GTK or
+Qt menus would add a dependency the project does not have; dbusmenu and
+the KDE/Unity app menus cover menu bars only). Keep `supported = false`;
+`prefer_native_menu` then falls back to the widget's own menu, which uses
+popup windows once the backend has them.
 
 ## Shared work before the first backend
 
