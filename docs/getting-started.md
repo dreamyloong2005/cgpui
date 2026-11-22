@@ -140,7 +140,10 @@ LeakSanitizer). The normal build does not use the entry.
 
 `test.sh --asan` also sets `VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1`
 (a Vulkan driver unloaded before exit leaves leak reports with unnamed
-frames) and reads `scripts/dev/lsan-suppressions.txt`, which suppresses
+frames), hides Mesa's dzn driver (`VK_LOADER_DRIVERS_DISABLE=*dzn*`: under
+ASan it fails `ID3D12DeviceFactory::CreateDevice` on WSL and leaks from
+unnamed frames, so ASan runs use lavapipe) and reads
+`scripts/dev/lsan-suppressions.txt`, which suppresses
 leaks inside Mesa's Vulkan drivers only: `libvulkan_lvp.so` and
 `libvulkan_dzn.so` (Mesa 26.1.6) keep 96 bytes per Wayland event queue
 from `wl_display_read_events` in their WSI after

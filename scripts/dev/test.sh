@@ -45,6 +45,11 @@ if [ "$asan" = 1 ]; then
   # Keep the Vulkan drivers loaded until exit: unloaded, their allocations
   # are reported as leaks with unnamed ([unknown module]) frames.
   export VK_LOADER_DISABLE_DYNAMIC_LIBRARY_UNLOADING=1
+  # Mesa's dzn (Vulkan over D3D12, WSL) cannot create its D3D12 device
+  # under ASan ("ID3D12DeviceFactory::CreateDevice failed") and leaks from
+  # frames LSan cannot name, so ASan runs use lavapipe only. Set
+  # VK_LOADER_DRIVERS_DISABLE (empty for none) to override.
+  export VK_LOADER_DRIVERS_DISABLE="${VK_LOADER_DRIVERS_DISABLE-*dzn*}"
   if [ "$per_member" = 0 ]; then
     status=0
     "$MCPP" test "${profile_args[@]}" ${args[@]+"${args[@]}"} || status=$?
