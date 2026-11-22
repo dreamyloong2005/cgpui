@@ -83,6 +83,82 @@ with a unit table in `platform_popup_placement_test`),
   not activated, owner, placement and flip at a monitor edge,
   pointer-transparent hit test).
 
+### Win32 design: DirectComposition presentation (stage B, for review)
+
+Spike (2026-11-22, `D:\WSL\spike\spike.cpp`, outside the repo): Vulkan
+cleared a D3D11 shared texture to premultiplied `128, 0, 0, 128`, D3D11
+copied it into a premultiplied composition swapchain shown with DComp on a
+`WS_EX_NOREDIRECTIONBITMAP` popup over a green window, and the screen read
+back `128, 127, 0` (red over green) on the NVIDIA RTX 5070 Ti and on the
+Intel GPU (`VK_LOADER_VENDOR_ID_FILTER` selected each).
+
+Presentation path of a popup (per frame, one image in flight):
+1. Vulkan renders into a `VkImage` imported from a D3D11 texture
+   (`D3D11_RESOURCE_MISC_SHARED_NTHANDLE | SHARED_KEYEDMUTEX`,
+   `B8G8R8A8_UNORM`) with `VK_KHR_external_memory_win32`
+   (`D3D11_TEXTURE_BIT`, dedicated allocation). The submission acquires
+   the keyed mutex with key 0 and releases key 1
+   (`VK_KHR_win32_keyed_mutex`); two small pre-recorded command buffers
+   around the frame's own command buffer move the image from and to
+   `VK_QUEUE_FAMILY_EXTERNAL`.
+2. D3D11, on the adapter whose LUID equals the Vulkan device's
+   (`VkPhysicalDeviceIDProperties`, `IDXGIFactory4::EnumAdapterByLuid`),
+   takes key 1, copies the texture into the back buffer of a
+   `CreateSwapChainForComposition` swapchain (`DXGI_ALPHA_MODE_PREMULTIPLIED`,
+   flip sequential, 2 buffers), releases key 0 and presents.
+3. A DComp target on the popup HWND has one visual whose content is that
+   swapchain (set and committed once; `ResizeBuffers` keeps it).
+
+Why not the alternatives in the plan: DXGI swapchain buffers cannot be
+shared, so Vulkan cannot render into them directly; a copy per popup
+frame is small. The keyed mutex needs no extra objects and is reported by
+all four devices here; a shared D3D11 fence and timeline semaphore would
+need D3D11.4 and semaphore import for the same result. Preferring the
+premultiplied-capable GPU for popups (as for backdrops) would leave
+popups without transparency on Intel-only machines.
+
+Seam in the renderer (smallest found): the platform marks the popup's
+surface, `Win32SurfaceHandle::composition = true` ("no redirection
+surface; present through DirectComposition"). The Vulkan renderer then
+creates no `VkSurfaceKHR`, takes the first Vulkan 1.1 device with
+graphics and the two interop extensions, and builds its swapchain
+resources from a `VulkanCompositionPresenter` (new files,
+`src/renderer/vulkan/vulkan_composition*`) instead of `VkSwapchainKHR`:
+the same render pass, pipelines, framebuffers, command reuse and pixel
+capture over one imported image. Only three places branch on it: image
+creation (`create_swapchain_resources`), submission (keyed mutex instead
+of semaphores) and acquire/present in `present_frame`. The runtime and
+`Renderer` API do not change. Normal windows keep `VkSwapchainKHR`
+unchanged (no flag, same device selection and code path).
+
+Platform side: popups are `WS_POPUP` with `WS_EX_NOACTIVATE |
+WS_EX_TOOLWINDOW | WS_EX_NOREDIRECTIONBITMAP`, owned by the parent, shown
+with `SW_SHOWNOACTIVATE`; a window property marks them for the window
+procedure (`WM_MOUSEACTIVATE` -> `MA_NOACTIVATE`, `WM_NCHITTEST` ->
+`HTTRANSPARENT` when pointer-transparent; Windows passes that hit to the
+same-thread window below, the root). `place_popup` converts the anchor
+with the parent's scale and `ClientToScreen`, places with
+`platform_popup_frame` on the anchor monitor's work area, and returns the
+bounds in the parent's logical client coordinates. Owned windows do not
+move with their owner on Windows, so the owner's `WM_MOVE` moves its
+popups by the same offset. `WM_DPICHANGED` on a popup resizes it to the
+new monitor's scale through the existing path.
+
+Fallback: `popup_windows_supported()` is true when a probe (a D3D11
+hardware device and `DCompositionCreateDevice`, once per application)
+succeeds. If a popup's renderer cannot start (no interop extensions, no
+LUID match, a failed import), `open_popup` fails with that error and the
+widgets keep the in-window overlay, as for any open failure.
+
+Found while designing: `Win32Application::windows_` keeps raw pointers of
+destroyed windows and `dispatch_wakeup` calls them; popups are destroyed
+often (every tooltip), so destroyed windows leave the list first.
+
+Not covered: sharing one Vulkan device across windows (each popup creates
+its own instance, device, D3D11 device and DComp device; creation time is
+measured in the pixel test), and popups on a monitor whose scale differs
+from the parent's beyond `WM_DPICHANGED`.
+
 ## Wayland
 
 - Window: `xdg_surface.get_popup(parent xdg_surface, xdg_positioner)`.
