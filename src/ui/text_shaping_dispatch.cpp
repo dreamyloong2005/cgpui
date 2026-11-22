@@ -23,9 +23,13 @@ TextShapeRun shape_text_natively(TextShapingRequest request) {
   if (request.backend.used == TextShapingBackend::harfbuzz) {
     return shape_text_with_harfbuzz(std::move(request));
   }
+#if defined(__APPLE__)
+  // text_shaping_coretext_macos.cpp is compiled on macOS only
+  // (packages/renderer/mcpp.toml), and only macOS selects core_text.
   if (request.backend.used == TextShapingBackend::core_text) {
     return shape_text_with_core_text(std::move(request));
   }
+#endif
   return shape_text_with_deterministic_fallback(std::move(request));
 }
 
