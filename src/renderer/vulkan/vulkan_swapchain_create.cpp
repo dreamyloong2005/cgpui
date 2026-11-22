@@ -9,6 +9,7 @@ Result<VulkanSwapchainResources> VulkanRendererState::create_swapchain_resources
   if (retired_old_swapchain != nullptr) {
     *retired_old_swapchain = false;
   }
+  if (composition_surface()) return create_composition_resources(retired_old_swapchain);
 
   auto details = query_vulkan_swapchain_surface(physical_device_, surface_);
   if (!details) {
@@ -46,45 +47,7 @@ Result<VulkanSwapchainResources> VulkanRendererState::create_swapchain_resources
     destroy_swapchain_resources(resources);
     return std::unexpected(result.error());
   }
-  if (auto result = create_swapchain_image_views(resources); !result) {
-    destroy_swapchain_resources(resources);
-    return std::unexpected(result.error());
-  }
-  if (auto result = create_swapchain_render_pass(resources); !result) {
-    destroy_swapchain_resources(resources);
-    return std::unexpected(result.error());
-  }
-  if (auto result = vulkan_create_text_pipeline_resources(
-          device_,
-          resources.render_pass,
-          glyph_atlas_resources_.descriptor_set_layout,
-          resources.text_pipeline);
-      !result) {
-    destroy_swapchain_resources(resources);
-    return std::unexpected(result.error());
-  }
-  if (auto result = vulkan_create_image_pipeline_resources(
-          device_,
-          resources.render_pass,
-          image_texture_resources_.descriptor_set_layout,
-          resources.image_pipeline);
-      !result) {
-    destroy_swapchain_resources(resources);
-    return std::unexpected(result.error());
-  }
-  if (auto result = vulkan_create_rounded_rect_pipeline_resources(
-          device_,
-          resources.render_pass,
-          resources.rounded_rect_pipeline);
-      !result) {
-    destroy_swapchain_resources(resources);
-    return std::unexpected(result.error());
-  }
-  if (auto result = create_swapchain_framebuffers(resources); !result) {
-    destroy_swapchain_resources(resources);
-    return std::unexpected(result.error());
-  }
-  if (auto result = allocate_swapchain_command_buffers(resources); !result) {
+  if (auto result = create_swapchain_targets(resources); !result) {
     destroy_swapchain_resources(resources);
     return std::unexpected(result.error());
   }
@@ -93,6 +56,45 @@ Result<VulkanSwapchainResources> VulkanRendererState::create_swapchain_resources
       details->capabilities.supportedCompositeAlpha,
       descriptor_.transparent_background);
   return resources;
+}
+
+// Views, render pass, pipelines, framebuffers and command buffers over
+// resources.images; the caller destroys `resources` when this fails.
+Result<void> VulkanRendererState::create_swapchain_targets(
+    VulkanSwapchainResources& resources) {
+  if (auto result = create_swapchain_image_views(resources); !result) {
+    return result;
+  }
+  if (auto result = create_swapchain_render_pass(resources); !result) {
+    return result;
+  }
+  if (auto result = vulkan_create_text_pipeline_resources(
+          device_,
+          resources.render_pass,
+          glyph_atlas_resources_.descriptor_set_layout,
+          resources.text_pipeline);
+      !result) {
+    return result;
+  }
+  if (auto result = vulkan_create_image_pipeline_resources(
+          device_,
+          resources.render_pass,
+          image_texture_resources_.descriptor_set_layout,
+          resources.image_pipeline);
+      !result) {
+    return result;
+  }
+  if (auto result = vulkan_create_rounded_rect_pipeline_resources(
+          device_,
+          resources.render_pass,
+          resources.rounded_rect_pipeline);
+      !result) {
+    return result;
+  }
+  if (auto result = create_swapchain_framebuffers(resources); !result) {
+    return result;
+  }
+  return allocate_swapchain_command_buffers(resources);
 }
 
 } // namespace cgpui

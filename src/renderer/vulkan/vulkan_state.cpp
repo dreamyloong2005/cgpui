@@ -9,6 +9,7 @@ VulkanRendererState::~VulkanRendererState() {
   if (device_ != VK_NULL_HANDLE) {
     vkDeviceWaitIdle(device_);
     destroy_swapchain();
+    composition_.reset();  // its imported image and transfer commands
     destroy_sync_objects();
     vulkan_destroy_rounded_rect_buffers(device_, solid_rect_buffers_);
     vulkan_destroy_rounded_rect_buffers(device_, rounded_rect_buffers_);

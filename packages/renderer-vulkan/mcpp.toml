@@ -11,6 +11,10 @@ cgpui.core = { path = "../core" }
 cgpui.platform = { path = "../platform" }
 cgpui.renderer = { path = "../renderer" }
 
+# Popup windows present through DirectComposition (vulkan_composition_*).
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.renderer-win32-composition = { path = "../renderer-win32-composition" }
+
 [build]
 include_dirs = ["../../include"]
 sources = []

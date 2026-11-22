@@ -8,6 +8,9 @@ namespace cgpui {
 struct Win32SurfaceHandle {
   void* hinstance = nullptr;
   void* hwnd = nullptr;
+  // The window has no redirection surface (popup windows): renderers
+  // present through DirectComposition instead of a swapchain on it.
+  bool composition = false;
 };
 
 struct WaylandSurfaceHandle {

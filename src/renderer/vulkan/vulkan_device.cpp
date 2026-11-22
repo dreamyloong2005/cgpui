@@ -24,9 +24,13 @@ Result<void> VulkanRendererState::create_device() {
     });
   }
 
-  const std::array<const char*, 1> device_extensions{
+  const std::array<const char*, 1> swapchain_extensions{
       VK_KHR_SWAPCHAIN_EXTENSION_NAME,
   };
+  // Composition surfaces import a D3D11 texture and present without one.
+  const std::span<const char* const> device_extensions =
+      composition_surface() ? vulkan_composition_device_extensions()
+                            : std::span<const char* const>(swapchain_extensions);
   const VkDeviceCreateInfo create_info{
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
       .queueCreateInfoCount =

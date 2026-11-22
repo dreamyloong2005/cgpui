@@ -20,6 +20,9 @@ struct VulkanFramePixelCaptureCommand {
   VkImage image = VK_NULL_HANDLE;
   VkBuffer buffer = VK_NULL_HANDLE;
   VkExtent2D extent{};
+  // The image's layout after the frame's render pass, restored after the
+  // copy (VulkanRendererState::presented_image_layout).
+  VkImageLayout layout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
   [[nodiscard]] bool enabled() const;
 };

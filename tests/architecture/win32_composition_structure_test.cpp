@@ -91,6 +91,73 @@ int main() {
                 tests.find("\"win32_composition_presenter_test.cpp\"") > windows_tests &&
                 !vulkan_code(behavior) && !has(behavior, "create_renderer("),
             "a Windows test presents through the module with D3D11 alone");
+
+    // The Vulkan side imports the module's texture and keeps no D3D11,
+    // DXGI or DComp code of its own; normal windows keep VkSwapchainKHR.
+    constexpr Source vulkan_sources[]{
+        {"src/renderer/vulkan/vulkan_composition_presenter_internal.hpp", 90},
+        {"src/renderer/vulkan/vulkan_composition_device.cpp", 90},
+        {"src/renderer/vulkan/vulkan_composition_resources.cpp", 70},
+        {"src/renderer/vulkan/vulkan_composition_presenter.cpp", 110},
+        {"src/renderer/vulkan/vulkan_composition_import.cpp", 110},
+        {"src/renderer/vulkan/vulkan_composition_submission.cpp", 120},
+        {"src/renderer/vulkan/vulkan_composition_unsupported.cpp", 50},
+    };
+    for (const Source& source : vulkan_sources) {
+      const auto text = read(source.path);
+      require(lines(text) <= source.max_lines, source.path);
+      require(!has(text, "D3D11CreateDevice") && !has(text, "ID3D11") &&
+                  !has(text, "IDXGI") && !has(text, "IDComposition") &&
+                  !has(text, "DCompositionCreateDevice"),
+              "the Vulkan side leaves D3D11, DXGI and DComp to the composition module");
+    }
+    const auto presenter_header =
+        read("src/renderer/vulkan/vulkan_composition_presenter_internal.hpp");
+    const auto vulkan_presenter = read("src/renderer/vulkan/vulkan_composition_presenter.cpp") +
+                                  read("src/renderer/vulkan/vulkan_composition_import.cpp");
+    const auto submission = read("src/renderer/vulkan/vulkan_composition_submission.cpp");
+    const auto unsupported = read("src/renderer/vulkan/vulkan_composition_unsupported.cpp");
+    require(has(presenter_header, "class VulkanCompositionPresenter") &&
+                has(vulkan_presenter, "#if defined(_WIN32)") &&
+                has(submission, "#if defined(_WIN32)") &&
+                has(unsupported, "#if !defined(_WIN32)") &&
+                has(vulkan_presenter, "Win32CompositionPresenter::create(") &&
+                has(vulkan_presenter, "shared_texture_handle()") &&
+                has(presenter_header, "VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT") &&
+                has(vulkan_presenter, "VkImportMemoryWin32HandleInfoKHR") &&
+                has(vulkan_presenter, "VkMemoryDedicatedAllocateInfo") &&
+                has(vulkan_presenter, "VK_KHR_WIN32_KEYED_MUTEX_EXTENSION_NAME"),
+            "the presenter imports the shared texture as a VkImage");
+    require(has(submission, "VkWin32KeyedMutexAcquireReleaseInfoKHR") &&
+                has(submission, "win32_composition_render_key") &&
+                has(submission, "win32_composition_present_key") &&
+                has(submission, "VK_QUEUE_FAMILY_EXTERNAL") &&
+                has(submission, "composition_->present()"),
+            "the submit takes the keyed mutex and hands the image to D3D11");
+    const auto swapchain_create = read("src/renderer/vulkan/vulkan_swapchain_create.cpp");
+    const auto presentation = read("src/renderer/vulkan/vulkan_presentation.cpp");
+    const auto frame_submission = read("src/renderer/vulkan/vulkan_frame_submission.cpp");
+    const auto vulkan_device = read("src/renderer/vulkan/vulkan_device.cpp");
+    const auto vulkan_package = read("packages/renderer-vulkan/mcpp.toml");
+    require(has(swapchain_create, "if (composition_surface()) return create_composition_resources(") &&
+                has(swapchain_create, "vkCreateSwapchainKHR") &&
+                has(presentation, "composition_->present()") &&
+                has(presentation, "vkQueuePresentKHR") &&
+                has(presentation, "vkAcquireNextImageKHR") &&
+                has(frame_submission, "composition_->submit(") &&
+                has(vulkan_device, "VK_KHR_SWAPCHAIN_EXTENSION_NAME") &&
+                has(vulkan_device, "vulkan_composition_device_extensions()"),
+            "composition surfaces branch beside the unchanged swapchain path");
+    const auto windows_dependencies =
+        vulkan_package.find("[target.'cfg(os = \"windows\")'.dependencies]");
+    require(windows_dependencies != std::string::npos &&
+                vulkan_package.find("cgpui.renderer-win32-composition") > windows_dependencies,
+            "renderer-vulkan uses the composition module on Windows only");
+    const auto pixel_test = read("tests/renderer/vulkan_composition_pixel_test.cpp");
+    require(tests.find("\"vulkan_composition_pixel_test.cpp\"") > windows_tests &&
+                has(pixel_test, "VK_LOADER_VENDOR_ID_FILTER") &&
+                has(pixel_test, ".composition = true"),
+            "a pixel test composites a composition surface on each GPU vendor");
   } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';
     return 1;

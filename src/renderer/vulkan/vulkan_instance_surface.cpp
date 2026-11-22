@@ -64,6 +64,8 @@ Result<void> VulkanRendererState::create_instance() {
 
 Result<void> VulkanRendererState::create_surface() {
 #if defined(_WIN32)
+  // Composition surfaces present through DirectComposition (no VkSurfaceKHR).
+  if (composition_surface()) return {};
   auto surface = require_win32_surface(descriptor_.native_surface);
   if (!surface) {
     return std::unexpected(surface.error());

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vulkan_backdrop_blur_resources_internal.hpp"
+#include "vulkan_composition_presenter_internal.hpp"
 #include "vulkan_device_internal.hpp"
 #include "vulkan_frame_command_reuse_internal.hpp"
 #include "vulkan_frame_diagnostic_snapshot_internal.hpp"
@@ -103,6 +104,16 @@ class VulkanRendererState final {
   Result<VulkanSwapchainResources> create_swapchain_resources(
       VkSwapchainKHR old_swapchain,
       bool* retired_old_swapchain = nullptr);
+  Result<void> create_swapchain_targets(VulkanSwapchainResources& resources);
+  // Win32 composition surfaces (popup windows) present through
+  // DirectComposition instead of a swapchain (vulkan_composition_*.cpp).
+  [[nodiscard]] bool composition_surface() const;
+  Result<void> select_composition_device();
+  Result<VulkanSwapchainResources> create_composition_resources(
+      bool* retired_old_swapchain);
+  // The layout a frame leaves its image in: present source for swapchain
+  // images, the attachment layout the composition release starts from.
+  [[nodiscard]] VkImageLayout presented_image_layout() const;
   Result<void> populate_swapchain_images(
       VulkanSwapchainResources& resources);
   Result<void> create_swapchain_image_views(
@@ -134,6 +145,7 @@ class VulkanRendererState final {
   VkQueue graphics_queue_ = VK_NULL_HANDLE;
   VkQueue present_queue_ = VK_NULL_HANDLE;
   VkSwapchainKHR swapchain_ = VK_NULL_HANDLE;
+  std::unique_ptr<VulkanCompositionPresenter> composition_;
   VkFormat swapchain_format_ = VK_FORMAT_UNDEFINED;
   VkExtent2D swapchain_extent_{};
   VkImageUsageFlags swapchain_image_usage_ = 0;

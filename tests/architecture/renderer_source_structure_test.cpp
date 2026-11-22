@@ -922,8 +922,9 @@ int main(int argc, char** argv) {
       !contains(pixel_capture_recording, "vkCmdCopyImageToBuffer") ||
       !contains(pixel_capture_recording,
                 "VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL") ||
-      !contains(pixel_capture_recording,
-                "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR") ||
+      !contains(pixel_capture_recording, "capture.layout") ||
+      !contains(pixel_capture_header,
+                "VkImageLayout layout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR") ||
       !contains(pixel_capture_readback, "vkWaitForFences") ||
       !contains(pixel_capture_readback, "vkMapMemory") ||
       !contains(pixel_capture_readback, "std::swap(") ||

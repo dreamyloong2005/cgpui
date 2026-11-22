@@ -120,6 +120,7 @@ discover = [
     "vulkan_box_shadow_pixel_test.cpp",
     "vulkan_clip_pixel_test.cpp",
     "vulkan_color_encoding_pixel_test.cpp",
+    "vulkan_composition_pixel_test.cpp",
     "vulkan_frame_lifetime_test.cpp",
     "vulkan_frame_pixel_capture_test.cpp",
     "vulkan_image_pixel_test.cpp",

@@ -49,9 +49,11 @@ Result<void> VulkanRendererState::present_frame(
   }
   diagnostic_timer.finish_stage(RendererFrameTimingStage::resource_preparation);
   std::uint32_t image_index = 0;
-  const VkResult acquire_result = vkAcquireNextImageKHR(
-      device_, swapchain_, present_pacing_.image_acquire_timeout,
-      image_available_, VK_NULL_HANDLE, &image_index);
+  // A composition surface has one image, ordered by its keyed mutex.
+  const VkResult acquire_result = composition_ != nullptr
+      ? VK_SUCCESS
+      : vkAcquireNextImageKHR(device_, swapchain_, present_pacing_.image_acquire_timeout,
+                              image_available_, VK_NULL_HANDLE, &image_index);
   const VulkanSwapchainRecoveryPlan acquire_plan =
       vulkan_plan_swapchain_recovery(
           VulkanSwapchainOperation::acquire, acquire_result);
@@ -124,15 +126,22 @@ Result<void> VulkanRendererState::present_frame(
   commit_image_texture_frame();
   commit_glyph_atlas_frame();
 
-  const VkPresentInfoKHR present_info{
-      .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-      .waitSemaphoreCount = 1,
-      .pWaitSemaphores = &render_finished,
-      .swapchainCount = 1,
-      .pSwapchains = &swapchain_,
-      .pImageIndices = &image_index,
-  };
-  const VkResult present_result = vkQueuePresentKHR(present_queue_, &present_info);
+  VkResult present_result = VK_SUCCESS;
+  if (composition_ != nullptr) {
+    if (auto result = composition_->present(); !result) {
+      return recover_after_failed_present(result.error().message);
+    }
+  } else {
+    const VkPresentInfoKHR present_info{
+        .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &render_finished,
+        .swapchainCount = 1,
+        .pSwapchains = &swapchain_,
+        .pImageIndices = &image_index,
+    };
+    present_result = vkQueuePresentKHR(present_queue_, &present_info);
+  }
   const VulkanSwapchainRecoveryPlan present_plan =
       vulkan_plan_swapchain_recovery(
           VulkanSwapchainOperation::present, present_result);
