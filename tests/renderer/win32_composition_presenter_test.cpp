@@ -19,7 +19,6 @@
 namespace {
 
 using Microsoft::WRL::ComPtr;
-using cgpui_test::ScreenColor;
 
 // What the stand-in backend does each frame: clear the whole texture.
 bool render(LUID adapter_luid, HANDLE handle, const float (&premultiplied)[4]) {

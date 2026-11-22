@@ -10,6 +10,9 @@
 #endif
 #include <windows.h>
 
+#include "cgpui/renderer/renderer_frame_pixels.hpp"
+
+#include <array>
 #include <cstdlib>
 #include <iostream>
 
@@ -52,6 +55,19 @@ inline bool expect_screen_color(ScreenColor expected, POINT point) {
             << ' ' << seen.b << " (expected " << expected.r << ' ' << expected.g << ' '
             << expected.b << ")" << (matched ? "" : " MISMATCH") << '\n';
   return matched;
+}
+
+// A captured RGBA pixel within 2 per channel of `expected`; prints it.
+inline bool expect_texture_pixel(const cgpui::RendererFramePixels& pixels, std::uint32_t x,
+                                 std::uint32_t y, std::array<int, 4> expected) {
+  const auto pixel = pixels.pixel_rgba8(x, y);
+  if (!pixel) return false;
+  std::cout << "texture " << x << "," << y << ": " << int((*pixel)[0]) << ' '
+            << int((*pixel)[1]) << ' ' << int((*pixel)[2]) << ' ' << int((*pixel)[3]) << '\n';
+  for (std::size_t channel = 0; channel < 4; ++channel) {
+    if (std::abs(int((*pixel)[channel]) - expected[channel]) > 2) return false;
+  }
+  return true;
 }
 
 // `x`, `y` pixels into the primary monitor's work area.

@@ -135,6 +135,7 @@ discover = [
     "vulkan_text_pixel_test.cpp",
     "vulkan_transform_pixel_test.cpp",
     "win32_composition_presenter_test.cpp",
+    "win32_popup_pixel_test.cpp",
     "win32_vulkan_surface_test.cpp",
 ]
 

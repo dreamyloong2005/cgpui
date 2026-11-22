@@ -154,10 +154,18 @@ int main() {
                 vulkan_package.find("cgpui.renderer-win32-composition") > windows_dependencies,
             "renderer-vulkan uses the composition module on Windows only");
     const auto pixel_test = read("tests/renderer/vulkan_composition_pixel_test.cpp");
+    const auto vendor_support = read("tests/renderer/vulkan_vendor_filter_support.hpp");
+    const auto popup_pixels = read("tests/renderer/win32_popup_pixel_test.cpp");
     require(tests.find("\"vulkan_composition_pixel_test.cpp\"") > windows_tests &&
-                has(pixel_test, "VK_LOADER_VENDOR_ID_FILTER") &&
-                has(pixel_test, ".composition = true"),
-            "a pixel test composites a composition surface on each GPU vendor");
+                tests.find("\"win32_popup_pixel_test.cpp\"") > windows_tests &&
+                has(vendor_support, "VK_LOADER_VENDOR_ID_FILTER") &&
+                has(pixel_test, "filter_vulkan_vendor(") &&
+                has(pixel_test, ".composition = true") &&
+                has(popup_pixels, "filter_vulkan_vendor(") &&
+                has(popup_pixels, "create_child_window(") &&
+                has(popup_pixels, "pointer_transparent") &&
+                has(popup_pixels, "expect_screen_color("),
+            "pixel tests composite a composition surface and real popups on each GPU vendor");
   } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';
     return 1;
