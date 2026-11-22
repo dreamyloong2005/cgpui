@@ -16,7 +16,6 @@ inline constexpr WPARAM win32_application_close_wparam = 1;
 struct Win32WindowChromeState {
   PlatformWindowChromeState platform;
   DWORD style = WS_OVERLAPPEDWINDOW;
-  DWORD extended_style = 0;
 };
 
 class Win32WindowMessageTarget : public Win32AccessibilityMessageTarget,

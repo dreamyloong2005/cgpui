@@ -40,7 +40,7 @@ bool Win32Window::title_bar_message(
           ? &reinterpret_cast<NCCALCSIZE_PARAMS*>(lparam)->rgrc[0]
           : reinterpret_cast<RECT*>(lparam);
       const int frame = win32_frame_metrics_px(
-          title_bar_.dpi, chrome_state_.style, chrome_state_.extended_style).frame;
+          title_bar_.dpi, chrome_state_.style).frame;
       *rect = win32_client_title_bar_rect(*rect, frame, IsZoomed(hwnd) != FALSE);
       result = 0;
       return true;

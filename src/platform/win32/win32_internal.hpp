@@ -36,7 +36,6 @@ DWORD choose_ole_drop_effect(DWORD allowed_effect, DWORD key_state);
 DragDropPayload drag_payload_from_ole_data_object(IDataObject* data_object);
 KeyboardModifiers current_modifiers();
 DWORD win32_window_style_for(const WindowChromeOptions& chrome);
-DWORD win32_window_extended_style_for(const WindowChromeOptions& chrome);
 PlatformFontDiscoveryResult win32_discover_fonts();
 LRESULT CALLBACK win32_window_proc(
     HWND hwnd,

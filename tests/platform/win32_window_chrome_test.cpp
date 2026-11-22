@@ -30,8 +30,10 @@ int main() {
   const auto hwnd = static_cast<HWND>(surface->hwnd);
   const LONG_PTR style = GetWindowLongPtrW(hwnd, GWL_STYLE);
   const LONG_PTR extended_style = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+  // transparent_background sets no window style; the renderer's
+  // premultiplied surface makes the window see-through.
   if ((style & (WS_CAPTION | WS_THICKFRAME | WS_MAXIMIZEBOX)) != 0 ||
-      (extended_style & WS_EX_LAYERED) == 0) {
+      (extended_style & WS_EX_LAYERED) != 0) {
     return 4;
   }
   const auto applied = (*window)->apply_window_chrome({});

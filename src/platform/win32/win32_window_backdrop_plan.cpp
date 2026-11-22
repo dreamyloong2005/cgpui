@@ -43,11 +43,6 @@ Win32BackdropPlan win32_plan_window_backdrop(const Win32BackdropInputs& inputs) 
                    "this is build " + std::to_string(inputs.os_build);
     return plan;
   }
-  if (inputs.layered) {
-    state.reason = "transparent_background uses WS_EX_LAYERED, which DWM "
-                   "system backdrops do not support";
-    return plan;
-  }
   state.supported = true;
   plan.touch_dwm = true;
   state.mechanism = type_mechanism(win32_backdrop_type_none);

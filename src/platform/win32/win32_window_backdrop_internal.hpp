@@ -23,7 +23,6 @@ struct Win32BackdropInputs {
   WindowBackdrop requested = WindowBackdrop::none;
   bool transparent_surface = false;
   std::uint32_t os_build = 0;
-  bool layered = false;
   bool transparency_effects_enabled = true;
   bool client_title_bar = false;
 };
@@ -59,7 +58,6 @@ class Win32WindowBackdrop {
       HWND hwnd,
       WindowBackdrop backdrop,
       bool transparent_surface,
-      bool layered,
       bool client_title_bar);
   PlatformWindowBackdropState reevaluate(const SystemAppearance& appearance);
   void detach();
@@ -72,7 +70,6 @@ class Win32WindowBackdrop {
   HWND hwnd_ = nullptr;
   WindowBackdrop requested_ = WindowBackdrop::none;
   bool transparent_surface_ = false;
-  bool layered_ = false;
   bool client_title_bar_ = false;
   bool frame_extended_ = false;
   PlatformWindowBackdropState state_{
