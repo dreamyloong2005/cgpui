@@ -206,10 +206,13 @@ the single `VulkanCompositionPresenter` of the seam paragraph above):
    The renderer uses it instead of `VkSwapchainKHR` for surfaces marked
    `Win32SurfaceHandle::composition`, that is for popups only.
 
-A DX12 backend would open the same handle and call the same `present()`;
-how it synchronizes with the module (the keyed mutex through D3D11On12,
-or a shared fence the module would add) is decided with that backend.
-Normal windows keep `VkSwapchainKHR`, unchanged.
+The DX12 plan (`2026-11-22-dx12-renderer-backend-plan.md`, section 4.2)
+replaced the idea that a DX12 backend opens the same handle and calls the
+same `present()`. D3D12 has no keyed mutex, so DX12 creates its own
+composition swapchain on its command queue and reuses only the DComp
+device, target and visual. Those still sit in `Win32CompositionObjects`
+next to the D3D11 objects; DX12 phase 5 moves them into a type of their
+own. Normal windows keep `VkSwapchainKHR`, unchanged.
 
 ## Wayland
 
