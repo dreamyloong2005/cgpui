@@ -3,8 +3,9 @@
 
 namespace cgpui {
 
-// Native context menus and popup windows exist on macOS only so far; the
-// other backends report them unsupported and apps keep in-window overlays.
+// Native context menus exist on macOS and Win32, popup windows on macOS
+// only so far; the other backends report them unsupported and apps keep
+// in-window menus and overlays.
 PlatformContextMenuResult PlatformWindow::show_context_menu(
     const NativeMenuModel& menu, Point position) {
   (void)menu;

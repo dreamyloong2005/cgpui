@@ -21,6 +21,9 @@ class Win32NativeMenuTree {
 
   [[nodiscard]] static std::optional<Win32NativeMenuTree> build(
       const NativeMenuModel& model);
+  // The same items under a CreatePopupMenu root (context menus).
+  [[nodiscard]] static std::optional<Win32NativeMenuTree> build_popup(
+      const NativeMenuModel& model);
   [[nodiscard]] HMENU root() const;
 
  private:

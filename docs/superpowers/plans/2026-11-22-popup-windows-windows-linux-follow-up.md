@@ -143,7 +143,7 @@ or overlay). Contract, as on macOS (`src/platform/macos/macos_context_menu.mm`,
 - Accelerators are not shown: `PopoverMenu` converts `MenuItem::accelerator`
   (a display string) to no `NativeMenuAccelerator`.
 
-Win32 (recommended; small):
+Win32 (done 2026-11-22, see Progress):
 - Build the menu with `CreatePopupMenu` and the existing item code in
   `src/platform/win32/win32_native_menu_tree.cpp` (it builds the menu bar
   with `CreateMenu` today; add a popup root). Map command ids to action
@@ -188,6 +188,29 @@ all platforms) holds the former macOS table plus above, left, no room on
 either side, a work area off the origin and a popup larger than the work
 area; `popup_placement_structure_test` keeps the function neutral and
 shared. Not built on macOS in this change.
+
+Win32 native context menu (2026-11-22): `Win32Window::show_context_menu`
+(`src/platform/win32/win32_window_context_menu.cpp`) builds the model with
+`Win32NativeMenuTree::build_popup` (the menu bar item code under a
+`CreatePopupMenu` root) and a `Win32NativeMenuCommandMap` of its own, so
+ids never mix with the installed menu bar. The point goes from logical
+client pixels to physical with `WindowState::scale`, then `ClientToScreen`;
+`SetForegroundWindow` before and `WM_NULL` after `TrackPopupMenuEx(
+TPM_RETURNCMD | TPM_RIGHTBUTTON | TPM_NONOTIFY)`. A choice is queued on the
+window and announced with a private `WM_APP + 2` message
+(`win32_context_menu_command_message`); the window procedure turns it into
+`NativeMenuCommand{source = context_menu}` on the next loop turn. A window
+destroyed during or after the menu sends nothing (`IsWindow` after
+tracking; the destructor clears `GWLP_USERDATA` before the message
+arrives). `result.shown` is false only for an empty model, a closed window,
+a failed build, or `ERROR_POPUP_ALREADY_ACTIVE`. `win32_context_menu_test`
+drives the modal loop from a thread timer: it checks the open `HMENU`
+(`MN_GETHMENU`: separator, checked, disabled, submenu), cancels with
+`EndMenu`, chooses with posted arrow and Enter keys (a top item and a
+submenu item; the command arrives only after the call returns), the empty
+model, and a window destroyed before delivery. Wayland and X11 keep
+`supported = false`. Not checked on screen (example_workbench with
+`CGPUI_WORKBENCH_NATIVE_MENU=1`).
 
 ## Known limits on macOS (for parity checks)
 

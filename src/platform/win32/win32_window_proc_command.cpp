@@ -9,6 +9,11 @@ bool win32_window_proc_handle_command(
     LPARAM lparam,
     Win32WindowMessageTarget* window,
     LRESULT& result) {
+  if (message == win32_context_menu_command_message) {
+    if (window != nullptr) window->context_menu_command();
+    result = 0;
+    return true;
+  }
   if (message != WM_COMMAND || lparam != 0 || window == nullptr) return false;
   const WORD source = HIWORD(wparam);
   if (source > 1U) return false;

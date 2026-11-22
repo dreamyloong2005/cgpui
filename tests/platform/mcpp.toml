@@ -84,6 +84,7 @@ discover = [
     "win32_clipboard_contention_test.cpp",
     "win32_clipboard_files_test.cpp",
     "win32_clipboard_unicode_test.cpp",
+    "win32_context_menu_test.cpp",
     "win32_cursor_production_test.cpp",
     "win32_dead_key_test.cpp",
     "win32_directory_dialog_plan_test.cpp",

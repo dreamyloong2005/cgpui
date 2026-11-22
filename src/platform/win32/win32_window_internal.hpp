@@ -32,8 +32,7 @@ class Win32Window final
   void set_cursor(CursorShape cursor_shape) override;
   [[nodiscard]] PlatformPointerCaptureState pointer_capture_state() const override;
   void set_pointer_capture(bool captured) override;
-  void set_ime_text_input_placement(
-      std::optional<ImeTextInputPlacement> placement) override;
+  void set_ime_text_input_placement(std::optional<ImeTextInputPlacement> placement) override;
   PlatformWindowChromeState apply_window_chrome(
       WindowChromeOptions options) override;
   PlatformWindowBackdropState apply_window_backdrop(WindowBackdrop backdrop, bool transparent_surface) override;
@@ -46,8 +45,9 @@ class Win32Window final
   bool title_bar_message(
       HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam,
       LRESULT& result) override;
-  void update_accessibility_tree(
-      PlatformAccessibilityTreeUpdate update) override;
+  void update_accessibility_tree(PlatformAccessibilityTreeUpdate update) override;
+  PlatformContextMenuResult show_context_menu(
+      const NativeMenuModel& menu, Point position) override;
   bool accessibility_object(WPARAM wparam, LPARAM lparam, LRESULT& result) override;
 
   void update_size() override;
@@ -72,9 +72,8 @@ class Win32Window final
   void pointer_capture_lost() override;
   void refresh_cursor(bool reload_system_cursor) override;
   void key_event(KeyboardKey event) override;
-  void native_menu_command(
-      UINT command_id,
-      NativeMenuCommandSource source) override;
+  void native_menu_command(UINT command_id, NativeMenuCommandSource source) override;
+  void context_menu_command() override;
   void set_native_menu_commands(
       std::shared_ptr<const Win32NativeMenuCommandMap> commands);
   void dead_key(wchar_t character) override;
@@ -128,6 +127,7 @@ class Win32Window final
   DragDropPayload last_ole_drag_payload_;
   Win32TextInputState text_input_state_;
   std::shared_ptr<const Win32NativeMenuCommandMap> native_menu_commands_;
+  std::vector<NativeMenuCommand> pending_context_menu_commands_;
 };
 
 } // namespace cgpui

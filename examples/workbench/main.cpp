@@ -5,7 +5,7 @@
 //   CGPUI_EXAMPLE_BACKDROP=1      Mica behind the window
 //   CGPUI_WORKBENCH_THEME=dark    force dark (or light) instead of the system
 //   CGPUI_WORKBENCH_BLUR=1        backdrop blur under the context menu
-//   CGPUI_WORKBENCH_NATIVE_MENU=1 native context menu where available (macOS)
+//   CGPUI_WORKBENCH_NATIVE_MENU=1 native context menu where available (macOS, Windows)
 #include "cgpui/cgpui.hpp"
 #include "cgpui/ui/workbench_widgets.hpp"
 

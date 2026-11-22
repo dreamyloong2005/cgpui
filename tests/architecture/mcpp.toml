@@ -200,6 +200,7 @@ discover = [
     "wayland_system_appearance_structure_test.cpp",
     "wayland_window_source_test.cpp",
     "widget_source_structure_test.cpp",
+    "win32_context_menu_structure_test.cpp",
     "win32_window_source_test.cpp",
     "window_backdrop_structure_test.cpp",
     "workbench_widgets_structure_test.cpp",

@@ -277,6 +277,7 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_window_ime_placement.cpp",
       "src/platform/win32/win32_window_text.cpp",
       "src/platform/win32/win32_window_native_menu.cpp",
+      "src/platform/win32/win32_window_context_menu.cpp",
       "src/platform/win32/win32_window_cursor.cpp",
       "src/platform/win32/win32_window_proc_cursor_internal.hpp",
       "src/platform/win32/win32_window_proc_cursor.cpp",

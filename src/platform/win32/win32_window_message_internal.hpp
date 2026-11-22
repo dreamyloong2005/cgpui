@@ -51,6 +51,8 @@ class Win32WindowMessageTarget : public Win32AccessibilityMessageTarget,
   virtual void native_menu_command(
       UINT command_id,
       NativeMenuCommandSource source) = 0;
+  // Sends the oldest command chosen in show_context_menu.
+  virtual void context_menu_command() = 0;
   virtual void dead_key(wchar_t character) = 0;
   virtual void text_input(Win32TextInputMessage message) = 0;
   virtual void drag_entered(const Win32TestDragDropPayload* payload) = 0;

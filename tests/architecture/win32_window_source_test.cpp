@@ -115,6 +115,7 @@ std::string read_win32_source() {
       "src/platform/win32/win32_window_drag_drop.cpp",
       "src/platform/win32/win32_window_events.cpp",
       "src/platform/win32/win32_window_native_menu.cpp",
+      "src/platform/win32/win32_window_context_menu.cpp",
       "src/platform/win32/win32_window_text.cpp",
       "src/platform/win32/win32_window_factory_internal.hpp",
       "src/platform/win32/win32_window_factory.cpp",

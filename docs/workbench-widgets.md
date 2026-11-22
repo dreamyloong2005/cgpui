@@ -196,9 +196,9 @@ void on_close(PopoverCloseHandler handler);     // activated / escape / outside_
   (`src/ui/workbench/popover_menu_native.cpp`). Where it is shown (macOS
   `NSMenu popUpMenuPositioningItem:atLocation:inView:`, which can extend
   outside the window and uses the system look, keyboard navigation and
-  VoiceOver), the chosen item goes to the activate handler; elsewhere
-  (`supported = false`: Win32, Wayland, X11) the in-window menu opens as
-  before. The native menu shows no accelerator text (`MenuItem::accelerator`
+  VoiceOver; Win32 `TrackPopupMenuEx`), the chosen item goes to the
+  activate handler; elsewhere (`supported = false`: Wayland, X11) the
+  in-window menu opens as before. The native menu shows no accelerator text (`MenuItem::accelerator`
   is a display string, not a key), no theme or blur, and runs modally: the
   call returns when the menu closes, and timers and rendering wait until
   then. `example_workbench` uses it with `CGPUI_WORKBENCH_NATIVE_MENU=1`.

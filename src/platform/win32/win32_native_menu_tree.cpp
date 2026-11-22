@@ -72,6 +72,15 @@ bool append_menu_items(
   return true;
 }
 
+// Fills `root` with the model's items; destroys it on failure.
+HMENU fill_root(HMENU root, const NativeMenuModel& model) {
+  if (root == nullptr) return nullptr;
+  UINT_PTR next_command_id = win32_native_menu_first_command_id;
+  if (append_menu_items(root, model.items, next_command_id)) return root;
+  DestroyMenu(root);
+  return nullptr;
+}
+
 } // namespace
 
 Win32NativeMenuTree::Win32NativeMenuTree(HMENU root) : root_(root) {}
@@ -95,14 +104,15 @@ Win32NativeMenuTree& Win32NativeMenuTree::operator=(
 std::optional<Win32NativeMenuTree> Win32NativeMenuTree::build(
     const NativeMenuModel& model) {
   if (model.items.empty()) return Win32NativeMenuTree{};
-  HMENU root = CreateMenu();
-  if (root == nullptr) return std::nullopt;
-  UINT_PTR next_command_id = win32_native_menu_first_command_id;
-  if (!append_menu_items(root, model.items, next_command_id)) {
-    DestroyMenu(root);
-    return std::nullopt;
-  }
-  return Win32NativeMenuTree(root);
+  if (HMENU root = fill_root(CreateMenu(), model)) return Win32NativeMenuTree(root);
+  return std::nullopt;
+}
+
+std::optional<Win32NativeMenuTree> Win32NativeMenuTree::build_popup(
+    const NativeMenuModel& model) {
+  if (model.items.empty()) return Win32NativeMenuTree{};
+  if (HMENU root = fill_root(CreatePopupMenu(), model)) return Win32NativeMenuTree(root);
+  return std::nullopt;
 }
 
 HMENU Win32NativeMenuTree::root() const { return root_; }
