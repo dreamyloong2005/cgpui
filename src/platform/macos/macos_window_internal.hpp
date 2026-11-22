@@ -67,6 +67,10 @@ class MacOSWindow final : public PlatformWindow {
       PlatformWindowActionRequest request) override;
   PlatformContextMenuResult show_context_menu(
       const NativeMenuModel& menu, Point position) override;
+  PlatformPopupPlacementResult place_popup(WindowPopupPlacement placement) override;
+  // Marks this window as a popup of `parent` (macos_popup_window.mm).
+  void attach_popup_parent(NSWindow* parent);
+  [[nodiscard]] bool popup() const { return popup_; }
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
 
@@ -144,6 +148,8 @@ class MacOSWindow final : public PlatformWindow {
   __strong NSVisualEffectView* backdrop_view_ = nil;
   __strong id backdrop_observer_ = nil;
   bool client_title_bar_ = false;
+  bool popup_ = false;
+  __weak NSWindow* popup_parent_ = nil;
   std::vector<WindowControlRegion> control_regions_;
   std::optional<WindowControlArea> pressed_control_;
   PlatformWindowBackdropState backdrop_state_{.supported = true, .backend = "macos"};

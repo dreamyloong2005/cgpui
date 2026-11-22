@@ -1,5 +1,6 @@
 #include "macos_application_internal.hpp"
 #include "macos_input_internal.hpp"
+#include "macos_popup_window_internal.hpp"
 #include "macos_window_internal.hpp"
 
 namespace cgpui {
@@ -26,15 +27,23 @@ Result<std::unique_ptr<MacOSWindow>> create_macos_window(
     NSWindow* parent,
     PlatformEventCallback callback,
     std::function<void(MacOSWindow*)> unregister) {
+  const bool popup = descriptor.kind == WindowKind::popup;
+  if (popup && parent == nil) {
+    return std::unexpected(Error{
+        .code = ErrorCode::invalid_argument,
+        .message = "a popup window needs a parent window"});
+  }
   NSRect frame = NSMakeRect(
       descriptor.position.has_value() ? descriptor.position->x : 0.0,
       descriptor.position.has_value() ? descriptor.position->y : 0.0,
       descriptor.size.width,
       descriptor.size.height);
-  NSWindow* window = [[NSWindow alloc] initWithContentRect:frame
-                                                 styleMask:style_for(descriptor.chrome)
-                                                   backing:NSBackingStoreBuffered
-                                                     defer:NO];
+  NSWindow* window = popup
+      ? macos_make_popup_panel(descriptor)
+      : [[NSWindow alloc] initWithContentRect:frame
+                                    styleMask:style_for(descriptor.chrome)
+                                      backing:NSBackingStoreBuffered
+                                        defer:NO];
   if (window == nil) {
     return std::unexpected(Error{
         .code = ErrorCode::window_creation_failed,
@@ -54,7 +63,8 @@ Result<std::unique_ptr<MacOSWindow>> create_macos_window(
   [window setContentView:content];
   [content setWantsLayer:YES];
   CAMetalLayer* layer = [CAMetalLayer layer];
-  layer.opaque = YES;
+  // Popups draw rounded corners and their shadow over transparent pixels.
+  layer.opaque = popup ? NO : YES;
   layer.contentsScale = [window backingScaleFactor];
   content.layer = layer;
   WindowState state = make_macos_window_state(window);
@@ -73,6 +83,14 @@ Result<std::unique_ptr<MacOSWindow>> create_macos_window(
   [content attachWindowAdapter:result.get()];
   [delegate attachWindow:result.get()];
   [window setDelegate:delegate];
+  if (popup) {
+    // Shown without taking key focus or activating the app.
+    result->attach_popup_parent(parent);
+    macos_attach_popup_panel(static_cast<NSPanel*>(window), parent);
+    if (descriptor.popup.has_value()) (void)result->place_popup(*descriptor.popup);
+    [window orderFront:nil];
+    return result;
+  }
   (void)result->apply_window_chrome(descriptor.chrome);
   if (parent != nil) [parent addChildWindow:window ordered:NSWindowAbove];
   if (!descriptor.position.has_value()) [window center];

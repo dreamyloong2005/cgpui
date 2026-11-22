@@ -11,6 +11,7 @@
 #include "cgpui/platform/platform_open_url.hpp"
 #include "cgpui/platform/platform_lifecycle.hpp"
 #include "cgpui/platform/platform_window_backdrop.hpp"
+#include "cgpui/platform/platform_window_popup.hpp"
 #include "cgpui/platform/platform_window_title_bar.hpp"
 #include "cgpui/platform/platform_window_chrome.hpp"
 #include "cgpui/platform/platform_window_close.hpp"

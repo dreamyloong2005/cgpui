@@ -1,7 +1,7 @@
 # Native Popup Windows (C9 step 2)
 
 Date: 2026-11-22
-Status: design, for review before implementation.
+Status: approved 2026-11-22; step 1 done (see [Progress](#progress)).
 
 ## Goal
 
@@ -79,3 +79,28 @@ widget API (`PopoverMenu`, `Tooltip`). Step 1 (native NSMenu,
   display than its parent.
 - Estimated size: comparable to C3-C6 together. Steps 1-3 are macOS-only
   and usable on their own; step 4 brings the other platforms.
+
+## Progress
+
+Step 1 (macOS platform, 2026-11-22):
+- `WindowDescriptor::kind` / `popup` (`include/cgpui/core/window_popup.hpp`),
+  `PlatformWindow::place_popup` returning `PlatformPopupPlacementResult`
+  (`platform_window_popup.hpp`), `PlatformApplication::popup_windows_supported`
+  (false except on macOS). Win32, Wayland and X11 do not create popup kinds
+  yet and the runtime must not ask them to.
+- macOS (`src/platform/macos/macos_popup_window.mm`): borderless
+  non-activating `NSPanel`, transparent, no system shadow, transient in
+  Spaces and Mission Control. `addChildWindow:` resets the child's level and
+  hides-on-deactivate, so both are applied after it
+  (`NSPopUpMenuWindowLevel`, YES). Shown with `orderFront:` only; the app is
+  not activated. A popup without a parent is rejected.
+- Placement converts the anchor from the parent's flipped CGPUI view to
+  screen coordinates, places in the visible frame of the screen holding the
+  anchor's center (flip, then shift; `macos_popup_frame`), and reports the
+  bounds back in the parent's client coordinates.
+- Content views track the mouse while the app is active
+  (`NSTrackingActiveInActiveApp`, was key window only), so non-key popups
+  get hover.
+- `macos_popup_window_test`: placement table (below, flip above, flip
+  left with a shift, shift left), panel properties, placement in parent
+  coordinates, and the popup moving with its parent.

@@ -99,7 +99,7 @@ cgpui::MacOSWindow* adapter(void* value) {
   tracking_area_ = [[NSTrackingArea alloc]
       initWithRect:NSZeroRect
            options:NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved |
-                   NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect
+                   NSTrackingActiveInActiveApp | NSTrackingInVisibleRect
              owner:self
           userInfo:nil];
   [self addTrackingArea:tracking_area_];

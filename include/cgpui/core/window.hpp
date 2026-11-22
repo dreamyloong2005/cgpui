@@ -2,6 +2,7 @@
 
 #include "cgpui/core/geometry.hpp"
 #include "cgpui/core/window_backdrop.hpp"
+#include "cgpui/core/window_popup.hpp"
 #include "cgpui/core/window_title_bar.hpp"
 
 #include <cstdint>
@@ -40,6 +41,9 @@ struct WindowDescriptor {
   std::optional<Point> position;
   WindowChromeOptions chrome;
   WindowBackdrop backdrop = WindowBackdrop::none;
+  WindowKind kind = WindowKind::normal;
+  // Popups: initial placement; `position` and `chrome` are ignored.
+  std::optional<WindowPopupPlacement> popup;
 };
 
 struct WindowState {

@@ -10,6 +10,7 @@
 #include "cgpui/platform/platform_window_close.hpp"
 #include "cgpui/platform/platform_window_lifecycle.hpp"
 #include "cgpui/platform/platform_window_pointer_capture.hpp"
+#include "cgpui/platform/platform_window_popup.hpp"
 #include "cgpui/platform/platform_window_position.hpp"
 #include "cgpui/platform/platform_window_title_bar.hpp"
 
@@ -60,6 +61,9 @@ class PlatformWindow {
   // when it closes.
   virtual PlatformContextMenuResult show_context_menu(
       const NativeMenuModel& menu, Point position);
+  // Popup windows (WindowKind::popup): moves the popup to `placement`, at
+  // its current size.
+  virtual PlatformPopupPlacementResult place_popup(WindowPopupPlacement placement);
 };
 
 using PlatformEventCallback = std::function<void(const PlatformEvent&)>;

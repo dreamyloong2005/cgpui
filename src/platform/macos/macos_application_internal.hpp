@@ -56,6 +56,7 @@ class MacOSApplication final : public PlatformApplication {
   void set_system_appearance_callback(
       SystemAppearanceCallback callback) override;
   [[nodiscard]] PlatformDpiAwarenessState dpi_awareness() const override;
+  [[nodiscard]] bool popup_windows_supported() const override { return true; }
 
   void dispatch_wakeup();
   void reopened();
