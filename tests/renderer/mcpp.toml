@@ -16,6 +16,7 @@ cgpui.ui = { path = "../../packages/ui" }
 
 [target.'cfg(os = "windows")'.dependencies]
 cgpui.platform-win32 = { path = "../../packages/platform-win32" }
+cgpui.renderer-win32-composition = { path = "../../packages/renderer-win32-composition" }
 
 [target.'cfg(os = "linux")'.dependencies]
 cgpui.platform-linux-wayland = { path = "../../packages/platform-linux-wayland" }
@@ -132,6 +133,7 @@ discover = [
     "vulkan_text_ink_extent_pixel_test.cpp",
     "vulkan_text_pixel_test.cpp",
     "vulkan_transform_pixel_test.cpp",
+    "win32_composition_presenter_test.cpp",
     "win32_vulkan_surface_test.cpp",
 ]
 

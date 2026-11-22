@@ -17,6 +17,7 @@ members = [
     "packages/platform-macos",
     "packages/renderer",
     "packages/renderer-fallback",
+    "packages/renderer-win32-composition",
     "packages/renderer-vulkan",
     "packages/renderer-metal",
     "packages/ui",
