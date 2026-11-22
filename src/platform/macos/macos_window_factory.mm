@@ -87,6 +87,7 @@ Result<std::unique_ptr<MacOSWindow>> create_macos_window(
     // Shown without taking key focus or activating the app.
     result->attach_popup_parent(parent);
     macos_attach_popup_panel(static_cast<NSPanel*>(window), parent);
+    [window setIgnoresMouseEvents:descriptor.popup_options.pointer_transparent];
     if (descriptor.popup.has_value()) (void)result->place_popup(*descriptor.popup);
     [window orderFront:nil];
     return result;

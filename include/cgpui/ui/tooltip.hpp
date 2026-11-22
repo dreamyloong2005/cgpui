@@ -16,7 +16,11 @@
 namespace cgpui {
 
 class PaintList;
+class WindowRuntime;
 struct WindowRuntimeContext;
+namespace workbench_detail {
+class WidgetPopup;
+}
 
 using TooltipTargetId = std::uint64_t;
 
@@ -35,6 +39,10 @@ struct TooltipOptions {
   float padding = 6.0F;
   float gap = 6.0F;
   float pointer_offset = 18.0F;
+  // Show the bubble in its own popup window where the platform has popups
+  // (it may then extend outside the window); the in-window overlay
+  // otherwise.
+  bool popup_window = true;
 };
 
 // One tooltip per window. The app registers hover targets (window rects and
@@ -85,6 +93,9 @@ class Tooltip {
     AnimationHandle fade;
   };
 
+  void paint_bubble(PaintList& paint_list, const WorkbenchTheme& theme) const;
+  // Opens, moves or closes the popup window for the current state.
+  void sync_popup(Rect anchor, Size size, const WorkbenchTheme& theme);
   [[nodiscard]] const Target* find(TooltipTargetId id) const;
   [[nodiscard]] std::optional<TooltipTargetId> target_at(Point point) const;
   void begin_hover(TooltipTargetId id, const WindowRuntimeContext& context);
@@ -104,6 +115,10 @@ class Tooltip {
   DpiScale scale_;
   Rect bounds_;
   bool flipped_ = false;
+  WindowRuntime* runtime_ = nullptr;  // set by the first hover
+  std::shared_ptr<workbench_detail::WidgetPopup> popup_;
+  std::shared_ptr<WorkbenchTheme> popup_theme_;
+  bool in_popup_ = false;
 };
 
 } // namespace cgpui

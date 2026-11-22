@@ -1,5 +1,7 @@
 #include "cgpui/ui/popover_menu.hpp"
 
+#include <memory>
+
 #include "cgpui/ui/runtime_context.hpp"
 #include "cgpui/ui/text_measurement.hpp"
 #include "workbench_internal.hpp"
@@ -60,6 +62,7 @@ void PopoverMenu::open_beside(
 }
 
 void PopoverMenu::open(std::vector<MenuItem> items, const WindowRuntimeContext& context) {
+  runtime_ = &context.runtime;
   if (!open_) {
     restore_focus_ = context.input_state().keyboard_focus_element_owner;
   }
@@ -79,6 +82,7 @@ void PopoverMenu::close(PopoverCloseReason reason, const WindowRuntimeContext& c
   open_ = false;
   focus_pending_ = false;
   levels_.clear();
+  sync_popups();
   if (restore_focus_.has_value()) {
     context.request_keyboard_focus(*restore_focus_);
   } else if (menu_id_.value != 0) {
@@ -108,6 +112,7 @@ void PopoverMenu::layout(Size viewport, DpiScale scale, const WorkbenchTheme& th
   scale_ = scale;
   font_ = theme.font;
   font_size_ = theme.font_size;
+  popup_theme_ = std::make_shared<WorkbenchTheme>(theme);  // popup windows paint with it
   if (font_changed) {
     for (Level& level : levels_) level.measured = false;
   }
@@ -183,6 +188,7 @@ void PopoverMenu::place() {
     level.flipped_x = placed.flipped_x;
     level.flipped_y = placed.flipped_y;
   }
+  sync_popups();
 }
 
 void PopoverMenu::open_submenu(std::size_t level, std::size_t index) {
@@ -194,7 +200,9 @@ void PopoverMenu::open_submenu(std::size_t level, std::size_t index) {
 }
 
 void PopoverMenu::truncate(std::size_t count) {
-  if (levels_.size() > count) levels_.resize(count);
+  if (levels_.size() <= count) return;
+  levels_.resize(count);
+  sync_popups();
 }
 
 } // namespace cgpui

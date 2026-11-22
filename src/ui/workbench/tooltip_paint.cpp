@@ -3,6 +3,7 @@
 #include "cgpui/ui/anchored.hpp"
 #include "cgpui/ui/paint.hpp"
 #include "cgpui/ui/text_measurement.hpp"
+#include "widget_popup_internal.hpp"
 #include "workbench_internal.hpp"
 
 #include <algorithm>
@@ -16,6 +17,8 @@ void Tooltip::layout(Size viewport, DpiScale scale, const WorkbenchTheme& theme)
   if (target == nullptr || !(live_->visible || live_->pending)) {
     bounds_ = {};
     flipped_ = false;
+    if (popup_) popup_->close();
+    in_popup_ = false;
     return;
   }
   // Re-measure only when the text, font size or scale changed.
@@ -47,6 +50,7 @@ void Tooltip::layout(Size viewport, DpiScale scale, const WorkbenchTheme& theme)
                   workbench_detail::snap(placed.bounds.origin.y, scale)},
                  placed.bounds.size};
   flipped_ = placed.flipped_y;
+  sync_popup(anchor, size, theme);
 }
 
 Rect Tooltip::bounds() const {
@@ -70,6 +74,10 @@ void Tooltip::append_elements(
 }
 
 void Tooltip::paint(PaintList& paint_list, const WorkbenchTheme& theme) const {
+  if (!in_popup_) paint_bubble(paint_list, theme);
+}
+
+void Tooltip::paint_bubble(PaintList& paint_list, const WorkbenchTheme& theme) const {
   const Target* target = active_.has_value() ? find(*active_) : nullptr;
   if (!live_->visible || target == nullptr || live_->opacity <= 0.0F) return;
   const auto faded = [&](Color color) {

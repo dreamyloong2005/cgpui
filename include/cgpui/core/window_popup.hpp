@@ -23,4 +23,13 @@ struct WindowPopupPlacement {
   float gap = 0.0F;
 };
 
+struct WindowPopupOptions {
+  // Pointer input passes through to what is below (tooltips), so the popup
+  // never takes hover from the window that owns it.
+  bool pointer_transparent = false;
+  // The root window's key and text events go to the popup while it is
+  // open (popups are never key windows).
+  bool takes_keyboard = false;
+};
+
 } // namespace cgpui

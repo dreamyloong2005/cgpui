@@ -203,6 +203,45 @@ void on_close(PopoverCloseHandler handler);     // activated / escape / outside_
   call returns when the menu closes, and timers and rendering wait until
   then. `example_workbench` uses it with `CGPUI_WORKBENCH_NATIVE_MENU=1`.
 
+## Popup windows
+
+Where the platform has popup windows (`popup_windows_supported`, macOS
+today), `Tooltip` and `PopoverMenu` draw into them instead of the in-window
+overlay, so they can extend outside the window. `TooltipOptions::popup_window`
+and `PopoverMenuOptions::popup_window` (both `true`) choose it; without
+popups, or when opening one fails, the overlay is used as before.
+
+- `src/ui/workbench/widget_popup.cpp` (`WidgetPopup`): one popup window per
+  tooltip and per open menu level, opened with `open_popup`
+  (`include/cgpui/ui/runtime_popups.hpp`). The window is the surface plus a
+  shadow margin (16 px tooltip, 40 px menu) and is placed by the platform
+  against the screen's work area (flip, then shift). Widgets keep their
+  geometry in root-window coordinates, so hit testing, keyboard handling
+  and accessibility nodes are the same code as the overlay; the popup view
+  paints the widget translated by the popup's origin.
+- Menus: level 0 opens at the point or anchor, submenus beside their item,
+  each in its own popup. Pointer input in a popup is handed to the root
+  window after the current event, so the root view's `PopoverMenu`
+  handles it with the root context. The overlay node still covers the
+  root window while the menu is open, so outside clicks close it. Popup
+  surfaces are opaque (no in-app blur behind a separate window).
+- Tooltips: the popup is pointer-transparent
+  (`WindowPopupOptions::pointer_transparent`), so it never takes hover
+  from the target under it.
+- Closing is deferred (the popup's view may be handling the click that
+  closes it) and destroys the native window right away. Popup redraws are
+  deferred too: widgets request them from the root window's layout, and a
+  nested frame inside the root frame overflowed the stack.
+- Observed 2026-11-22 (macOS 27.2.1, 1x): `example_workbench` context menu
+  in a popup below the window's bottom edge over the desktop; a click on
+  Rename in the popup sets "Last menu action: edit.rename"; the Open With
+  submenu in a second popup; the agent button tooltip extending past the
+  window's right edge.
+- Tests: `workbench_popup_windows_test` (fake popup platform: placement,
+  root paints nothing, click in the popup activates the item, the popup
+  window closes); the existing widget tests cover the overlay. Windows and
+  Linux: `docs/superpowers/plans/2026-11-22-popup-windows-windows-linux-follow-up.md`.
+
 ## Theming
 
 `workbench_theme(SystemAppearance, const Theme* overrides)` picks light or

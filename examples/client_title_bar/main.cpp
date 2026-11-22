@@ -91,7 +91,8 @@ int main() {
   options.setup_context = [&view](cgpui::AppContext& app_context) {
     app_context.runtime.set_after_frame_callback(
         [&view](const cgpui::ViewContext& context) {
-          if (view.set_leading_reserved(context.platform_window.frame_metrics()
+          if (context.window_runtime_id == context.runtime.root_window_runtime_id() &&
+              view.set_leading_reserved(context.platform_window.frame_metrics()
                                             .caption_buttons_leading_reserved_width)) {
             context.request_paint();
             return;

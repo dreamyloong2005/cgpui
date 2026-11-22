@@ -128,7 +128,8 @@ int main() {
     }
     application.supported = true;
     const auto opened = cgpui::open_popup(runtime,
-        placement, {120, 80}, std::make_unique<KeyCountingView>(popup_keys), true);
+        placement, {120, 80}, std::make_unique<KeyCountingView>(popup_keys),
+        cgpui::WindowPopupOptions{.takes_keyboard = true});
     const auto& descriptor = application.popup.descriptor;
     if (!opened || descriptor.kind != cgpui::WindowKind::popup || !descriptor.popup ||
         descriptor.popup->anchor.origin.y != 20.0F || descriptor.size.width != 120.0F ||

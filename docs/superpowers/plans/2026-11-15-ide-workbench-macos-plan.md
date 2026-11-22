@@ -46,7 +46,7 @@ Host: macOS 27.2.1 (26B131), Xcode 27.2 (27B52), Apple M4, one 1x display.
 | C6 Backdrop blur | done: offscreen scene, `MPSImageGaussianBlur` per backdrop, masked tint composite; pixel test; the workbench context menu observed blurred on screen |
 | C7 Shaping | done: `core_text` backend and glyph-id rasterizer, Metal glyph placement shared with Vulkan; see `docs/native-text.md`. Text observed in `example_workbench` |
 | C8 IME | done: clause spans from `NSMarkedClauseSegmentAttributeName` / `NSUnderlineStyleAttributeName`, see `docs/ime-composition.md`. Not checked with a real Pinyin or Japanese input method |
-| C9 Widgets | step 1 done: `PlatformWindow::show_context_menu` (macOS NSMenu; other backends unsupported) and `PopoverMenuOptions::prefer_native_menu`; the native menu was observed in `example_workbench`. Step 2 (popups in their own native windows) is in progress |
+| C9 Widgets | step 1 done: `PlatformWindow::show_context_menu` (macOS NSMenu; other backends unsupported) and `PopoverMenuOptions::prefer_native_menu`; the native menu was observed in `example_workbench`. Step 2 done on macOS: tooltips and menus (with submenus) in popup windows that extend outside the window, overlay as fallback; Windows/Linux follow-up in `2026-11-22-popup-windows-windows-linux-follow-up.md` |
 
 ## Order on a Mac
 

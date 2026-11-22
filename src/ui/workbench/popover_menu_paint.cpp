@@ -75,9 +75,17 @@ Rect line_box(Rect item, float x, float width, float font_size) {
 } // namespace
 
 void PopoverMenu::paint(PaintList& paint_list, const WorkbenchTheme& theme) const {
+  if (in_popup_) return;  // each level paints in its popup window
+  for (std::size_t level = 0; level < levels_.size(); ++level) {
+    paint_level(paint_list, theme, level, false);
+  }
+}
+
+void PopoverMenu::paint_level(PaintList& paint_list, const WorkbenchTheme& theme,
+                              std::size_t level, bool in_popup) const {
   const BorderRadii radius = BorderRadii::all(options_.corner_radius);
   const float hairline = workbench_detail::snap_length(1.0F, scale_);
-  for (std::size_t level = 0; level < levels_.size(); ++level) {
+  {
     const Level& entry = levels_[level];
     const Rect bounds = entry.bounds;
     // C5 shadow under the surface; optional C6 blur of what lies beneath.
@@ -89,7 +97,8 @@ void PopoverMenu::paint(PaintList& paint_list, const WorkbenchTheme& theme) cons
     // must not show through a plain surface.
     Color surface = theme.menu;
     surface.a = 1.0F;
-    if (options_.backdrop_blur) {
+    // A popup window has nothing of the app behind it to blur.
+    if (options_.backdrop_blur && !in_popup) {
       paint_list.draw_backdrop_blur(bounds, radius, options_.blur_radius);
       surface.a = std::min(theme.menu.a, 0.78F);  // let the blur show through
     }

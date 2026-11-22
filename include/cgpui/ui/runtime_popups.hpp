@@ -13,7 +13,7 @@ namespace cgpui {
 [[nodiscard]] bool popup_windows_supported(const WindowRuntime& runtime);
 [[nodiscard]] Result<AppOpenedWindow> open_popup(
     WindowRuntime& runtime, WindowPopupPlacement placement, Size size,
-    std::unique_ptr<View> view, bool takes_keyboard = false);
+    std::unique_ptr<View> view, WindowPopupOptions options = {});
 PlatformPopupPlacementResult place_popup(
     WindowRuntime& runtime, WindowRuntimeId popup, WindowPopupPlacement placement);
 bool request_popup_redraw(WindowRuntime& runtime, WindowRuntimeId popup);

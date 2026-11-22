@@ -106,6 +106,7 @@ discover = [
     "window_runtime_multi_window_geometry_test.cpp",
     "window_runtime_multi_window_input_test.cpp",
     "window_runtime_popup_test.cpp",
+    "workbench_popup_windows_test.cpp",
     "window_runtime_multi_window_theme_test.cpp",
     "window_runtime_multiwindow_test.cpp",
     "window_runtime_observation_closure_test.cpp",

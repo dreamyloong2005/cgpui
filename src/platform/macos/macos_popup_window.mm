@@ -142,7 +142,11 @@ PlatformPopupPlacementResult MacOSWindow::place_popup(WindowPopupPlacement place
       Size{static_cast<float>(size.width), static_cast<float>(size.height)},
       placement.side, placement.gap, y_down([screen visibleFrame]));
   const NSRect screen_frame = y_up(frame.bounds);
-  [window_ setFrameOrigin:screen_frame.origin];
+  // Moving sends windowDidMove:, and the runtime may lay out again in
+  // response; an unchanged origin must not move the window.
+  if (!NSEqualPoints([window_ frame].origin, screen_frame.origin)) {
+    [window_ setFrameOrigin:screen_frame.origin];
+  }
   const NSRect in_parent =
       [view convertRect:[parent convertRectFromScreen:screen_frame] fromView:nil];
   result.placed = true;

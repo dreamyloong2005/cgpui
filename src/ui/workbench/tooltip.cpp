@@ -1,6 +1,7 @@
 #include "cgpui/ui/tooltip.hpp"
 
 #include "cgpui/ui/runtime_context.hpp"
+#include "widget_popup_internal.hpp"
 #include "workbench_internal.hpp"
 
 #include <utility>
@@ -39,6 +40,8 @@ void Tooltip::clear_targets() {
 }
 
 void Tooltip::hide() {
+  if (popup_) popup_->close();
+  in_popup_ = false;
   live_->generation += 1;
   live_->pending = false;
   live_->visible = false;
@@ -67,6 +70,7 @@ std::optional<TooltipTargetId> Tooltip::target_at(Point point) const {
 }
 
 void Tooltip::begin_hover(TooltipTargetId id, const WindowRuntimeContext& context) {
+  runtime_ = &context.runtime;
   hide();
   active_ = id;
   anchor_pointer_ = pointer_;

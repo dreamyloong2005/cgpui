@@ -29,8 +29,8 @@ bool RuntimePopups::supported(const WindowRuntime& runtime) {
 
 Result<AppOpenedWindow> open_popup(
     WindowRuntime& runtime, WindowPopupPlacement placement, Size size,
-    std::unique_ptr<View> view, bool takes_keyboard) {
-  return RuntimePopups::open(runtime, placement, size, std::move(view), takes_keyboard);
+    std::unique_ptr<View> view, WindowPopupOptions options) {
+  return RuntimePopups::open(runtime, placement, size, std::move(view), options);
 }
 
 PlatformPopupPlacementResult place_popup(
@@ -56,15 +56,16 @@ bool close_popup(WindowRuntime& runtime, WindowRuntimeId popup) {
 
 Result<AppOpenedWindow> RuntimePopups::open(
     WindowRuntime& runtime, WindowPopupPlacement placement, Size size,
-    std::unique_ptr<View> view, bool takes_keyboard) {
+    std::unique_ptr<View> view, WindowPopupOptions options) {
   if (!popup_windows_supported(runtime)) {
     return std::unexpected(Error{
         .code = ErrorCode::unsupported_platform,
         .message = "popup windows are unsupported on this backend"});
   }
-  auto opened = runtime.try_open_window(
-      WindowOptions{}.size(size).popup(placement), std::move(view));
-  if (opened && takes_keyboard) runtime.keyboard_popup_ = opened->runtime_id;
+  WindowOptions window = WindowOptions{}.size(size).popup(placement);
+  window.descriptor.popup_options = options;
+  auto opened = runtime.try_open_window(std::move(window), std::move(view));
+  if (opened && options.takes_keyboard) runtime.keyboard_popup_ = opened->runtime_id;
   return opened;
 }
 
@@ -73,7 +74,17 @@ bool RuntimePopups::close(WindowRuntime& runtime, WindowRuntimeId popup) {
   if (record == nullptr) return false;
   if (runtime.keyboard_popup_ == popup) runtime.keyboard_popup_ = {};
   runtime.cleanup_closed_additional_window(*record);
+  // Destroy the native window now (it would otherwise stay on screen until
+  // the next reclamation). Callers close popups outside the popup's own
+  // event dispatch (WidgetPopup defers it).
+  runtime.collect_retired_native_windows();
   return true;
+}
+
+void RuntimePopups::forward_to_root(WindowRuntime& runtime, PlatformEvent event) {
+  runtime.defer([event = std::move(event)](const WindowRuntimeContext& context) {
+    context.runtime.handle_event(event);
+  });
 }
 
 bool RuntimePopups::forward_keyboard(WindowRuntime& runtime, const PlatformEvent& event) {

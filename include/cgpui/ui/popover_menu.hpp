@@ -8,6 +8,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -17,7 +18,9 @@
 namespace cgpui {
 
 class PaintList;
+class WindowRuntime;
 struct WindowRuntimeContext;
+namespace workbench_detail { class WidgetPopup; }
 
 enum class MenuItemKind {
   action,
@@ -71,6 +74,8 @@ struct PopoverMenuOptions {
   // NSMenu, which can extend outside the window) and falls back to the
   // in-window menu elsewhere. Native menus show no accelerator text.
   bool prefer_native_menu = false;
+  // Levels in popup windows where available (opaque, no blur); else overlay.
+  bool popup_window = true;
   std::string name = "Context menu";
 };
 
@@ -147,6 +152,9 @@ class PopoverMenu {
                    const WindowRuntimeContext& context);
   void measure(Level& level);
   void place();
+  void sync_popups();  // levels into popup windows (popover_menu_popups.cpp)
+  void paint_level(PaintList& paint_list, const WorkbenchTheme& theme,
+                   std::size_t level, bool in_popup) const;
   void open_submenu(std::size_t level, std::size_t index);
   void truncate(std::size_t count);
   void move_highlight(int direction, bool to_edge);
@@ -182,6 +190,10 @@ class PopoverMenu {
   std::optional<ElementId> restore_focus_;
   bool focus_pending_ = false;
   bool pressed_inside_ = false;
+  WindowRuntime* runtime_ = nullptr;  // set when the menu opens
+  std::vector<std::shared_ptr<workbench_detail::WidgetPopup>> popups_;
+  std::shared_ptr<WorkbenchTheme> popup_theme_;
+  bool in_popup_ = false;
 };
 
 } // namespace cgpui

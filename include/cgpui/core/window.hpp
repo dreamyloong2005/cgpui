@@ -44,6 +44,7 @@ struct WindowDescriptor {
   WindowKind kind = WindowKind::normal;
   // Popups: initial placement; `position` and `chrome` are ignored.
   std::optional<WindowPopupPlacement> popup;
+  WindowPopupOptions popup_options;
 };
 
 struct WindowState {
