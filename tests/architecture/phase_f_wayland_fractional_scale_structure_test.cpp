@@ -77,7 +77,8 @@ int main() {
       !contains(fractional, "wp_viewport_set_destination(")) return 4;
   if (!contains(behavior, "request_fractional_scale(150)") ||
       !contains(behavior, "state.scale.value, 1.25F") ||
-      !contains(behavior, "last_surface_buffer_scale() != 2") ||
+      !contains(behavior, "last_surface_buffer_scale() == 2") ||
+      !contains(behavior, "wait_until(scaled_surface)") ||
       !contains(compositor, "wp_fractional_scale_manager_v1_interface") ||
       !contains(compositor, "set_viewport_destination(") ||
       !contains(manifests, "\"wayland_fractional_scale_test.cpp\"") ||

@@ -18,12 +18,19 @@ bool same_size(cgpui::Size lhs, cgpui::Size rhs) {
   return near(lhs.width, rhs.width) && near(lhs.height, rhs.height);
 }
 
-bool wait_for(const std::atomic_bool& flag) {
+// The compositor thread records a surface's state when it handles the
+// client's requests, which can come just after the client's callback.
+template <typename Predicate>
+bool wait_until(Predicate predicate) {
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
-  while (!flag.load() && std::chrono::steady_clock::now() < deadline) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  while (!predicate() && std::chrono::steady_clock::now() < deadline) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
-  return flag.load();
+  return predicate();
+}
+
+bool wait_for(const std::atomic_bool& flag) {
+  return wait_until([&] { return flag.load(); });
 }
 
 } // namespace
@@ -72,15 +79,19 @@ int main() {
       !wait_for(fractional_matched)) {
     return finish(4);
   }
-  auto destination = compositor.last_viewport_destination();
-  if (compositor.last_surface_buffer_scale() != 2 ||
-      destination.width != 320 || destination.height != 240) {
-    return finish(5);
-  }
+  const auto scaled_surface = [&] {
+    const auto destination = compositor.last_viewport_destination();
+    return compositor.last_surface_buffer_scale() == 2 &&
+           destination.width == 320 && destination.height == 240;
+  };
+  if (!wait_until(scaled_surface)) return finish(5);
   compositor.request_resize_configure(400, 300);
   if (!wait_for(resize_matched)) return finish(6);
-  destination = compositor.last_viewport_destination();
-  if (destination.width != 400 || destination.height != 300) return finish(7);
+  const auto resized_surface = [&] {
+    const auto destination = compositor.last_viewport_destination();
+    return destination.width == 400 && destination.height == 300;
+  };
+  if (!wait_until(resized_surface)) return finish(7);
   const cgpui::WindowState state = (*window)->state();
   if (!near(state.scale.value, 1.25F) ||
       !same_size(state.framebuffer_size, {500.0F, 375.0F})) {
