@@ -57,19 +57,12 @@ int main() {
       "tests/platform/win32_uia_get_object_message_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &object_header, &navigation_header, &navigation, &tree_state_header,
       &lifetime, &fragment,
       &adapter_header, &adapter, &updates, &window, &proc_header, &proc,
       &main_proc,
-      &navigation_behavior, &message_behavior, &manifests, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &navigation_behavior, &message_behavior, &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(object_header, "public IRawElementProviderFragment") ||
@@ -114,17 +107,5 @@ int main() {
       line_count(navigation_behavior) > 190 ||
       line_count(message_behavior) > 100) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 620 adds production Win32 UIA fragment/root tree "
-      "navigation with parent, child, and sibling traversal, runtime ids, "
-      "bounds, focus and point lookup, plus focused `WM_GETOBJECT` routing. "
-      "Step 621 Win32 UIA pattern provider production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
   return 0;
 }

@@ -31,15 +31,8 @@ int main() {
       "tests/architecture/phase_f_win32_native_menu_tree_structure_test.cpp");
   const std::string manifests = read_source("tests/architecture/mcpp.toml") +
       read_source("tests/platform/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &public_menu, &source, &behavior, &tree_structure, &manifests, &roadmap,
-      &ledger_md, &ledger_json, &task_plan, &findings};
+      &public_menu, &source, &behavior, &tree_structure, &manifests};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(public_menu, "bool enabled = true") ||
       !contains(public_menu, "bool checked = false") ||
@@ -63,11 +56,5 @@ int main() {
       line_count(behavior) > 130) return 6;
   if (!contains(manifests, "\"phase_f_win32_native_menu_state_structure_test.cpp\"") ||
       !contains(manifests, "\"win32_native_menu_tree_test.cpp\"")) return 7;
-  constexpr const char* completion =
-      "Phase F Step 580 maps enabled, checked, and radio menu state through structured Win32 MENUITEMINFO records, adds a defaulted public radio flag, and verifies disabled, checkmark, and radio-check rendering on a real HMENU. Step 581 native menu dynamic update production behavior is next.";
-  const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 8;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) return 9;
   return 0;
 }

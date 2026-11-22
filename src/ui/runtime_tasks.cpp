@@ -20,20 +20,20 @@ bool WindowRuntime::complete_task(TaskId id) {
   }
 
   {
-    std::lock_guard lock(tasks_mutex_);
+    std::lock_guard lock(state_->tasks.tasks_mutex_);
     const auto task = std::find_if(
-        tasks_.begin(),
-        tasks_.end(),
+        state_->tasks.tasks_.begin(),
+        state_->tasks.tasks_.end(),
         [id](const RuntimeTask& task) {
           return task.id == id;
         });
-    if (task == tasks_.end() || task->queued || task->completed ||
+    if (task == state_->tasks.tasks_.end() || task->queued || task->completed ||
         task->cancelled) {
       return false;
     }
 
     task->queued = true;
-    task_completion_queue_.push_back(RuntimeTaskCompletion{
+    state_->tasks.task_completion_queue_.push_back(RuntimeTaskCompletion{
         .id = id,
         .priority = task->priority,
     });
@@ -44,19 +44,19 @@ bool WindowRuntime::complete_task(TaskId id) {
 }
 
 void WindowRuntime::drain_task_completions() {
-  if (draining_task_completions_ || should_quit_) {
+  if (state_->tasks.draining_task_completions_ || state_->core.should_quit_) {
     return;
   }
 
-  draining_task_completions_ = true;
-  while (!should_quit_) {
+  state_->tasks.draining_task_completions_ = true;
+  while (!state_->core.should_quit_) {
     std::vector<RuntimeTaskCompletion> queued;
     {
-      std::lock_guard lock(tasks_mutex_);
-      if (task_completion_queue_.empty()) {
+      std::lock_guard lock(state_->tasks.tasks_mutex_);
+      if (state_->tasks.task_completion_queue_.empty()) {
         break;
       }
-      queued.swap(task_completion_queue_);
+      queued.swap(state_->tasks.task_completion_queue_);
     }
     for (const TaskPriority priority : runtime_task_priorities_descending) {
       for (const RuntimeTaskCompletion& completion : queued) {
@@ -64,18 +64,18 @@ void WindowRuntime::drain_task_completions() {
         const TaskId id = completion.id;
         TaskCompletionCallback callback;
         {
-          std::lock_guard lock(tasks_mutex_);
+          std::lock_guard lock(state_->tasks.tasks_mutex_);
           const auto task = std::find_if(
-              tasks_.begin(),
-              tasks_.end(),
+              state_->tasks.tasks_.begin(),
+              state_->tasks.tasks_.end(),
               [id](const RuntimeTask& task) {
                 return task.id == id;
               });
-          if (task == tasks_.end() || task->completed || task->cancelled) {
+          if (task == state_->tasks.tasks_.end() || task->completed || task->cancelled) {
             continue;
           }
 
-          callback = task->callback;
+          callback = std::move(task->callback);
           task->queued = false;
           task->completed = true;
         }
@@ -92,7 +92,7 @@ void WindowRuntime::drain_task_completions() {
       }
     }
   }
-  draining_task_completions_ = false;
+  state_->tasks.draining_task_completions_ = false;
   flush_deferred_redraw_request();
 }
 

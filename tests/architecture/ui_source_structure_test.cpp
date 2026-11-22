@@ -89,18 +89,18 @@ int main() {
       "include/cgpui/ui/style.hpp",
       "include/cgpui/ui/focus_metadata.hpp",
       "include/cgpui/ui/text_edit_actions.hpp",
-      "include/cgpui/ui/text_font.hpp",
-      "include/cgpui/ui/text_shaping_backend.hpp",
-      "include/cgpui/ui/text_shape.hpp",
-      "include/cgpui/ui/text_glyphs.hpp",
-      "include/cgpui/ui/text_measurement.hpp",
-      "include/cgpui/ui/text_wrapping.hpp",
-      "include/cgpui/ui/text_hit_testing.hpp",
-      "include/cgpui/ui/text_layout.hpp",
-      "include/cgpui/ui/text_rich_text.hpp",
+      "include/cgpui/platform/font_database.hpp",
+      "include/cgpui/renderer/text/text_shaping_backend.hpp",
+      "include/cgpui/renderer/text/text_shape.hpp",
+      "include/cgpui/renderer/text/text_glyphs.hpp",
+      "include/cgpui/renderer/text/text_measurement.hpp",
+      "include/cgpui/renderer/text/text_wrapping.hpp",
+      "include/cgpui/renderer/text/text_hit_testing.hpp",
+      "include/cgpui/renderer/text/text_layout.hpp",
+      "include/cgpui/renderer/text/text_rich_text.hpp",
       "include/cgpui/ui/text_rich_text_activation.hpp",
       "include/cgpui/ui/text_rich_text_hit_testing.hpp",
-      "include/cgpui/ui/text_rich_text_inline_image.hpp",
+      "include/cgpui/renderer/text/text_rich_text_inline_image.hpp",
       "include/cgpui/ui/text_rich_text_syntax.hpp",
       "include/cgpui/ui/text_model.hpp",
       "include/cgpui/ui/text.hpp",
@@ -157,23 +157,23 @@ int main() {
   }
 
   const std::vector<const char*> text_implementation_files{
-      "src/ui/text_shaping_backend.cpp",
-      "src/ui/text_shaping_dispatch.cpp",
-      "src/ui/text_shaping_harfbuzz.cpp",
-      "src/ui/text_shaping_fallback.cpp",
-      "src/ui/text_shape.cpp",
-      "src/ui/text_glyph_raster.cpp",
-      "src/ui/text_measurement.cpp",
-      "src/ui/text_measurement_grapheme.cpp",
-      "src/ui/text_measurement_bidi.cpp",
-      "src/ui/text_line_metrics.cpp",
-      "src/ui/text_paragraph_layout.cpp",
-      "src/ui/text_wrapping.cpp",
-      "src/ui/text_hit_testing.cpp",
-      "src/ui/text_rich_text.cpp",
+      "src/renderer/text/text_shaping_backend.cpp",
+      "src/renderer/text/text_shaping_dispatch.cpp",
+      "src/renderer/text/text_shaping_harfbuzz.cpp",
+      "src/renderer/text/text_shaping_fallback.cpp",
+      "src/renderer/text/text_shape.cpp",
+      "src/renderer/text/text_glyph_raster.cpp",
+      "src/renderer/text/text_measurement.cpp",
+      "src/renderer/text/text_measurement_grapheme.cpp",
+      "src/renderer/text/text_measurement_bidi.cpp",
+      "src/renderer/text/text_line_metrics.cpp",
+      "src/renderer/text/text_paragraph_layout.cpp",
+      "src/renderer/text/text_wrapping.cpp",
+      "src/renderer/text/text_hit_testing.cpp",
+      "src/renderer/text/text_rich_text.cpp",
       "src/ui/text_rich_text_activation.cpp",
       "src/ui/text_rich_text_hit_testing.cpp",
-      "src/ui/text_rich_text_inline_image.cpp",
+      "src/renderer/text/text_rich_text_inline_image.cpp",
       "src/ui/text_rich_text_syntax.cpp",
   };
   for (const char* source : text_implementation_files) {
@@ -182,22 +182,22 @@ int main() {
     }
   }
   const std::string text_shaping_backend_source =
-      read_source("src/ui/text_shaping_backend.cpp");
+      read_source("src/renderer/text/text_shaping_backend.cpp");
   const std::string text_shaping_internal_header =
-      read_source("src/ui/text_shaping_internal.hpp");
+      read_source("src/renderer/text/text_shaping_internal.hpp");
   const std::string text_shaping_dispatch_source =
-      read_source("src/ui/text_shaping_dispatch.cpp");
+      read_source("src/renderer/text/text_shaping_dispatch.cpp");
   const std::string text_shaping_harfbuzz_source =
-      read_source("src/ui/text_shaping_harfbuzz.cpp");
+      read_source("src/renderer/text/text_shaping_harfbuzz.cpp");
   const std::string fallback_source =
-      read_source("src/ui/text_shaping_fallback.cpp");
+      read_source("src/renderer/text/text_shaping_fallback.cpp");
   const std::string text_shape_public_header =
-      read_source("include/cgpui/ui/text_shape.hpp");
-  const std::string text_shape_source = read_source("src/ui/text_shape.cpp");
+      read_source("include/cgpui/renderer/text/text_shape.hpp");
+  const std::string text_shape_source = read_source("src/renderer/text/text_shape.cpp");
   const std::string text_rich_text_header =
-      read_source("include/cgpui/ui/text_rich_text.hpp");
+      read_source("include/cgpui/renderer/text/text_rich_text.hpp");
   const std::string text_rich_text_source =
-      read_source("src/ui/text_rich_text.cpp");
+      read_source("src/renderer/text/text_rich_text.cpp");
   const std::string text_rich_text_activation_header =
       read_source("include/cgpui/ui/text_rich_text_activation.hpp");
   const std::string text_rich_text_activation_source =
@@ -207,15 +207,15 @@ int main() {
   const std::string text_rich_text_hit_testing_source =
       read_source("src/ui/text_rich_text_hit_testing.cpp");
   const std::string text_rich_text_inline_image_header =
-      read_source("include/cgpui/ui/text_rich_text_inline_image.hpp");
+      read_source("include/cgpui/renderer/text/text_rich_text_inline_image.hpp");
   const std::string text_rich_text_inline_image_source =
-      read_source("src/ui/text_rich_text_inline_image.cpp");
+      read_source("src/renderer/text/text_rich_text_inline_image.cpp");
   const std::string text_rich_text_syntax_header =
       read_source("include/cgpui/ui/text_rich_text_syntax.hpp");
   const std::string text_rich_text_syntax_source =
       read_source("src/ui/text_rich_text_syntax.cpp");
-  const std::string library_manifests = read_source("packages/renderer/mcpp.toml") +
-      read_source("packages/ui/mcpp.toml");
+  const std::string renderer_manifest = read_source("packages/renderer/mcpp.toml");
+  const std::string ui_manifest = read_source("packages/ui/mcpp.toml");
   if (!contains(text_shaping_backend_source,
                 "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND") ||
       !contains(text_shaping_internal_header, "TextShapingRequest") ||
@@ -333,10 +333,9 @@ int main() {
                 "append_emoji_presentation_color_glyph_plan(") ||
       !contains(fallback_source, "mark_emoji_presentation_selector_span(") ||
       !contains(fallback_source, "append_color_glyph_plan(") ||
-      !contains(library_manifests,
-                "\"../../src/ui/text_shaping_harfbuzz.cpp\"") ||
-      !contains(library_manifests,
-                "\"!../../src/ui/text_shaping_harfbuzz.cpp\"") ||
+      !contains(renderer_manifest,
+                "\"../../src/renderer/text/text_shaping_harfbuzz.cpp\"") ||
+      contains(ui_manifest, "../../src/renderer/text/") ||
       contains(text_shape_source, "run.glyphs.push_back")) {
     return 143;
   }
@@ -540,7 +539,8 @@ int main() {
     return 101;
   }
   if (!contains(style_tokens_header, "class Theme") ||
-      !contains(style_values_header, "struct FontDescriptor") ||
+      !contains(style_values_header, "#include \"cgpui/ui/style_font.hpp\"") ||
+      !contains(read_source("include/cgpui/core/font.hpp"), "struct FontDescriptor") ||
       !contains(style_box_header, "struct Style") ||
       !contains(style_text_header, "#include \"cgpui/ui/style_box.hpp\"") ||
       !contains(style_layout_header, "#include \"cgpui/ui/style_box.hpp\"") ||
@@ -574,24 +574,24 @@ int main() {
   }
 
   const std::string text_font_header =
-      read_source("include/cgpui/ui/text_font.hpp");
-  const std::string text_font_source = read_source("src/ui/text_font.cpp");
+      read_source("include/cgpui/platform/font_database.hpp");
+  const std::string text_font_source = read_source("src/platform/font_database.cpp");
   const std::string text_edit_actions_header =
       read_source("include/cgpui/ui/text_edit_actions.hpp");
   const std::string text_shape_header =
-      read_source("include/cgpui/ui/text_shape.hpp");
+      read_source("include/cgpui/renderer/text/text_shape.hpp");
   const std::string text_glyphs_header =
-      read_source("include/cgpui/ui/text_glyphs.hpp");
+      read_source("include/cgpui/renderer/text/text_glyphs.hpp");
   const std::string text_measurement_header =
-      read_source("include/cgpui/ui/text_measurement.hpp");
+      read_source("include/cgpui/renderer/text/text_measurement.hpp");
   const std::string text_paragraph_layout_header =
-      read_source("include/cgpui/ui/text_paragraph_layout.hpp");
+      read_source("include/cgpui/renderer/text/text_paragraph_layout.hpp");
   const std::string text_wrapping_header =
-      read_source("include/cgpui/ui/text_wrapping.hpp");
+      read_source("include/cgpui/renderer/text/text_wrapping.hpp");
   const std::string text_hit_testing_header =
-      read_source("include/cgpui/ui/text_hit_testing.hpp");
+      read_source("include/cgpui/renderer/text/text_hit_testing.hpp");
   const std::string text_layout_header =
-      read_source("include/cgpui/ui/text_layout.hpp");
+      read_source("include/cgpui/renderer/text/text_layout.hpp");
   const std::string text_aggregate_header =
       read_source("include/cgpui/ui/text.hpp");
   const std::string text_model_header =
@@ -602,7 +602,7 @@ int main() {
       !contains(text_font_source, "void FontDatabase::add_face(") ||
       !contains(text_font_source,
                 "FontDatabase font_database_from_discovered_faces(") ||
-      !contains(text_font_header, "struct FontUnicodeRange") ||
+      !contains(read_source("include/cgpui/core/font_face.hpp"), "struct FontUnicodeRange") ||
       !contains(text_font_source, "font_face_covers_codepoint(") ||
       !contains(text_font_source, "FontDatabase::resolve_chain_for_codepoint(") ||
       !contains(text_edit_actions_header, "enum class TextEditAction") ||
@@ -647,15 +647,15 @@ int main() {
       !contains(text_model_header,
                 "preferred_line_column_for_vertical_navigation(") ||
       !contains(event_pointer_header, "std::uint8_t click_count = 1") ||
-      !contains(text_layout_header, "#include \"cgpui/ui/text_shape.hpp\"") ||
-      !contains(text_layout_header, "#include \"cgpui/ui/text_glyphs.hpp\"") ||
+      !contains(text_layout_header, "#include \"cgpui/renderer/text/text_shape.hpp\"") ||
+      !contains(text_layout_header, "#include \"cgpui/renderer/text/text_glyphs.hpp\"") ||
       !contains(text_layout_header,
-                "#include \"cgpui/ui/text_measurement.hpp\"") ||
+                "#include \"cgpui/renderer/text/text_measurement.hpp\"") ||
       !contains(text_layout_header,
-                "#include \"cgpui/ui/text_paragraph_layout.hpp\"") ||
-      !contains(text_layout_header, "#include \"cgpui/ui/text_wrapping.hpp\"") ||
+                "#include \"cgpui/renderer/text/text_paragraph_layout.hpp\"") ||
+      !contains(text_layout_header, "#include \"cgpui/renderer/text/text_wrapping.hpp\"") ||
       !contains(text_layout_header,
-                "#include \"cgpui/ui/text_hit_testing.hpp\"") ||
+                "#include \"cgpui/renderer/text/text_hit_testing.hpp\"") ||
       !contains(text_aggregate_header,
                 "#include \"cgpui/ui/text_rich_text_hit_testing.hpp\"") ||
       !contains(text_aggregate_header,
@@ -684,19 +684,19 @@ int main() {
   }
 
   const std::string text_measurement_source =
-      read_source("src/ui/text_measurement.cpp");
+      read_source("src/renderer/text/text_measurement.cpp");
   const std::string text_measurement_grapheme_source =
-      read_source("src/ui/text_measurement_grapheme.cpp");
+      read_source("src/renderer/text/text_measurement_grapheme.cpp");
   const std::string text_measurement_bidi_source =
-      read_source("src/ui/text_measurement_bidi.cpp");
+      read_source("src/renderer/text/text_measurement_bidi.cpp");
   const std::string text_line_metrics_source =
-      read_source("src/ui/text_line_metrics.cpp");
+      read_source("src/renderer/text/text_line_metrics.cpp");
   const std::string text_paragraph_layout_source =
-      read_source("src/ui/text_paragraph_layout.cpp");
+      read_source("src/renderer/text/text_paragraph_layout.cpp");
   const std::string text_wrapping_source =
-      read_source("src/ui/text_wrapping.cpp");
+      read_source("src/renderer/text/text_wrapping.cpp");
   const std::string text_hit_testing_source =
-      read_source("src/ui/text_hit_testing.cpp");
+      read_source("src/renderer/text/text_hit_testing.cpp");
   const std::string text_model_source = read_source("src/ui/text_model.cpp");
   const std::string text_model_history_source =
       read_source("src/ui/text_model_history.cpp");
@@ -822,14 +822,12 @@ int main() {
       contains(text_font_header, "faces_.push_back") ||
       contains(text_font_header, "generic_fallback_families_.push_back") ||
       contains(text_font_header, "std::find(") ||
-      // text_font.cpp is compiled once, by packages/platform (mcpp links a
-      // dependency's objects, so xmake's second copy in the renderer would
-      // be a duplicate definition); renderer and ui depend on platform.
+      // Font database sources follow platform ownership without UI exclusions.
       count_occurrences(read_source("packages/platform/mcpp.toml"),
-                        "\"../../src/ui/text_font.cpp\"") != 1 ||
+                        "\"../../src/platform/*.cpp\"") != 1 ||
       contains(read_source("packages/renderer/mcpp.toml"),
-               "\"../../src/ui/text_font.cpp\"") ||
-      !contains(library_manifests, "\"!../../src/ui/text_font.cpp\"")) {
+               "\"../../src/platform/font_database.cpp\"") ||
+      contains(read_source("packages/ui/mcpp.toml"), "!../../src/ui/text")) {
     return 150;
   }
 
@@ -952,7 +950,15 @@ int main() {
   const std::string window_runtime_header =
       read_source("include/cgpui/ui/window_runtime.hpp");
   const std::string window_runtime_internal_header =
-      read_source("src/ui/window_runtime_internal.hpp");
+      read_source("include/cgpui/ui/detail/window_runtime_declarations.hpp");
+  const std::string runtime_state_task_types_header =
+      read_source("src/ui/runtime_state_tasks_types_internal.hpp");
+  const std::string runtime_state_core_header =
+      read_source("src/ui/runtime_state_core_internal.hpp");
+  const std::string runtime_state_diagnostics_header =
+      read_source("src/ui/runtime_state_diagnostics_internal.hpp");
+  const std::string runtime_state_scheduling_header =
+      read_source("src/ui/runtime_state_scheduling_internal.hpp");
   const std::string runtime_rendering_header =
       read_source("include/cgpui/ui/runtime_rendering.hpp");
   const std::string runtime_action_templates_header =
@@ -1142,8 +1148,8 @@ int main() {
       !contains(runtime_types_header, "#include \"cgpui/ui/runtime_context.hpp\"") ||
       !contains(window_runtime_header, "class WindowRuntime") ||
       !contains(window_runtime_header, "struct AppRunnerOptions") ||
-      !contains(window_runtime_internal_header, "struct RuntimeTask") ||
-      !contains(window_runtime_internal_header, "PlatformApplication& application_") ||
+      !contains(runtime_state_task_types_header, "struct WindowRuntime::RuntimeTask") ||
+      !contains(runtime_state_core_header, "PlatformApplication& application_") ||
       !contains(runtime_rendering_header, "Result<void> render_view(") ||
       !contains(runtime_rendering_header, "int run_app(") ||
       !contains(runtime_action_templates_header,
@@ -1190,6 +1196,10 @@ int main() {
       line_count(runtime_action_enablement_templates_header) > 100 ||
       line_count(runtime_command_palette_templates_header) > 80 ||
       line_count(window_runtime_internal_header) > 260 ||
+      line_count(runtime_state_task_types_header) > 40 ||
+      line_count(runtime_state_core_header) > 30 ||
+      line_count(runtime_state_diagnostics_header) > 25 ||
+      line_count(runtime_state_scheduling_header) > 40 ||
       contains(runtime_types_header, "struct WindowRuntimeContext") ||
       contains(runtime_types_header, "struct AppContext") ||
       contains(runtime_input_state_header, "class WeakView") ||
@@ -1931,6 +1941,15 @@ int main() {
       "src/ui/runtime_core.cpp",
       "src/ui/runtime_run.cpp",
       "src/ui/runtime_shutdown.cpp",
+      "src/ui/runtime_shutdown_resources.cpp",
+      "src/ui/runtime_state.cpp",
+      "src/ui/runtime_state_core.cpp",
+      "src/ui/runtime_state_windows.cpp",
+      "src/ui/runtime_state_tasks.cpp",
+      "src/ui/runtime_entity_storage.cpp",
+      "src/ui/runtime_global_storage.cpp",
+      "src/ui/runtime_observer_registration.cpp",
+      "src/ui/runtime_template_access.cpp",
       "src/ui/runtime_rendering.cpp",
       "src/ui/runtime_views.cpp",
       "src/ui/runtime_callbacks.cpp",
@@ -1938,7 +1957,7 @@ int main() {
       "src/ui/runtime_entities.cpp",
       "src/ui/runtime_accessibility.cpp",
       "src/ui/runtime_window_accessibility.cpp",
-      "src/ui/runtime_window_accessibility_internal.hpp",
+      "include/cgpui/ui/detail/window_runtime_window_accessibility_declarations.hpp",
       "src/ui/runtime_events.cpp",
       "src/ui/runtime_event_control.cpp",
       "src/ui/runtime_event_dispatch.cpp",
@@ -1968,8 +1987,19 @@ int main() {
       "src/ui/runtime_window_ownership.cpp",
       "src/ui/runtime_window_ownership_state_internal.hpp",
       "src/ui/runtime_window_reclamation.cpp",
-      "src/ui/runtime_window_reclamation_internal.hpp",
+      "include/cgpui/ui/detail/window_runtime_window_reclamation_declarations.hpp",
       "src/ui/runtime_window_records.cpp",
+      "src/ui/runtime_window_store_internal.hpp",
+      "src/ui/runtime_window_store.cpp",
+      "src/ui/runtime_window_lifetime_internal.hpp",
+      "include/cgpui/ui/detail/window_runtime_window_lifetime_declarations.hpp",
+      "src/ui/runtime_window_lifetime.cpp",
+      "src/ui/runtime_window_shutdown.cpp",
+      "src/ui/runtime_window_resource_cleanup.cpp",
+      "include/cgpui/ui/detail/window_runtime_window_scheduling_declarations.hpp",
+      "src/ui/runtime_window_scheduling.cpp",
+      "src/ui/runtime_window_close.cpp",
+      "src/ui/runtime_window_frame_results.cpp",
       "src/ui/runtime_window_rendering.cpp",
       "src/ui/runtime_window_results.cpp",
       "src/ui/runtime_renderer_results.cpp",
@@ -2022,9 +2052,11 @@ int main() {
       "src/ui/runtime_task_priority_internal.hpp",
       "src/ui/runtime_task_priority.cpp",
       "src/ui/runtime_task_group_internal.hpp",
+      "src/ui/runtime_task_group_record_internal.hpp",
       "src/ui/runtime_task_group.cpp",
       "src/ui/runtime_task_group_propagation.cpp",
       "src/ui/task_group.cpp",
+      "src/ui/task_group_lifetime.cpp",
       "src/ui/runtime_task_results.cpp",
       "src/ui/runtime_task_state.cpp",
       "src/ui/runtime_diagnostic_snapshot.cpp",
@@ -2389,7 +2421,7 @@ int main() {
       !contains(runtime_window_results_source,
                 "app_opened_windows_.push_back(opened)") ||
       !contains(runtime_window_results_source,
-                "window_runtime_records_.push_back(record)") ||
+                "window_runtime_records_->insert(std::move(record))") ||
       contains(runtime_window_results_source,
                "void WindowRuntime::handle_redraw_for_record(") ||
       contains(runtime_window_results_source, "install_native_menu(") ||
@@ -2472,7 +2504,7 @@ int main() {
                 "snapshot->timings.total_nanoseconds") ||
       !contains(diagnostic_ui_internal_header,
                 "#include \"runtime_renderer_diagnostics_internal.hpp\"") ||
-      !contains(window_runtime_internal_header,
+      !contains(runtime_state_diagnostics_header,
                 "#include \"runtime_renderer_diagnostic_state_internal.hpp\"") ||
       !contains(diagnostic_render_view_source,
                 "apply_runtime_renderer_frame_diagnostics(") ||
@@ -2485,15 +2517,27 @@ int main() {
 
   const std::string runtime_renderer_frame_results_source =
       read_source("src/ui/runtime_renderer_frame_results.cpp");
+  const std::string runtime_window_frame_results_source =
+      read_source("src/ui/runtime_window_frame_results.cpp");
   const std::string runtime_frame_scheduling_header =
       read_source("src/ui/runtime_frame_scheduling_internal.hpp");
   const std::string runtime_frame_scheduling_source =
       read_source("src/ui/runtime_frame_scheduling.cpp");
   if (line_count(runtime_renderer_frame_results_source) > 180 ||
+      line_count(runtime_window_frame_results_source) > 120 ||
       !contains(runtime_renderer_frame_results_source,
                 "Result<void> WindowRuntime::try_draw_frame(") ||
-      !contains(runtime_renderer_frame_results_source,
+      !contains(runtime_window_frame_results_source,
                 "WindowRuntime::try_draw_frame_for_record(") ||
+      !contains(runtime_window_frame_results_source, "render_view(") ||
+      !contains(runtime_window_frame_results_source,
+                "runtime_renderer_frame_diagnostic_snapshot(") ||
+      !contains(runtime_window_frame_results_source, "frame_index_ += 1") ||
+      contains(runtime_window_frame_results_source, "fail_and_quit(") ||
+      contains(runtime_window_frame_results_source,
+               "WindowRuntime::try_resize_surface(") ||
+      contains(runtime_window_frame_results_source,
+               "WindowRuntime::try_create_renderer(") ||
       !contains(runtime_renderer_frame_results_source, "render_view(") ||
       !contains(runtime_renderer_frame_results_source,
                 "runtime_renderer_frame_diagnostic_snapshot(") ||
@@ -2515,7 +2559,7 @@ int main() {
   }
   if (line_count(runtime_frame_scheduling_header) > 20 ||
       line_count(runtime_frame_scheduling_source) > 70 ||
-      !contains(window_runtime_internal_header,
+      !contains(runtime_state_scheduling_header,
                 "#include \"runtime_frame_scheduling_internal.hpp\"") ||
       !contains(runtime_frame_scheduling_header,
                 "bool rendering_frame_ = false") ||
@@ -2726,11 +2770,11 @@ int main() {
   const std::string runtime_window_input_state_source =
       read_source("src/ui/runtime_window_input_state.cpp");
   const std::string runtime_window_input_state_header =
-      read_source("src/ui/runtime_window_input_state_internal.hpp");
+      read_source("include/cgpui/ui/detail/window_runtime_window_input_declarations.hpp");
   const std::string runtime_window_event_state_source =
       read_source("src/ui/runtime_window_event_state.cpp");
   const std::string runtime_window_event_state_header =
-      read_source("src/ui/runtime_window_event_state_internal.hpp");
+      read_source("include/cgpui/ui/detail/window_runtime_window_event_declarations.hpp");
   if (!contains(runtime_event_windows_source,
                 "void WindowRuntime::dispatch_view_event_for_record(") ||
       !contains(runtime_event_windows_source,
@@ -3411,7 +3455,7 @@ int main() {
       !contains(runtime_text_focus_source,
                 "std::optional<ImeCandidateRect> "
                 "WindowRuntime::focused_text_ime_rect()") ||
-      !contains(runtime_text_focus_source, "text_element->caret_rect(scale_)") ||
+      !contains(runtime_text_focus_source, "text_element->caret_rect(state_->windows.scale_)") ||
       contains(runtime_text_focus_source,
                "bool WindowRuntime::apply_text_pointer_selection(") ||
       contains(runtime_text_focus_source, "void WindowRuntime::bind_text_model(")) {
@@ -3755,7 +3799,7 @@ int main() {
   const std::string runtime_theme_scheduling_source =
       read_source("src/ui/runtime_theme_scheduling.cpp");
   const std::string runtime_theme_scheduling_header =
-      read_source("src/ui/runtime_theme_scheduling_internal.hpp");
+      read_source("include/cgpui/ui/detail/window_runtime_theme_scheduling_declarations.hpp");
   if (line_count(runtime_theme_source) > 120 ||
       !contains(runtime_theme_source, "void WindowRuntime::set_app_theme(") ||
       !contains(runtime_theme_source, "const Theme& WindowRuntime::app_theme(") ||
@@ -3782,7 +3826,7 @@ int main() {
   const std::string runtime_window_accessibility_source =
       read_source("src/ui/runtime_window_accessibility.cpp");
   const std::string runtime_window_accessibility_header =
-      read_source("src/ui/runtime_window_accessibility_internal.hpp");
+      read_source("include/cgpui/ui/detail/window_runtime_window_accessibility_declarations.hpp");
   if (line_count(runtime_accessibility_source) > 100 ||
       !contains(runtime_accessibility_source,
                 "void WindowRuntime::update_platform_accessibility_tree(") ||

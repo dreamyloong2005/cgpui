@@ -34,20 +34,13 @@ int main() {
   const std::string linux_release = read_source("scripts/ci/linux-release.sh");
   const std::string workflow =
       read_source(".github/workflows/phase-g-windows-linux.yml");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_linux_debug_packaging_structure_test.cpp");
   const std::string manifests = read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &windows_core, &windows_debug, &windows_release, &linux_core,
-      &linux_debug, &linux_release, &workflow, &previous, &manifests,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &linux_debug, &linux_release, &workflow, &manifests,
+      &ledger_json};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(windows_debug, "windows-package.ps1") ||
@@ -88,9 +81,7 @@ int main() {
       !contains(workflow, "cgpui-windows-release") ||
       !contains(workflow, "cgpui-linux-release")) return 5;
 
-  if (!contains(previous,
-                "Phase G Step 668 adds a Linux Debug CI packaging path") ||
-      !contains(manifests,
+  if (!contains(manifests,
                 "\"phase_g_release_packaging_structure_test.cpp\"")) {
     return 6;
   }
@@ -99,21 +90,7 @@ int main() {
       line_count(linux_debug) > 20 || line_count(linux_release) > 20 ||
       line_count(workflow) > 150 || line_count(read_source("mcpp.toml")) > 100) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 669 adds Windows and Linux Release CI packaging paths "
-      "with workspace-confined output cleanup, serial Xmake configuration "
-      "and build, public headers, framework libraries, demo executables, "
-      "README, manifest validation, and uploaded artifact coverage. Step 670 "
-      "examples and smoke test matrix coverage is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
-  if (!contains(ledger_json, "\"phase_g_step_669_sources\"") ||
-      !contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
+  if (!contains(ledger_json, "\"phase_g_step_669_sources\"")) {
     return 9;
   }
   return 0;

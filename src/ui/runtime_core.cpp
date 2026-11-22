@@ -1,8 +1,6 @@
 #include "ui_internal.hpp"
-#include "runtime_async_io_internal.hpp"
-#include "runtime_cross_thread_entity_internal.hpp"
-#include "runtime_task_pool_internal.hpp"
-#include "runtime_task_group_internal.hpp"
+#include "runtime_window_store_internal.hpp"
+#include "runtime_window_lifetime_internal.hpp"
 
 namespace cgpui {
 
@@ -10,28 +8,30 @@ WindowRuntime::WindowRuntime(
     PlatformApplication& application,
     View& view,
     RendererFactory renderer_factory)
-    : application_(application),
-      view_(view),
-      renderer_factory_(std::move(renderer_factory)),
-      cross_thread_entity_queue_(
-          std::make_shared<detail::CrossThreadEntityQueueState>(*this)),
-      async_io_registry_(std::make_unique<RuntimeAsyncIoRegistry>()),
-      task_pool_(std::make_unique<RuntimeTaskPool>()),
-      task_group_store_(std::make_unique<RuntimeTaskGroupStore>()) {
-  view_registry_.insert_or_assign(
-      root_view_id_.value,
-      RegisteredView{.view = &view_});
-  window_runtime_records_.push_back(WindowRuntimeRecord{
-      .runtime_id = root_window_runtime_id_,
+    : state_(std::make_unique<RuntimeState>(*this, application, view, std::move(renderer_factory))) {
+  state_->views.view_registry_.insert_or_assign(
+      state_->views.root_view_id_.value,
+      RegisteredView{.view = &state_->core.view_});
+  state_->windows.window_runtime_records_->insert(WindowRuntimeRecord{
+      .runtime_id = state_->windows.root_window_runtime_id_,
       .parent_runtime_id = {},
       .descriptor = {},
-      .root_view_id = root_view_id_,
+      .root_view_id = state_->views.root_view_id_,
       .window = nullptr,
       .renderer = nullptr,
       .owns_window = true,
       .owns_renderer = false,
       .owns_root_view = false,
       .active = false});
+}
+
+WindowRuntime::WindowRuntime(PlatformApplication& application, View& view,
+                             AppRendererFactory renderer_factory, OwnedRendererFactoryTag)
+    : WindowRuntime(application, view, RendererFactory{}) {
+  state_->windows.window_lifetime_->factory = std::move(renderer_factory);
+  if (state_->windows.window_lifetime_->factory) {
+    state_->core.renderer_factory_ = [this](const auto& descriptor) { return state_->windows.window_lifetime_->create(descriptor); };
+  }
 }
 
 } // namespace cgpui

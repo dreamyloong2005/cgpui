@@ -1,3 +1,4 @@
+#include "runtime_state_internal.hpp"
 #include "runtime_popup_support_internal.hpp"
 
 #include "runtime_popups_internal.hpp"
@@ -30,7 +31,7 @@ bool RuntimePopups::supported(const WindowRuntime& runtime) {
   const WindowRuntimeRecord* root =
       runtime.window_runtime_record(runtime.root_window_runtime_id());
   return runtime_popup_windows_supported(
-      runtime.application_, root == nullptr ? nullptr : root->renderer);
+      runtime.state_->core.application_, root == nullptr ? nullptr : root->renderer);
 }
 
 } // namespace cgpui

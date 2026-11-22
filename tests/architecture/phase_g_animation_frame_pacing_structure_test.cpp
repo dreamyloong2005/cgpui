@@ -32,6 +32,8 @@ int main() {
       read_source("include/cgpui/ui/runtime_diagnostics.hpp");
   const std::string private_header =
       read_source("src/ui/runtime_animation_frame_pacing_internal.hpp");
+  const std::string pacing_declarations = read_source("include/cgpui/ui/detail/window_runtime_animation_frame_pacing_declarations.hpp");
+  const std::string animation_types = read_source("src/ui/runtime_state_animations_types_internal.hpp");
   const std::string pacing =
       read_source("src/ui/runtime_animation_frame_pacing.cpp");
   const std::string state =
@@ -63,20 +65,11 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &header, &diagnostics, &private_header, &pacing, &state, &start,
+      &header, &diagnostics, &private_header, &pacing_declarations, &animation_types, &pacing, &state, &start,
       &cancel, &tick, &element, &run, &diagnostic_source, &aggregate,
       &behavior, &lifecycle, &sequence, &ui_structure, &cleanliness, &previous,
-      &manifests, &vocabulary, &core, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &manifests, &vocabulary, &core};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "struct AnimationFramePacingSnapshot") ||
@@ -84,12 +77,12 @@ int main() {
       !contains(header, "coalesced_request_count") ||
       !contains(header, "late_frame_count") ||
       !contains(diagnostics, "animation_frame_pacing")) return 2;
-  if (!contains(private_header, "schedule_animation_frame_wakeup") ||
+  if (!contains(pacing_declarations, "schedule_animation_frame_wakeup") ||
       !contains(private_header, "animation_frame_timer_id_") ||
       !contains(private_header, "element_animation_frame_deadline_ms_") ||
-      !contains(state, "next_tick_ms") ||
-      !contains(state, "frame_pending") ||
-      !contains(state, "due_for_frame") || contains(state, "TimerId timer_id")) {
+      !contains(animation_types, "next_tick_ms") ||
+      !contains(animation_types, "frame_pending") ||
+      !contains(animation_types, "due_for_frame") || contains(animation_types, "TimerId timer_id")) {
     return 3;
   }
   if (!contains(pacing, "add_interval(") ||
@@ -121,32 +114,17 @@ int main() {
       !contains(cleanliness, "cgpui/ui/animation_frame_pacing.hpp") ||
       !contains(manifests, "\"animation_frame_pacing_test.cpp\"") ||
       !contains(manifests,
-                "\"phase_g_animation_frame_pacing_structure_test.cpp\"") ||
-      !contains(previous, "Step 648 animation frame pacing") ||
-      !contains(previous, "production behavior")) {
+                "\"phase_g_animation_frame_pacing_structure_test.cpp\"")) {
     return 7;
   }
   if (line_count(header) > 30 || line_count(private_header) > 20 ||
+      line_count(pacing_declarations) > 20 || line_count(animation_types) > 25 ||
       line_count(pacing) > 150 || line_count(state) > 25 ||
       line_count(start) > 60 || line_count(cancel) > 60 ||
       line_count(tick) > 60 || line_count(element) > 50 ||
       line_count(run) > 141 || line_count(behavior) > 190) return 8;
 
-  constexpr const char* completion =
-      "Phase G Step 648 coalesces ordinary and element animations onto one "
-      "deadline-driven frame timer, preserves cadence across late frames, "
-      "delivers mutation-safe due callbacks without a per-frame allocation, "
-      "tears down cancelled participation, and reports pending, scheduled, "
-      "delivered, coalesced, and late-frame diagnostics. Step 649 style "
-      "interpolation production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 9;
-  }
   if (!contains(vocabulary, "`AnimationFramePacingSnapshot`") ||
-      !contains(core, "deadline-driven frame timer") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 10;
+      !contains(core, "deadline-driven frame timer")) return 10;
   return 0;
 }

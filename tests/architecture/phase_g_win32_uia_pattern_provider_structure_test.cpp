@@ -35,7 +35,7 @@ int main() {
   const std::string runtime = read_source(
       "src/ui/runtime_accessibility_actions.cpp");
   const std::string runtime_header = read_source(
-      "src/ui/runtime_window_accessibility_internal.hpp");
+      "include/cgpui/ui/detail/window_runtime_window_accessibility_declarations.hpp");
   const std::string root_events = read_source("src/ui/runtime_events.cpp");
   const std::string window_events = read_source(
       "src/ui/runtime_event_windows.cpp");
@@ -72,12 +72,6 @@ int main() {
   const std::string manifests = read_source("tests/ui/mcpp.toml") +
       read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &event, &patterns, &element, &platform, &runtime, &runtime_header,
       &root_events, &window_events, &object, &provider, &win32_actions,
@@ -86,7 +80,7 @@ int main() {
       &pattern_properties,
       &slider_accessibility, &text_accessibility, &element_behavior,
       &runtime_behavior, &provider_behavior, &core_headers, &ui_headers,
-      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(event, "enum class AccessibilityActionKind") ||
@@ -96,10 +90,10 @@ int main() {
       !contains(element, "handle_accessibility_action(")) return 2;
   if (!contains(platform, "PlatformAccessibilityPatternState") ||
       !contains(runtime_header, "handle_accessibility_action_event(") ||
-      !contains(runtime, "target_view_id == root_view_id_") ||
+      !contains(runtime, "target_view_id == state_->views.root_view_id_") ||
       !contains(runtime, "finish_event_dispatch(result)") ||
       !contains(runtime, "finish_event_dispatch_for_record(*record, result)") ||
-      !contains(root_events, "handle_accessibility_action_event(event, root_view_id_)") ||
+      !contains(root_events, "handle_accessibility_action_event(event, state_->views.root_view_id_)") ||
       !contains(window_events, "record->root_view_id, record")) return 3;
   if (!contains(object, "public IInvokeProvider") ||
       !contains(object, "public IValueProvider") ||
@@ -146,17 +140,5 @@ int main() {
       line_count(element_behavior) > 90 || line_count(runtime_behavior) > 90 ||
       line_count(provider_behavior) > 150) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 621 adds production Win32 UIA Invoke, Value, Toggle, and "
-      "RangeValue pattern providers routed through runtime accessibility "
-      "actions to real elements. Step 622 Win32 UIA live event production "
-      "behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
   return 0;
 }

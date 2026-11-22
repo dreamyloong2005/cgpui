@@ -58,7 +58,7 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string text_hit_testing =
-      read_source("include/cgpui/ui/text_hit_testing.hpp");
+      read_source("include/cgpui/renderer/text/text_hit_testing.hpp");
   const std::string event_pointer =
       read_source("include/cgpui/core/event_pointer.hpp");
   const std::string text_model_header =
@@ -185,7 +185,7 @@ int main() {
       "ScrollModel::scroll_rect_into_view(",
       "TextElement::scroll_caret_into_view(",
       "dynamic_cast<ScrollableListElement*>(",
-      "text_element->caret_rect(scale_)",
+      "text_element->caret_rect(state_->windows.scale_)",
   };
   const std::array source_files{
       runtime_selection,

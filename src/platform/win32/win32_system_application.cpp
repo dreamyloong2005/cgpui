@@ -1,6 +1,6 @@
 #include "win32_system_application_internal.hpp"
 #include "win32_dpi_awareness_internal.hpp"
-#include "../../renderer/win32_composition/win32_composition_presenter_internal.hpp"
+#include "win32_composition_host_internal.hpp"
 
 #include <utility>
 
@@ -27,7 +27,7 @@ PlatformDpiAwarenessState Win32SystemApplication::dpi_awareness() const {
 }
 
 bool Win32SystemApplication::popup_windows_supported() const {
-  return win32_composition_available();
+  return win32_composition_host_available();
 }
 
 } // namespace cgpui

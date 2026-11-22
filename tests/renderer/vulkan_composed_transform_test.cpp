@@ -158,7 +158,7 @@ int test_text_quad_corners_transform_after_positioning() {
              : 40;
 }
 
-int test_structure_and_documentation() {
+int test_structure() {
   const std::string transform_header = read_source(
       "src/renderer/vulkan/vulkan_composition_transform_internal.hpp");
   const std::string transform_source = read_source(
@@ -182,27 +182,6 @@ int test_structure_and_documentation() {
     return 51;
   }
 
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 486",
-      "vulkan_apply_composed_transform",
-      "precomposed affine transform",
-      "Step 487",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 60;
-    }
-  }
   return 0;
 }
 
@@ -225,5 +204,5 @@ int main() {
       result != 0) {
     return result;
   }
-  return test_structure_and_documentation();
+  return test_structure();
 }

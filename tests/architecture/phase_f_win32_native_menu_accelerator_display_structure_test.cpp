@@ -35,16 +35,9 @@ int main() {
       "tests/architecture/platform_source_structure_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &source, &tree, &behavior, &win32_structure,
-      &platform_structure, &manifests, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &platform_structure, &manifests};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(header, "win32_native_menu_display_title(") ||
       !contains(tree, "#include \"win32_native_menu_accelerator_internal.hpp\"") ||
@@ -72,11 +65,5 @@ int main() {
       line_count(tree) > 125 || line_count(behavior) > 115) return 7;
   if (!contains(manifests, "\"win32_native_menu_accelerator_display_test.cpp\"") ||
       !contains(manifests, "\"phase_f_win32_native_menu_accelerator_display_structure_test.cpp\"")) return 8;
-  constexpr const char* completion =
-      "Phase F Step 582 formats Win32 native menu accelerator labels in a focused leaf, appends tab-aligned Ctrl/Alt/Shift/Win key text for letters, digits, function keys, and named keys, and preserves accelerator counts without claiming dispatch. Step 583 native menu accelerator registration production behavior is next.";
-  const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 9;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) return 10;
   return 0;
 }

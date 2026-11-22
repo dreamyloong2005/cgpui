@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
-#include "cgpui/ui/text.hpp"
 #include "wayland_protocol_internal.hpp"
 
 #include <wayland-client.h>

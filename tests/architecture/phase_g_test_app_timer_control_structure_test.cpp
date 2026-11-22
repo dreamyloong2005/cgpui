@@ -33,25 +33,15 @@ int main() {
   const std::string timer = read_source("src/ui/test_app_timer.cpp");
   const std::string behavior =
       read_source("tests/ui/test_app_timer_control_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_test_app_simulated_input_structure_test.cpp");
   const std::string manifests = read_source("tests/ui/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &header, &internal, &facade, &platform, &timer, &behavior, &previous,
-      &manifests, &vocabulary, &core, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &header, &internal, &facade, &platform, &timer, &behavior, &manifests, &vocabulary, &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "void advance_time(std::uint64_t delta_ms) const") ||
@@ -63,12 +53,11 @@ int main() {
       !contains(timer, "runtime_context.test_context().run_until_parked()") ||
       !contains(timer, "TestApp::advance_time_until_parked(")) return 3;
   if (!contains(platform, "monotonic_time_ms() const { return 0; }") ||
-      !contains(facade, "runtime.window_ = &parent_window") ||
-      !contains(facade, "runtime.renderer_ = &parent_renderer") ||
+      !contains(facade, "runtime.state_->windows.window_ = &parent_window") ||
+      !contains(facade, "runtime.state_->windows.renderer_ = &parent_renderer") ||
       !contains(behavior, "schedule_repeating_timer(") ||
       !contains(behavior, "app.cancel_timer(view->repeating)")) return 4;
-  if (!contains(previous, "Phase J Step 799 re-run upstream extractor against the pinned revision") ||
-      !contains(manifests, "\"test_app_timer_control_test.cpp\"") ||
+  if (!contains(manifests, "\"test_app_timer_control_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_test_app_timer_control_structure_test.cpp\"")) {
     return 5;
@@ -77,21 +66,8 @@ int main() {
       line_count(facade) > 135 || line_count(platform) > 75 ||
       line_count(timer) > 60 || line_count(behavior) > 95) return 6;
 
-  constexpr const char* completion =
-      "Phase G Step 661 adds deterministic TestApp timer control with a fixed "
-      "private platform clock, explicit time advancement, parked-work "
-      "draining, combined advance-and-drain behavior, timer cancellation, and "
-      "runnable hidden-parent wakeups. Step 662 GPUI-style async control "
-      "production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
   if (!contains(vocabulary, "`TestApp::advance_time(...)`") ||
       !contains(core, "Deterministic `TestApp` timer control") ||
-      !contains(ledger_json, "\"phase_g_step_661_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 8;
+      !contains(ledger_json, "\"phase_g_step_661_sources\"")) return 8;
   return 0;
 }

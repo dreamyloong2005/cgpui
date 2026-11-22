@@ -1,3 +1,8 @@
+#include "cgpui/platform/platform_application.hpp"
+
+static_assert(sizeof(cgpui::WindowDescriptor) > 0);
+static_assert(sizeof(cgpui::FontDatabase) > 0);
+
 #include "cgpui/core/asset_cache_key.hpp"
 #include "cgpui/core/asset_reload.hpp"
 #include "cgpui/core/asset_source.hpp"
@@ -16,7 +21,6 @@
 #include "cgpui/platform/clipboard.hpp"
 #include "cgpui/platform/native_surface.hpp"
 #include "cgpui/platform/platform_accessibility.hpp"
-#include "cgpui/platform/platform_application.hpp"
 #include "cgpui/platform/platform_diagnostics.hpp"
 #include "cgpui/platform/platform_file_dialog.hpp"
 #include "cgpui/platform/platform_native_menu.hpp"

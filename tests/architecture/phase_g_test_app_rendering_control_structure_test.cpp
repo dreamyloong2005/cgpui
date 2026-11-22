@@ -32,28 +32,19 @@ int main() {
   const std::string renderer = read_source("src/ui/test_app_renderer.cpp");
   const std::string rendering = read_source("src/ui/test_app_rendering.cpp");
   const std::string runtime =
-      read_source("src/ui/runtime_renderer_frame_results.cpp");
+      read_source("src/ui/runtime_window_frame_results.cpp");
   const std::string behavior =
       read_source("tests/ui/test_app_rendering_control_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_test_app_async_control_structure_test.cpp");
   const std::string manifests = read_source("tests/ui/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &internal, &platform, &renderer, &rendering, &runtime, &behavior,
-      &previous, &manifests, &vocabulary, &core, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &manifests, &vocabulary, &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "struct TestWindowRenderSnapshot") ||
@@ -77,8 +68,7 @@ int main() {
       !contains(behavior, "first.simulate_resize(") ||
       !contains(behavior, "first.render_snapshot()") ||
       !contains(behavior, "second.try_draw_frame()")) return 5;
-  if (!contains(previous, "Phase J Step 799 re-run upstream extractor against the pinned revision") ||
-      !contains(manifests,
+  if (!contains(manifests,
                 "\"test_app_rendering_control_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_test_app_rendering_control_structure_test.cpp\"")) {
@@ -88,22 +78,9 @@ int main() {
       line_count(renderer) > 45 || line_count(rendering) > 70 ||
       line_count(behavior) > 85) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 663 adds per-window TestApp rendering control with resize "
-      "and redraw simulation, fallible and throwing frame draws, private "
-      "renderer/frame snapshots, real additional-window rendering, and cross-"
-      "window counter isolation. Step 664 GPUI-style platform service fake "
-      "production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
   if (!contains(vocabulary, "`TestAppWindow::simulate_resize(...)`") ||
       !contains(vocabulary, "`TestAppWindow::try_draw_frame()`") ||
       !contains(core, "Per-window `TestAppWindow` rendering control") ||
-      !contains(ledger_json, "\"phase_g_step_663_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
+      !contains(ledger_json, "\"phase_g_step_663_sources\"")) return 9;
   return 0;
 }

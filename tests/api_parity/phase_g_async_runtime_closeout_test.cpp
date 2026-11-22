@@ -63,7 +63,7 @@ int main() {
       !contains(groups, "RuntimeTaskGroupStore") ||
       !contains(cancellation, "cancel_locked(runtime, *child") ||
       !contains(io, "RuntimeAsyncIoRegistry") ||
-      !contains(timers, "nearest-deadline delayed wakeups") ||
+      !contains(timers, "schedule_next_timer_wakeup()") ||
       !contains(entities, "CrossThreadEntityQueueState")) return 2;
 
   const char* targets[]{

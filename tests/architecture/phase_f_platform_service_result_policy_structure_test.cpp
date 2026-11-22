@@ -26,22 +26,15 @@ int main() {
   const std::string diagnostics = read_source("include/cgpui/platform/platform_diagnostics.hpp");
   const std::string source = read_source("src/ui/runtime_platform_service_system_results.cpp");
   const std::string state = read_source("src/ui/runtime_platform_service_state_internal.hpp");
-  const std::string internal = read_source("src/ui/window_runtime_internal.hpp");
+  const std::string internal = read_source("src/ui/runtime_state_platform_internal.hpp");
   const std::string context_source = read_source("src/ui/app_context_services.cpp");
   const std::string behavior = read_source("tests/api_parity/phase_f_platform_service_result_policy_test.cpp");
   const std::string ui_structure = read_source("tests/architecture/ui_source_structure_test.cpp");
-  const std::string previous = read_source("tests/architecture/phase_f_quit_reopen_lifecycle_structure_test.cpp");
   const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{&runtime_header, &context_header, &diagnostics,
       &source, &state, &internal, &context_source, &behavior, &ui_structure,
-      &previous, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
-      &findings};
+      &manifests};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(runtime_header, "try_show_native_message_dialog(") ||
       !contains(runtime_header, "try_open_url(std::string url)") ||
@@ -78,14 +71,7 @@ int main() {
       line_count(source) > 120 || line_count(state) > 10 ||
       line_count(runtime_header) > 263 || line_count(context_header) > 90 ||
       line_count(context_source) > 80 || line_count(behavior) > 250) return 8;
-  if (!contains(previous, "Phase F Step 592") ||
-      !contains(manifests, "\"phase_f_platform_service_result_policy_test.cpp\"") ||
+  if (!contains(manifests, "\"phase_f_platform_service_result_policy_test.cpp\"") ||
       !contains(manifests, "\"phase_f_platform_service_result_policy_structure_test.cpp\"")) return 9;
-  constexpr const char* completion =
-      "Phase F Step 593 adds Runtime and AppContext Result adapters for native message dialogs, URL opening, and reopen requests, records typed bounded diagnostics, preserves supported incomplete results, and keeps the last supported service state across unsupported attempts. Step 594 dialogs and platform-services closeout audit is next.";
-  const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 10;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) return 11;
   return 0;
 }

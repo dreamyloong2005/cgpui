@@ -53,6 +53,11 @@ int X11Application::run() {
       {.fd = wakeup_pipe_[0], .events = POLLIN},
   };
   while (running_.load()) {
+    // Synchronous XCB replies can buffer events without leaving the socket
+    // readable. Drain that queue before waiting for more bytes or a wakeup.
+    dispatch_x11_events();
+    if (xcb_connection_has_error(connection_) != 0) return 2;
+    if (!running_.load()) break;
     const int result = poll(descriptors, 2, poll_timeout_ms());
     if (result < 0 && errno != EINTR) return 1;
     if ((descriptors[1].revents & POLLIN) != 0) {

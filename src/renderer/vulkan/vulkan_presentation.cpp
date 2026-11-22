@@ -28,7 +28,7 @@ Result<void> VulkanRendererState::present_frame(
     return result;
   }
   diagnostic_timer.finish_stage(RendererFrameTimingStage::pacing_wait);
-  last_command_batches_ = vulkan_build_renderer_command_batches(
+  last_command_batches_ = build_renderer_command_batches(
       rects, rounded_rects, text_draws, text_selections, text_carets);
   pending_frame_upload_bytes_ = renderer_upload_byte_counts({}, image_uploads);
   if (auto result = prepare_solid_rect_frame(rects); !result) {
@@ -63,7 +63,7 @@ Result<void> VulkanRendererState::present_frame(
       return result;
     }
     return std::unexpected(vulkan_error(
-        ErrorCode::frame_acquisition_failed,
+        ErrorCode::frame_retry_required,
         "swapchain was recreated before frame acquisition; retry the frame"));
   }
   if (!acquire_plan.operation_succeeded) {
@@ -158,7 +158,7 @@ Result<void> VulkanRendererState::present_frame(
   }
   if (present_plan.retry_frame) {
     return std::unexpected(vulkan_error(
-        ErrorCode::frame_acquisition_failed,
+        ErrorCode::frame_retry_required,
         "swapchain was recreated after presentation; retry the frame"));
   }
   if (auto result = complete_frame_pixel_capture(*pixel_capture); !result) {

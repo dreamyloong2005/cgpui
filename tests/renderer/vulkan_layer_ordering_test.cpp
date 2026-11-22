@@ -249,7 +249,7 @@ int test_ui_z_order_reaches_vulkan_cursor() {
   return cursor.next().has_value() ? 15 : 0;
 }
 
-int test_structure_and_documentation() {
+int test_structure() {
   const std::string element_core =
       read_source("include/cgpui/ui/element_core.hpp");
   const std::string tree_paint = read_source("src/ui/element_tree_paint.cpp");
@@ -286,27 +286,6 @@ int test_structure_and_documentation() {
     return 31;
   }
 
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 489",
-      "explicit z/layer command ordering",
-      "stable UI paint order",
-      "Step 490",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 40;
-    }
-  }
   return 0;
 }
 
@@ -316,5 +295,5 @@ int main() {
   if (const int result = test_ui_z_order_reaches_vulkan_cursor(); result != 0) {
     return result;
   }
-  return test_structure_and_documentation();
+  return test_structure();
 }

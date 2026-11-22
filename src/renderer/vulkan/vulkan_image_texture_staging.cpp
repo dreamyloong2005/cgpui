@@ -41,6 +41,7 @@ Result<VulkanImageTextureStagingUpload> stage_upload(
       .copy_region = vulkan_image_texture_buffer_image_copy(
           batch.uploads.front(),
           batch.uploads.front().byte_offset),
+      .descriptor = batch.image,
   };
   const VkBufferCreateInfo buffer_info{
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -180,6 +181,7 @@ void vulkan_destroy_image_texture_upload_resources(
     destroy_staging_upload(device, upload);
   }
   resources.uploads.clear();
+  resources.submitted = false;
 }
 
 } // namespace cgpui

@@ -10,7 +10,7 @@ namespace cgpui {
 
 TaskGroupId WindowRuntime::RuntimeTaskGroupStore::create(
     WindowRuntime& runtime) {
-  std::lock_guard lock(runtime.tasks_mutex_);
+  std::lock_guard lock(runtime.state_->tasks.tasks_mutex_);
   const TaskGroupId id{next_id_++};
   records_.push_back(Record{.id = id});
   return id;
@@ -21,14 +21,14 @@ TaskHandle WindowRuntime::RuntimeTaskGroupStore::spawn_task(
     TaskGroupId group_id,
     TaskPriority priority,
     TaskCompletionCallback callback) {
-  if (!callback || group_id.value == 0) return {};
+  if (!callback || group_id.value == 0 || runtime.state_->core.shutting_down_) return {};
   TaskId id;
   {
-    std::lock_guard lock(runtime.tasks_mutex_);
+    std::lock_guard lock(runtime.state_->tasks.tasks_mutex_);
     Record* group = find(group_id);
     if (group == nullptr || group->cancelled) return {};
-    id = TaskId{runtime.next_task_id_++};
-    runtime.tasks_.push_back(WindowRuntime::RuntimeTask{
+    id = TaskId{runtime.state_->tasks.next_task_id_++};
+    runtime.state_->tasks.tasks_.push_back(WindowRuntime::RuntimeTask{
         .id = id,
         .group_id = group_id,
         .priority = priority,
@@ -45,15 +45,15 @@ TaskHandle WindowRuntime::RuntimeTaskGroupStore::spawn_background_task(
     TaskPriority priority,
     BackgroundTaskCallback work,
     TaskCompletionCallback completion) {
-  if (!work || !completion || group_id.value == 0) return {};
+  if (!work || !completion || group_id.value == 0 || runtime.state_->core.shutting_down_) return {};
   auto cancellation_requested = std::make_shared<std::atomic_bool>(false);
   TaskId id;
   {
-    std::lock_guard lock(runtime.tasks_mutex_);
+    std::lock_guard lock(runtime.state_->tasks.tasks_mutex_);
     Record* group = find(group_id);
     if (group == nullptr || group->cancelled) return {};
-    id = TaskId{runtime.next_task_id_++};
-    runtime.tasks_.push_back(WindowRuntime::RuntimeTask{
+    id = TaskId{runtime.state_->tasks.next_task_id_++};
+    runtime.state_->tasks.tasks_.push_back(WindowRuntime::RuntimeTask{
         .id = id,
         .group_id = group_id,
         .priority = priority,
@@ -63,7 +63,7 @@ TaskHandle WindowRuntime::RuntimeTaskGroupStore::spawn_background_task(
     });
     group->task_ids.push_back(id);
   }
-  const bool submitted = runtime.task_pool_->submit(
+  const bool submitted = runtime.state_->tasks.task_pool_->submit(
       priority,
       [&runtime, id, cancellation_requested, work = std::move(work)]() mutable {
         try {
@@ -82,7 +82,7 @@ TaskHandle WindowRuntime::RuntimeTaskGroupStore::spawn_background_task(
 }
 
 TaskGroup WindowRuntime::create_task_group() {
-  return TaskGroup(*this, task_group_store_->create(*this));
+  return TaskGroup(*this, state_->tasks.task_group_store_->create(*this));
 }
 
 TaskHandle WindowRuntime::make_task_handle(TaskId id) {

@@ -61,14 +61,14 @@ Result<AppOpenedWindow> RuntimePopups::open(
   WindowOptions window = WindowOptions{}.size(size).popup(placement);
   window.descriptor.popup_options = options;
   auto opened = runtime.try_open_window(std::move(window), std::move(view));
-  if (opened && options.takes_keyboard) runtime.keyboard_popup_ = opened->runtime_id;
+  if (opened && options.takes_keyboard) runtime.state_->windows.keyboard_popup_ = opened->runtime_id;
   return opened;
 }
 
 bool RuntimePopups::close(WindowRuntime& runtime, WindowRuntimeId popup) {
   WindowRuntimeRecord* record = open_popup_record(runtime, popup);
   if (record == nullptr) return false;
-  if (runtime.keyboard_popup_ == popup) runtime.keyboard_popup_ = {};
+  if (runtime.state_->windows.keyboard_popup_ == popup) runtime.state_->windows.keyboard_popup_ = {};
   runtime.cleanup_closed_additional_window(*record);
   // Destroy the native window now (it would otherwise stay on screen until
   // the next reclamation). Callers close popups outside the popup's own
@@ -84,16 +84,16 @@ void RuntimePopups::forward_to_root(WindowRuntime& runtime, PlatformEvent event)
 }
 
 bool RuntimePopups::forward_keyboard(WindowRuntime& runtime, const PlatformEvent& event) {
-  if (runtime.keyboard_popup_.value == 0 ||
+  if (runtime.state_->windows.keyboard_popup_.value == 0 ||
       (!std::holds_alternative<KeyboardKey>(event) &&
        !std::holds_alternative<TextInput>(event))) {
     return false;
   }
-  if (open_popup_record(runtime, runtime.keyboard_popup_) == nullptr) {
-    runtime.keyboard_popup_ = {};
+  if (open_popup_record(runtime, runtime.state_->windows.keyboard_popup_) == nullptr) {
+    runtime.state_->windows.keyboard_popup_ = {};
     return false;
   }
-  runtime.handle_native_additional_window_event(runtime.keyboard_popup_, event);
+  runtime.handle_native_additional_window_event(runtime.state_->windows.keyboard_popup_, event);
   return true;
 }
 

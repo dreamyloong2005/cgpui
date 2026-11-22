@@ -3,7 +3,10 @@
 #include "cgpui/renderer/image_sampling.hpp"
 #include "cgpui/renderer/renderer_effect_draws.hpp"
 #include "cgpui/renderer/renderer_types.hpp"
-#include "cgpui/ui/text.hpp"
+#include "cgpui/renderer/text/text_wrapping.hpp"
+#include "cgpui/renderer/text/text_hit_testing.hpp"
+#include "cgpui/renderer/text/text_rich_text.hpp"
+#include "cgpui/renderer/text/text_rich_text_inline_image.hpp"
 
 #include <cstddef>
 #include <optional>

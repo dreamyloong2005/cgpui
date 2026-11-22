@@ -173,7 +173,9 @@ int test_draw_binding_module_structure() {
   }
   if (!contains(internal, "struct VulkanGlyphAtlasDrawPageUsage") ||
       !contains(internal, "struct VulkanGlyphAtlasDrawBinding") ||
-      !contains(draw_data, "vulkan_build_textured_glyph_quads(") ||
+      !contains(draw_data, "cgpui/renderer/planning/glyph_geometry.hpp") ||
+      !contains(draw_data, "build_textured_glyph_quads(") ||
+      contains(draw_data, "vulkan_build_textured_glyph_quads(") ||
       !contains(bindings, "vulkan_resolve_glyph_atlas_draw_bindings(") ||
       !contains(frame, "vulkan_plan_glyph_atlas_draw_data(") ||
       !contains(frame, "vulkan_resolve_glyph_atlas_draw_bindings(") ||
@@ -185,32 +187,6 @@ int test_draw_binding_module_structure() {
                 "vulkan_validate_glyph_atlas_draw_bindings(") ||
       !contains(presentation, "glyph_atlas_draw_bindings_")) {
     return 31;
-  }
-  return 0;
-}
-
-int test_step_464_documentation() {
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 464",
-      "VulkanGlyphAtlasDrawBinding",
-      "vulkan_resolve_glyph_atlas_draw_bindings",
-      "live command buffer",
-      "Step 465",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 40;
-    }
   }
   return 0;
 }
@@ -230,5 +206,5 @@ int main() {
   if (const int result = test_draw_binding_module_structure(); result != 0) {
     return result;
   }
-  return test_step_464_documentation();
+  return 0;
 }

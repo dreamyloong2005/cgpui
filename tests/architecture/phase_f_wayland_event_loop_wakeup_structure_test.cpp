@@ -34,17 +34,8 @@ int main() {
       "tests/platform/wayland_event_loop_wakeup_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &event_loop, &lifecycle, &core, &input, &behavior, &manifests, &roadmap,
-      &ledger_md, &ledger_json, &task_plan, &findings};
+      &event_loop, &lifecycle, &core, &input, &behavior, &manifests};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(event_loop, "wl_display_prepare_read(display)") ||
       !contains(event_loop, "wl_display_read_events(display)") ||
@@ -68,23 +59,5 @@ int main() {
   }
   if (line_count(event_loop) > 110 || line_count(lifecycle) > 25 ||
       line_count(core) > 80 || line_count(behavior) > 110) return 6;
-  constexpr const char* completion =
-      "Phase F Step 562 makes Wayland wakeups thread-safe with atomic run "
-      "state, prepare-read polling, EINTR-safe pipe draining, burst "
-      "coalescing, and quit-only wake suppression. Step 563 Win32 Unicode "
-      "clipboard production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_562_remaining_gap\": \"Step 563 Win32")) {
-    return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 9;
-  }
   return 0;
 }

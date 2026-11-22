@@ -4,10 +4,10 @@
 namespace cgpui {
 
 std::optional<ViewId> WindowRuntime::action_dispatch_view_id() const {
-  if (current_event_route_.has_value()) {
-    return current_event_route_->target_view_id;
+  if (state_->input.current_event_route_.has_value()) {
+    return state_->input.current_event_route_->target_view_id;
   }
-  return root_view_id_;
+  return state_->views.root_view_id_;
 }
 
 ScrollState* WindowRuntime::scroll_state_for_route(const EventRoute& route) {
@@ -67,7 +67,7 @@ EventResult WindowRuntime::dispatch_routed_element_event(
     }
   }
 
-  if (should_dispatch_synthesized_click_event(input_, event, route) ||
+  if (should_dispatch_synthesized_click_event(state_->input.input_, event, route) ||
       should_dispatch_synthesized_keyboard_activation_event(event, route)) {
     return dispatch_synthesized_click_event(
         event,

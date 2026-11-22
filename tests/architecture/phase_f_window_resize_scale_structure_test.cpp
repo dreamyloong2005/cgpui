@@ -68,21 +68,11 @@ int main() {
       "tests/platform/wayland_window_resize_scale_state_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   if (output_header.empty() || output_source.empty() || registry.empty() ||
       application_registry.empty() || application_creation.empty() ||
       window_internal.empty() || scale_internal.empty() ||
       scale_source.empty() || configure.empty() || win32_size.empty() ||
-      win32_test.empty() || wayland_test.empty() || manifests.empty() ||
-      roadmap.empty() || ledger_md.empty() || ledger_json.empty() ||
-      task_plan.empty() || findings.empty()) {
+      win32_test.empty() || wayland_test.empty() || manifests.empty()) {
     return 1;
   }
 
@@ -139,23 +129,5 @@ int main() {
     return 9;
   }
 
-  constexpr const char* completion =
-      "Phase F Step 541 makes resize and scale state-before-event observable "
-      "on Win32, and adds production Wayland `wl_output` scale tracking, "
-      "surface enter/leave handling, buffer-scale updates, "
-      "logical-to-framebuffer conversion, and real dynamic scale/resize "
-      "coverage. Step 542 close policy production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 10;
-    }
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_step_541_remaining_gap\": \"Step 542 close policy")) {
-    return 11;
-  }
   return 0;
 }

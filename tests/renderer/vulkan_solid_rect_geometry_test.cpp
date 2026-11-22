@@ -118,31 +118,6 @@ int test_solid_geometry_owns_the_promoted_frame_path() {
   return 0;
 }
 
-int test_step_485_documentation() {
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 485",
-      "vulkan_build_solid_rect_geometry",
-      "blend-capable solid geometry",
-      "Step 486",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 30;
-    }
-  }
-  return 0;
-}
-
 } // namespace
 
 int main() {
@@ -154,5 +129,5 @@ int main() {
       result != 0) {
     return result;
   }
-  return test_step_485_documentation();
+  return 0;
 }

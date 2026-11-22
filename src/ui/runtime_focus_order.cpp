@@ -21,7 +21,7 @@ std::vector<ElementId> WindowRuntime::ordered_focusable_element_ids() const {
   std::vector<FocusOrderEntry> entries;
   if (static_element_tree_installed()) {
     std::size_t tree_order = 0;
-    static_element_tree_.for_each_preorder(
+    state_->elements.static_element_tree_.for_each_preorder(
         [&](const StaticElementNode& node) {
           if (!node.enabled || !node.focusable) {
             return;
@@ -34,7 +34,7 @@ std::vector<ElementId> WindowRuntime::ordered_focusable_element_ids() const {
         });
   }
 
-  if (owned_element_tree_ == nullptr) {
+  if (state_->elements.owned_element_tree_ == nullptr) {
     std::vector<ElementId> focusable_ids;
     focusable_ids.reserve(entries.size());
     for (const FocusOrderEntry& entry : entries) {
@@ -44,7 +44,7 @@ std::vector<ElementId> WindowRuntime::ordered_focusable_element_ids() const {
   }
 
   std::size_t tree_order = 0;
-  for (ElementId element_id : owned_element_tree_->enabled_preorder_ids()) {
+  for (ElementId element_id : state_->elements.owned_element_tree_->enabled_preorder_ids()) {
     const Element* element = routed_element(element_id);
     if (element == nullptr || !element->focusable()) {
       continue;

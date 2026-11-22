@@ -15,6 +15,9 @@ enum class ErrorCode {
   asset_io_failed,
   asset_too_large,
   asset_revision_exhausted,
+  // The renderer is usable, but this frame was not presented. Schedule a
+  // later frame; other acquisition/initialization errors remain fatal.
+  frame_retry_required,
 };
 
 struct Error {

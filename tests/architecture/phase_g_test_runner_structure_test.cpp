@@ -34,8 +34,6 @@ int main() {
       read_source("tests/ui/test_runner_macro_test.cpp");
   const std::string cleanliness = read_source(
       "tests/header_cleanliness/test_runner_header_cleanliness.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_test_app_platform_services_structure_test.cpp");
   const std::string aggregate = read_source("include/cgpui/ui/ui.hpp");
   const std::string manifests = read_source("tests/ui/mcpp.toml") +
       read_source("tests/header_cleanliness/mcpp.toml") +
@@ -43,18 +41,10 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &header, &source, &behavior, &macro_behavior, &cleanliness, &previous,
-      &aggregate, &manifests, &vocabulary, &core, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &header, &source, &behavior, &macro_behavior, &cleanliness, &aggregate, &manifests, &vocabulary, &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "struct TestRunOptions") ||
@@ -74,9 +64,7 @@ int main() {
       !contains(macro_behavior, "CGPUI_TEST(") ||
       !contains(macro_behavior, "cgpui::TestApp& second")) return 4;
   if (!contains(cleanliness, "#include \"cgpui/ui/test_runner.hpp\"") ||
-      !contains(aggregate, "#include \"cgpui/ui/test_runner.hpp\"") ||
-      !contains(previous,
-                "Phase J Step 799 re-run upstream extractor against the pinned revision")) {
+      !contains(aggregate, "#include \"cgpui/ui/test_runner.hpp\"")) {
     return 5;
   }
   if (!contains(manifests, "\"test_runner_test.cpp\"") ||
@@ -89,22 +77,8 @@ int main() {
       line_count(behavior) > 140 || line_count(macro_behavior) > 65 ||
       line_count(cleanliness) > 25) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 665 adds GPUI-style C++ test runner ergonomics with "
-      "ordinary executable entry macros, typed injection of multiple isolated "
-      "TestApp contexts and deterministic seeds, iteration and explicit/"
-      "environment seed planning, bounded retries, final-failure callbacks, "
-      "reproducible failure summaries, and header-clean public modules. Step "
-      "666 GPUI-style test support closeout audit is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
   if (!contains(vocabulary, "`CGPUI_TEST`") ||
       !contains(core, "GPUI-style C++ test runner") ||
-      !contains(ledger_json, "\"phase_g_step_665_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
+      !contains(ledger_json, "\"phase_g_step_665_sources\"")) return 9;
   return 0;
 }

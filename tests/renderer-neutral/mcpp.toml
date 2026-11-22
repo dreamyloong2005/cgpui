@@ -1,0 +1,18 @@
+# CPU planning and compatibility must link without any GPU backend package.
+[package]
+namespace = "cgpui"
+name = "tests-renderer-neutral"
+version = "0.1.0"
+
+[dependencies]
+cgpui.renderer = { path = "../../packages/renderer" }
+
+[build]
+sources = []
+
+[test]
+discover = [
+    "planning_compatibility_test.cpp",
+    "planning_test.cpp",
+    "renderer_frame_header_test.cpp",
+]

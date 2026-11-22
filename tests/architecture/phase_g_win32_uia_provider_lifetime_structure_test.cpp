@@ -45,16 +45,10 @@ int main() {
       "tests/architecture/win32_window_source_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &lifetime_header, &lifetime, &provider_object, &provider_state,
       &tree_state_header, &tree_state, &updates, &behavior, &source_guard,
-      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(lifetime, "reconcile_win32_uia_provider_lifetime(") ||
@@ -86,17 +80,5 @@ int main() {
       line_count(tree_state_header) > 70 || line_count(tree_state) > 70 ||
       line_count(updates) > 80 || line_count(behavior) > 140) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 624 preserves Win32 UIA provider COM identity across "
-      "stable element updates, refreshes provider state in place, and retires "
-      "removed or destroyed providers with element-unavailable semantics. "
-      "Step 625 Win32 UIA lifecycle stress production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
   return 0;
 }

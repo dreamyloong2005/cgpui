@@ -1,9 +1,4 @@
-# Renderer-neutral drawing, SVG (lunasvg) and the text pipeline: shaping,
-# measurement, layout and glyph rasterization (the text sources live in
-# src/ui; packages/ui leaves them out). src/ui/text_font.cpp, which xmake
-# compiled into both cgpui_platform and cgpui_renderer, is compiled once, by
-# packages/platform: mcpp links a dependency's objects (not its archive)
-# into each program, so a second copy is a duplicate definition.
+# Renderer-neutral drawing, SVG, shaping, layout, and glyph rasterization.
 [package]
 namespace = "cgpui"
 name = "renderer"
@@ -22,42 +17,45 @@ include_dirs = ["../../include", "../../third_party/stb"]
 private_include_dirs = ["../../third_party/stb"]
 sources = [
     "../../src/renderer/*.cpp",
+    "../../src/renderer/planning/*.cpp",
     "!../../src/renderer/renderer_unimplemented.cpp",
-    "../../src/ui/text_shaping_backend.cpp",
-    "../../src/ui/text_shaping_dispatch.cpp",
-    "../../src/ui/text_shaping_harfbuzz.cpp",
-    "../../src/ui/text_shaping_fallback.cpp",
-    "../../src/ui/text_shape.cpp",
-    "../../src/ui/text_glyph_raster.cpp",
-    "../../src/ui/text_measurement.cpp",
-    "../../src/ui/text_line_metrics.cpp",
-    "../../src/ui/text_paragraph_layout.cpp",
-    "../../src/ui/text_measurement_grapheme.cpp",
-    "../../src/ui/text_measurement_bidi.cpp",
-    "../../src/ui/text_wrapping.cpp",
-    "../../src/ui/text_hit_testing.cpp",
-    "../../src/ui/text_shaping_native.cpp",
-    "../../src/ui/text_shaping_unicode.cpp",
-    "../../src/ui/text_shape_cache.cpp",
-    "../../src/ui/text_shaping_directwrite.cpp",
-    "../../src/ui/text_font_defaults.cpp",
-    "../../src/ui/text_glyph_rasterizer.cpp",
+    "../../src/renderer/text/text_shaping_backend.cpp",
+    "../../src/renderer/text/text_shaping_dispatch.cpp",
+    "../../src/renderer/text/text_shaping_harfbuzz.cpp",
+    "../../src/renderer/text/text_shaping_fallback.cpp",
+    "../../src/renderer/text/text_shape.cpp",
+    "../../src/renderer/text/text_rich_text.cpp",
+    "../../src/renderer/text/text_rich_text_inline_image.cpp",
+    "../../src/renderer/text/text_glyph_raster.cpp",
+    "../../src/renderer/text/text_measurement.cpp",
+    "../../src/renderer/text/text_line_metrics.cpp",
+    "../../src/renderer/text/text_paragraph_layout.cpp",
+    "../../src/renderer/text/text_measurement_grapheme.cpp",
+    "../../src/renderer/text/text_measurement_bidi.cpp",
+    "../../src/renderer/text/text_wrapping.cpp",
+    "../../src/renderer/text/text_hit_testing.cpp",
+    "../../src/renderer/text/text_shaping_native.cpp",
+    "../../src/renderer/text/text_shaping_unicode.cpp",
+    "../../src/renderer/text/text_shape_cache.cpp",
+    "../../src/renderer/text/text_shaping_directwrite.cpp",
+    "../../src/renderer/text/text_font_defaults.cpp",
+    "../../src/renderer/text/text_glyph_rasterizer.cpp",
 ]
 
 [target.'cfg(os = "windows")'.build]
 sources = [
-    "../../src/ui/text_dwrite_fonts_win32.cpp",
-    "../../src/ui/text_dwrite_analysis_win32.cpp",
-    "../../src/ui/text_glyph_id_raster_win32.cpp",
-    "../../src/ui/text_glyph_raster_win32.cpp",
-    "../../src/ui/text_glyph_coverage_win32.cpp",
+    "../../src/renderer/text/text_dwrite_fonts_win32.cpp",
+    "../../src/renderer/text/text_dwrite_analysis_win32.cpp",
+    "../../src/renderer/text/text_glyph_id_raster_win32.cpp",
+    "../../src/renderer/text/text_glyph_raster_win32.cpp",
+    "../../src/renderer/text/text_glyph_coverage_win32.cpp",
 ]
 ldflags = ["dwrite.lib"]
 
 [target.'cfg(os = "linux")'.build]
 sources = [
-    "../../src/ui/text_fontconfig_faces_linux.cpp",
-    "../../src/ui/text_glyph_id_raster_freetype.cpp",
+    "../../src/renderer/text/text_fontconfig_faces_linux.cpp",
+    "../../src/renderer/text/text_glyph_id_raster_freetype.cpp",
 ]
 defines = [
     "CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND",
@@ -66,9 +64,9 @@ defines = [
 
 [target.'cfg(os = "macos")'.build]
 sources = [
-    "../../src/ui/text_shaping_coretext_macos.cpp",
-    "../../src/ui/text_coretext_fonts_macos.cpp",
-    "../../src/ui/text_glyph_id_raster_coretext.cpp",
+    "../../src/renderer/text/text_shaping_coretext_macos.cpp",
+    "../../src/renderer/text/text_coretext_fonts_macos.cpp",
+    "../../src/renderer/text/text_glyph_id_raster_coretext.cpp",
 ]
 
 [target.'cfg(os = "macos")'.runtime]

@@ -22,7 +22,7 @@ WindowRuntime::RuntimeTaskGroupStore::find(TaskGroupId id) const {
 TaskGroupId WindowRuntime::RuntimeTaskGroupStore::create_child(
     WindowRuntime& runtime,
     TaskGroupId parent_id) {
-  std::lock_guard lock(runtime.tasks_mutex_);
+  std::lock_guard lock(runtime.state_->tasks.tasks_mutex_);
   Record* parent = find(parent_id);
   if (parent == nullptr || parent->cancelled) return {};
   const TaskGroupId id{next_id_++};
@@ -48,8 +48,8 @@ std::size_t WindowRuntime::RuntimeTaskGroupStore::active_task_count_locked(
     const Record& group) const {
   std::size_t count = 0;
   for (const TaskId id : group.task_ids) {
-    const auto task = std::ranges::find(runtime.tasks_, id, &WindowRuntime::RuntimeTask::id);
-    count += task != runtime.tasks_.end() && !task->completed && !task->cancelled;
+    const auto task = std::ranges::find(runtime.state_->tasks.tasks_, id, &WindowRuntime::RuntimeTask::id);
+    count += task != runtime.state_->tasks.tasks_.end() && !task->completed && !task->cancelled;
   }
   for (const TaskGroupId child_id : group.child_ids) {
     const Record* child = find(child_id);
@@ -62,8 +62,8 @@ bool WindowRuntime::RuntimeTaskGroupStore::complete_locked(
     const WindowRuntime& runtime,
     const Record& group) const {
   const bool own_complete = std::ranges::all_of(group.task_ids, [&](TaskId id) {
-    const auto task = std::ranges::find(runtime.tasks_, id, &WindowRuntime::RuntimeTask::id);
-    return task != runtime.tasks_.end() && (task->completed || task->cancelled);
+    const auto task = std::ranges::find(runtime.state_->tasks.tasks_, id, &WindowRuntime::RuntimeTask::id);
+    return task != runtime.state_->tasks.tasks_.end() && (task->completed || task->cancelled);
   });
   return own_complete && std::ranges::all_of(
       group.child_ids,
@@ -76,7 +76,7 @@ bool WindowRuntime::RuntimeTaskGroupStore::complete_locked(
 std::size_t WindowRuntime::RuntimeTaskGroupStore::task_count(
     const WindowRuntime& runtime,
     TaskGroupId group_id) const {
-  std::lock_guard lock(runtime.tasks_mutex_);
+  std::lock_guard lock(runtime.state_->tasks.tasks_mutex_);
   const Record* group = find(group_id);
   return group == nullptr ? 0 : task_count_locked(runtime, *group);
 }
@@ -84,7 +84,7 @@ std::size_t WindowRuntime::RuntimeTaskGroupStore::task_count(
 std::size_t WindowRuntime::RuntimeTaskGroupStore::active_task_count(
     const WindowRuntime& runtime,
     TaskGroupId group_id) const {
-  std::lock_guard lock(runtime.tasks_mutex_);
+  std::lock_guard lock(runtime.state_->tasks.tasks_mutex_);
   const Record* group = find(group_id);
   return group == nullptr ? 0 : active_task_count_locked(runtime, *group);
 }
@@ -92,7 +92,7 @@ std::size_t WindowRuntime::RuntimeTaskGroupStore::active_task_count(
 bool WindowRuntime::RuntimeTaskGroupStore::complete(
     const WindowRuntime& runtime,
     TaskGroupId group_id) const {
-  std::lock_guard lock(runtime.tasks_mutex_);
+  std::lock_guard lock(runtime.state_->tasks.tasks_mutex_);
   const Record* group = find(group_id);
   return group != nullptr && complete_locked(runtime, *group);
 }
@@ -100,7 +100,7 @@ bool WindowRuntime::RuntimeTaskGroupStore::complete(
 bool WindowRuntime::RuntimeTaskGroupStore::cancelled(
     const WindowRuntime& runtime,
     TaskGroupId group_id) const {
-  std::lock_guard lock(runtime.tasks_mutex_);
+  std::lock_guard lock(runtime.state_->tasks.tasks_mutex_);
   const Record* group = find(group_id);
   return group != nullptr && group->cancelled;
 }
@@ -111,8 +111,8 @@ void WindowRuntime::RuntimeTaskGroupStore::cancel_locked(
     std::vector<TaskId>& cancelled_ids) {
   group.cancelled = true;
   for (const TaskId id : group.task_ids) {
-    const auto task = std::ranges::find(runtime.tasks_, id, &WindowRuntime::RuntimeTask::id);
-    if (task == runtime.tasks_.end() || task->completed || task->cancelled) continue;
+    const auto task = std::ranges::find(runtime.state_->tasks.tasks_, id, &WindowRuntime::RuntimeTask::id);
+    if (task == runtime.state_->tasks.tasks_.end() || task->completed || task->cancelled) continue;
     if (task->cancellation_requested != nullptr) {
       task->cancellation_requested->store(true);
     }
@@ -131,14 +131,19 @@ void WindowRuntime::RuntimeTaskGroupStore::cancel_locked(
 bool WindowRuntime::RuntimeTaskGroupStore::cancel(
     WindowRuntime& runtime,
     TaskGroupId group_id) {
-  std::lock_guard lock(runtime.tasks_mutex_);
+  std::vector<TaskCompletionCallback> retired_callbacks;
+  std::lock_guard lock(runtime.state_->tasks.tasks_mutex_);
   Record* group = find(group_id);
   if (group == nullptr || group->cancelled) return false;
   std::vector<TaskId> cancelled_ids;
   cancel_locked(runtime, *group, cancelled_ids);
-  std::erase_if(runtime.task_completion_queue_, [&](const auto& completion) {
+  std::erase_if(runtime.state_->tasks.task_completion_queue_, [&](const auto& completion) {
     return std::ranges::find(cancelled_ids, completion.id) != cancelled_ids.end();
   });
+  for (const TaskId id : cancelled_ids) {
+    auto task = std::ranges::find(runtime.state_->tasks.tasks_, id, &WindowRuntime::RuntimeTask::id);
+    retired_callbacks.push_back(std::move(task->callback));
+  }
   return true;
 }
 

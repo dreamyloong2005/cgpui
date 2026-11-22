@@ -93,7 +93,7 @@ CrossThreadEntity<T> AsyncContextCapability::entity(
     return {};
   }
   return CrossThreadEntity<T>(
-      entity, context_->runtime.cross_thread_entity_queue_);
+      entity, context_->runtime.cross_thread_entity_queue());
 }
 
 template <typename T>
@@ -690,7 +690,7 @@ void WindowRuntimeContext::subscribe_view_to_entity(
 template <typename T>
 EntityId<T> WindowRuntime::insert_entity(T entity) {
   const EntityId<T> id = entity_store<T>().insert(std::move(entity));
-  entity_count_ += 1;
+  did_insert_entity();
   return id;
 }
 
@@ -698,7 +698,7 @@ template <typename T, typename... Args>
 EntityId<T> WindowRuntime::emplace_entity(Args&&... args) {
   const EntityId<T> id =
       entity_store<T>().emplace(std::forward<Args>(args)...);
-  entity_count_ += 1;
+  did_insert_entity();
   return id;
 }
 
@@ -740,17 +740,11 @@ bool WindowRuntime::observe_model(
     return false;
   }
 
-  entity_observers_.push_back(EntityObserver{
-      .subscription_id = {},
-      .entity_type = std::type_index(typeid(T)),
-      .entity_id_value = entity_id.value,
-      .callback =
-          [observer = std::move(observer_fn)](
-              const WindowRuntimeContext& context,
-              std::uint64_t entity_id_value) {
-            observer(context, Model<T>{entity_id_value});
-          },
-  });
+  (void)append_entity_observer(std::type_index(typeid(T)), entity_id.value,
+      [observer = std::move(observer_fn)](const WindowRuntimeContext& context,
+                                        std::uint64_t entity_id_value) {
+        observer(context, Model<T>{entity_id_value});
+      }, false);
   return true;
 }
 
@@ -763,18 +757,12 @@ Subscription WindowRuntime::observe_model_subscription(
     return {};
   }
 
-  const SubscriptionId subscription_id{next_subscription_id_++};
-  entity_observers_.push_back(EntityObserver{
-      .subscription_id = subscription_id,
-      .entity_type = std::type_index(typeid(T)),
-      .entity_id_value = entity_id.value,
-      .callback =
-          [observer = std::move(observer_fn)](
-              const WindowRuntimeContext& context,
-              std::uint64_t entity_id_value) {
-            observer(context, Model<T>{entity_id_value});
-          },
-  });
+  const SubscriptionId subscription_id = append_entity_observer(
+      std::type_index(typeid(T)), entity_id.value,
+      [observer = std::move(observer_fn)](const WindowRuntimeContext& context,
+                                        std::uint64_t entity_id_value) {
+        observer(context, Model<T>{entity_id_value});
+      }, true);
   return Subscription(*this, subscription_id);
 }
 
@@ -785,11 +773,7 @@ bool WindowRuntime::observe_window(Observer&& observer) {
     return false;
   }
 
-  window_observers_.push_back(WindowObserver{
-      .subscription_id = {},
-      .runtime_id = root_window_runtime_id_,
-      .callback = std::move(observer_fn),
-  });
+  (void)append_window_observer(std::move(observer_fn), false);
   return true;
 }
 
@@ -800,12 +784,7 @@ Subscription WindowRuntime::observe_window_subscription(Observer&& observer) {
     return {};
   }
 
-  const SubscriptionId subscription_id{next_subscription_id_++};
-  window_observers_.push_back(WindowObserver{
-      .subscription_id = subscription_id,
-      .runtime_id = root_window_runtime_id_,
-      .callback = std::move(observer_fn),
-  });
+  const SubscriptionId subscription_id = append_window_observer(std::move(observer_fn), true);
   return Subscription(*this, subscription_id);
 }
 
@@ -816,11 +795,7 @@ bool WindowRuntime::observe_view(ViewId view_id, Observer&& observer) {
     return false;
   }
 
-  view_observers_.push_back(ViewObserver{
-      .subscription_id = {},
-      .view_id = view_id,
-      .callback = std::move(observer_fn),
-  });
+  (void)append_view_observer(view_id, std::move(observer_fn), false);
   return true;
 }
 
@@ -833,12 +808,7 @@ Subscription WindowRuntime::observe_view_subscription(
     return {};
   }
 
-  const SubscriptionId subscription_id{next_subscription_id_++};
-  view_observers_.push_back(ViewObserver{
-      .subscription_id = subscription_id,
-      .view_id = view_id,
-      .callback = std::move(observer_fn),
-  });
+  const SubscriptionId subscription_id = append_view_observer(view_id, std::move(observer_fn), true);
   return Subscription(*this, subscription_id);
 }
 
@@ -850,9 +820,7 @@ bool WindowRuntime::remove_entity(EntityId<T> id) {
   }
   const bool removed = store->remove(id);
   if (removed) {
-    if (entity_count_ > 0) {
-      entity_count_ -= 1;
-    }
+    did_remove_entity();
     (void)notify_entity_changed(id);
   }
   return removed;
@@ -862,24 +830,7 @@ template <typename T>
 void WindowRuntime::subscribe_view_to_entity(
     ViewId view_id,
     EntityId<T> entity_id) {
-  if (view_id.value == 0 || entity_id.value == 0) {
-    return;
-  }
-
-  const std::type_index entity_type(typeid(T));
-  for (const EntitySubscription& subscription : entity_subscriptions_) {
-    if (subscription.view_id == view_id &&
-        subscription.entity_type == entity_type &&
-        subscription.entity_id_value == entity_id.value) {
-      return;
-    }
-  }
-
-  entity_subscriptions_.push_back(EntitySubscription{
-      .view_id = view_id,
-      .entity_type = entity_type,
-      .entity_id_value = entity_id.value,
-  });
+  subscribe_view_to_entity_value(view_id, std::type_index(typeid(T)), entity_id.value);
 }
 
 template <typename T>
@@ -902,26 +853,19 @@ bool WindowRuntime::notify_entity_changed(EntityId<T> entity_id) {
 
 template <typename T>
 void WindowRuntime::set_global(T global_value) {
-  globals_[std::type_index(typeid(T))] = std::move(global_value);
-  request_render();
+  set_global_value(std::type_index(typeid(T)), std::move(global_value));
 }
 
 template <typename T>
 const T* WindowRuntime::global() const {
-  const auto entry = globals_.find(std::type_index(typeid(T)));
-  if (entry == globals_.end()) {
-    return nullptr;
-  }
-  return &std::any_cast<const T&>(entry->second);
+  auto* value = global_value(std::type_index(typeid(T)));
+  return value == nullptr ? nullptr : &std::any_cast<const T&>(*value);
 }
 
 template <typename T>
 T* WindowRuntime::global() {
-  auto entry = globals_.find(std::type_index(typeid(T)));
-  if (entry == globals_.end()) {
-    return nullptr;
-  }
-  return &std::any_cast<T&>(entry->second);
+  auto* value = global_value(std::type_index(typeid(T)));
+  return value == nullptr ? nullptr : &std::any_cast<T&>(*value);
 }
 
 template <typename T, typename Update>
@@ -937,67 +881,47 @@ bool WindowRuntime::update_global(Update&& update) {
 
 template <typename T>
 T* WindowRuntime::element_state(ElementId element_id) {
-  if (owned_element_tree_ == nullptr) {
-    return nullptr;
-  }
-  return owned_element_tree_->state<T>(element_id);
+  auto* tree = mutable_element_tree();
+  return tree == nullptr ? nullptr : tree->state<T>(element_id);
 }
 
 template <typename T>
 const T* WindowRuntime::element_state(ElementId element_id) const {
-  if (owned_element_tree_ == nullptr) {
-    return nullptr;
-  }
-  return owned_element_tree_->state<T>(element_id);
+  auto* tree = element_tree();
+  return tree == nullptr ? nullptr : tree->state<T>(element_id);
 }
 
 template <typename T, typename... Args>
 T* WindowRuntime::emplace_element_state(ElementId element_id, Args&&... args) {
-  if (owned_element_tree_ == nullptr) {
-    return nullptr;
-  }
-  return owned_element_tree_->emplace_state<T>(
-      element_id,
-      std::forward<Args>(args)...);
+  auto* tree = mutable_element_tree();
+  return tree == nullptr ? nullptr : tree->emplace_state<T>(element_id, std::forward<Args>(args)...);
 }
 
 template <typename T, typename... Args>
 T* WindowRuntime::element_state_or_init(
     ElementId element_id,
     Args&&... args) {
-  if (owned_element_tree_ == nullptr) {
-    return nullptr;
-  }
-  return owned_element_tree_->state_or_init<T>(
-      element_id,
-      std::forward<Args>(args)...);
+  auto* tree = mutable_element_tree();
+  return tree == nullptr ? nullptr : tree->state_or_init<T>(element_id, std::forward<Args>(args)...);
 }
 
 template <typename T>
 EntityStore<T>& WindowRuntime::entity_store() {
-  auto [entry, inserted] = entity_stores_.try_emplace(
-      std::type_index(typeid(T)),
-      EntityStore<T>{});
-  (void)inserted;
-  return std::any_cast<EntityStore<T>&>(entry->second);
+  auto& value = ensure_entity_store_value(std::type_index(typeid(T)),
+      []() -> std::any { return EntityStore<T>{}; });
+  return std::any_cast<EntityStore<T>&>(value);
 }
 
 template <typename T>
 const EntityStore<T>* WindowRuntime::find_entity_store() const {
-  const auto entry = entity_stores_.find(std::type_index(typeid(T)));
-  if (entry == entity_stores_.end()) {
-    return nullptr;
-  }
-  return &std::any_cast<const EntityStore<T>&>(entry->second);
+  auto* value = entity_store_value(std::type_index(typeid(T)));
+  return value == nullptr ? nullptr : &std::any_cast<const EntityStore<T>&>(*value);
 }
 
 template <typename T>
 EntityStore<T>* WindowRuntime::find_entity_store() {
-  auto entry = entity_stores_.find(std::type_index(typeid(T)));
-  if (entry == entity_stores_.end()) {
-    return nullptr;
-  }
-  return &std::any_cast<EntityStore<T>&>(entry->second);
+  auto* value = entity_store_value(std::type_index(typeid(T)));
+  return value == nullptr ? nullptr : &std::any_cast<EntityStore<T>&>(*value);
 }
 
 

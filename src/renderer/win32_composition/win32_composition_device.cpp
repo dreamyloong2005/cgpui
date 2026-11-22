@@ -95,6 +95,8 @@ Result<void> win32_composition_create_swapchain(Win32CompositionObjects& objects
 }
 
 bool win32_composition_available() {
+  // Renderer bridge smoke-test only. Platform host support is independent,
+  // and actual Vulkan interop validates its selected adapter separately.
   static const bool available = [] {
     Win32ComPtr<ID3D11Device> device;
     Win32ComPtr<IDXGIDevice> dxgi_device;

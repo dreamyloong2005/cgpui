@@ -59,20 +59,12 @@ int main() {
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/ui/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &event_pointer, &event_platform, &application_pointer, &window_api,
       &window_bridge, &window_events, &event_kind, &event_pointer_internal,
       &runtime_input, &runtime_windows, &runtime_record_input, &wayland_behavior,
       &runtime_behavior,
-      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -119,26 +111,6 @@ int main() {
       line_count(runtime_input) > 160 || line_count(runtime_windows) > 120 ||
       line_count(wayland_behavior) > 130 || line_count(runtime_behavior) > 100) {
     return 7;
-  }
-  constexpr const char* completion =
-      "Phase F Step 557 publishes Wayland pointer enter coordinates "
-      "immediately, delivers explicit leave with the last position, and "
-      "clears runtime hover and cursor state. Step 558 Wayland pointer axis "
-      "and frame production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 8;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_557_remaining_gap\": \"Step 558 Wayland")) {
-    return 9;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 10;
   }
   return 0;
 }

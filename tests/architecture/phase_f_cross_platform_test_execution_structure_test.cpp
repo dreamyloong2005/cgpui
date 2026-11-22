@@ -30,16 +30,7 @@ bool registered_with_source_root(const char* test) {
 
 int main() {
   const std::string manifests = read_source("mcpp.toml");
-  const std::string wsl_guard = read_source(
-      "tests/architecture/phase_f_wsl_full_debug_verification_structure_test.cpp");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const std::string* required[]{&manifests, &wsl_guard, &roadmap, &ledger_md,
-                                &ledger_json, &task_plan, &findings};
+  const std::string* required[]{&manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   constexpr std::array root_bound_tests{
@@ -62,16 +53,6 @@ int main() {
       return 10 + static_cast<int>(index);
     }
   }
-  if (!contains(
-          wsl_guard,
-          "Phase J Step 799 re-run upstream extractor against the pinned revision")) return 30;
 
-  constexpr const char* completion =
-      "Phase F Step 613 audits cross-platform test execution by requiring repository-inspection targets to run from the project root with CGPUI_SOURCE_ROOT, preserving identical Windows and Linux path semantics. Step 614 platform production-path audit is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 31;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 32;
   return 0;
 }

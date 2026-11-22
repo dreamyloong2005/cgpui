@@ -3,7 +3,9 @@
 namespace cgpui {
 
 TaskGroup WindowRuntimeContext::create_task_group() const {
-  return runtime.create_task_group();
+  TaskGroup group = runtime.create_task_group();
+  group.window_runtime_id_ = window_runtime_id;
+  return group;
 }
 
 } // namespace cgpui

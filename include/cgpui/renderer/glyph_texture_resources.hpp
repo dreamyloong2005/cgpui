@@ -47,11 +47,11 @@ class GlyphAtlasTextureResourceState {
 
  private:
   friend GlyphAtlasTextureResourcePlan
-  vulkan_update_glyph_atlas_texture_resources(
+  update_glyph_atlas_texture_resources(
       GlyphAtlasTextureResourceState& state,
       std::span<const GlyphAtlasUploadBatch> upload_batches);
   friend std::vector<GlyphAtlasDirtyUploadRange>
-  vulkan_plan_glyph_atlas_dirty_uploads(
+  plan_glyph_atlas_dirty_uploads(
       GlyphAtlasTextureResourceState& state,
       std::span<const GlyphAtlasUploadBatch> upload_batches);
 

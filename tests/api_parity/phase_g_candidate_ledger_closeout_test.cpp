@@ -97,7 +97,7 @@ int main() {
   if (!contains(manifests, "\"phase_g_candidate_ledger_closeout_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_candidate_ledger_closeout_test.cpp\"") ||
-      !contains(predecessor, "Step 676 candidate-ledger closeout audit")) {
+      !contains(predecessor, "CGPUI_ACTIONS_IN")) {
     return 2;
   }
 

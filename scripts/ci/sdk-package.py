@@ -29,6 +29,7 @@ import tomllib
 from pathlib import Path
 
 from sdk_package_cmake import cmake_config, cmake_version_file, readme
+from sdk_package_headers import validate_sdk_headers
 from sdk_package_provenance import (
     compiler_info, mcpp_info, msvc_runtime, pacman_versions, sha256,
     vendored_dependencies, vulkan_sdk_version)
@@ -223,43 +224,6 @@ def project_version(repo: Path) -> str:
 
 
 
-def private_header_closure(repo: Path) -> list[Path]:
-    """Repository headers outside include/ reached from public headers by
-    relative includes (WindowRuntime's private members), transitively."""
-    include_root = (repo / "include").resolve()
-    pending, found = [], set()
-    for header in include_root.rglob("*.hpp"):
-        for name in re.findall(r'#include "([^"]+)"', header.read_text("utf-8")):
-            target = (header.parent / name).resolve()
-            if include_root not in target.parents:
-                pending.append(target)
-    while pending:
-        header = pending.pop()
-        if header in found:
-            continue
-        if not header.is_file():
-            raise SystemExit(f"public header includes a missing file: {header}")
-        found.add(header)
-        for name in re.findall(r'#include "([^"]+)"', header.read_text("utf-8")):
-            target = (header.parent / name).resolve()
-            if target.is_file() and include_root not in target.parents:
-                pending.append(target)
-    return sorted(found)
-
-
-def copy_private_headers(repo: Path, package_root: Path) -> list[str]:
-    """Copies them to the same path relative to the package root, so the
-    public headers' relative includes resolve."""
-    copied = []
-    for header in private_header_closure(repo):
-        relative = header.relative_to(repo.resolve()).as_posix()
-        destination = package_root / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(header, destination)
-        copied.append(relative)
-    return copied
-
-
 def library_file(build_dir: Path, library: dict, platform: str) -> Path:
     name = f"{library['name']}.lib" if platform == "windows" else f"lib{library['name']}.a"
     path = build_dir / "bin" / library["package"] / name
@@ -318,6 +282,7 @@ def write_cmake(package_root: Path, version: str, platform: str, mode: str,
 
 def stage_macos(args) -> None:
     repo, root = args.repo_root.resolve(), args.package_root
+    validate_sdk_headers(root)
     libraries = link_order(repo, "macos")
     copy_libraries(args, libraries, root)
     for lib in libraries:
@@ -331,10 +296,10 @@ def stage_macos(args) -> None:
     write_cmake(root, version, "macos", args.mode, None, libraries,
                 system + [f"-framework {name}" for name in frameworks])
     manifest = {
-        "schema_version": 1, "package": f"cgpui-macos-{args.arch}-{args.mode}",
+        "schema_version": 2, "package": f"cgpui-macos-{args.arch}-{args.mode}",
         "platform": "macos", "architecture": args.arch, "mode": args.mode,
         "deployment_target": "26.0", "version": version, "cxx_standard": "c++23",
-        "header_root": "include/cgpui", "private_headers": copy_private_headers(repo, root),
+        "header_root": "include/cgpui",
         "libraries": [lib["path"] for lib in libraries],
         "link_names": [lib["name"] for lib in libraries],
         "system_libraries": system, "frameworks": frameworks,
@@ -354,19 +319,19 @@ def stage_macos(args) -> None:
 def finalize(args) -> None:
     repo, package_root = args.repo_root, args.package_root
     check_clean(repo, allow_untracked=False)
+    validate_sdk_headers(package_root)
     libraries = link_order(repo, args.platform)
     copy_libraries(args, libraries, package_root)
     own = {library["name"] for library in libraries}
     system, dirs = system_libraries(
         link_edge(args.build_dir, "example_workbench"), args.platform, own)
     executables = copy_programs(args, package_root)
-    private_headers = copy_private_headers(repo, package_root)
     architecture = "x64" if args.platform == "windows" else "x86_64"
     name = f"cgpui-sdk-{args.platform}-{architecture}-{args.mode}"
     bundled = {library["package"] for library in libraries
                if library["origin"] != "cgpui"}
     manifest = {
-        "schema_version": 3,
+        "schema_version": 4,
         "package": name,
         "version": project_version(repo),
         "git_commit": git(repo, "rev-parse", "HEAD").strip(),
@@ -381,10 +346,6 @@ def finalize(args) -> None:
                              profile=args.profile),
         "compiler": compiler_info(args.build_dir, args.platform),
         "header_root": "include/cgpui",
-        "private_headers": private_headers,
-        "private_headers_reason": "WindowRuntime's private members are "
-                                  "declared in src/ui headers included by "
-                                  "include/cgpui/ui/window_runtime.hpp",
         "libraries": [library["path"] for library in libraries],
         "link_names": [library["name"] for library in libraries],
         "library_origins": {library["name"]: library["origin"]

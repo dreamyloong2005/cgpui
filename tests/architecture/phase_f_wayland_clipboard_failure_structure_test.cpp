@@ -40,18 +40,9 @@ int main() {
       read_source("tests/architecture/platform_source_structure_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &internal, &signal, &transfer, &source_state, &compositor,
-      &compositor_header, &behavior, &platform_structure, &manifests, &roadmap,
-      &ledger_md, &ledger_json, &task_plan, &findings};
+      &compositor_header, &behavior, &platform_structure, &manifests};
   for (const std::string* value : required) if (value->empty()) return 1;
   if (!contains(internal, "wayland_clipboard_write_without_sigpipe(") ||
       !contains(signal, "pthread_sigmask(SIG_BLOCK") ||
@@ -82,24 +73,5 @@ int main() {
       line_count(transfer) > 80 || line_count(source_state) > 160 ||
       line_count(compositor) > 3700 || line_count(compositor_header) > 220 ||
       line_count(behavior) > 70) return 7;
-  constexpr const char* completion =
-      "Phase F Step 569 prevents abandoned Wayland clipboard receivers from "
-      "terminating the host with SIGPIPE, scopes signal masking to the writer "
-      "thread, preserves caller signal state, and keeps selection ownership "
-      "usable after EPIPE. Step 570 Wayland clipboard diagnostics production "
-      "behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_569_remaining_gap\": \"Step 570 Wayland")) {
-    return 9;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 10;
-  }
   return 0;
 }

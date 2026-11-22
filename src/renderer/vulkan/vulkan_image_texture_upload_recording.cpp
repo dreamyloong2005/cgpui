@@ -67,7 +67,7 @@ Result<void> vulkan_record_image_texture_uploads(
 
 void vulkan_commit_image_texture_uploads(
     VulkanImageTextureResources& texture_resources,
-    const VulkanImageTextureUploadResources& upload_resources) {
+    VulkanImageTextureUploadResources& upload_resources) {
   for (const VulkanImageTextureStagingUpload& upload :
        upload_resources.uploads) {
     VulkanImageTextureResource* texture =
@@ -76,6 +76,7 @@ void vulkan_commit_image_texture_uploads(
       texture->layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     }
   }
+  upload_resources.submitted = true;
 }
 
 } // namespace cgpui

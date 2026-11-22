@@ -38,8 +38,6 @@ int main() {
       "examples/api_parity/public_gif_viewer_example/main.cpp");
   const std::string behavior = read_source(
       "tests/api_parity/phase_g_official_image_gif_examples_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_async_asset_loading_structure_test.cpp");
   const std::string manifests = read_source("tests/ui/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
@@ -47,16 +45,11 @@ int main() {
   const std::string core = read_source("docs/gpui-core-api-parity.md");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &transport, &paint, &render_view, &transport_test, &image, &gif,
-      &behavior, &previous, &manifests, &vocabulary, &core, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &behavior, &manifests, &vocabulary, &core, &roadmap, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "void upload_image(const ImageAsset& image)") ||
@@ -90,8 +83,6 @@ int main() {
       !contains(gif, "#include \"cgpui/prelude.hpp\"") ||
       !contains(image, "CGPUI_RUN_PUBLIC_IMAGE_EXAMPLE") ||
       !contains(gif, "CGPUI_RUN_PUBLIC_GIF_VIEWER_EXAMPLE") ||
-      !contains(previous, "Step 658 ") ||
-      !contains(previous, "official image/GIF examples and asset closeout") ||
       !contains(manifests, "\"render_view_image_asset_updates_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_image_gif_examples_structure_test.cpp\"")) {
@@ -100,26 +91,10 @@ int main() {
   if (line_count(transport) > 55 || line_count(render_view) > 113 ||
       line_count(transport_test) > 135 || line_count(image) > 190 ||
       line_count(gif) > 210 || line_count(behavior) > 100) return 6;
-  constexpr const char* completion =
-      "Phase G Step 658 ports the pinned official image and GIF viewer "
-      "examples to public C++ authoring, adds frame-local image invalidation "
-      "and upload transport, decodes file-backed PNG/JPEG and complete GIF "
-      "frames through bounded async loading, schedules every GIF frame by its "
-      "duration and loop metadata, and closes the Steps 651-658 asset band. "
-      "Step 659 GPUI-style app and window test setup production behavior is "
-      "next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
   if (!contains(roadmap, "[x] Steps 651-658: Complete assets") ||
       !contains(vocabulary, "`PaintList::upload_image(...)`") ||
       !contains(vocabulary, "public_gif_viewer_example") ||
       !contains(core, "Frame-local `PaintList` invalidation/upload records") ||
-      !contains(ledger_md, "Phase G assets band closed") ||
-      !contains(ledger_json, "\"phase_g_step_658_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 8;
+      !contains(ledger_json, "\"phase_g_step_658_sources\"")) return 8;
   return 0;
 }

@@ -1,5 +1,6 @@
 #include "ui_internal.hpp"
 #include "runtime_window_scale_diagnostics_internal.hpp"
+#include "runtime_frame_retry_internal.hpp"
 
 namespace cgpui {
 
@@ -10,7 +11,7 @@ void WindowRuntime::handle_resize(const WindowResized& event) {
 
 void WindowRuntime::handle_redraw() {
   auto result = try_draw_frame();
-  if (!result) {
+  if (!result && !runtime_retry_frame(*this, state_->windows.root_window_runtime_id_, result.error())) {
     fail_and_quit(result.error());
   }
 }

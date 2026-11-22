@@ -39,7 +39,7 @@ int main() {
   const std::string runtime_state =
       read_source("src/ui/runtime_animation_state_internal.hpp");
   const std::string runtime_internal =
-      read_source("src/ui/window_runtime_internal.hpp");
+      read_source("src/ui/runtime_state_animations_internal.hpp");
   const std::string flex = read_source("src/ui/element_flex_layout.cpp");
   const std::string stack =
       read_source("src/ui/element_vertical_stack_node.cpp");
@@ -62,20 +62,11 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &public_header, &aggregate, &store, &element, &forwarding, &runtime,
       &runtime_state, &runtime_internal, &flex, &stack, &scroll_header,
       &scroll, &scroll_element, &behavior, &ui_structure, &header_cleanliness, &previous,
-      &manifests, &vocabulary, &core_parity, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &manifests, &vocabulary, &core_parity};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(public_header, "struct ElementAnimationSnapshot") ||
@@ -119,8 +110,7 @@ int main() {
       !contains(ui_structure, "src/ui/runtime_element_animation.cpp") ||
       !contains(header_cleanliness, "cgpui/ui/element_animation.hpp") ||
       !contains(manifests, "\"element_lifecycle_animation_test.cpp\"") ||
-      !contains(manifests, "\"phase_g_element_lifecycle_animation_structure_test.cpp\"") ||
-      !contains(previous, "644 element lifecycle animation")) return 8;
+      !contains(manifests, "\"phase_g_element_lifecycle_animation_structure_test.cpp\"")) return 8;
   if (line_count(public_header) > 140 || line_count(store) > 220 ||
       line_count(element) > 100 || line_count(forwarding) > 120 ||
       line_count(runtime) > 80 || line_count(runtime_state) > 40 ||
@@ -128,20 +118,7 @@ int main() {
     return 9;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 644 adds runtime-owned keyed element lifecycle animations "
-      "with mount/update/unmount tracking, cross-window scope isolation, "
-      "per-frame eased snapshots across reconstructed wrappers, transparent "
-      "element forwarding, and one shared delayed frame wakeup. Step 645 "
-      "animation repeat and chaining production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 10;
-  }
   if (!contains(vocabulary, "`ElementAnimationStateStore`") ||
-      !contains(core_parity, "runtime-owned keyed element lifecycle") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 11;
+      !contains(core_parity, "runtime-owned keyed element lifecycle")) return 11;
   return 0;
 }

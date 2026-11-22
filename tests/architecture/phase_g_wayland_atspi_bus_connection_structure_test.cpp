@@ -52,26 +52,15 @@ int main() {
       "tests/architecture/platform_source_structure_test.cpp");
   const std::string wayland_inventory = read_source(
       "tests/architecture/wayland_window_source_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_wayland_atspi_focus_event_structure_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string linux_backends =
       read_source("mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source(
-      "docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source(
-      "docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &bus_header, &bus_source, &bus_health, &adapter_header, &adapter_source,
       &adapter_bus, &services, &linux_atspi_api, &window, &behavior,
       &bus_test_support, &platform_inventory,
-      &wayland_inventory, &previous, &manifests, &linux_backends, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &wayland_inventory, &manifests, &linux_backends};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(bus_header, "struct WaylandAtspiBusOperations") ||
@@ -146,21 +135,5 @@ int main() {
     return 10;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 632 discovers the Linux AT-SPI accessibility bus through "
-      "org.a11y.Bus, opens and registers an owned private connection, attaches "
-      "it lazily on first accessibility update, and reports discovery/connection "
-      "lifecycle diagnostics. Step 633 Linux AT-SPI disconnect and reconnect "
-      "production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 11;
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
-    return 12;
-  }
   return 0;
 }

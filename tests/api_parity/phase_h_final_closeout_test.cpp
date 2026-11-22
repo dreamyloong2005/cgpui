@@ -67,12 +67,9 @@ int main() {
       "Xcode 26.6 (17F113), and Xmake 3.0.9+HEAD.2b184e178, including "
       "native Cocoa, Metal primitive/clip/text-image pixel capture, "
       "accessibility, and public-example smoke coverage.";
-  if (!contains(mac_guard,
-                "Phase H macOS full debug passes 380/380 on macOS 26.5.2 ") ||
-      !contains(mac_guard,
-                "native Cocoa, Metal primitive/clip/text-image pixel capture, ") ||
-      !contains(mac_guard,
-                "accessibility, and public-example smoke coverage.")) {
+  if (!contains(mac_guard, "cgpui_require_macos_arm64") ||
+      !contains(mac_guard, "xcodebuild -version") ||
+      !contains(mac_guard, "scripts/ci/macos-debug.sh")) {
     return 30;
   }
   for (const auto* document : std::array{

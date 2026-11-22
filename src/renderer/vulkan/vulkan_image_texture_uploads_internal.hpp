@@ -13,10 +13,12 @@ struct VulkanImageTextureStagingUpload {
   VkBuffer buffer = VK_NULL_HANDLE;
   VkDeviceMemory memory = VK_NULL_HANDLE;
   VkBufferImageCopy copy_region{};
+  ImageAssetDescriptor descriptor;
 };
 
 struct VulkanImageTextureUploadResources {
   std::vector<VulkanImageTextureStagingUpload> uploads;
+  bool submitted = false;
 };
 
 [[nodiscard]] bool vulkan_image_texture_upload_batch_valid(
@@ -45,6 +47,6 @@ Result<void> vulkan_record_image_texture_uploads(
     const VulkanImageTextureUploadResources& upload_resources);
 void vulkan_commit_image_texture_uploads(
     VulkanImageTextureResources& texture_resources,
-    const VulkanImageTextureUploadResources& upload_resources);
+    VulkanImageTextureUploadResources& upload_resources);
 
 } // namespace cgpui

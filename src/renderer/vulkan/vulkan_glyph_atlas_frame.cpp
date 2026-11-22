@@ -1,4 +1,6 @@
 #include "vulkan_internal.hpp"
+#include "cgpui/renderer/planning/glyph_uploads.hpp"
+#include "cgpui/renderer/planning/glyph_resources.hpp"
 
 namespace cgpui {
 
@@ -11,7 +13,7 @@ Result<void> VulkanRendererState::prepare_glyph_atlas_frame(
     return std::unexpected(*glyph_cache_.rasterization_error());
   }
   const std::vector<GlyphAtlasUploadBatch> batches =
-      vulkan_plan_glyph_atlas_uploads(
+      plan_glyph_atlas_uploads(
           glyph_cache_.upload_records(),
           glyph_cache_.atlas_pages());
   pending_frame_upload_bytes_ = vulkan_merge_upload_byte_counts(
@@ -19,7 +21,7 @@ Result<void> VulkanRendererState::prepare_glyph_atlas_frame(
       pending_frame_upload_bytes_);
   pending_glyph_atlas_plan_state_ = glyph_atlas_plan_state_;
   const GlyphAtlasProductionPlan plan =
-      vulkan_plan_glyph_atlas_production_resources(
+      plan_glyph_atlas_production_resources(
           pending_glyph_atlas_plan_state_,
           batches);
 

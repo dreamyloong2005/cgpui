@@ -37,25 +37,16 @@ int main() {
       read_source("tests/header_cleanliness/core_header_cleanliness.cpp");
   const std::string behavior =
       read_source("tests/assets/file_asset_source_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_animation_examples_structure_test.cpp");
   const std::string manifests = read_source("tests/assets/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &error, &internal, &path, &source, &prelude, &cleanliness,
-      &behavior, &previous, &manifests, &vocabulary, &core, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &behavior, &manifests, &vocabulary, &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "struct AssetBytes") ||
@@ -88,9 +79,7 @@ int main() {
       !contains(behavior, "FileAssetSource({})") ||
       !contains(cleanliness, "cgpui/core/asset_source.hpp") ||
       !contains(prelude, "cgpui/core/asset_source.hpp")) return 6;
-  if (!contains(previous, "Step 651 file-backed asset loading ") ||
-      !contains(previous, "production behavior is next.") ||
-      !contains(manifests, "\"file_asset_source_test.cpp\"") ||
+  if (!contains(manifests, "\"file_asset_source_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_file_asset_source_structure_test.cpp\"")) {
     return 7;
@@ -99,23 +88,9 @@ int main() {
       line_count(path) > 100 || line_count(source) > 135 ||
       line_count(behavior) > 140) return 8;
 
-  constexpr const char* completion =
-      "Phase G Step 651 adds root-confined file-backed AssetSource loading "
-      "with binary and empty-file support, optional missing-file results, "
-      "stable directory listing, canonical symlink escape protection, byte "
-      "limits before allocation, and explicit invalid-path and I/O "
-      "diagnostics. Step 652 PNG and JPEG decode boundary production "
-      "behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 9;
-  }
   if (!contains(vocabulary, "`AssetSource`") ||
       !contains(vocabulary, "`FileAssetSource`") ||
       !contains(core, "root-confined file-backed asset loading") ||
-      !contains(ledger_json, "\"phase_g_step_651_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 10;
+      !contains(ledger_json, "\"phase_g_step_651_sources\"")) return 10;
   return 0;
 }

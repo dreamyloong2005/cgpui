@@ -34,7 +34,7 @@ int main() {
   const std::string tasks_source = read_source("src/ui/runtime_tasks.cpp");
   const std::string shutdown_source = read_source("src/ui/runtime_shutdown.cpp");
   const std::string runtime_internal =
-      read_source("src/ui/window_runtime_internal.hpp");
+      read_source("src/ui/runtime_state_tasks_internal.hpp");
   const std::string diagnostics_header =
       read_source("include/cgpui/ui/runtime_diagnostics.hpp");
   const std::string diagnostics_source =
@@ -45,19 +45,10 @@ int main() {
       read_source("tests/architecture/ui_source_structure_test.cpp");
   const std::string manifests = read_source("tests/async/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &pool_header, &pool_source, &priority_source, &tasks_source, &shutdown_source,
       &runtime_internal, &diagnostics_header, &diagnostics_source, &behavior,
-      &ui_structure, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
-      &findings};
+      &ui_structure, &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(pool_header, "class WindowRuntime::RuntimeTaskPool") ||
@@ -126,21 +117,5 @@ int main() {
     return 9;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 635 replaces per-task background threads with a bounded "
-      "reusable runtime task pool, preserves runtime-thread completion dispatch "
-      "and cancellation tokens, and reports worker, queue, activity, peak, and "
-      "completion diagnostics. Step 636 async task priority production behavior "
-      "is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 10;
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
-    return 11;
-  }
   return 0;
 }

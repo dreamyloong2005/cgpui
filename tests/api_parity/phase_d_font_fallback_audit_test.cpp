@@ -58,13 +58,13 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string text_font_header =
-      read_source("include/cgpui/ui/text_font.hpp");
-  const std::string text_font_source = read_source("src/ui/text_font.cpp");
+      read_source("include/cgpui/platform/font_database.hpp");
+  const std::string text_font_source = read_source("src/platform/font_database.cpp");
   const std::string text_shape_header =
-      read_source("include/cgpui/ui/text_shape.hpp");
-  const std::string text_shape_source = read_source("src/ui/text_shape.cpp");
+      read_source("include/cgpui/renderer/text/text_shape.hpp");
+  const std::string text_shape_source = read_source("src/renderer/text/text_shape.cpp");
   const std::string fallback_source =
-      read_source("src/ui/text_shaping_fallback.cpp");
+      read_source("src/renderer/text/text_shaping_fallback.cpp");
   const std::string win32_font =
       read_source("src/platform/win32/win32_font_discovery.cpp");
   const std::string wayland_fontconfig =
@@ -118,7 +118,7 @@ int main() {
     return 4;
   }
 
-  if (!contains(text_font_header, "struct FontUnicodeRange") ||
+  if (!contains(read_source("include/cgpui/core/font_face.hpp"), "struct FontUnicodeRange") ||
       !contains(text_font_source, "FontDatabase::resolve_chain_for_codepoint(") ||
       !contains(text_shape_header, "font_fallback_faces") ||
       !contains(text_shape_header, "struct TextScriptRun") ||

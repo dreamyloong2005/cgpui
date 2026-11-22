@@ -23,8 +23,8 @@ void WindowRuntime::update_platform_accessibility_tree_for_record(
       .value_count = update.node_count,
   });
   record.last_accessibility_update = update;
-  if (record.runtime_id == root_window_runtime_id_) {
-    last_platform_accessibility_update_ = update;
+  if (record.runtime_id == state_->windows.root_window_runtime_id_) {
+    state_->platform.last_platform_accessibility_update_ = update;
   }
   record.window->update_accessibility_tree(std::move(update));
 }
@@ -32,8 +32,8 @@ void WindowRuntime::update_platform_accessibility_tree_for_record(
 void WindowRuntime::reset_accessibility_state_for_record(
     WindowRuntimeRecord& record) {
   record.last_accessibility_update.reset();
-  if (record.runtime_id == root_window_runtime_id_) {
-    last_platform_accessibility_update_.reset();
+  if (record.runtime_id == state_->windows.root_window_runtime_id_) {
+    state_->platform.last_platform_accessibility_update_.reset();
   }
 }
 

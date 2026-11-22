@@ -30,7 +30,8 @@ int main() {
       read_source("include/cgpui/platform/platform_application.hpp");
   const std::string platform_defaults = read_source("src/platform/empty.cpp");
   const std::string runtime_internal =
-      read_source("src/ui/window_runtime_internal.hpp");
+      read_source("include/cgpui/ui/detail/window_runtime_scheduling_declarations.hpp");
+  const std::string scheduling_state = read_source("src/ui/runtime_state_scheduling_internal.hpp");
   const std::string timer_integration =
       read_source("src/ui/runtime_timer_integration.cpp");
   const std::string timers = read_source("src/ui/runtime_timers.cpp");
@@ -71,22 +72,13 @@ int main() {
       read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &platform_header, &platform_defaults, &runtime_internal,
+      &platform_header, &platform_defaults, &runtime_internal, &scheduling_state,
       &timer_integration, &timers, &scheduling, &win32_header, &win32_source,
       &win32_application, &wayland_header, &wayland_source, &wayland_core,
       &wayland_event_loop, &behavior, &win32_behavior, &wayland_behavior,
       &test_support, &ui_structure, &platform_structure, &win32_structure,
-      &wayland_structure, &previous, &manifests, &core_parity, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &wayland_structure, &previous, &manifests, &core_parity};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(platform_header, "monotonic_time_ms() const") ||
@@ -99,7 +91,7 @@ int main() {
   }
   if (!contains(runtime_internal, "sync_platform_time()") ||
       !contains(runtime_internal, "schedule_next_timer_wakeup()") ||
-      !contains(runtime_internal, "last_platform_time_ms_") ||
+      !contains(scheduling_state, "last_platform_time_ms_") ||
       !contains(timer_integration, "application_.monotonic_time_ms()") ||
       !contains(timer_integration, "std::ranges::min_element") ||
       !contains(timer_integration, "application_.request_wakeup_after") ||
@@ -132,7 +124,6 @@ int main() {
       !contains(platform_structure, "wayland_timer_wakeup.cpp") ||
       !contains(win32_structure, "win32_timer_wakeup.cpp") ||
       !contains(wayland_structure, "wayland_timer_wakeup.cpp") ||
-      !contains(previous, "Step 640 async timer integration production behavior is next.") ||
       !contains(manifests, "\"runtime_async_timer_integration_test.cpp\"") ||
       !contains(manifests, "\"win32_timer_wakeup_test.cpp\"") ||
       !contains(manifests, "\"wayland_timer_wakeup_test.cpp\"") ||
@@ -141,6 +132,7 @@ int main() {
     return 8;
   }
   if (line_count(platform_header) > 70 || line_count(runtime_internal) > 260 ||
+      line_count(scheduling_state) > 40 ||
       line_count(timer_integration) > 50 || line_count(win32_header) > 50 ||
       line_count(win32_source) > 80 || line_count(win32_application) > 170 ||
       line_count(wayland_header) > 40 || line_count(wayland_source) > 60 ||
@@ -150,21 +142,8 @@ int main() {
     return 9;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 640 integrates runtime timers with platform monotonic "
-      "clocks and nearest-deadline delayed wakeups on Win32 and Wayland, "
-      "preserving deterministic time advancement, cancellation, repeating "
-      "cadence, and zero-delay compatibility. Step 641 cross-thread entity "
-      "access production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 10;
-  }
   if (contains(core_parity, "timer integration and cross-thread entity access") ||
-      contains(core_parity, "complete async timer integration") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
+      contains(core_parity, "complete async timer integration")) {
     return 11;
   }
   return 0;

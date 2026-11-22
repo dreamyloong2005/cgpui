@@ -58,23 +58,15 @@ int main() {
       read_source(".github/workflows/phase-g-windows-linux.yml");
   const std::string manifest =
       read_source("scripts/ci/architecture-header-targets.txt");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_architecture_header_matrix_structure_test.cpp");
   const std::string manifests = read_source("third_party/VENDORED.md") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &windows_dependencies, &linux_dependencies, &action, &lock,
       &windows_package, &linux_package, &windows_examples, &linux_examples,
-      &windows_matrix, &linux_matrix, &workflow, &manifest, &previous, &manifests,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &windows_matrix, &linux_matrix, &workflow, &manifest, &manifests,
+      &ledger_json};
   for (const auto* source : required) if (source->empty()) return 1;
 
   // Dependencies are pinned in the repository: lunasvg / plutovg are
@@ -140,8 +132,7 @@ int main() {
   for (const auto* package : linux_packages)
     if (!contains(action, package)) return 12;
 
-  if (!contains(previous, "Phase G Step 671 adds Windows and Linux CI") ||
-      !contains(manifest,
+  if (!contains(manifest,
           "phase_g_reproducible_dependency_setup_structure_test|") ||
       !contains(manifests,
           "\"phase_g_reproducible_dependency_setup_structure_test.cpp\"")) {
@@ -151,20 +142,7 @@ int main() {
       line_count(linux_dependencies) > 100 || line_count(action) > 80 ||
       line_count(workflow) > 155 || line_count(read_source("mcpp.toml")) > 100) return 9;
 
-  constexpr const char* completion =
-      "Phase G Step 672 pins Xmake 3.0.9, commits a dual-platform package "
-      "lock, centralizes workspace-confined dependency roots, caches "
-      "reproducible package state in CI, and removes floating repository "
-      "refreshes from package setup. Step 673 Windows full-debug "
-      "verification is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 10;
-  }
-  if (!contains(ledger_json, "\"phase_g_step_672_sources\"") ||
-      !contains(ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
+  if (!contains(ledger_json, "\"phase_g_step_672_sources\"")) {
     return 11;
   }
   return 0;

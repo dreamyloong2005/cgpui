@@ -1,6 +1,7 @@
 #include "win32_window_internal.hpp"
 #include "win32_popup_window_internal.hpp"
 #include "win32_window_factory_internal.hpp"
+#include "win32_window_registry_internal.hpp"
 
 #include <utility>
 
@@ -10,14 +11,15 @@ Win32Window::Win32Window(
     HINSTANCE instance,
     PlatformEventCallback callback,
     WindowState state)
-    : instance_(instance),
-      callback_(std::move(callback)),
+    : Win32WindowDispatchLifetime(std::move(callback)),
+      instance_(instance),
       state_(state),
       ole_drop_target_(std::make_unique<Win32OleDropTarget>(*this)) {
   configure_accessibility_actions();
 }
 
 Win32Window::~Win32Window() {
+  invalidate_window_registration();
   if (hwnd_ != nullptr) {
     set_pointer_capture(false);
     revoke_drop_target();
@@ -78,7 +80,10 @@ void Win32Window::redraw_requested() {
 }
 
 void Win32Window::wakeup_requested() {
-  callback_(WindowWakeupRequested{});
+  // A wakeup can reclaim this very window. Keep the executing callable
+  // alive independently of its owning Win32Window.
+  const PlatformEventCallback callback = callback_;
+  callback(WindowWakeupRequested{});
 }
 
 } // namespace cgpui

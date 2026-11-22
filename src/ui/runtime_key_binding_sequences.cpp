@@ -67,14 +67,14 @@ bool key_binding_sequence_has_prefix(
 } // namespace
 
 bool WindowRuntime::dispatch_key_binding_for_event(const KeyboardKey& key) {
-  std::vector<KeyBindingChord> sequence = pending_key_binding_sequence_;
+  std::vector<KeyBindingChord> sequence = state_->actions.pending_key_binding_sequence_;
   sequence.push_back(chord_from_key(key));
 
   const KeyBinding* selected = nullptr;
   int selected_rank = -1;
   bool has_partial_match = false;
 
-  for (const KeyBinding& binding : key_bindings_) {
+  for (const KeyBinding& binding : state_->actions.key_bindings_) {
     if (!key_binding_context_active(binding.context) ||
         !key_binding_sequence_has_prefix(binding, sequence)) {
       continue;
@@ -94,11 +94,11 @@ bool WindowRuntime::dispatch_key_binding_for_event(const KeyboardKey& key) {
   }
 
   if (has_partial_match) {
-    pending_key_binding_sequence_ = std::move(sequence);
+    state_->actions.pending_key_binding_sequence_ = std::move(sequence);
     return true;
   }
 
-  pending_key_binding_sequence_.clear();
+  state_->actions.pending_key_binding_sequence_.clear();
   if (selected == nullptr) {
     return false;
   }

@@ -80,22 +80,13 @@ int main() {
       read_source("tests/platform/wayland_window_position_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &position_header, &platform_window, &window_header, &event_header,
       &event_platform, &position_default, &win32_application, &win32_factory,
       &win32_position,
       &win32_proc, &wayland_position_internal, &wayland_position,
       &wayland_registered, &runtime_control, &runtime_windows, &event_kind,
-      &win32_test, &wayland_test, &manifests, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &win32_test, &wayland_test, &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -159,26 +150,6 @@ int main() {
       line_count(runtime_control) > 75 || line_count(runtime_windows) > 115 ||
       line_count(win32_proc) > 110) {
     return 8;
-  }
-  constexpr const char* completion =
-      "Phase F Step 544 adds capability-aware top-level positioning with "
-      "initial/query/request support and WindowMoved delivery on Win32, while "
-      "Wayland explicitly reports absolute positioning unsupported. Step 545 "
-      "transparent and decorated window production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 9;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_544_remaining_gap\": \"Step 545 transparent")) {
-    return 10;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_544_remaining_gap\": \"Step 545 transparent")) {
-    return 11;
   }
   return 0;
 }

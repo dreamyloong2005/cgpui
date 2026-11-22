@@ -15,14 +15,14 @@ bool WindowRuntime::notify_entity_changed(
     std::type_index entity_type,
     std::uint64_t entity_id_value) {
   bool notified = false;
-  for (const EntitySubscription& subscription : entity_subscriptions_) {
+  for (const EntitySubscription& subscription : state_->entities.entity_subscriptions_) {
     if (subscription.entity_type == entity_type &&
         subscription.entity_id_value == entity_id_value) {
       notified = true;
     }
   }
   std::vector<PendingEntityObserver> pending_observers;
-  for (const EntityObserver& observer : entity_observers_) {
+  for (const EntityObserver& observer : state_->entities.entity_observers_) {
     if (observer.entity_type == entity_type &&
         observer.entity_id_value == entity_id_value &&
         observer.callback) {
@@ -36,7 +36,7 @@ bool WindowRuntime::notify_entity_changed(
     auto callback = pending.callback;
     if (pending.subscription_id.value != 0) {
       callback = {};
-      for (const EntityObserver& observer : entity_observers_) {
+      for (const EntityObserver& observer : state_->entities.entity_observers_) {
         if (observer.subscription_id == pending.subscription_id &&
             observer.callback) {
           callback = observer.callback;

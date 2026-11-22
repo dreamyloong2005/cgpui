@@ -973,8 +973,8 @@ int test_multi_window_registry_owns_independent_runtime_records() {
                     second_record->renderer == nullptr &&
                     first_record->owns_window &&
                     second_record->owns_window &&
-                    first_record->owns_renderer &&
-                    second_record->owns_renderer &&
+                    !first_record->owns_renderer &&
+                    !second_record->owns_renderer &&
                     !first_record->active &&
                     !second_record->active &&
                     first_record->parent_runtime_id ==
@@ -1012,7 +1012,7 @@ int test_multi_window_registry_owns_independent_runtime_records() {
                               &frame_context.platform_window &&
                           root_record->renderer == &frame_context.renderer &&
                           root_record->owns_window &&
-                          !root_record->owns_renderer &&
+                          root_record->owns_renderer &&
                           !root_record->owns_root_view;
                       frame_secondary_records_ok =
                           first_frame_record != nullptr &&

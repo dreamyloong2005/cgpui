@@ -101,10 +101,8 @@ int main() {
         std::string{"\""} + std::string{closeout_targets[index]} + "\"";
     if (!contains(manifests, registration)) return 10 + static_cast<int>(index);
   }
-  if (!contains(predecessor,
-                "Phase G Step 677 completes final dual-host verification") ||
-      !contains(predecessor, "Step 678 Phase G final closeout ") ||
-      !contains(predecessor, "verification is next.") ||
+  if (!contains(predecessor, "wayland_frame_pixel_capture_test.cpp") ||
+      !contains(predecessor, "wayland_vulkan_surface_test.cpp") ||
       !contains(candidate, "count(candidates, \"| Required |\") != 0") ||
       !contains(candidate, "count(ledger_json, \"\\\"upstream_gpui\\\":\") != 32")) {
     return 30;

@@ -36,12 +36,12 @@ std::vector<ElementId> WindowRuntime::element_ancestry_for(
     return ancestry;
   }
 
-  if (owned_element_tree_ != nullptr) {
+  if (state_->elements.owned_element_tree_ != nullptr) {
     ElementId current = element_id;
-    while (current.value != 0 && owned_element_tree_->get(current) != nullptr) {
+    while (current.value != 0 && state_->elements.owned_element_tree_->get(current) != nullptr) {
       ancestry.push_back(current);
       const std::optional<ElementId> parent =
-          owned_element_tree_->parent(current);
+          state_->elements.owned_element_tree_->parent(current);
       if (!parent.has_value()) {
         break;
       }
@@ -50,7 +50,7 @@ std::vector<ElementId> WindowRuntime::element_ancestry_for(
     return ancestry;
   }
 
-  if (element_root_ != nullptr && element_root_->id() == element_id) {
+  if (state_->elements.element_root_ != nullptr && state_->elements.element_root_->id() == element_id) {
     ancestry.push_back(element_id);
   }
   return ancestry;
@@ -61,8 +61,8 @@ std::vector<ViewId> WindowRuntime::view_ancestry_for(ViewId view_id) const {
   if (view_id.value != 0) {
     ancestry.push_back(view_id);
   }
-  if (view_id != root_view_id_ && root_view_id_.value != 0) {
-    ancestry.push_back(root_view_id_);
+  if (view_id != state_->views.root_view_id_ && state_->views.root_view_id_.value != 0) {
+    ancestry.push_back(state_->views.root_view_id_);
   }
   return ancestry;
 }
@@ -82,11 +82,11 @@ Element* WindowRuntime::routed_element(ElementId element_id) {
   if (element_id.value == 0) {
     return nullptr;
   }
-  if (owned_element_tree_ != nullptr) {
-    return owned_element_tree_->get(element_id);
+  if (state_->elements.owned_element_tree_ != nullptr) {
+    return state_->elements.owned_element_tree_->get(element_id);
   }
-  if (element_root_ != nullptr && element_root_->id() == element_id) {
-    return const_cast<Element*>(element_root_);
+  if (state_->elements.element_root_ != nullptr && state_->elements.element_root_->id() == element_id) {
+    return const_cast<Element*>(state_->elements.element_root_);
   }
   return nullptr;
 }
@@ -95,11 +95,11 @@ const Element* WindowRuntime::routed_element(ElementId element_id) const {
   if (element_id.value == 0) {
     return nullptr;
   }
-  if (owned_element_tree_ != nullptr) {
-    return owned_element_tree_->get(element_id);
+  if (state_->elements.owned_element_tree_ != nullptr) {
+    return state_->elements.owned_element_tree_->get(element_id);
   }
-  if (element_root_ != nullptr && element_root_->id() == element_id) {
-    return element_root_;
+  if (state_->elements.element_root_ != nullptr && state_->elements.element_root_->id() == element_id) {
+    return state_->elements.element_root_;
   }
   return nullptr;
 }

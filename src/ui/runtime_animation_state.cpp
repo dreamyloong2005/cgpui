@@ -9,20 +9,20 @@ std::optional<AnimationSnapshot> WindowRuntime::animation_snapshot(
   }
 
   const auto animation = std::find_if(
-      animations_.begin(),
-      animations_.end(),
+      state_->animations.animations_.begin(),
+      state_->animations.animations_.end(),
       [id](const RuntimeAnimation& animation) {
         return animation.id == id;
       });
-  if (animation == animations_.end()) {
+  if (animation == state_->animations.animations_.end()) {
     return std::nullopt;
   }
 
   const std::uint64_t duration_ms = animation->options.duration_ms;
   const std::uint64_t raw_elapsed_ms = animation->cancelled
       ? animation->cancelled_elapsed_ms
-      : current_time_ms_ >= animation->started_ms
-          ? current_time_ms_ - animation->started_ms
+      : state_->scheduling.current_time_ms_ >= animation->started_ms
+          ? state_->scheduling.current_time_ms_ - animation->started_ms
           : 0;
   const std::uint64_t elapsed_ms =
       duration_ms == 0 ? 0 : std::min(raw_elapsed_ms, duration_ms);

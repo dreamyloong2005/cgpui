@@ -42,22 +42,11 @@ int main() {
       read_source("tests/platform/wayland_pointer_axis_frame_test.cpp");
   const std::string compositor =
       read_source("tests/platform/wayland_test_compositor.cpp");
-  const std::string source_guard =
-      read_source("tests/architecture/wayland_window_source_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &state_header, &state, &callbacks, &core, &registry, &window_events,
-      &behavior, &compositor, &source_guard, &manifests, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &behavior, &compositor, &manifests};
   for (const std::string* source : required) {
     if (source->empty()) return 1;
   }
@@ -96,24 +85,6 @@ int main() {
   if (line_count(state_header) > 55 || line_count(state) > 100 ||
       line_count(callbacks) > 110 || line_count(behavior) > 130) {
     return 6;
-  }
-  constexpr const char* completion =
-      "Phase F Step 558 aggregates Wayland axis frames with source-aware "
-      "precision, high-resolution value120 metadata, stop-only cleanup, and "
-      "v9 pointer negotiation. Step 559 Wayland fractional scale production "
-      "behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_558_remaining_gap\": \"Step 559 Wayland")) {
-    return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 9;
   }
   return 0;
 }

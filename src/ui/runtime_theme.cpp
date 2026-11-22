@@ -3,12 +3,12 @@
 namespace cgpui {
 
 void WindowRuntime::set_app_theme(Theme theme) {
-  app_theme_ = std::move(theme);
+  state_->platform.app_theme_ = std::move(theme);
   request_all_theme_renders();
 }
 
 const Theme& WindowRuntime::app_theme() const {
-  return app_theme_;
+  return state_->platform.app_theme_;
 }
 
 void WindowRuntime::set_window_theme(
@@ -17,7 +17,7 @@ void WindowRuntime::set_window_theme(
   if (runtime_id.value == 0) {
     return;
   }
-  window_themes_[runtime_id.value] = std::move(theme);
+  state_->platform.window_themes_[runtime_id.value] = std::move(theme);
   request_theme_render(runtime_id);
 }
 
@@ -25,7 +25,7 @@ bool WindowRuntime::clear_window_theme(WindowRuntimeId runtime_id) {
   if (runtime_id.value == 0) {
     return false;
   }
-  const bool erased = window_themes_.erase(runtime_id.value) != 0;
+  const bool erased = state_->platform.window_themes_.erase(runtime_id.value) != 0;
   if (erased) {
     request_theme_render(runtime_id);
   }
@@ -36,8 +36,8 @@ const Theme* WindowRuntime::window_theme(WindowRuntimeId runtime_id) const {
   if (runtime_id.value == 0) {
     return nullptr;
   }
-  const auto theme = window_themes_.find(runtime_id.value);
-  if (theme == window_themes_.end()) {
+  const auto theme = state_->platform.window_themes_.find(runtime_id.value);
+  if (theme == state_->platform.window_themes_.end()) {
     return nullptr;
   }
   return &theme->second;
@@ -51,7 +51,7 @@ std::optional<Color> WindowRuntime::theme_color(
       return color;
     }
   }
-  return app_theme_.color(id);
+  return state_->platform.app_theme_.color(id);
 }
 
 std::optional<float> WindowRuntime::theme_spacing(
@@ -63,7 +63,7 @@ std::optional<float> WindowRuntime::theme_spacing(
       return spacing;
     }
   }
-  return app_theme_.spacing(id);
+  return state_->platform.app_theme_.spacing(id);
 }
 
 } // namespace cgpui

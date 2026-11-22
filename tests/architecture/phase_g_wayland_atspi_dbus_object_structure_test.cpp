@@ -54,19 +54,10 @@ int main() {
       read_source("tests/architecture/mcpp.toml");
   const std::string linux_backends =
       read_source("packages/platform-linux-wayland/build.mcpp");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source(
-      "docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source(
-      "docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &object_header, &object, &dbus_header, &dbus, &messages_header,
       &messages, &adapter_header, &adapter, &services, &window, &behavior,
-      &test_support, &manifests, &linux_backends, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &test_support, &manifests, &linux_backends};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(object_header, "struct WaylandAtspiObjectNode") ||
@@ -120,20 +111,5 @@ int main() {
     return 7;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 627 exposes Linux AT-SPI accessibility objects on an "
-      "attached D-Bus connection with deterministic object-path registration, "
-      "introspection, interface discovery, removal, teardown, and diagnostics. "
-      "Step 628 Linux AT-SPI tree navigation production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
-    return 9;
-  }
   return 0;
 }

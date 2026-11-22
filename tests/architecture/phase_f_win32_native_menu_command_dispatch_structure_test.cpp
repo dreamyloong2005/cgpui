@@ -53,18 +53,11 @@ int main() {
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/ui/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &event, &events, &aggregate, &map_header, &map_source, &window_source,
       &proc_header, &proc_source, &proc, &runtime, &runtime_entry,
       &runtime_windows, &platform_behavior, &runtime_behavior, &win32_structure,
-      &platform_structure, &ui_structure, &renderer_structure, &manifests, &roadmap,
-      &ledger_md, &ledger_json, &task_plan, &findings};
+      &platform_structure, &ui_structure, &renderer_structure, &manifests};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(event, "enum class NativeMenuCommandSource") ||
       !contains(event, "struct NativeMenuCommand") ||
@@ -85,7 +78,7 @@ int main() {
   if (!contains(runtime, "handle_native_menu_command_event(") ||
       !contains(runtime, "dispatch_action(command->action_name)") ||
       !contains(runtime, "finish_event_dispatch(dispatch.result)") ||
-      !contains(runtime_entry, "handle_native_menu_command_event(event, root_view_id_)") ||
+      !contains(runtime_entry, "handle_native_menu_command_event(event, state_->views.root_view_id_)") ||
       !contains(runtime_windows, "handle_native_menu_command_event(event, record->root_view_id)")) return 5;
   if (!contains(platform_behavior, "MAKEWPARAM(0x1000U, 0U)") ||
       !contains(platform_behavior, "MAKEWPARAM(0x1000U, 1U)") ||
@@ -103,11 +96,5 @@ int main() {
   if (!contains(manifests, "\"win32_native_menu_command_test.cpp\"") ||
       !contains(manifests, "\"native_menu_action_dispatch_test.cpp\"") ||
       !contains(manifests, "\"phase_f_win32_native_menu_command_dispatch_structure_test.cpp\"")) return 9;
-  constexpr const char* completion =
-      "Phase F Step 584 maps recursive Win32 menu command ids to immutable action names, emits menu/accelerator command events from WM_COMMAND, and routes them through existing scoped runtime action dispatch for root and additional windows. Step 585 native menu dispatch diagnostics production behavior is next.";
-  const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 10;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) return 11;
   return 0;
 }

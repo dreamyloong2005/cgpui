@@ -266,23 +266,23 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_instance_surface.cpp",
       "src/renderer/vulkan/vulkan_physical_device.cpp",
       "src/renderer/vulkan/vulkan_renderer.cpp",
-      "src/renderer/vulkan/vulkan_report.cpp",
-      "src/renderer/vulkan/vulkan_report_commands.cpp",
-      "src/renderer/vulkan/vulkan_report_frame.cpp",
-      "src/renderer/vulkan/vulkan_report_geometry.cpp",
-      "src/renderer/vulkan/vulkan_report_glyph_uploads.cpp",
-      "src/renderer/vulkan/vulkan_report_image_uploads.cpp",
-      "src/renderer/vulkan/vulkan_report_internal.hpp",
-      "src/renderer/vulkan/vulkan_report_keys.cpp",
-      "src/renderer/vulkan/vulkan_report_payloads.cpp",
-      "src/renderer/vulkan/vulkan_report_submission.cpp",
-      "src/renderer/vulkan/vulkan_report_text_submission.cpp",
-      "src/renderer/vulkan/vulkan_report_submission_stats.cpp",
-      "src/renderer/vulkan/vulkan_report_stream.cpp",
-      "src/renderer/vulkan/vulkan_report_text_draws.cpp",
-      "src/renderer/vulkan/vulkan_report_text_quads.cpp",
-      "src/renderer/vulkan/vulkan_report_texture_resources.cpp",
-      "src/renderer/vulkan/vulkan_glyph_atlas_production.cpp",
+      "src/renderer/planning/report.cpp",
+      "src/renderer/planning/report_commands.cpp",
+      "src/renderer/planning/report_frame.cpp",
+      "src/renderer/planning/draw_geometry.cpp",
+      "src/renderer/planning/glyph_uploads.cpp",
+      "src/renderer/planning/image_uploads.cpp",
+      "src/renderer/planning/report_internal.hpp",
+      "src/renderer/planning/report_keys.cpp",
+      "src/renderer/planning/report_payloads.cpp",
+      "src/renderer/planning/report_submission.cpp",
+      "src/renderer/planning/report_text_submission.cpp",
+      "src/renderer/planning/report_submission_stats.cpp",
+      "src/renderer/planning/report_stream.cpp",
+      "src/renderer/planning/glyph_draws.cpp",
+      "src/renderer/planning/glyph_geometry.cpp",
+      "src/renderer/planning/glyph_texture_resources.cpp",
+      "src/renderer/planning/glyph_atlas_production.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_draw_bindings.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_draw_data.cpp",
@@ -292,7 +292,7 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_glyph_atlas_resources.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_staging.cpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_upload_recording.cpp",
-      "src/renderer/vulkan/vulkan_report_uploads.cpp",
+      "include/cgpui/renderer/planning.hpp",
       "src/renderer/vulkan/vulkan_presentation.cpp",
       "src/renderer/vulkan/vulkan_presentation_recovery.cpp",
       "src/renderer/vulkan/vulkan_swapchain_recovery_policy_internal.hpp",
@@ -715,9 +715,9 @@ int main(int argc, char** argv) {
       contains(renderer, "vkQueuePresentKHR") ||
       contains(renderer, "vkCreateSwapchainKHR") ||
       contains(renderer, "record_vulkan_frame_command_buffer(") ||
-      contains(renderer, "RendererCommandReport vulkan_build_renderer_command_report(") ||
-      contains(renderer, "std::vector<GlyphAtlasUploadBatch> vulkan_plan_glyph_atlas_uploads(") ||
-      contains(renderer, "std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(") ||
+      contains(renderer, "RendererCommandReport build_renderer_command_report(") ||
+      contains(renderer, "std::vector<GlyphAtlasUploadBatch> plan_glyph_atlas_uploads(") ||
+      contains(renderer, "std::vector<TexturedGlyphQuad> build_textured_glyph_quads(") ||
       contains(renderer, "Result<void> require_vk_success(") ||
       contains(renderer, "Result<void> record_vulkan_frame_command_buffer(")) {
     return 4;
@@ -1425,162 +1425,162 @@ int main(int argc, char** argv) {
   }
 
   const std::string report =
-      read_source("src/renderer/vulkan/vulkan_report.cpp");
+      read_source("src/renderer/planning/report.cpp");
   if (line_count(report) > 150) {
     return 5;
   }
-  if (!contains(report, "RendererCommandReport vulkan_build_renderer_command_report(") ||
-      !contains(report, "vulkan_build_renderer_command_stream(") ||
-      !contains(report, "vulkan_record_renderer_text_statistics(") ||
-      !contains(report, "vulkan_record_renderer_image_statistics(") ||
-      !contains(report, "vulkan_record_submission_plan_statistics(") ||
-      contains(report, "RendererFrameReport vulkan_build_renderer_frame_report(") ||
+  if (!contains(report, "RendererCommandReport build_renderer_command_report(") ||
+      !contains(report, "renderer_plan_build_renderer_command_stream(") ||
+      !contains(report, "renderer_plan_record_renderer_text_statistics(") ||
+      !contains(report, "renderer_plan_record_renderer_image_statistics(") ||
+      !contains(report, "renderer_plan_record_submission_plan_statistics(") ||
+      contains(report, "RendererFrameReport build_renderer_frame_report(") ||
       contains(report, "for (std::size_t index = 0; index < rects.size()") ||
-      contains(report, "vulkan_build_textured_glyph_quads(") ||
-      contains(report, "std::vector<GlyphAtlasUploadBatch> vulkan_plan_glyph_atlas_uploads(") ||
-      contains(report, "std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(") ||
-      contains(report, "std::vector<RoundedRectTessellationRecord> vulkan_tessellate_rounded_rects(") ||
-      contains(report, "std::vector<RendererSubmissionPlanRecord> vulkan_build_renderer_submission_plan(")) {
+      contains(report, "build_textured_glyph_quads(") ||
+      contains(report, "std::vector<GlyphAtlasUploadBatch> plan_glyph_atlas_uploads(") ||
+      contains(report, "std::vector<TexturedGlyphQuad> build_textured_glyph_quads(") ||
+      contains(report, "std::vector<RoundedRectTessellationRecord> tessellate_rounded_rects(") ||
+      contains(report, "std::vector<RendererSubmissionPlanRecord> renderer_plan_build_renderer_submission_plan(")) {
     return 17;
   }
 
   const std::string report_internal =
-      read_source("src/renderer/vulkan/vulkan_report_internal.hpp");
-  if (!contains(report_internal, "struct VulkanTextDrawAtlasPageUsage") ||
-      !contains(report_internal, "vulkan_build_renderer_command_stream(") ||
-      !contains(report_internal, "vulkan_record_renderer_text_statistics(") ||
-      !contains(report_internal, "vulkan_same_command_batch_key(") ||
-      !contains(report_internal, "vulkan_same_submission_plan_key(") ||
-      !contains(report_internal, "vulkan_build_renderer_submission_plan(") ||
-      !contains(report_internal, "vulkan_record_submission_plan_statistics(")) {
+      read_source("src/renderer/planning/report_internal.hpp");
+  if (!contains(report_internal, "struct RendererTextDrawAtlasPageUsage") ||
+      !contains(report_internal, "renderer_plan_build_renderer_command_stream(") ||
+      !contains(report_internal, "renderer_plan_record_renderer_text_statistics(") ||
+      !contains(report_internal, "renderer_plan_same_command_batch_key(") ||
+      !contains(report_internal, "renderer_plan_same_submission_plan_key(") ||
+      !contains(report_internal, "renderer_plan_build_renderer_submission_plan(") ||
+      !contains(report_internal, "renderer_plan_record_submission_plan_statistics(")) {
     return 18;
   }
 
   const std::string report_keys =
-      read_source("src/renderer/vulkan/vulkan_report_keys.cpp");
+      read_source("src/renderer/planning/report_keys.cpp");
   if (line_count(report_keys) > 90 ||
-      !contains(report_keys, "vulkan_same_rect(") ||
-      !contains(report_keys, "vulkan_same_clip_rect(") ||
-      !contains(report_keys, "vulkan_same_clip_stack(") ||
-      !contains(report_keys, "vulkan_same_command_batch_key(") ||
-      !contains(report_keys, "vulkan_same_submission_plan_key(")) {
+      !contains(report_keys, "renderer_plan_same_rect(") ||
+      !contains(report_keys, "renderer_plan_same_clip_rect(") ||
+      !contains(report_keys, "renderer_plan_same_clip_stack(") ||
+      !contains(report_keys, "renderer_plan_same_command_batch_key(") ||
+      !contains(report_keys, "renderer_plan_same_submission_plan_key(")) {
     return 46;
   }
 
   const std::string report_commands =
-      read_source("src/renderer/vulkan/vulkan_report_commands.cpp");
+      read_source("src/renderer/planning/report_commands.cpp");
   if (line_count(report_commands) > 140) {
     return 19;
   }
   if (!contains(report_commands, "append_command_batch(") ||
-      !contains(report_commands, "vulkan_build_renderer_command_batches(") ||
-      !contains(report_commands, "vulkan_build_renderer_command_report(") ||
-      !contains(report_commands, "vulkan_record_submission_plan_statistics(") ||
+      !contains(report_commands, "build_renderer_command_batches(") ||
+      !contains(report_commands, "build_renderer_command_report(") ||
+      !contains(report_commands, "renderer_plan_record_submission_plan_statistics(") ||
       contains(report_commands, "same_rect(") ||
       contains(report_commands, "same_clip_stack(") ||
       contains(report_commands, "for (std::size_t index = 0; index < rects.size()") ||
       contains(report_commands, "append_submission_plan_record(") ||
-      contains(report_commands, "vulkan_build_textured_glyph_quads(")) {
+      contains(report_commands, "build_textured_glyph_quads(")) {
     return 20;
   }
 
   const std::string report_stream =
-      read_source("src/renderer/vulkan/vulkan_report_stream.cpp");
+      read_source("src/renderer/planning/report_stream.cpp");
   if (line_count(report_stream) > 170 ||
-      !contains(report_stream, "vulkan_build_renderer_command_stream(") ||
+      !contains(report_stream, "renderer_plan_build_renderer_command_stream(") ||
       !contains(report_stream, "RendererCommandStreamItem") ||
       !contains(report_stream, "RendererPrimitiveKind::solid_rect") ||
       !contains(report_stream, "RendererPrimitiveKind::image") ||
-      contains(report_stream, "vulkan_build_renderer_submission_plan(") ||
-      contains(report_stream, "vulkan_build_textured_glyph_quads(")) {
+      contains(report_stream, "renderer_plan_build_renderer_submission_plan(") ||
+      contains(report_stream, "build_textured_glyph_quads(")) {
     return 43;
   }
 
   const std::string report_payloads =
-      read_source("src/renderer/vulkan/vulkan_report_payloads.cpp");
+      read_source("src/renderer/planning/report_payloads.cpp");
   if (line_count(report_payloads) > 120 ||
-      !contains(report_payloads, "vulkan_record_renderer_text_statistics(") ||
-      !contains(report_payloads, "vulkan_record_renderer_image_statistics(") ||
-      !contains(report_payloads, "vulkan_build_textured_glyph_quads(") ||
-      contains(report_payloads, "vulkan_build_renderer_submission_plan(") ||
-      contains(report_payloads, "RendererFrameReport vulkan_build_renderer_frame_report(")) {
+      !contains(report_payloads, "renderer_plan_record_renderer_text_statistics(") ||
+      !contains(report_payloads, "renderer_plan_record_renderer_image_statistics(") ||
+      !contains(report_payloads, "build_textured_glyph_quads(") ||
+      contains(report_payloads, "renderer_plan_build_renderer_submission_plan(") ||
+      contains(report_payloads, "RendererFrameReport build_renderer_frame_report(")) {
     return 44;
   }
 
   const std::string report_frame =
-      read_source("src/renderer/vulkan/vulkan_report_frame.cpp");
+      read_source("src/renderer/planning/report_frame.cpp");
   if (line_count(report_frame) > 80 ||
-      !contains(report_frame, "RendererFrameReport vulkan_build_renderer_frame_report(") ||
+      !contains(report_frame, "RendererFrameReport build_renderer_frame_report(") ||
       !contains(report_frame, "renderer_frame_report_from_command_report(") ||
-      contains(report_frame, "vulkan_build_textured_glyph_quads(") ||
-      contains(report_frame, "vulkan_record_submission_plan_statistics(")) {
+      contains(report_frame, "build_textured_glyph_quads(") ||
+      contains(report_frame, "renderer_plan_record_submission_plan_statistics(")) {
     return 45;
   }
 
   const std::string report_submission =
-      read_source("src/renderer/vulkan/vulkan_report_submission.cpp");
+      read_source("src/renderer/planning/report_submission.cpp");
   const std::string report_text_submission =
-      read_source("src/renderer/vulkan/vulkan_report_text_submission.cpp");
+      read_source("src/renderer/planning/report_text_submission.cpp");
   const std::string report_submission_stats =
-      read_source("src/renderer/vulkan/vulkan_report_submission_stats.cpp");
+      read_source("src/renderer/planning/report_submission_stats.cpp");
   if (line_count(report_submission) > 100) {
     return 25;
   }
   if (!contains(report_text_submission,
-                "vulkan_append_text_draw_atlas_page_usage(") ||
+                "renderer_plan_append_text_draw_atlas_page_usage(") ||
       !contains(report_text_submission,
-                "VulkanTextDrawAtlasPageUsage") ||
+                "RendererTextDrawAtlasPageUsage") ||
       !contains(report_submission_stats,
-                "vulkan_record_submission_plan_statistics(") ||
+                "renderer_plan_record_submission_plan_statistics(") ||
       !contains(report_submission, "append_submission_plan_record(") ||
-      !contains(report_submission, "vulkan_build_renderer_submission_plan(") ||
+      !contains(report_submission, "renderer_plan_build_renderer_submission_plan(") ||
       contains(report_submission,
-               "vulkan_append_text_draw_atlas_page_usage(") ||
+               "renderer_plan_append_text_draw_atlas_page_usage(") ||
       contains(report_submission,
-               "vulkan_record_submission_plan_statistics(") ||
+               "renderer_plan_record_submission_plan_statistics(") ||
       contains(report_submission, "same_rect(") ||
       contains(report_submission, "same_clip_stack(") ||
       contains(report_submission, "bool same_submission_plan_key(") ||
-      contains(report_submission, "vulkan_build_renderer_command_report(")) {
+      contains(report_submission, "build_renderer_command_report(")) {
     return 26;
   }
 
   const std::string report_uploads =
-      read_source("src/renderer/vulkan/vulkan_report_uploads.cpp");
+      read_source("include/cgpui/renderer/planning.hpp");
   if (line_count(report_uploads) > 40 ||
-      contains(report_uploads, "vulkan_consume_text_draw(") ||
-      contains(report_uploads, "vulkan_plan_glyph_atlas_uploads(") ||
-      contains(report_uploads, "vulkan_plan_image_uploads(") ||
-      contains(report_uploads, "vulkan_update_glyph_atlas_texture_resources(") ||
-      contains(report_uploads, "vulkan_plan_glyph_atlas_dirty_uploads(") ||
-      contains(report_uploads, "vulkan_build_textured_glyph_quads(")) {
+      contains(report_uploads, "consume_text_draw(") ||
+      contains(report_uploads, "plan_glyph_atlas_uploads(") ||
+      contains(report_uploads, "plan_image_uploads(") ||
+      contains(report_uploads, "update_glyph_atlas_texture_resources(") ||
+      contains(report_uploads, "plan_glyph_atlas_dirty_uploads(") ||
+      contains(report_uploads, "build_textured_glyph_quads(")) {
     return 21;
   }
 
   const std::string report_text_draws =
-      read_source("src/renderer/vulkan/vulkan_report_text_draws.cpp");
+      read_source("src/renderer/planning/glyph_draws.cpp");
   if (line_count(report_text_draws) > 60 ||
-      !contains(report_text_draws, "vulkan_consume_text_draw(") ||
-      !contains(report_text_draws, "vulkan_build_textured_glyph_quads(") ||
+      !contains(report_text_draws, "consume_text_draw(") ||
+      !contains(report_text_draws, "build_textured_glyph_quads(") ||
       contains(report_text_draws, "rasterize_fallback_glyph(") ||
-      contains(report_text_draws, "vulkan_plan_glyph_atlas_uploads(")) {
+      contains(report_text_draws, "plan_glyph_atlas_uploads(")) {
     return 22;
   }
 
   const std::string report_glyph_uploads =
-      read_source("src/renderer/vulkan/vulkan_report_glyph_uploads.cpp");
+      read_source("src/renderer/planning/glyph_uploads.cpp");
   if (line_count(report_glyph_uploads) > 120 ||
-      !contains(report_glyph_uploads, "vulkan_plan_glyph_atlas_uploads(") ||
+      !contains(report_glyph_uploads, "plan_glyph_atlas_uploads(") ||
       !contains(report_glyph_uploads, "GlyphAtlasUploadRegion") ||
-      contains(report_glyph_uploads, "vulkan_plan_image_uploads(") ||
-      contains(report_glyph_uploads, "vulkan_build_textured_glyph_quads(")) {
+      contains(report_glyph_uploads, "plan_image_uploads(") ||
+      contains(report_glyph_uploads, "build_textured_glyph_quads(")) {
     return 39;
   }
 
   const std::string report_texture_resources =
-      read_source("src/renderer/vulkan/vulkan_report_texture_resources.cpp");
+      read_source("src/renderer/planning/glyph_texture_resources.cpp");
   const std::string glyph_atlas_production_source =
-      read_source("src/renderer/vulkan/vulkan_glyph_atlas_production.cpp");
+      read_source("src/renderer/planning/glyph_atlas_production.cpp");
   const std::string glyph_atlas_resources_internal = read_source(
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp");
   const std::string glyph_atlas_descriptors = read_source(
@@ -1618,27 +1618,27 @@ int main(int argc, char** argv) {
   if (line_count(report_texture_resources) > 150 ||
       !contains(
           report_texture_resources,
-          "vulkan_update_glyph_atlas_texture_resources(") ||
+          "update_glyph_atlas_texture_resources(") ||
       !contains(
           report_texture_resources,
-          "vulkan_plan_glyph_atlas_dirty_uploads(") ||
+          "plan_glyph_atlas_dirty_uploads(") ||
       !contains(report_texture_resources, "GlyphAtlasTextureResourceState") ||
-      contains(report_texture_resources, "vulkan_plan_image_uploads(") ||
-      contains(report_texture_resources, "vulkan_build_textured_glyph_quads(")) {
+      contains(report_texture_resources, "plan_image_uploads(") ||
+      contains(report_texture_resources, "build_textured_glyph_quads(")) {
     return 40;
   }
   if (line_count(glyph_atlas_production_source) > 120 ||
       !contains(
           glyph_atlas_production_source,
-          "vulkan_plan_glyph_atlas_production_resources(") ||
+          "plan_glyph_atlas_production_resources(") ||
       !contains(glyph_atlas_production_source,
                 "GlyphAtlasProductionResourceState") ||
       !contains(glyph_atlas_production_source,
                 "GlyphAtlasProductionUploadCommand") ||
       contains(glyph_atlas_production_source,
-               "vulkan_update_glyph_atlas_texture_resources(") ||
+               "update_glyph_atlas_texture_resources(") ||
       contains(glyph_atlas_production_source,
-               "vulkan_build_textured_glyph_quads(")) {
+               "build_textured_glyph_quads(")) {
     return 58;
   }
   if (line_count(glyph_atlas_resources_internal) > 100 ||
@@ -1991,12 +1991,12 @@ int main(int argc, char** argv) {
   }
 
   const std::string report_image_uploads =
-      read_source("src/renderer/vulkan/vulkan_report_image_uploads.cpp");
+      read_source("src/renderer/planning/image_uploads.cpp");
   if (line_count(report_image_uploads) > 80 ||
-      !contains(report_image_uploads, "vulkan_plan_image_uploads(") ||
+      !contains(report_image_uploads, "plan_image_uploads(") ||
       !contains(report_image_uploads, "ImageUploadRegion") ||
-      contains(report_image_uploads, "vulkan_plan_glyph_atlas_uploads(") ||
-      contains(report_image_uploads, "vulkan_build_textured_glyph_quads(")) {
+      contains(report_image_uploads, "plan_glyph_atlas_uploads(") ||
+      contains(report_image_uploads, "build_textured_glyph_quads(")) {
     return 41;
   }
 
@@ -2198,28 +2198,28 @@ int main(int argc, char** argv) {
   }
 
   const std::string report_text_quads =
-      read_source("src/renderer/vulkan/vulkan_report_text_quads.cpp");
+      read_source("src/renderer/planning/glyph_geometry.cpp");
   if (line_count(report_text_quads) > 140 ||
-      !contains(report_text_quads, "vulkan_build_textured_glyph_quads(") ||
+      !contains(report_text_quads, "build_textured_glyph_quads(") ||
       !contains(report_text_quads, "normalized_atlas_bounds(") ||
       !contains(report_text_quads, "rasterize_text_glyph(") ||
       contains(report_text_quads, "rasterize_fallback_glyph(") ||
-      contains(report_text_quads, "vulkan_plan_glyph_atlas_uploads(") ||
-      contains(report_text_quads, "vulkan_plan_image_uploads(")) {
+      contains(report_text_quads, "plan_glyph_atlas_uploads(") ||
+      contains(report_text_quads, "plan_image_uploads(")) {
     return 42;
   }
 
   const std::string report_geometry =
-      read_source("src/renderer/vulkan/vulkan_report_geometry.cpp");
+      read_source("src/renderer/planning/draw_geometry.cpp");
   if (line_count(report_geometry) > 260) {
     return 23;
   }
-  if (!contains(report_geometry, "vulkan_tessellate_rounded_rects(") ||
+  if (!contains(report_geometry, "tessellate_rounded_rects(") ||
       !contains(report_geometry,
                 ".fill_enabled = rounded_rect.fill_enabled") ||
-      !contains(report_geometry, "vulkan_build_text_selection_geometry(") ||
-      !contains(report_geometry, "vulkan_build_text_caret_geometry(") ||
-      contains(report_geometry, "vulkan_plan_glyph_atlas_uploads(")) {
+      !contains(report_geometry, "build_text_selection_geometry(") ||
+      !contains(report_geometry, "build_text_caret_geometry(") ||
+      contains(report_geometry, "plan_glyph_atlas_uploads(")) {
     return 24;
   }
 

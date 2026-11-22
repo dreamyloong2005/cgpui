@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgpui/core/error.hpp"
-#include "cgpui/renderer/glyph_atlas.hpp"
+#include "cgpui/renderer/planning.hpp"
 #include "cgpui/renderer/renderer_frame_diagnostic_snapshot.hpp"
 #include "cgpui/renderer/renderer_frame_pixels.hpp"
 #include "cgpui/renderer/renderer_surface_composition.hpp"
@@ -55,76 +55,4 @@ class Renderer {
 
 Result<std::unique_ptr<Renderer>> create_renderer(
     const RenderSurfaceDescriptor& descriptor);
-void vulkan_consume_text_draw(const TextDraw& text, GlyphCache& glyph_cache);
-std::vector<GlyphAtlasUploadBatch> vulkan_plan_glyph_atlas_uploads(
-    std::span<const GlyphUploadRecord> upload_records,
-    std::span<const GlyphAtlasPage> atlas_pages);
-std::vector<ImageUploadBatch> vulkan_plan_image_uploads(
-    std::span<const ImageAsset> assets);
-GlyphAtlasTextureResourcePlan vulkan_update_glyph_atlas_texture_resources(
-    GlyphAtlasTextureResourceState& state,
-    std::span<const GlyphAtlasUploadBatch> upload_batches);
-std::vector<GlyphAtlasDirtyUploadRange> vulkan_plan_glyph_atlas_dirty_uploads(
-    GlyphAtlasTextureResourceState& state,
-    std::span<const GlyphAtlasUploadBatch> upload_batches);
-std::vector<TexturedGlyphQuad> vulkan_build_textured_glyph_quads(
-    const TextDraw& text,
-    GlyphCache& glyph_cache);
-std::vector<RoundedRectTessellationRecord> vulkan_tessellate_rounded_rects(
-    std::span<const RoundedRectDraw> rounded_rects);
-std::vector<TextSelectionGeometryRecord> vulkan_build_text_selection_geometry(
-    std::span<const TextSelectionDraw> selections);
-std::vector<TextCaretGeometryRecord> vulkan_build_text_caret_geometry(
-    std::span<const TextCaretDraw> carets);
-RendererCommandReport vulkan_build_renderer_command_report(
-    std::span<const RendererCommandStreamItem> commands);
-RendererCommandReport vulkan_build_renderer_command_report(
-    std::span<const SolidRect> rects,
-    std::span<const TextDraw> text_draws,
-    GlyphCache& glyph_cache);
-RendererCommandReport vulkan_build_renderer_command_report(
-    std::span<const SolidRect> rects,
-    std::span<const RoundedRectDraw> rounded_rects,
-    std::span<const TextDraw> text_draws,
-    GlyphCache& glyph_cache);
-RendererCommandReport vulkan_build_renderer_command_report(
-    std::span<const SolidRect> rects,
-    std::span<const RoundedRectDraw> rounded_rects,
-    std::span<const TextDraw> text_draws,
-    std::span<const TextSelectionDraw> selections,
-    std::span<const TextCaretDraw> carets,
-    GlyphCache& glyph_cache);
-RendererCommandReport vulkan_build_renderer_command_report(
-    std::span<const SolidRect> rects,
-    std::span<const RoundedRectDraw> rounded_rects,
-    std::span<const TextDraw> text_draws,
-    std::span<const TextSelectionDraw> selections,
-    std::span<const TextCaretDraw> carets,
-    std::span<const ImageDraw> image_draws,
-    GlyphCache& glyph_cache);
-RendererFrameReport vulkan_build_renderer_frame_report(
-    std::span<const SolidRect> rects,
-    std::span<const TextDraw> text_draws,
-    GlyphCache& glyph_cache);
-RendererFrameReport vulkan_build_renderer_frame_report(
-    std::span<const SolidRect> rects,
-    std::span<const RoundedRectDraw> rounded_rects,
-    std::span<const TextDraw> text_draws,
-    std::span<const TextSelectionDraw> selections,
-    std::span<const TextCaretDraw> carets,
-    GlyphCache& glyph_cache);
-std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
-    std::span<const SolidRect> rects,
-    std::span<const TextDraw> text_draws);
-std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
-    std::span<const SolidRect> rects,
-    std::span<const RoundedRectDraw> rounded_rects,
-    std::span<const TextDraw> text_draws);
-std::vector<RendererCommandBatch> vulkan_build_renderer_command_batches(
-    std::span<const SolidRect> rects,
-    std::span<const RoundedRectDraw> rounded_rects,
-    std::span<const TextDraw> text_draws,
-    std::span<const TextSelectionDraw> selections,
-    std::span<const TextCaretDraw> carets);
-
 } // namespace cgpui

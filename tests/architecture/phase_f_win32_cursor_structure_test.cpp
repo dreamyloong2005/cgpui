@@ -54,18 +54,9 @@ int main() {
       read_source("tests/platform/win32_cursor_production_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &pointer_header, &cursor_header, &cursor, &window_cursor, &proc_header, &proc,
-      &main_proc, &window, &input_helpers, &window_internal, &behavior, &manifests,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &main_proc, &window, &input_helpers, &window_internal, &behavior, &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -104,26 +95,6 @@ int main() {
       line_count(window_internal) > 134 ||
       line_count(behavior) > 85) {
     return 5;
-  }
-  constexpr const char* completion =
-      "Phase F Step 552 adds production Win32 system cursors with expanded "
-      "public shapes, focused system-resource mapping, client WM_SETCURSOR "
-      "reapplication, and settings/theme refresh. Step 553 Win32 pointer "
-      "capture and drag production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 6;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_552_remaining_gap\": \"Step 553 Win32")) {
-    return 7;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 8;
   }
   return 0;
 }

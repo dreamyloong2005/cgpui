@@ -7,8 +7,8 @@ bool WindowRuntime::handle_native_menu_command_event(
     ViewId target_view_id) {
   const auto* command = std::get_if<NativeMenuCommand>(&event);
   if (command == nullptr) return false;
-  current_event_route_ = EventRouter::route_to_root(event, target_view_id);
-  refresh_route_ancestry(*current_event_route_);
+  state_->input.current_event_route_ = EventRouter::route_to_root(event, target_view_id);
+  refresh_route_ancestry(*state_->input.current_event_route_);
   const ActionDispatchResult dispatch = dispatch_action(command->action_name);
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::menu,

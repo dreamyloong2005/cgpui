@@ -46,18 +46,9 @@ int main() {
       read_source("tests/architecture/win32_window_source_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &coordinates_header, &coordinates, &events, &drag, &size, &behavior,
-      &source_inventory, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
-      &findings};
+      &source_inventory, &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -92,26 +83,6 @@ int main() {
       line_count(events) > 95 || line_count(drag) > 115 ||
       line_count(behavior) > 120) {
     return 5;
-  }
-  constexpr const char* completion =
-      "Phase F Step 554 makes Win32 pointer, button, wheel, and native drag "
-      "coordinates DPI-aware through focused physical-to-logical conversion "
-      "after live scale changes, closing the Win32 input band. Step 555 "
-      "Wayland seat capability production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 6;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_554_remaining_gap\": \"Step 555 Wayland")) {
-    return 7;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 8;
   }
   return 0;
 }

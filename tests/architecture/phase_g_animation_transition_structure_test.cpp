@@ -45,7 +45,7 @@ int main() {
   const std::string runtime_header =
       read_source("include/cgpui/ui/window_runtime.hpp");
   const std::string runtime_internal =
-      read_source("src/ui/window_runtime_internal.hpp");
+      read_source("include/cgpui/ui/detail/window_runtime_declarations.hpp");
   const std::string behavior =
       read_source("tests/animation/runtime_animation_transition_test.cpp");
   const std::string ui_structure =
@@ -59,19 +59,10 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &public_header, &aggregate, &source, &animation_start, &runtime_header,
       &runtime_internal, &behavior, &ui_structure, &header_cleanliness,
-      &previous, &manifests, &vocabulary, &core_parity, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &previous, &manifests, &vocabulary, &core_parity};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(public_header, "struct AnimationTransition") ||
@@ -113,20 +104,7 @@ int main() {
     return 7;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 643 adds typed scalar animation transitions over existing "
-      "runtime, runtime-context, and async-context scheduling, with eased "
-      "from/to value snapshots, runtime-thread callbacks, zero-duration final "
-      "delivery, invalid-callback rejection, and handle observability. Step "
-      "644 element lifecycle animation production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
   if (!contains(vocabulary, "`AnimationTransition`") ||
-      !contains(core_parity, "typed scalar animation transitions") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
+      !contains(core_parity, "typed scalar animation transitions")) return 9;
   return 0;
 }

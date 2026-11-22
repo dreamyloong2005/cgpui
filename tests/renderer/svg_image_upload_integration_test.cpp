@@ -120,7 +120,7 @@ int test_failed_rasterization_does_not_upload() {
              : 30;
 }
 
-int test_structure_and_documentation() {
+int test_structure() {
   const std::string header =
       read_source("include/cgpui/renderer/svg_image_upload.hpp");
   const std::string source =
@@ -143,29 +143,6 @@ int test_structure_and_documentation() {
     return 41;
   }
 
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 504",
-      "SvgImageUploadResult",
-      "cache-owned raster ImageAsset",
-      "RenderFrame::upload_image(...) integration",
-      "failed rasterization skips upload",
-      "Step 505 SVG public example",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 50;
-    }
-  }
   return 0;
 }
 
@@ -184,5 +161,5 @@ int main() {
       result != 0) {
     return result;
   }
-  return test_structure_and_documentation();
+  return test_structure();
 }

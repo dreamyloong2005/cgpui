@@ -150,7 +150,7 @@ int test_cache_normalizes_default_viewport() {
              : 50;
 }
 
-int test_structure_and_documentation() {
+int test_structure() {
   const std::string header =
       read_source("include/cgpui/renderer/svg_viewport_scaling.hpp");
   const std::string source_file =
@@ -179,29 +179,6 @@ int test_structure_and_documentation() {
     return 61;
   }
 
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 502",
-      "SvgViewportScalingPlan",
-      "optional raster viewport",
-      "ceil-rounded viewport device pixels",
-      "effective x/y raster scales",
-      "Step 503 SVG recolor/tint",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 70;
-    }
-  }
   return 0;
 }
 
@@ -226,5 +203,5 @@ int main() {
   if (const int result = test_cache_normalizes_default_viewport(); result != 0) {
     return result;
   }
-  return test_structure_and_documentation();
+  return test_structure();
 }

@@ -1,11 +1,13 @@
 #include "ui_internal.hpp"
+#include "runtime_window_lifetime_internal.hpp"
 
 namespace cgpui {
 
 Result<void> WindowRuntime::try_draw_frame() {
-  if (renderer_ == nullptr || should_quit_) {
+  if (state_->windows.renderer_ == nullptr || state_->core.should_quit_) {
     return {};
   }
+  const RuntimeWindowCallbackScope callback_scope(*this);
   begin_frame_scheduling();
 
   FrameStatistics frame_statistics;
@@ -17,36 +19,36 @@ Result<void> WindowRuntime::try_draw_frame() {
   std::size_t static_node_count = 0;
 
   const StaticRenderInstallResult static_render =
-      install_static_render_tree(view_, render_context);
+      install_static_render_tree(state_->core.view_, render_context);
   if (static_render.installed) {
     rendered_root_id = static_render.root_id;
     static_node_count = static_render.node_count;
     tree_kind = RenderTreeKind::static_element_tree;
   } else {
     clear_static_element_tree();
-    const bool had_view_rendered_element_tree = view_rendered_element_tree_;
-    AnyElement rendered = view_.render(render_context);
+    const bool had_view_rendered_element_tree = state_->elements.view_rendered_element_tree_;
+    AnyElement rendered = state_->core.view_.render(render_context);
     if (rendered != nullptr) {
       auto tree = std::make_unique<ElementTree>();
       rendered_root_id = tree->set_root(std::move(rendered));
       set_element_tree(std::move(tree));
-      view_rendered_element_tree_ = true;
+      state_->elements.view_rendered_element_tree_ = true;
       tree_kind = RenderTreeKind::dynamic_element_tree;
     } else if (had_view_rendered_element_tree) {
       set_element_tree(nullptr);
     }
   }
 
-  last_render_record_ = RenderRecord{
-      .sequence = ++render_sequence_,
-      .view_id = root_view_id_,
-      .viewport_size = viewport_size_,
+  state_->diagnostics.last_render_record_ = RenderRecord{
+      .sequence = ++state_->diagnostics.render_sequence_,
+      .view_id = state_->views.root_view_id_,
+      .viewport_size = state_->windows.viewport_size_,
       .tree_kind = tree_kind,
       .root_element_id = rendered_root_id,
       .static_node_count = static_node_count,
   };
-  if (after_render_callback_) {
-    after_render_callback_(context(), *last_render_record_);
+  if (state_->core.after_render_callback_) {
+    state_->core.after_render_callback_(context(), *state_->diagnostics.last_render_record_);
   }
 
   layout_element_tree_with_animations(frame_statistics);
@@ -55,12 +57,12 @@ Result<void> WindowRuntime::try_draw_frame() {
 
   std::vector<WindowControlRegion> window_control_regions;
   auto result = render_view(
-      *renderer_,
-      view_,
-      viewport_size_,
-      scale_,
+      *state_->windows.renderer_,
+      state_->core.view_,
+      state_->windows.viewport_size_,
+      state_->windows.scale_,
       nullptr,
-      runtime_window_clear_color(window_),
+      runtime_window_clear_color(state_->windows.window_),
       &window_control_regions,
       element_tree(),
       &frame_statistics);
@@ -69,104 +71,20 @@ Result<void> WindowRuntime::try_draw_frame() {
     return std::unexpected(result.error());
   }
   runtime_publish_window_control_regions(
-      window_, std::move(window_control_regions));
-  last_renderer_frame_diagnostics_ =
-      runtime_renderer_frame_diagnostic_snapshot(*renderer_);
+      state_->windows.window_, std::move(window_control_regions));
+  state_->diagnostics.last_renderer_frame_diagnostics_ =
+      runtime_renderer_frame_diagnostic_snapshot(*state_->windows.renderer_);
 
-  frame_index_ += 1;
-  frame_statistics.frame_index = frame_index_;
-  if (last_render_record_.has_value()) {
-    last_render_record_->statistics = frame_statistics;
+  state_->diagnostics.frame_index_ += 1;
+  frame_statistics.frame_index = state_->diagnostics.frame_index_;
+  if (state_->diagnostics.last_render_record_.has_value()) {
+    state_->diagnostics.last_render_record_->statistics = frame_statistics;
   }
-  last_frame_statistics_ = frame_statistics;
-  if (after_frame_callback_) {
-    after_frame_callback_(context());
+  state_->diagnostics.last_frame_statistics_ = frame_statistics;
+  if (state_->core.after_frame_callback_) {
+    state_->core.after_frame_callback_(context());
   }
   complete_frame_scheduling();
-  return {};
-}
-
-Result<void> WindowRuntime::try_draw_frame_for_record(
-    WindowRuntimeRecord& record,
-    View& view) {
-  if (!record.active || record.window == nullptr || record.renderer == nullptr ||
-      should_quit_) {
-    return {};
-  }
-
-  FrameStatistics frame_statistics;
-  frame_statistics.render_pass_count = 1;
-
-  ViewContext render_context = context_for_record(record);
-  RenderTreeKind tree_kind = RenderTreeKind::none;
-  std::optional<ElementId> rendered_root_id;
-  std::size_t static_node_count = 0;
-  std::optional<AccessibilityTreeSnapshot> accessibility_snapshot;
-  if (view.supports_static_render()) {
-    const StaticElementTreeView rendered = view.render_static(render_context);
-    if (!rendered.empty() && rendered.valid()) {
-      rendered_root_id = rendered.root_id();
-      static_node_count = rendered.size();
-      tree_kind = RenderTreeKind::static_element_tree;
-      accessibility_snapshot = static_accessibility_snapshot_for(
-          rendered,
-          AccessibilitySnapshotOptions{
-              .focused_element_id =
-                  record.input.keyboard_focus_element_owner,
-          });
-    }
-  }
-  if (tree_kind != RenderTreeKind::static_element_tree) {
-    install_rendered_element_for_record(
-        record, view.render(render_context), tree_kind, rendered_root_id);
-  }
-
-  last_render_record_ = RenderRecord{
-      .sequence = ++render_sequence_,
-      .view_id = record.root_view_id,
-      .viewport_size = record.viewport_size,
-      .tree_kind = tree_kind,
-      .root_element_id = rendered_root_id,
-      .static_node_count = static_node_count,
-  };
-  if (after_render_callback_) {
-    after_render_callback_(context_for_record(record), *last_render_record_);
-  }
-  if (accessibility_snapshot.has_value()) {
-    update_platform_accessibility_tree_for_record(
-        record, *accessibility_snapshot);
-  } else {
-    publish_element_tree_for_record(record);
-  }
-
-  std::vector<WindowControlRegion> window_control_regions;
-  auto result = render_view(
-      *record.renderer,
-      view,
-      record.viewport_size,
-      record.scale,
-      nullptr,
-      runtime_window_clear_color(record),
-      &window_control_regions,
-      element_tree_for_record(record),
-      &frame_statistics);
-  if (!result) {
-    return std::unexpected(result.error());
-  }
-  runtime_publish_window_control_regions(
-      record.window, std::move(window_control_regions));
-  last_renderer_frame_diagnostics_ =
-      runtime_renderer_frame_diagnostic_snapshot(*record.renderer);
-
-  frame_index_ += 1;
-  frame_statistics.frame_index = frame_index_;
-  if (last_render_record_.has_value()) {
-    last_render_record_->statistics = frame_statistics;
-  }
-  last_frame_statistics_ = frame_statistics;
-  if (after_frame_callback_) {
-    after_frame_callback_(context_for_record(record));
-  }
   return {};
 }
 

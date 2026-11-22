@@ -75,8 +75,7 @@ int main() {
   const std::string event_routes_source =
       read_source("src/ui/runtime_event_routes.cpp");
   const std::string ui_header = read_source("include/cgpui/ui/ui.hpp");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
+  const std::string architecture = read_source("docs/architecture.md");
 
   if (manifests.empty() || ids_header.empty() || dynamic_header.empty() ||
       static_header.empty() || static_source.empty() || render_header.empty() ||
@@ -86,7 +85,7 @@ int main() {
       static_runtime_accessibility_source.empty() ||
       frame_results_source.empty() || event_input_source.empty() ||
       event_routes_source.empty() ||
-      ui_header.empty() || task_plan.empty() || findings.empty()) {
+      ui_header.empty() || architecture.empty()) {
     return 1;
   }
 
@@ -207,10 +206,9 @@ int main() {
     return 7;
   }
 
-  if (!contains(task_plan, "Zero-cost abstraction is a hard") ||
-      !contains(task_plan, "Static widget fast paths") ||
-      !contains(task_plan, "dynamic escape hatches") ||
-      !contains(findings, "Zero-Cost Static Element Fast Path")) {
+  if (!contains(architecture, "## Static Fast Path") ||
+      !contains(architecture, "render_static(...)") ||
+      !contains(architecture, "## Dynamic Escape Hatch")) {
     return 8;
   }
 

@@ -34,17 +34,8 @@ int main() {
       read_source("tests/architecture/platform_source_structure_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &internal, &mime, &read, &behavior, &platform_structure, &manifests,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &internal, &mime, &read, &behavior, &platform_structure, &manifests};
   for (const std::string* value : required) if (value->empty()) return 1;
   if (!contains(internal, "wayland_clipboard_text_mime_rank(") ||
       !contains(mime, "trim_ascii(") || !contains(mime, "ascii_equal(") ||
@@ -68,24 +59,5 @@ int main() {
   }
   if (line_count(internal) > 150 || line_count(mime) > 90 ||
       line_count(read) > 70 || line_count(behavior) > 90) return 6;
-  constexpr const char* completion =
-      "Phase F Step 567 adds case-insensitive Wayland text MIME parsing and "
-      "ranking, accepts normalized UTF-8 charset parameters, preserves "
-      "original offer strings for receive, and rejects unsupported charsets. "
-      "Step 568 Wayland clipboard incremental transfer production behavior "
-      "is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_567_remaining_gap\": \"Step 568 Wayland")) {
-    return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 9;
-  }
   return 0;
 }

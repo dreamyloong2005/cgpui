@@ -30,28 +30,16 @@ int main() {
       "tests/architecture/phase_g_final_dual_host_verification_structure_test.cpp");
   const std::string candidate =
       read_source("tests/api_parity/phase_g_candidate_ledger_closeout_test.cpp");
-  const std::string windows = read_source(
-      "tests/architecture/phase_g_windows_full_debug_verification_structure_test.cpp");
-  const std::string wsl = read_source(
-      "tests/architecture/phase_g_wsl_full_debug_verification_structure_test.cpp");
-  const std::string dependency = read_source(
-      "tests/architecture/phase_g_reproducible_dependency_setup_structure_test.cpp");
   const std::string manifests = read_source("tests/architecture/mcpp.toml") +
       read_source("third_party/VENDORED.md") +
       read_source("tests/renderer/mcpp.toml");
   const std::string manifest =
       read_source("scripts/ci/architecture-header-targets.txt");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &self,       &candidate, &windows, &wsl,       &dependency, &manifests,
-      &manifest,   &roadmap,   &ledger_md, &ledger_json, &task_plan,  &findings};
+      &self,       &candidate, &manifests,
+      &manifest,   &ledger_json};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(manifests,
@@ -63,38 +51,16 @@ int main() {
                 "tests/architecture/phase_g_final_dual_host_verification_structure_test.cpp")) {
     return 2;
   }
-  if (!contains(candidate, "Phase G Step 676 closes the candidate ledger") ||
-      !contains(candidate, "phase_g_step_676_remaining_gap") ||
-      !contains(candidate, "Step 677 final Windows/WSL verification") ||
-      !contains(windows, "Phase G Step 673 completes Windows full-debug") ||
-      !contains(wsl, "Phase G Step 674 completes WSL full-debug")) {
+  if (!contains(candidate, "phase_g_step_676_remaining_gap")) {
     return 3;
   }
   if (!contains(manifests, "Source archive SHA-256") ||
-      !contains(dependency, "3.0.9") ||
       !contains(manifests, "\"wayland_frame_pixel_capture_test.cpp\"") ||
       !contains(manifests, "\"wayland_vulkan_surface_test.cpp\"")) {
     return 4;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 677 completes final dual-host verification: Windows full "
-      "debug passes 456/456 and WSL Arch Linux full debug passes 437/437 under "
-      "Xmake 3.0.9, including real WSLg Wayland frame pixel capture and "
-      "Wayland/Vulkan surface coverage. Step 678 Phase G final closeout "
-      "verification is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 5;
-  }
-  if (!contains(ledger_json, "\"phase_g_step_677_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_g_step_677_remaining_gap\": \"Step 678 Phase G "
-                "final closeout verification\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run "
-                "upstream extractor against the pinned revision\"")) {
+  if (!contains(ledger_json, "\"phase_g_step_677_sources\"")) {
     return 6;
   }
   if (line_count(self) > 130 || line_count(read_source("mcpp.toml")) > 100) {

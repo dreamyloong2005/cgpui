@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cgpui/ui/style_values.hpp"
+#include "cgpui/core/paint_values.hpp"
 
 namespace cgpui {
 

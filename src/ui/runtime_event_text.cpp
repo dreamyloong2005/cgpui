@@ -3,7 +3,7 @@
 namespace cgpui {
 
 void WindowRuntime::apply_text_input_for_event(const PlatformEvent& event) {
-  if (!keyboard_focus_element_owner_.has_value()) {
+  if (!state_->input.keyboard_focus_element_owner_.has_value()) {
     return;
   }
 

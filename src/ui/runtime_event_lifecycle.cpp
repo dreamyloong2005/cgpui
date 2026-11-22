@@ -13,17 +13,17 @@ void WindowRuntime::record_lifecycle_event(const PlatformEvent& event) {
       .succeeded = true,
       .value_count = 1,
   });
-  current_event_route_ = EventRouter::route_to_root(event, root_view_id_);
-  last_event_result_ = EventResult::unhandled();
-  last_event_dispatch_ = EventDispatchRecord{
-      .sequence = ++event_dispatch_sequence_,
-      .view_id = current_event_route_->target_view_id,
-      .event_kind = current_event_route_->event_kind,
-      .route = *current_event_route_,
-      .result = last_event_result_};
+  state_->input.current_event_route_ = EventRouter::route_to_root(event, state_->views.root_view_id_);
+  state_->input.last_event_result_ = EventResult::unhandled();
+  state_->diagnostics.last_event_dispatch_ = EventDispatchRecord{
+      .sequence = ++state_->diagnostics.event_dispatch_sequence_,
+      .view_id = state_->input.current_event_route_->target_view_id,
+      .event_kind = state_->input.current_event_route_->event_kind,
+      .route = *state_->input.current_event_route_,
+      .result = state_->input.last_event_result_};
   sync_root_event_record();
-  if (after_event_callback_) {
-    after_event_callback_(context(), *last_event_dispatch_);
+  if (state_->core.after_event_callback_) {
+    state_->core.after_event_callback_(context(), *state_->diagnostics.last_event_dispatch_);
   }
   drain_deferred_callbacks();
   flush_deferred_redraw_request();

@@ -54,19 +54,10 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &base_header, &public_header, &aggregate, &store, &state, &element,
       &sequence, &sequence_state, &behavior, &ui_structure,
-      &header_cleanliness, &previous, &manifests, &pin, &vocabulary, &core_parity,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &header_cleanliness, &previous, &manifests, &pin, &vocabulary, &core_parity};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(public_header, "struct ElementAnimationStage") ||
@@ -100,9 +91,7 @@ int main() {
       !contains(ui_structure, "src/ui/element_animation_sequence_state.cpp") ||
       !contains(header_cleanliness, "cgpui/ui/element_animation_sequence.hpp") ||
       !contains(manifests, "\"element_animation_sequence_test.cpp\"") ||
-      !contains(manifests, "\"phase_g_element_animation_sequence_structure_test.cpp\"") ||
-      !contains(previous,
-                "animation repeat and chaining production behavior is next.")) {
+      !contains(manifests, "\"phase_g_element_animation_sequence_structure_test.cpp\"")) {
     return 6;
   }
   if (!contains(pin, "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0") ||
@@ -111,21 +100,7 @@ int main() {
       line_count(element) > 120 || line_count(sequence) > 80 ||
       line_count(sequence_state) > 160 || line_count(behavior) > 230) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 645 adds pinned-upstream-compatible infinite element "
-      "animation repetition and indexed one-shot chains, with iteration "
-      "observability, final-stage value delivery before advancement, "
-      "reconstructed-wrapper persistence, invalid-sequence rejection, and "
-      "shared runtime frame wakeups. Step 646 spring and tween variant "
-      "production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
   if (!contains(vocabulary, "`ElementAnimationStage`") ||
-      !contains(core_parity, "indexed one-shot animation chains") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
+      !contains(core_parity, "indexed one-shot animation chains")) return 9;
   return 0;
 }

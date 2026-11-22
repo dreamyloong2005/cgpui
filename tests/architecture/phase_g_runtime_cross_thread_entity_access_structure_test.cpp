@@ -35,14 +35,14 @@ int main() {
   const std::string runtime_header =
       read_source("include/cgpui/ui/window_runtime.hpp");
   const std::string runtime_internal =
-      read_source("src/ui/window_runtime_internal.hpp");
+      read_source("src/ui/runtime_state_tasks_internal.hpp");
   const std::string queue_internal =
       read_source("src/ui/runtime_cross_thread_entity_internal.hpp");
   const std::string queue_source =
       read_source("src/ui/runtime_cross_thread_entity_queue.cpp");
   const std::string drain_source =
       read_source("src/ui/runtime_cross_thread_entity.cpp");
-  const std::string core_source = read_source("src/ui/runtime_core.cpp");
+  const std::string core_source = read_source("src/ui/runtime_state_tasks.cpp");
   const std::string scheduling = read_source("src/ui/runtime_scheduling.cpp");
   const std::string shutdown = read_source("src/ui/runtime_shutdown.cpp");
   const std::string behavior =
@@ -58,20 +58,11 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &public_header, &async_header, &templates, &runtime_header,
       &runtime_internal, &queue_internal, &queue_source, &drain_source,
       &core_source, &scheduling, &shutdown, &behavior, &ui_structure,
-      &header_cleanliness, &previous, &manifests, &vocabulary, &core_parity,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &header_cleanliness, &previous, &manifests, &vocabulary, &core_parity};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(public_header, "class CrossThreadEntity") ||
@@ -116,8 +107,6 @@ int main() {
   if (!contains(ui_structure, "include/cgpui/ui/cross_thread_entity.hpp") ||
       !contains(ui_structure, "runtime_cross_thread_entity_queue.cpp") ||
       !contains(header_cleanliness, "CrossThreadEntity<TestModel>") ||
-      !contains(previous,
-                "Step 641 cross-thread entity \"") ||
       !contains(manifests,
                 "\"runtime_cross_thread_entity_access_test.cpp\"") ||
       !contains(manifests,
@@ -131,22 +120,9 @@ int main() {
       line_count(scheduling) > 220 || line_count(shutdown) > 70 ||
       line_count(behavior) > 220) return 9;
 
-  constexpr const char* completion =
-      "Phase G Step 641 adds explicit CrossThreadEntity<T> read and update "
-      "queueing through AsyncContextCapability, executing FIFO worker-thread "
-      "submissions on the owning runtime thread with context isolation, "
-      "missing-entity status, concurrent safety, and shutdown detachment. "
-      "Step 642 async runtime production closeout audit is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 10;
-  }
   if (!contains(vocabulary, "`CrossThreadEntity<T>`") ||
       contains(core_parity, "cross-thread entity access remains incomplete") ||
-      contains(core_parity, "Cross-thread entity access guarantees") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
+      contains(core_parity, "Cross-thread entity access guarantees")) {
     return 11;
   }
   return 0;

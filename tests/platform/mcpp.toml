@@ -78,6 +78,9 @@ discover = [
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "win32_window_registry_test.cpp",
+    "win32_composition_host_test.cpp",
+    "win32_runtime_frame_retry_test.cpp",
     "win32_backdrop_erase_test.cpp",
     "win32_child_window_ownership_test.cpp",
     "win32_client_title_bar_test.cpp",
@@ -187,6 +190,7 @@ discover = [
     "x11_clipboard_test.cpp",
     "x11_drag_drop_test.cpp",
     "x11_input_test.cpp",
+    "x11_queued_event_loop_test.cpp",
     "x11_platform_services_test.cpp",
     "x11_scale_test.cpp",
     "x11_window_lifecycle_test.cpp",

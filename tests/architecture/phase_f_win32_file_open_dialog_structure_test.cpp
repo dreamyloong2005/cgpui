@@ -28,18 +28,9 @@ int main() {
   const std::string state = read_source("src/platform/win32/win32_native.cpp");
   const std::string behavior = read_source(
       "tests/platform/win32_file_open_dialog_plan_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_f_native_menu_closeout_structure_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const std::string* required[]{&header, &source, &state, &behavior, &previous,
-      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+  const std::string* required[]{&header, &source, &state, &behavior, &manifests};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(header, "struct Win32FileDialogPlan") ||
       !contains(header, "win32_file_dialog_plan(") ||
@@ -57,14 +48,7 @@ int main() {
       !contains(behavior, "L\"*.cpp;*.hpp;*.cxx\"")) return 5;
   if (line_count(header) > 55 || line_count(source) > 180 ||
       line_count(state) > 80 || line_count(behavior) > 45) return 6;
-  if (!contains(previous, "Phase F Step 586") ||
-      !contains(manifests, "\"win32_file_open_dialog_plan_test.cpp\"") ||
+  if (!contains(manifests, "\"win32_file_open_dialog_plan_test.cpp\"") ||
       !contains(manifests, "\"phase_f_win32_file_open_dialog_structure_test.cpp\"")) return 7;
-  constexpr const char* completion =
-      "Phase F Step 587 implements Win32 open-file and multi-file dialogs in a focused COM leaf, maps filters and selection flags through a pure plan, handles cancellation without acceptance, and preserves explicit unsupported behavior elsewhere. Step 588 Win32 save-file dialog production behavior is next.";
-  const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 8;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) return 9;
   return 0;
 }

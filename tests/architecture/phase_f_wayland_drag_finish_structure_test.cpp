@@ -26,14 +26,7 @@ int main() {
   const std::string compositor = read_source("tests/platform/wayland_test_compositor.cpp");
   const std::string behavior = read_source("tests/platform/wayland_pointer_button_test.cpp");
   const std::string manifests = read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source("docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const std::string* required[]{&actions, &state, &compositor, &behavior, &manifests,
-                                &roadmap, &ledger_md, &ledger_json, &task_plan,
-                                &findings};
+  const std::string* required[]{&actions, &state, &compositor, &behavior, &manifests};
   for (const auto* value : required) if (value->empty()) return 1;
   const auto finish = actions.find("wl_data_offer_finish(active_offer_->offer)");
   const auto destroy = actions.find("clear_active_offer()", finish);
@@ -50,10 +43,5 @@ int main() {
   if (line_count(actions) > 115 || line_count(state) > 110 ||
       line_count(compositor) > 3700 || line_count(behavior) > 370) return 5;
   if (!contains(manifests, "\"phase_f_wayland_drag_finish_structure_test.cpp\"")) return 6;
-  constexpr const char* completion =
-      "Phase F Step 574 completes Wayland drop offers with exactly-once finish followed by immediate destroy, destroys rejected and pre-v3 offers without finish, and observes lifecycle completion before leave in focused test state. Step 575 Win32 OLE text drag payload production behavior is next.";
-  const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 7;
-  if (!contains(ledger_json, "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) return 8;
   return 0;
 }

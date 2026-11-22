@@ -140,7 +140,7 @@ int test_phase_e_glyph_atlas_production_structure_docs() {
   const std::string production_header =
       read_source("include/cgpui/renderer/glyph_atlas_production.hpp");
   const std::string production_source =
-      read_source("src/renderer/vulkan/vulkan_glyph_atlas_production.cpp");
+      read_source("src/renderer/planning/glyph_atlas_production.cpp");
   const std::string structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
   const std::string roadmap = read_source(
@@ -171,9 +171,9 @@ int test_phase_e_glyph_atlas_production_structure_docs() {
       !contains(production_header,
                 "class GlyphAtlasProductionResourceState") ||
       !contains(production_source,
-                "vulkan_plan_glyph_atlas_production_resources(") ||
+                "plan_glyph_atlas_production_resources(") ||
       !contains(structure, "glyph_atlas_production.hpp") ||
-      !contains(structure, "vulkan_glyph_atlas_production.cpp")) {
+      !contains(structure, "glyph_atlas_production.cpp")) {
     return 32;
   }
 

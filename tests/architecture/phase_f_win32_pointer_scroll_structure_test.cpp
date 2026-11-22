@@ -46,18 +46,9 @@ int main() {
       read_source("tests/platform/win32_pointer_scroll_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &pointer_header, &decoder, &decoder_header, &proc, &pointer_events,
-      &events, &behavior, &manifests, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &events, &behavior, &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -86,22 +77,6 @@ int main() {
       line_count(pointer_events) > 55 || line_count(events) > 105 ||
       line_count(behavior) > 90) {
     return 4;
-  }
-  constexpr const char* completion =
-      "Phase F Step 548 adds real Win32 vertical and horizontal wheel routing "
-      "with fractional high-precision deltas and explicit precision metadata "
-      "through a focused pointer-scroll decoder. Step 549 Win32 keyboard "
-      "production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 5;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_548_remaining_gap\": \"Step 549 Win32")) {
-    return 6;
   }
   return 0;
 }

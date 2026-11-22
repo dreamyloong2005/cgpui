@@ -110,31 +110,6 @@ int test_pipeline_resource_structure() {
   return 0;
 }
 
-int test_step_469_documentation() {
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 469",
-      "VulkanTextPipelineResources",
-      "vulkan_create_text_pipeline_resources",
-      "Step 470",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 40;
-    }
-  }
-  return 0;
-}
-
 } // namespace
 
 int main() {
@@ -147,5 +122,5 @@ int main() {
   if (const int result = test_pipeline_resource_structure(); result != 0) {
     return result;
   }
-  return test_step_469_documentation();
+  return 0;
 }

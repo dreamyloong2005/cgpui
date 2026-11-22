@@ -16,7 +16,7 @@ void WindowRuntime::update_record_hover_cursor(
   const ElementTree* tree = element_tree_for_record(record);
   if (!exited && hit.has_value() && tree != nullptr) {
     const Element* element = tree->get(*hit);
-    const WindowElementHost& host = window_element_hosts_[record.runtime_id.value];
+    const WindowElementHost& host = state_->elements.window_element_hosts_[record.runtime_id.value];
     if (const auto found = host.cursors.find(hit->value);
         found != host.cursors.end() && (element == nullptr || element->enabled())) {
       cursor = found->second;

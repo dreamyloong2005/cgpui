@@ -9,15 +9,15 @@ bool WindowRuntime::handle_accessibility_action_event(
   const auto* action = std::get_if<AccessibilityActionRequested>(&event);
   if (action == nullptr) return false;
 
-  current_event_route_ = EventRouter::route_to_root(event, target_view_id);
-  current_event_route_->target_element_id = ElementId{action->element_id};
-  refresh_route_ancestry(*current_event_route_);
+  state_->input.current_event_route_ = EventRouter::route_to_root(event, target_view_id);
+  state_->input.current_event_route_->target_element_id = ElementId{action->element_id};
+  refresh_route_ancestry(*state_->input.current_event_route_);
 
   EventResult result = EventResult::unhandled();
   // Additional windows resolve the element in their own tree.
   ElementTree* record_tree =
       record == nullptr ? nullptr : element_tree_for_record(*record);
-  Element* element = target_view_id == root_view_id_
+  Element* element = target_view_id == state_->views.root_view_id_
       ? routed_element(ElementId{action->element_id})
       : (record_tree == nullptr ? nullptr
                                 : record_tree->get(ElementId{action->element_id}));
@@ -36,9 +36,9 @@ bool WindowRuntime::handle_accessibility_action_event(
   if (record == nullptr) {
     finish_event_dispatch(result);
   } else {
-    record->event_route = current_event_route_;
+    record->event_route = state_->input.current_event_route_;
     finish_event_dispatch_for_record(*record, result);
-    current_event_route_.reset();
+    state_->input.current_event_route_.reset();
   }
   if (changed && record == nullptr) {
     update_platform_accessibility_tree();

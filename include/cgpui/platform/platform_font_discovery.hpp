@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cgpui/ui/text_font.hpp"
+#include "cgpui/core/font_face.hpp"
 
 #include <cstddef>
 #include <span>

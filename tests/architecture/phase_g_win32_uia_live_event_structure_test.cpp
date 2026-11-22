@@ -45,17 +45,10 @@ int main() {
       "tests/architecture/win32_window_source_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &event_header, &events, &updates, &lifetime, &adapter_header, &adapter,
       &behavior,
-      &test_support, &source_guard, &manifests, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &test_support, &source_guard, &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(event_header, "struct Win32UiaEventOperations") ||
@@ -95,17 +88,5 @@ int main() {
       line_count(test_support) > 100 ||
       line_count(source_guard) > 1150) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 622 publishes production Win32 UIA value-property, "
-      "text-change, and focus notifications from runtime accessibility live "
-      "updates with listener, missing-provider, and HRESULT diagnostics. "
-      "Step 623 Win32 UIA focus, value, and text change integration is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
   return 0;
 }

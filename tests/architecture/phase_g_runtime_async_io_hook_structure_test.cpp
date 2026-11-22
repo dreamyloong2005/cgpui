@@ -56,20 +56,11 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &public_header, &runtime_header, &context_header, &async_header,
       &internal, &hook_source, &registry_source, &completion_source,
       &scheduling, &shutdown, &behavior, &ui_structure, &header_cleanliness,
-      &previous, &manifests, &vocabulary, &core_parity, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &previous, &manifests, &vocabulary, &core_parity};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(public_header, "using AsyncIoResult = Result<AsyncIoPayload>") ||
@@ -101,7 +92,6 @@ int main() {
   if (!contains(ui_structure, "src/ui/runtime_async_io_internal.hpp") ||
       !contains(ui_structure, "src/ui/runtime_async_io_completion.cpp") ||
       !contains(header_cleanliness, "cgpui::AsyncIoHook async_io_hook") ||
-      !contains(previous, "639 async I/O hook production behavior is next.") ||
       !contains(manifests, "\"runtime_async_io_hook_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_runtime_async_io_hook_structure_test.cpp\"")) {
@@ -112,21 +102,8 @@ int main() {
       line_count(completion_source) > 40 || line_count(behavior) > 190 ||
       line_count(runtime_header) > 263) return 9;
 
-  constexpr const char* completion =
-      "Phase G Step 639 adds one-shot async I/O hooks with thread-safe "
-      "success/failure notification, priority-aware runtime-thread dispatch, "
-      "explicit cancellation, duplicate suppression, and shutdown detachment. "
-      "Step 640 async timer integration production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 10;
-  }
   if (!contains(vocabulary, "`AsyncIoHook`") ||
-      contains(core_parity, "Async I/O integration and cross-thread") ||
-      !contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
+      contains(core_parity, "Async I/O integration and cross-thread")) {
     return 11;
   }
   return 0;

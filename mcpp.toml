@@ -33,6 +33,7 @@ members = [
     "tests/ui",
     "tests/platform",
     "tests/renderer",
+    "tests/renderer-neutral",
     "tests/api_parity",
     "tests/async",
     "tests/animation",

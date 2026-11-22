@@ -28,14 +28,14 @@ std::size_t lines(const std::string& source) {
 
 int main() {
   try {
-    const auto leaf = read("include/cgpui/ui/text_glyph_rasterizer.hpp");
+    const auto leaf = read("include/cgpui/renderer/text/text_glyph_rasterizer.hpp");
     const auto aggregate = read("include/cgpui/ui/text.hpp");
-    const auto dispatch = read("src/ui/text_glyph_rasterizer.cpp");
-    const auto native = read("src/ui/text_glyph_raster_win32.cpp");
-    const auto coverage = read("src/ui/text_glyph_coverage_win32.cpp");
-    const auto native_header = read("src/ui/text_glyph_raster_win32_internal.hpp");
-    const auto coverage_header = read("src/ui/text_glyph_coverage_win32_internal.hpp");
-    const auto production = read("src/renderer/vulkan/vulkan_report_text_quads.cpp");
+    const auto dispatch = read("src/renderer/text/text_glyph_rasterizer.cpp");
+    const auto native = read("src/renderer/text/text_glyph_raster_win32.cpp");
+    const auto coverage = read("src/renderer/text/text_glyph_coverage_win32.cpp");
+    const auto native_header = read("src/renderer/text/text_glyph_raster_win32_internal.hpp");
+    const auto coverage_header = read("src/renderer/text/text_glyph_coverage_win32_internal.hpp");
+    const auto production = read("src/renderer/planning/glyph_geometry.cpp");
     const auto build = read("mcpp.toml");
     const auto pixel_shape = read("tests/renderer/vulkan_text_pixel_shape_support.hpp");
     require(lines(pixel_shape) <= 60 && has(pixel_shape, "text_ink_shape("),
@@ -56,19 +56,21 @@ int main() {
             "DirectWrite layout and coverage extraction must remain separate modules");
     require(has(production, "rasterize_text_glyph(") && !has(production, "rasterize_fallback_glyph("),
             "Vulkan production glyph preparation bypassed the native rasterizer");
-    // packages/renderer compiles and links the native rasterizer;
-    // packages/ui leaves those sources out of its src/ui wildcard.
+    // Native rasterization is physically renderer-owned; UI must not need
+    // a mirrored exclusion list to keep its source wildcard correct.
     const auto renderer = read("packages/renderer/mcpp.toml");
     require(has(build, "\"tests/ui\",") &&
-            has(renderer, "\"../../src/ui/text_glyph_rasterizer.cpp\"") &&
-            has(renderer, "\"../../src/ui/text_glyph_raster_win32.cpp\"") &&
-            has(renderer, "\"../../src/ui/text_glyph_coverage_win32.cpp\"") &&
+            has(renderer, "\"../../src/renderer/text/text_glyph_rasterizer.cpp\"") &&
+            has(renderer, "\"../../src/renderer/text/text_glyph_raster_win32.cpp\"") &&
+            has(renderer, "\"../../src/renderer/text/text_glyph_coverage_win32.cpp\"") &&
             has(renderer, "ldflags = [\"dwrite.lib\"]"),
             "native rasterizer must be owned and linked by cgpui_renderer");
     const auto ui = read("packages/ui/mcpp.toml");
     for (const auto* source : {"text_glyph_rasterizer.cpp", "text_glyph_raster_win32.cpp", "text_glyph_coverage_win32.cpp"}) {
-      require(has(ui, std::string("\"!../../src/ui/") + source + "\""),
-              "UI wildcard duplicated renderer-owned native rasterizer sources");
+      const auto root = std::filesystem::path(CGPUI_SOURCE_ROOT);
+      require(!std::filesystem::exists(root / "src/ui" / source) &&
+                  !has(ui, source),
+              "native rasterization must remain renderer-owned without UI exclusions");
     }
     return 0;
   } catch (const std::exception& error) {

@@ -30,6 +30,8 @@ int main() {
       read_source("include/cgpui/ui/task_group.hpp");
   const std::string group_internal =
       read_source("src/ui/runtime_task_group_internal.hpp");
+  const std::string group_record =
+      read_source("src/ui/runtime_task_group_record_internal.hpp");
   const std::string group_source =
       read_source("src/ui/runtime_task_group.cpp");
   const std::string propagation_source =
@@ -49,26 +51,18 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &public_header, &group_internal, &group_source, &propagation_source,
+      &public_header, &group_internal, &group_record, &group_source, &propagation_source,
       &handle_source, &tasks_source, &behavior, &header_cleanliness,
-      &ui_structure, &previous, &manifests, &vocabulary, &core_parity, &roadmap,
-      &ledger_md, &ledger_json, &task_plan, &findings};
+      &ui_structure, &previous, &manifests, &vocabulary, &core_parity};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(public_header, "TaskGroup create_child_group() const") ||
       !contains(handle_source, "TaskGroup TaskGroup::create_child_group() const") ||
       !contains(handle_source, "task_group_store_->create_child")) return 2;
-  if (!contains(group_internal, "TaskGroupId parent_id{}") ||
-      !contains(group_internal, "std::vector<TaskGroupId> child_ids") ||
+  if (!contains(group_internal, "using Record = detail::RuntimeTaskGroupRecord") ||
+      !contains(group_record, "TaskGroupId parent_id{}") ||
+      !contains(group_record, "std::vector<TaskGroupId> child_ids") ||
       !contains(group_internal, "task_count_locked(") ||
       !contains(group_internal, "active_task_count_locked(") ||
       !contains(group_internal, "complete_locked(") ||
@@ -86,7 +80,7 @@ int main() {
   if (!contains(propagation_source,
                 "cancel_locked(runtime, *child, cancelled_ids)") ||
       !contains(propagation_source, "cancellation_requested->store(true)") ||
-      !contains(propagation_source, "std::erase_if(runtime.task_completion_queue_") ||
+      !contains(propagation_source, "std::erase_if(runtime.state_->tasks.task_completion_queue_") ||
       !contains(tasks_source, "task->completed || task->cancelled")) return 6;
   if (!contains(behavior, "parent.task_count() == 4") ||
       !contains(behavior, "child.task_count() == 2") ||
@@ -106,25 +100,13 @@ int main() {
     return 8;
   }
   if (line_count(public_header) > 80 || line_count(group_internal) > 90 ||
+      line_count(group_record) > 25 ||
       line_count(group_source) > 140 || line_count(propagation_source) > 180 ||
       line_count(handle_source) > 160 || line_count(behavior) > 180 ||
       line_count(previous) > 200) return 9;
 
-  constexpr const char* completion =
-      "Phase G Step 638 adds parent/child task groups with recursive subtree "
-      "observability, descendant cancellation and destructor propagation, "
-      "child/sibling isolation, and cancelled-ancestor spawn rejection. Step "
-      "639 async I/O hook production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 10;
-  }
   if (!contains(vocabulary, "`TaskGroup::create_child_group()`") ||
-      contains(core_parity, "Cancellation propagation depth") ||
-      !contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
+      contains(core_parity, "Cancellation propagation depth")) {
     return 11;
   }
   return 0;

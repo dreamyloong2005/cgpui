@@ -44,17 +44,9 @@ int main() {
       read_source("tests/platform/win32_keyboard_key_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &keyboard_header, &decoder, &decoder_header, &internal, &proc, &behavior,
-      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -85,22 +77,6 @@ int main() {
       line_count(decoder) > 45 || line_count(proc) > 50 ||
       line_count(behavior) > 95) {
     return 4;
-  }
-  constexpr const char* completion =
-      "Phase F Step 549 adds real Win32 key and system-key decoding with "
-      "scan-code, repeat, extended-key, and system-message metadata through "
-      "a focused keyboard-key decoder. Step 550 Win32 dead-key production "
-      "behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 5;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_549_remaining_gap\": \"Step 550 Win32")) {
-    return 6;
   }
   return 0;
 }

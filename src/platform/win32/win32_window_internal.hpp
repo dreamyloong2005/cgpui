@@ -3,6 +3,7 @@
 #include "win32_internal.hpp"
 #include "win32_window_backdrop_internal.hpp"
 #include "win32_window_display_internal.hpp"
+#include "win32_window_dispatch_lifetime_internal.hpp"
 #include "../platform_window_close_internal.hpp"
 #include <memory>
 #include <optional>
@@ -12,7 +13,8 @@ namespace cgpui {
 class Win32Window final
     : public PlatformWindow,
       public Win32OleDropTargetOwner,
-      public Win32WindowMessageTarget {
+      public Win32WindowMessageTarget,
+      public Win32WindowDispatchLifetime {
  public:
   Win32Window(HINSTANCE instance, PlatformEventCallback callback, WindowState state);
   ~Win32Window() override;
@@ -108,10 +110,8 @@ class Win32Window final
   void apply_ime_text_input_placement();
   [[nodiscard]] bool client_title_bar_active() const;
   HINSTANCE instance_ = nullptr;
-  HWND hwnd_ = nullptr;
   HCURSOR current_cursor_ = nullptr;
   CursorShape current_cursor_shape_ = CursorShape::default_arrow;
-  PlatformEventCallback callback_;
   WindowState state_;
   Win32WindowDisplayCommandState display_command_state_;
   PlatformWindowCloseController close_controller_;

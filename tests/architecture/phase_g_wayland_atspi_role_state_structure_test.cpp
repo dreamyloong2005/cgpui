@@ -37,22 +37,11 @@ int main() {
       "src/platform/linux/wayland_atspi_dbus_messages.cpp");
   const std::string behavior = read_source(
       "tests/platform/wayland_atspi_role_state_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_wayland_atspi_tree_navigation_structure_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source(
-      "docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source(
-      "docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &object_header, &object, &role_header, &role, &messages, &behavior,
-      &previous, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
-      &findings};
+      &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(object_header, "PlatformAccessibilityPatternState patterns") ||
@@ -110,21 +99,5 @@ int main() {
     return 9;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 629 maps Linux accessibility nodes to standard AT-SPI "
-      "roles, role names, and two-word state sets covering visibility, "
-      "enablement, sensitivity, focus, checkability, checked state, and "
-      "editability. Step 630 Linux AT-SPI text and value event production "
-      "behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 10;
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
-    return 11;
-  }
   return 0;
 }

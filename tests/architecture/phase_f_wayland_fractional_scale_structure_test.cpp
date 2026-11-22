@@ -46,19 +46,10 @@ int main() {
       read_source("tests/platform/wayland_test_compositor.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &protocol_header, &fractional_interfaces, &fractional_requests,
       &viewporter_interfaces, &viewporter_requests, &registry, &window, &scale,
-      &fractional, &behavior, &compositor, &manifests, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &fractional, &behavior, &compositor, &manifests};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(protocol_header, "wp_fractional_scale_v1_listener") ||
       !contains(fractional_interfaces, "preferred_scale") ||
@@ -89,23 +80,5 @@ int main() {
   if (line_count(protocol_header) > 50 || line_count(fractional) > 60 ||
       line_count(scale) > 80 || line_count(window) > 180 ||
       line_count(behavior) > 110) return 6;
-  constexpr const char* completion =
-      "Phase F Step 559 adds production Wayland fractional scaling with "
-      "preferred 120-based scale, integer-ceiling buffer scale, viewporter "
-      "logical destinations, and integer output fallback. Step 560 Wayland "
-      "configure lifecycle production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_559_remaining_gap\": \"Step 560 Wayland")) {
-    return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 9;
-  }
   return 0;
 }

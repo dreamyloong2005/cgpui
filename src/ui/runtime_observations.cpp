@@ -18,8 +18,8 @@ struct PendingViewObserver {
 
 void WindowRuntime::notify_window_observers() {
   std::vector<PendingWindowObserver> pending_observers;
-  for (const WindowObserver& observer : window_observers_) {
-    if (observer.runtime_id == root_window_runtime_id_ && observer.callback) {
+  for (const WindowObserver& observer : state_->entities.window_observers_) {
+    if (observer.runtime_id == state_->windows.root_window_runtime_id_ && observer.callback) {
       pending_observers.push_back(PendingWindowObserver{
           .subscription_id = observer.subscription_id,
           .callback = observer.callback,
@@ -31,7 +31,7 @@ void WindowRuntime::notify_window_observers() {
     WindowObservationCallback callback = pending.callback;
     if (pending.subscription_id.value != 0) {
       callback = {};
-      for (const WindowObserver& observer : window_observers_) {
+      for (const WindowObserver& observer : state_->entities.window_observers_) {
         if (observer.subscription_id == pending.subscription_id &&
             observer.callback) {
           callback = observer.callback;
@@ -51,7 +51,7 @@ void WindowRuntime::notify_view_observers(ViewId view_id) {
   }
 
   std::vector<PendingViewObserver> pending_observers;
-  for (const ViewObserver& observer : view_observers_) {
+  for (const ViewObserver& observer : state_->entities.view_observers_) {
     if (observer.view_id == view_id && observer.callback) {
       pending_observers.push_back(PendingViewObserver{
           .subscription_id = observer.subscription_id,
@@ -64,7 +64,7 @@ void WindowRuntime::notify_view_observers(ViewId view_id) {
     ViewObservationCallback callback = pending.callback;
     if (pending.subscription_id.value != 0) {
       callback = {};
-      for (const ViewObserver& observer : view_observers_) {
+      for (const ViewObserver& observer : state_->entities.view_observers_) {
         if (observer.subscription_id == pending.subscription_id &&
             observer.callback) {
           callback = observer.callback;
@@ -83,14 +83,14 @@ void WindowRuntime::remove_observers_for_view(ViewId view_id) {
     return;
   }
 
-  view_observers_.erase(
+  state_->entities.view_observers_.erase(
       std::remove_if(
-          view_observers_.begin(),
-          view_observers_.end(),
+          state_->entities.view_observers_.begin(),
+          state_->entities.view_observers_.end(),
           [view_id](const ViewObserver& observer) {
             return observer.view_id == view_id;
           }),
-      view_observers_.end());
+      state_->entities.view_observers_.end());
 }
 
 } // namespace cgpui

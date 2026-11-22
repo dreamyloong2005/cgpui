@@ -37,7 +37,7 @@ bool contains(const std::string& text, const char* value) {
 
 int main() {
   const std::string harfbuzz_source =
-      read_source("src/ui/text_shaping_harfbuzz.cpp");
+      read_source("src/renderer/text/text_shaping_harfbuzz.cpp");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =

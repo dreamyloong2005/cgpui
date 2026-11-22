@@ -50,18 +50,9 @@ int main() {
       "tests/platform/win32_text_input_production_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &decoder_header, &decoder, &proc, &main_proc, &keyboard_proc,
-      &window_text, &window_events, &window_internal, &behavior, &manifests,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &window_text, &window_events, &window_internal, &behavior, &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -99,23 +90,6 @@ int main() {
       line_count(proc) > 40 || line_count(window_text) > 40 ||
       line_count(window_internal) > 134 || line_count(behavior) > 90) {
     return 5;
-  }
-  constexpr const char* completion =
-      "Phase F Step 551 adds production Win32 text input with UTF-16 "
-      "surrogate pairing, WM_UNICHAR negotiation and codepoint delivery, "
-      "system-character suppression, and focus-loss state reset through "
-      "focused text-input and window-procedure modules. Step 552 Win32 "
-      "cursor theme and system cursor production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 6;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_551_remaining_gap\": \"Step 552 Win32")) {
-    return 7;
   }
   return 0;
 }

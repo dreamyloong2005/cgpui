@@ -34,10 +34,7 @@ struct AppRunnerOptions {
 };
 class WindowRuntime {
  public:
-  WindowRuntime(
-      PlatformApplication& application,
-      View& view,
-      RendererFactory renderer_factory);
+  WindowRuntime(PlatformApplication& application, View& view, RendererFactory renderer_factory);
   ~WindowRuntime();
   [[nodiscard]] int run(
       const WindowDescriptor& descriptor,
@@ -49,6 +46,7 @@ class WindowRuntime {
   [[nodiscard]] Result<Renderer*> try_create_renderer(const RenderSurfaceDescriptor& descriptor);
   [[nodiscard]] std::span<const AppOpenedWindow> app_opened_windows() const;
   [[nodiscard]] WindowRuntimeId root_window_runtime_id() const;
+  // Snapshot until next query; window_runtime_record(id) exposes live state until reclamation.
   [[nodiscard]] std::span<const WindowRuntimeRecord> window_runtime_records() const;
   [[nodiscard]] const WindowRuntimeRecord* window_runtime_record(WindowRuntimeId runtime_id) const;
   [[nodiscard]] const View* app_opened_window_root_view(ViewId root_view_id) const;
@@ -257,7 +255,7 @@ class WindowRuntime {
   template <typename T>
   bool notify_entity_changed(EntityId<T> entity_id);
  private:
-#include "../../../src/ui/window_runtime_internal.hpp"
+#include "cgpui/ui/detail/window_runtime_declarations.hpp"
 };
 
 } // namespace cgpui

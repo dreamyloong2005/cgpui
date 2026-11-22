@@ -118,32 +118,6 @@ int test_shader_module_structure() {
   return 0;
 }
 
-int test_step_468_documentation() {
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 468",
-      "embedded SPIR-V",
-      "vulkan_text_vertex_shader_spirv",
-      "vulkan_create_text_shader_modules",
-      "Step 469",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 40;
-    }
-  }
-  return 0;
-}
-
 } // namespace
 
 int main() {
@@ -156,5 +130,5 @@ int main() {
   if (const int result = test_shader_module_structure(); result != 0) {
     return result;
   }
-  return test_step_468_documentation();
+  return 0;
 }

@@ -8,21 +8,21 @@ WindowRuntimeContext WindowRuntime::context() {
 
   return WindowRuntimeContext{
       .runtime = *this,
-      .application = application_,
+      .application = state_->core.application_,
       // No window yet (or any more): callbacks still get a context
       // (UBSan: a reference bound to *nullptr before run()).
       .platform_window =
-          window_ != nullptr ? *window_ : detached_runtime_window(),
-      .renderer = renderer_ != nullptr ? *renderer_ : detached_runtime_renderer(),
-      .window_runtime_id = root_window_runtime_id_,
-      .view_id = root_view_id_,
-      .viewport_size = viewport_size_,
-      .scale = scale_,
+          state_->windows.window_ != nullptr ? *state_->windows.window_ : detached_runtime_window(),
+      .renderer = state_->windows.renderer_ != nullptr ? *state_->windows.renderer_ : detached_runtime_renderer(),
+      .window_runtime_id = state_->windows.root_window_runtime_id_,
+      .view_id = state_->views.root_view_id_,
+      .viewport_size = state_->windows.viewport_size_,
+      .scale = state_->windows.scale_,
       .input = input,
-      .event_route = current_event_route_,
-      .last_event_result = last_event_result_,
-      .last_event_dispatch = last_event_dispatch_,
-      .frame_index = frame_index_};
+      .event_route = state_->input.current_event_route_,
+      .last_event_result = state_->input.last_event_result_,
+      .last_event_dispatch = state_->diagnostics.last_event_dispatch_,
+      .frame_index = state_->diagnostics.frame_index_};
 }
 
 } // namespace cgpui

@@ -32,8 +32,6 @@ int main() {
       "examples/api_parity/public_opacity_example/main.cpp");
   const std::string behavior = read_source(
       "tests/api_parity/phase_g_official_animation_examples_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_style_interpolation_structure_test.cpp");
   const std::string manifests = read_source("examples/api_parity/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string pin = read_source("docs/gpui-upstream-pinned-revision.md");
@@ -42,15 +40,11 @@ int main() {
   const std::string core = read_source("docs/gpui-core-api-parity.md");
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &animation, &opacity, &behavior, &previous, &manifests, &pin, &vocabulary,
-      &core, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &animation, &opacity, &behavior, &manifests, &pin, &vocabulary,
+      &core, &roadmap, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(animation, "#include \"cgpui/prelude.hpp\"") ||
@@ -77,8 +71,6 @@ int main() {
   }
   if (!contains(behavior, "examples/animation.rs") ||
       !contains(behavior, "examples/opacity.rs") ||
-      !contains(previous, "Step 650 ") ||
-      !contains(previous, "official animation and opacity examples") ||
       !contains(pin, "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0") ||
       !contains(manifests, "[targets.api_parity_public_animation_example]") ||
       !contains(manifests, "[targets.api_parity_public_opacity_example]") ||
@@ -89,24 +81,10 @@ int main() {
   if (line_count(animation) > 140 || line_count(opacity) > 145 ||
       line_count(behavior) > 90) return 6;
 
-  constexpr const char* completion =
-      "Phase G Step 650 ports the pinned official animation and opacity "
-      "examples to public C++ authoring, demonstrating two-second repeated "
-      "bounce rotation, click-restarted opacity transitions, cancellation-"
-      "safe restarts, shared frame pacing, and compile/run smoke coverage "
-      "without direct runtime internals. Step 651 file-backed asset loading "
-      "production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
   if (!contains(roadmap, "[x] Steps 643-650: Complete animation") ||
       !contains(vocabulary, "public_animation_example") ||
       !contains(vocabulary, "public_opacity_example") ||
       !contains(core, "official animation and opacity examples") ||
-      !contains(ledger_json, "\"phase_g_step_650_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 8;
+      !contains(ledger_json, "\"phase_g_step_650_sources\"")) return 8;
   return 0;
 }

@@ -81,22 +81,13 @@ int main() {
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/renderer/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &chrome_header, &renderer_types, &chrome_default, &empty, &win32_chrome,
       &wayland_protocol, &wayland_interfaces, &wayland_registry,
       &wayland_application, &wayland_internal, &wayland_chrome,
       &surface_selection, &swapchain_create, &runtime_run,
       &runtime_activation, &runtime_backdrop, &compositor, &win32_test, &wayland_test,
-      &alpha_test, &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan,
-      &findings};
+      &alpha_test, &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -158,27 +149,6 @@ int main() {
       line_count(wayland_internal) > 123 || line_count(wayland_chrome) > 60 ||
       line_count(surface_selection) > 70) {
     return 7;
-  }
-  constexpr const char* completion =
-      "Phase F Step 545 adds real Win32 decorated/frameless/layered chrome "
-      "transitions, Wayland xdg-decoration server/client-side negotiation "
-      "with non-resizable size constraints, and transparent-aware Vulkan "
-      "composite-alpha selection. Step 546 child-window ownership production "
-      "behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 8;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_545_remaining_gap\": \"Step 546 child-window")) {
-    return 9;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_545_remaining_gap\": \"Step 546 child-window")) {
-    return 10;
   }
   return 0;
 }

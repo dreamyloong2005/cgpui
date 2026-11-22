@@ -8,7 +8,7 @@ bool WindowRuntime::apply_text_pointer_selection(
   if (const auto* button = std::get_if<PointerButton>(&event);
       button != nullptr && button->button == MouseButton::left) {
     if (button->pressed) {
-      text_pointer_selection_drag_.reset();
+      state_->input.text_pointer_selection_drag_.reset();
       if (!route.target_element_id.has_value()) {
         return false;
       }
@@ -44,19 +44,19 @@ bool WindowRuntime::apply_text_pointer_selection(
       input->model()->set_selection(
           selection.anchor_offset,
           selection.head_offset);
-      text_pointer_selection_drag_ = TextPointerSelectionDrag{
+      state_->input.text_pointer_selection_drag_ = TextPointerSelectionDrag{
           .element_id = *route.target_element_id,
           .anchor_offset = selection.anchor_offset,
       };
       return false;
     }
 
-    if (!text_pointer_selection_drag_.has_value()) {
+    if (!state_->input.text_pointer_selection_drag_.has_value()) {
       return false;
     }
 
-    const TextPointerSelectionDrag drag = *text_pointer_selection_drag_;
-    text_pointer_selection_drag_.reset();
+    const TextPointerSelectionDrag drag = *state_->input.text_pointer_selection_drag_;
+    state_->input.text_pointer_selection_drag_.reset();
     TextInputElement* input = routed_text_input(drag.element_id);
     if (input == nullptr || input->model() == nullptr) {
       return true;
@@ -75,11 +75,11 @@ bool WindowRuntime::apply_text_pointer_selection(
   }
 
   if (const auto* moved = std::get_if<PointerMoved>(&event);
-      moved != nullptr && text_pointer_selection_drag_.has_value()) {
-    const TextPointerSelectionDrag drag = *text_pointer_selection_drag_;
+      moved != nullptr && state_->input.text_pointer_selection_drag_.has_value()) {
+    const TextPointerSelectionDrag drag = *state_->input.text_pointer_selection_drag_;
     TextInputElement* input = routed_text_input(drag.element_id);
     if (input == nullptr || input->model() == nullptr) {
-      text_pointer_selection_drag_.reset();
+      state_->input.text_pointer_selection_drag_.reset();
       return false;
     }
 
@@ -107,7 +107,7 @@ std::optional<std::size_t> WindowRuntime::text_offset_for_point(
   }
 
   const TextMeasurement measurement =
-      measure_text(element.text(), element.font(), element.font_size(), scale_);
+      measure_text(element.text(), element.font(), element.font_size(), state_->windows.scale_);
   return hit_test_text_position(measurement, *bounds, point).byte_offset;
 }
 

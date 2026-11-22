@@ -412,7 +412,7 @@
     "rich_text_run_core_surface": "RichTextSpan, RichTextRun, RichTextRunBuildScratch, RichTextAttributes, RichTextDecoration, RichTextLinkId, and build_rich_text_runs(...) normalize caller-provided rich text spans into clipped, merged, coalesced byte runs with reusable caller-owned output and scratch",
     "rich_text_run_core_sources": [
       "include/cgpui/ui/text_rich_text.hpp",
-      "src/ui/text_rich_text.cpp",
+      "src/renderer/text/text_rich_text.cpp",
       "include/cgpui/ui/text.hpp",
       "tests/ui/rich_text_run_test.cpp",
       "tests/architecture/ui_source_structure_test.cpp"
@@ -422,7 +422,7 @@
     "rich_text_byte_hit_surface": "RichTextRunHit, RichTextLinkHit, rich_text_run_at_byte_offset(...), and rich_text_link_at_byte_offset(...) expose half-open byte-range hit metadata for normalized rich text runs and links without renderer state or string link targets",
     "rich_text_byte_hit_sources": [
       "include/cgpui/ui/text_rich_text.hpp",
-      "src/ui/text_rich_text.cpp",
+      "src/renderer/text/text_rich_text.cpp",
       "tests/ui/rich_text_run_test.cpp",
       "tests/architecture/ui_source_structure_test.cpp"
     ],
@@ -441,7 +441,7 @@
     "rich_text_inline_image_surface": "RichTextInlineImageSpan, RichTextInlineImageRun, and build_rich_text_inline_image_runs(...) expose numeric ImageAssetId anchored inline image metadata with byte-span clipping, zero-length anchors, deterministic sorting, and visible caller-owned output storage",
     "rich_text_inline_image_sources": [
       "include/cgpui/ui/text_rich_text_inline_image.hpp",
-      "src/ui/text_rich_text_inline_image.cpp",
+      "src/renderer/text/text_rich_text_inline_image.cpp",
       "include/cgpui/ui/text.hpp",
       "tests/ui/rich_text_run_test.cpp",
       "tests/architecture/ui_source_structure_test.cpp"
@@ -541,9 +541,9 @@
       "findings.md"
     ],
     "rich_text_public_example_remaining_gap": "renderer glyph coloring and inline image drawing remain later work, alongside final examples closeout and final Phase D verification",
-    "guarded_harfbuzz_backend_surface": "Phase D guarded HarfBuzz backend now shapes through hb_shape in src/ui/text_shaping_harfbuzz.cpp when CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND is enabled, using file-backed font faces when available and deterministic fallback on shaping failure",
+    "guarded_harfbuzz_backend_surface": "Phase D guarded HarfBuzz backend now shapes through hb_shape in src/renderer/text/text_shaping_harfbuzz.cpp when CGPUI_HAS_HARFBUZZ_SHAPING_BACKEND is enabled, using file-backed font faces when available and deterministic fallback on shaping failure",
     "guarded_harfbuzz_backend_sources": [
-      "src/ui/text_shaping_harfbuzz.cpp",
+      "src/renderer/text/text_shaping_harfbuzz.cpp",
       "tests/api_parity/phase_d_harfbuzz_backend_audit_test.cpp",
       "tests/api_parity/phase_d_text_shaping_audit_test.cpp",
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md",

@@ -1,7 +1,7 @@
 #include "metal_renderer_internal.hpp"
 
 #include "../renderer_text_glyph_placement_internal.hpp"
-#include "cgpui/ui/text_glyph_rasterizer.hpp"
+#include "cgpui/renderer/text/text_glyph_rasterizer.hpp"
 
 #include <algorithm>
 
@@ -73,7 +73,7 @@ Result<std::size_t> metal_encode_text(
 
   std::size_t uploaded_bytes = 0;
   for (const TextGlyphPaint& glyph : text.glyphs) {
-    // As vulkan_build_textured_glyph_quads: native glyphs by glyph id with
+    // As build_textured_glyph_quads in renderer/planning: native glyphs by glyph id with
     // the pen and baseline snapped, deterministic glyphs by cluster text.
     const bool native =
         glyph.key.shaping_backend != TextShapingBackend::deterministic_fallback;

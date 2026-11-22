@@ -70,10 +70,7 @@ int main() {
   }
 
   if (!contains(ledger_json, "\"phase_i_status\": \"complete\"") ||
-      !contains(ledger_json, "\"phase_i_required_x11_gaps\": 0") ||
-      !contains(ledger_json,
-                "\"phase_i_current_handoff\": \"Phase J Step 799 re-run "
-                "upstream extractor against the pinned revision\"")) {
+      !contains(ledger_json, "\"phase_i_required_x11_gaps\": 0")) {
     return 4;
   }
   return 0;

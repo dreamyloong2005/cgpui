@@ -8,6 +8,7 @@ AsyncIoHook WindowRuntime::RuntimeAsyncIoRegistry::create(
     TaskPriority priority,
     AsyncIoCompletionCallback callback) {
   std::lock_guard lock(mutex_);
+  if (closed_) return {};
   const AsyncIoId id{next_id_++};
   auto state = std::make_shared<detail::AsyncIoHookState>();
   state->runtime = &runtime;
@@ -41,7 +42,8 @@ bool WindowRuntime::RuntimeAsyncIoRegistry::notify(
   return true;
 }
 
-bool WindowRuntime::RuntimeAsyncIoRegistry::cancel(AsyncIoId id) {
+bool WindowRuntime::RuntimeAsyncIoRegistry::cancel(
+    AsyncIoId id, AsyncIoCompletionCallback& retired_callback) {
   std::lock_guard lock(mutex_);
   const auto record = std::find_if(
       records_.begin(), records_.end(),
@@ -53,6 +55,7 @@ bool WindowRuntime::RuntimeAsyncIoRegistry::cancel(AsyncIoId id) {
     return false;
   }
   record->state->status.store(detail::AsyncIoHookStatus::cancelled);
+  retired_callback = std::move(record->callback);
   std::erase_if(
       completions_, [id](const Completion& value) { return value.id == id; });
   return true;
@@ -77,18 +80,19 @@ AsyncIoCompletionCallback WindowRuntime::RuntimeAsyncIoRegistry::complete(
     return {};
   }
   record->state->status.store(detail::AsyncIoHookStatus::complete);
-  return record->callback;
+  return std::move(record->callback);
 }
 
 void WindowRuntime::RuntimeAsyncIoRegistry::shutdown() {
-  std::vector<std::shared_ptr<detail::AsyncIoHookState>> states;
+  std::vector<Record> retired;
   {
     std::lock_guard lock(mutex_);
-    for (const Record& record : records_) states.push_back(record.state);
-    records_.clear();
+    closed_ = true;
+    retired.swap(records_);
     completions_.clear();
   }
-  for (const auto& state : states) {
+  for (const auto& record : retired) {
+    const auto& state = record.state;
     std::lock_guard lock(state->mutex);
     state->runtime = nullptr;
     if (state->status.load() != detail::AsyncIoHookStatus::complete) {
@@ -105,17 +109,18 @@ AsyncIoHook WindowRuntime::create_async_io_hook(
 AsyncIoHook WindowRuntime::create_async_io_hook(
     TaskPriority priority,
     AsyncIoCompletionCallback callback) {
-  return async_io_registry_->create(*this, priority, std::move(callback));
+  return state_->tasks.async_io_registry_->create(*this, priority, std::move(callback));
 }
 
 bool WindowRuntime::notify_async_io(AsyncIoId id, AsyncIoResult result) {
-  if (!async_io_registry_->notify(id, std::move(result))) return false;
+  if (!state_->tasks.async_io_registry_->notify(id, std::move(result))) return false;
   request_platform_wakeup();
   return true;
 }
 
-bool WindowRuntime::cancel_async_io(AsyncIoId id) {
-  return async_io_registry_->cancel(id);
+bool WindowRuntime::cancel_async_io(
+    AsyncIoId id, AsyncIoCompletionCallback& retired_callback) {
+  return state_->tasks.async_io_registry_->cancel(id, retired_callback);
 }
 
 } // namespace cgpui

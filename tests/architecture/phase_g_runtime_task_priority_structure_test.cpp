@@ -50,7 +50,7 @@ int main() {
   const std::string results_source =
       read_source("src/ui/runtime_task_results.cpp");
   const std::string runtime_internal =
-      read_source("src/ui/window_runtime_internal.hpp");
+      read_source("src/ui/runtime_state_tasks_types_internal.hpp");
   const std::string behavior =
       read_source("tests/async/runtime_task_priority_test.cpp");
   const std::string header_cleanliness =
@@ -64,21 +64,12 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &public_header, &runtime_header, &context_header, &async_header,
       &aggregate, &priority_internal, &priority_source, &context_source,
       &async_source, &pool_header, &pool_source, &tasks_source, &results_source,
       &runtime_internal, &behavior, &header_cleanliness, &ui_structure,
-      &previous, &manifests, &vocabulary, &core_parity, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &previous, &manifests, &vocabulary, &core_parity};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(public_header, "enum class TaskPriority") ||
@@ -116,7 +107,7 @@ int main() {
       !contains(pool_source, "runtime_task_priorities_descending") ||
       !contains(pool_source, "runtime_task_priority_index(priority)") ||
       !contains(runtime_internal, "TaskPriority priority = TaskPriority::normal") ||
-      !contains(runtime_internal, "struct RuntimeTaskCompletion") ||
+      !contains(runtime_internal, "struct WindowRuntime::RuntimeTaskCompletion") ||
       !contains(tasks_source, "runtime_task_priorities_descending") ||
       !contains(tasks_source, "completion.priority != priority")) return 7;
   if (!contains(tasks_source, "TaskPriority::normal") ||
@@ -148,24 +139,9 @@ int main() {
       line_count(results_source) > 40 || line_count(runtime_internal) > 260 ||
       line_count(behavior) > 220) return 12;
 
-  constexpr const char* completion =
-      "Phase G Step 636 adds low, normal, and high task priorities across "
-      "WindowRuntime, WindowRuntimeContext, and AsyncContextCapability, "
-      "schedules queued background work and runtime-thread completions by "
-      "priority with FIFO ordering within each priority, and preserves "
-      "normal-priority compatibility for existing APIs. Step 637 structured "
-      "task group production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 13;
-  }
   if (!contains(vocabulary, "`TaskPriority::{low, normal, high}`") ||
       contains(vocabulary, "This freeze does not add task priorities") ||
-      contains(core_parity, "task priority scheduling") ||
-      !contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
+      contains(core_parity, "task priority scheduling")) {
     return 14;
   }
   return 0;

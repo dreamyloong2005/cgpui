@@ -35,7 +35,7 @@ class WindowRuntime::RuntimeAsyncIoRegistry {
       TaskPriority priority,
       AsyncIoCompletionCallback callback);
   [[nodiscard]] bool notify(AsyncIoId id, AsyncIoResult result);
-  [[nodiscard]] bool cancel(AsyncIoId id);
+  [[nodiscard]] bool cancel(AsyncIoId id, AsyncIoCompletionCallback& retired_callback);
   [[nodiscard]] std::vector<Completion> take_completions();
   [[nodiscard]] AsyncIoCompletionCallback complete(AsyncIoId id);
   void shutdown();
@@ -49,6 +49,7 @@ class WindowRuntime::RuntimeAsyncIoRegistry {
   };
 
   mutable std::mutex mutex_;
+  bool closed_ = false;
   std::vector<Record> records_;
   std::vector<Completion> completions_;
   std::uint64_t next_id_ = 1;

@@ -4,10 +4,12 @@
 #include "cgpui/ui/task_priority.hpp"
 
 #include <cstddef>
+#include <memory>
 
 namespace cgpui {
 
 class WindowRuntime;
+namespace detail { struct TaskGroupLifetime; }
 
 class TaskGroup {
  public:
@@ -52,11 +54,15 @@ class TaskGroup {
 
  private:
   friend class WindowRuntime;
-  TaskGroup(WindowRuntime& runtime, TaskGroupId id)
-      : runtime_(&runtime), id_(id) {}
+  friend struct WindowRuntimeContext;
+  TaskGroup(WindowRuntime& runtime, TaskGroupId id);
+  [[nodiscard]] WindowRuntime* attached_runtime() const;
 
   WindowRuntime* runtime_ = nullptr;
+  std::weak_ptr<detail::TaskGroupLifetime> runtime_lifetime_;
   TaskGroupId id_{};
+  WindowRuntimeId window_runtime_id_{};
+  TaskCompletionCallback bind_callback(TaskCompletionCallback callback) const;
 };
 
 } // namespace cgpui

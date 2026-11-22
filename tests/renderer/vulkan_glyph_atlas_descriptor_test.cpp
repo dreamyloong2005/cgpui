@@ -83,19 +83,10 @@ int test_private_resource_ownership_structure() {
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_frame.cpp");
   const std::string public_production =
       read_source("include/cgpui/renderer/glyph_atlas_production.hpp");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
 
   if (internal.empty() || descriptors.empty() || images.empty() ||
       resources.empty() || state.empty() || frame.empty() ||
-      public_production.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty()) {
+      public_production.empty()) {
     return 20;
   }
   if (!contains(internal, "struct VulkanGlyphAtlasPageResource") ||
@@ -124,7 +115,9 @@ int test_private_resource_ownership_structure() {
       !contains(state, "VulkanGlyphAtlasResources glyph_atlas_resources_") ||
       !contains(state,
                 "GlyphAtlasProductionResourceState glyph_atlas_plan_state_") ||
-      !contains(frame, "vulkan_plan_glyph_atlas_production_resources(") ||
+      !contains(frame, "cgpui/renderer/planning/glyph_resources.hpp") ||
+      !contains(frame, "plan_glyph_atlas_production_resources(") ||
+      contains(frame, "vulkan_plan_glyph_atlas_production_resources(") ||
       !contains(frame, "vulkan_update_glyph_atlas_resources(")) {
     return 23;
   }
@@ -133,33 +126,6 @@ int test_private_resource_ownership_structure() {
                  contains(public_production, "vulkan.h")
              ? 24
              : 0;
-}
-
-int test_step_460_documentation() {
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 460",
-      "VulkanGlyphAtlasResources",
-      "vulkan_glyph_atlas_descriptors.cpp",
-      "R8_UNORM",
-      "vkUpdateDescriptorSets",
-      "Step 461",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 30;
-    }
-  }
-  return 0;
 }
 
 } // namespace
@@ -171,5 +137,5 @@ int main() {
   if (const int result = test_private_resource_ownership_structure(); result != 0) {
     return result;
   }
-  return test_step_460_documentation();
+  return 0;
 }

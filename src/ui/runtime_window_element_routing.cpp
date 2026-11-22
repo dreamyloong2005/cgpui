@@ -56,6 +56,7 @@ EventResult WindowRuntime::dispatch_record_event_through_elements(
       if (target != nullptr && target->enabled() && target->focusable()) {
         request_keyboard_focus_for_window(record.runtime_id, *route.target_element_id);
         target->focus(ElementFocusContext{.element_id = *route.target_element_id});
+        if (!record.active) return EventResult::consumed_event();
       }
     }
     std::optional<ElementId> enabled_target;
@@ -78,6 +79,7 @@ EventResult WindowRuntime::dispatch_record_event_through_elements(
       Element* element = tree->get(element_id);
       if (element == nullptr || !element->enabled()) continue;
       const EventResult result = element->handle_event(event, element_context);
+      if (!record.active) return result;
       if (result.consumed || result.cancelled) return result;
     }
     // Clicks and keyboard activation, as in the root window.
@@ -86,6 +88,7 @@ EventResult WindowRuntime::dispatch_record_event_through_elements(
       const EventResult result = dispatch_synthesized_click_event(
           event, route, element_context,
           [tree](ElementId element_id) { return tree->get(element_id); });
+      if (!record.active) return result;
       if (result.consumed || result.cancelled) return result;
     }
   }

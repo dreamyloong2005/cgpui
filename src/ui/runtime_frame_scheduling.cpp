@@ -4,7 +4,7 @@ namespace cgpui {
 
 void WindowRuntime::set_root_redraw_scheduled(bool scheduled) {
   if (WindowRuntimeRecord* record =
-          find_window_runtime_record(root_window_runtime_id_);
+          find_window_runtime_record(state_->windows.root_window_runtime_id_);
       record != nullptr) {
     record->redraw_scheduled = scheduled;
   }
@@ -12,18 +12,18 @@ void WindowRuntime::set_root_redraw_scheduled(bool scheduled) {
 
 void WindowRuntime::begin_frame_scheduling() {
   set_root_redraw_scheduled(true);
-  invalidation_state_ = {};
-  deferred_redraw_request_ = false;
-  rendering_frame_ = true;
-  next_frame_redraw_requested_ = false;
+  state_->scheduling.invalidation_state_ = {};
+  state_->scheduling.deferred_redraw_request_ = false;
+  state_->scheduling.rendering_frame_ = true;
+  state_->scheduling.next_frame_redraw_requested_ = false;
 }
 
 void WindowRuntime::complete_frame_scheduling() {
-  rendering_frame_ = false;
-  redraw_scheduled_ = false;
-  deferred_redraw_request_ = false;
-  const bool request_next_frame = next_frame_redraw_requested_;
-  next_frame_redraw_requested_ = false;
+  state_->scheduling.rendering_frame_ = false;
+  state_->scheduling.redraw_scheduled_ = false;
+  state_->scheduling.deferred_redraw_request_ = false;
+  const bool request_next_frame = state_->scheduling.next_frame_redraw_requested_;
+  state_->scheduling.next_frame_redraw_requested_ = false;
   set_root_redraw_scheduled(false);
   if (request_next_frame) {
     schedule_redraw();
@@ -31,10 +31,10 @@ void WindowRuntime::complete_frame_scheduling() {
 }
 
 void WindowRuntime::abort_frame_scheduling() {
-  rendering_frame_ = false;
-  redraw_scheduled_ = false;
-  deferred_redraw_request_ = false;
-  next_frame_redraw_requested_ = false;
+  state_->scheduling.rendering_frame_ = false;
+  state_->scheduling.redraw_scheduled_ = false;
+  state_->scheduling.deferred_redraw_request_ = false;
+  state_->scheduling.next_frame_redraw_requested_ = false;
   set_root_redraw_scheduled(false);
 }
 

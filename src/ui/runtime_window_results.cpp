@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include "runtime_window_store_internal.hpp"
 
 #include <expected>
 
@@ -10,26 +11,26 @@ Result<AppOpenedWindow> WindowRuntime::try_open_window(
   const WindowDescriptor descriptor = options.to_descriptor();
   AppOpenedWindow opened{
       .runtime_id = runtime_id,
-      .parent_runtime_id = root_window_runtime_id_,
+      .parent_runtime_id = state_->windows.root_window_runtime_id_,
       .descriptor = descriptor,
       .root_view_id = {}};
   WindowRuntimeRecord record{
       .runtime_id = runtime_id,
-      .parent_runtime_id = root_window_runtime_id_,
+      .parent_runtime_id = state_->windows.root_window_runtime_id_,
       .descriptor = descriptor,
       .root_view_id = {},
       .window = nullptr,
       .renderer = nullptr,
       .owns_window = true,
-      .owns_renderer = true,
+      .owns_renderer = false,
       .owns_root_view = false,
       .active = false};
   activate_native_window_for_record(record);
   if (record.native_window_error.has_value()) {
     return std::unexpected(*record.native_window_error);
   }
-  app_opened_windows_.push_back(opened);
-  window_runtime_records_.push_back(record);
+  state_->windows.app_opened_windows_.push_back(opened);
+  state_->windows.window_runtime_records_->insert(std::move(record));
   return opened;
 }
 
@@ -41,18 +42,18 @@ Result<AppOpenedWindow> WindowRuntime::try_open_window(
   const ViewId root_view_id = register_view(std::move(root_view));
   AppOpenedWindow opened{
       .runtime_id = runtime_id,
-      .parent_runtime_id = root_window_runtime_id_,
+      .parent_runtime_id = state_->windows.root_window_runtime_id_,
       .descriptor = descriptor,
       .root_view_id = root_view_id};
   WindowRuntimeRecord record{
       .runtime_id = runtime_id,
-      .parent_runtime_id = root_window_runtime_id_,
+      .parent_runtime_id = state_->windows.root_window_runtime_id_,
       .descriptor = descriptor,
       .root_view_id = root_view_id,
       .window = nullptr,
       .renderer = nullptr,
       .owns_window = true,
-      .owns_renderer = true,
+      .owns_renderer = false,
       .owns_root_view = root_view_id.value != 0,
       .active = false};
   activate_native_window_for_record(record);
@@ -63,8 +64,8 @@ Result<AppOpenedWindow> WindowRuntime::try_open_window(
     }
     return std::unexpected(*record.native_window_error);
   }
-  app_opened_windows_.push_back(opened);
-  window_runtime_records_.push_back(record);
+  state_->windows.app_opened_windows_.push_back(opened);
+  state_->windows.window_runtime_records_->insert(std::move(record));
   return opened;
 }
 

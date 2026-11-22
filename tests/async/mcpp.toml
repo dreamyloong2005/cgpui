@@ -24,6 +24,11 @@ include_dirs = [
 
 [test]
 discover = [
+    "runtime_shutdown_capture_lifetime_test.cpp",
+    "runtime_task_group_outlive_test.cpp",
+    "runtime_async_io_shutdown_reentry_test.cpp",
+    "runtime_cross_thread_shutdown_reentry_test.cpp",
+    "runtime_terminal_callback_lifetime_test.cpp",
     "runtime_async_io_hook_test.cpp",
     "runtime_async_timer_integration_test.cpp",
     "runtime_cross_thread_entity_access_test.cpp",

@@ -3,11 +3,11 @@
 namespace cgpui {
 
 void WindowRuntime::set_clipboard(Clipboard* clipboard) {
-  clipboard_ = clipboard;
+  state_->text.clipboard_ = clipboard;
 }
 
 std::optional<std::string> WindowRuntime::read_clipboard_text() {
-  if (clipboard_ == nullptr) {
+  if (state_->text.clipboard_ == nullptr) {
     record_platform_diagnostic(PlatformDiagnosticEvent{
         .kind = PlatformDiagnosticKind::clipboard,
         .backend = "runtime",
@@ -18,7 +18,7 @@ std::optional<std::string> WindowRuntime::read_clipboard_text() {
     return std::nullopt;
   }
 
-  std::optional<std::string> text = clipboard_->read_text();
+  std::optional<std::string> text = state_->text.clipboard_->read_text();
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::clipboard,
       .backend = "runtime",
@@ -31,7 +31,7 @@ std::optional<std::string> WindowRuntime::read_clipboard_text() {
 }
 
 bool WindowRuntime::write_clipboard_text(std::string_view text) {
-  if (clipboard_ == nullptr) {
+  if (state_->text.clipboard_ == nullptr) {
     record_platform_diagnostic(PlatformDiagnosticEvent{
         .kind = PlatformDiagnosticKind::clipboard,
         .backend = "runtime",
@@ -43,7 +43,7 @@ bool WindowRuntime::write_clipboard_text(std::string_view text) {
     return false;
   }
 
-  const bool succeeded = clipboard_->write_text(text);
+  const bool succeeded = state_->text.clipboard_->write_text(text);
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::clipboard,
       .backend = "runtime",
@@ -56,7 +56,7 @@ bool WindowRuntime::write_clipboard_text(std::string_view text) {
 }
 
 bool WindowRuntime::paste_clipboard_text() {
-  if (clipboard_ == nullptr) {
+  if (state_->text.clipboard_ == nullptr) {
     record_platform_diagnostic(PlatformDiagnosticEvent{
         .kind = PlatformDiagnosticKind::clipboard,
         .backend = "runtime",
@@ -67,7 +67,7 @@ bool WindowRuntime::paste_clipboard_text() {
     return false;
   }
 
-  const auto text = clipboard_->read_text();
+  const auto text = state_->text.clipboard_->read_text();
   if (!text.has_value()) {
     record_platform_diagnostic(PlatformDiagnosticEvent{
         .kind = PlatformDiagnosticKind::clipboard,
@@ -105,7 +105,7 @@ bool WindowRuntime::paste_clipboard_text() {
 }
 
 bool WindowRuntime::copy_selection_to_clipboard() {
-  if (clipboard_ == nullptr) {
+  if (state_->text.clipboard_ == nullptr) {
     record_platform_diagnostic(PlatformDiagnosticEvent{
         .kind = PlatformDiagnosticKind::clipboard,
         .backend = "runtime",
@@ -139,7 +139,7 @@ bool WindowRuntime::copy_selection_to_clipboard() {
     });
     return false;
   }
-  const bool succeeded = clipboard_->write_text(selected_text);
+  const bool succeeded = state_->text.clipboard_->write_text(selected_text);
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::clipboard,
       .backend = "runtime",

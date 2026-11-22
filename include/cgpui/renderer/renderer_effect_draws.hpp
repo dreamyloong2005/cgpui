@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgpui/renderer/renderer_types.hpp"
-#include "cgpui/ui/style_values.hpp"
+#include "cgpui/core/paint_values.hpp"
 
 #include <cstddef>
 #include <optional>

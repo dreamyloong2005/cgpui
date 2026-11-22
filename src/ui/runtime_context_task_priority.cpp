@@ -7,13 +7,13 @@ namespace cgpui {
 TaskHandle WindowRuntimeContext::spawn_task(
     TaskPriority priority,
     TaskCompletionCallback callback) const {
-  return runtime.spawn_task(priority, std::move(callback));
+  return runtime.spawn_task(priority, runtime.bind_window_callback(window_runtime_id, std::move(callback)));
 }
 
 Result<TaskHandle> WindowRuntimeContext::try_spawn_task(
     TaskPriority priority,
     TaskCompletionCallback callback) const {
-  return runtime.try_spawn_task(priority, std::move(callback));
+  return runtime.try_spawn_task(priority, runtime.bind_window_callback(window_runtime_id, std::move(callback)));
 }
 
 TaskHandle WindowRuntimeContext::spawn_background_task(
@@ -21,7 +21,7 @@ TaskHandle WindowRuntimeContext::spawn_background_task(
     BackgroundTaskCallback work,
     TaskCompletionCallback completion) const {
   return runtime.spawn_background_task(
-      priority, std::move(work), std::move(completion));
+      priority, std::move(work), runtime.bind_window_callback(window_runtime_id, std::move(completion)));
 }
 
 Result<TaskHandle> WindowRuntimeContext::try_spawn_background_task(
@@ -29,7 +29,7 @@ Result<TaskHandle> WindowRuntimeContext::try_spawn_background_task(
     BackgroundTaskCallback work,
     TaskCompletionCallback completion) const {
   return runtime.try_spawn_background_task(
-      priority, std::move(work), std::move(completion));
+      priority, std::move(work), runtime.bind_window_callback(window_runtime_id, std::move(completion)));
 }
 
 } // namespace cgpui

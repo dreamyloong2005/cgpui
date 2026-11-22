@@ -9,16 +9,15 @@ storage, syntax highlighting rules, agent protocol) stays in the consumer.
 
 ## Build conventions for this plan
 
-- `xmake.lua` is held at <= 4340 lines by older structure tests. New targets,
-  file additions to existing targets, and tests go in focused modules under
-  `build/xmake/capabilities/*.lua`, which the root includes with one glob.
-  The architecture/header matrix test scans that directory.
+- The mcpp workspace owns libraries in `packages/*`, examples in `examples/*`,
+  and test suites in `tests/*`. Add source files in their owning modules and
+  register tests through the suite's `[test] discover` list.
 - Every new `tests/architecture` or `tests/header_cleanliness` source must be
   listed in `scripts/ci/architecture-header-targets.txt`.
 - Follow AGENTS.md: leaf headers, private `*_internal.hpp`, focused `.cpp`
   files, and structure tests with line limits for each new module.
-- Gate per capability: full Windows debug `xmake build -a` and `xmake test`
-  green, `git diff --check` clean, then one commit.
+- Gate per capability: full Windows debug `scripts/dev/build.ps1` and
+  `scripts/dev/test.ps1` green, `git diff --check` clean, then one commit.
 - Behavior that needs a real window, GPU, or human observation is recorded as
   unverified until it has been observed.
 
@@ -34,15 +33,13 @@ storage, syntax highlighting rules, agent protocol) stays in the consumer.
   old and new limit in the commit message.
 - Unsupported native services return typed results with `supported = false`
   and a reason; never fabricate success.
-- Build system: mcpp (`mcpp.toml` workspace; xmake was removed on the
-  `mcpp-migration` branch, see `docs/migration/`). Builds and tests run in
-  parallel. Register a new test by adding its file to its suite's
+- Build system: mcpp (`mcpp.toml` workspace; see `docs/getting-started.md`).
+  Builds and tests run in parallel. Register a new test through its suite's
   `[test] discover` (`tests/<suite>/mcpp.toml`), a new library source by
   the member that compiles it (`packages/<name>/mcpp.toml`).
 - Windows gate: from `D:\Dev\Projects\cgpui`, `scripts/dev/build.ps1` and
-  `scripts/dev/test.ps1` fully green (they set `MCPP_HOME` and
-  `VSLANG=1033`; never let mcpp download a toolchain), `git diff --check`
-  clean.
+  `scripts/dev/test.ps1` fully green (the wrappers configure `MCPP_HOME`;
+  no `VSLANG` override is needed), `git diff --check` clean.
 - Linux gate (WSL2 `archlinux`, running as root): commit on Windows first,
   then in WSL `GATE_REF=<branch> bash /mnt/d/WSL/gate-mcpp.sh` (it checks
   out `origin/<branch>` in `~/cgpui-linux` and runs `scripts/dev/build.sh`

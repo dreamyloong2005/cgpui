@@ -50,4 +50,4 @@ extractor against the pinned revision.
 The historical evidence above is from xmake. The mcpp Debug workspace builds
 on native arm64; `vtool -show-build` reported `minos 13.0` for `hello_window` before the minimum was raised to 26.0.
 For test results and remaining work see
-[the migration record](migration/README.md#macos-follow-up).
+[macOS validation](macos-validation.md).

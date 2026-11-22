@@ -3,21 +3,21 @@
 namespace cgpui {
 
 Result<void> WindowRuntime::try_resize_surface(Size size, DpiScale scale) {
-  framebuffer_size_ = size;
-  scale_ = scale;
-  viewport_size_ = to_logical_pixels(framebuffer_size_, scale_);
+  state_->windows.framebuffer_size_ = size;
+  state_->windows.scale_ = scale;
+  state_->windows.viewport_size_ = to_logical_pixels(state_->windows.framebuffer_size_, state_->windows.scale_);
   if (WindowRuntimeRecord* root_record =
-          find_window_runtime_record(root_window_runtime_id_);
+          find_window_runtime_record(state_->windows.root_window_runtime_id_);
       root_record != nullptr) {
-    root_record->framebuffer_size = framebuffer_size_;
-    root_record->viewport_size = viewport_size_;
-    root_record->scale = scale_;
+    root_record->framebuffer_size = state_->windows.framebuffer_size_;
+    root_record->viewport_size = state_->windows.viewport_size_;
+    root_record->scale = state_->windows.scale_;
   }
-  if (renderer_ == nullptr) {
+  if (state_->windows.renderer_ == nullptr) {
     return {};
   }
 
-  return renderer_->resize(size, scale);
+  return state_->windows.renderer_->resize(size, scale);
 }
 
 } // namespace cgpui

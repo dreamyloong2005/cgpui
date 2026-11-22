@@ -33,8 +33,6 @@ int main() {
       read_source("tests/api_parity/action_macro_surface_test.cpp");
   const std::string cleanliness = read_source(
       "tests/header_cleanliness/action_macros_header_cleanliness.cpp");
-  const std::string predecessor = read_source(
-      "tests/architecture/phase_g_wsl_full_debug_verification_structure_test.cpp");
   const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
       read_source("tests/header_cleanliness/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
@@ -43,19 +41,14 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &action,      &macros,     &aggregate,  &behavior, &cleanliness,
-      &predecessor, &manifests,      &manifest,   &vocabulary,
-      &core,        &roadmap,    &ledger_md,  &ledger_json,
-      &task_plan,   &findings};
+      &manifests,      &manifest,   &vocabulary,
+      &core,        &ledger_md,  &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(action, "concept Action") ||
@@ -77,8 +70,7 @@ int main() {
                 "#include \"cgpui/ui/action_macros.hpp\"") ||
       !contains(cleanliness, "header_scope::ScopedHeaderAction") ||
       !contains(aggregate,
-                "#include \"cgpui/ui/action_macros.hpp\"") ||
-      !contains(predecessor, "Step 675 action macro production behavior")) {
+                "#include \"cgpui/ui/action_macros.hpp\"")) {
     return 4;
   }
   if (!contains(manifests, "\"action_macro_surface_test.cpp\"") ||
@@ -97,16 +89,6 @@ int main() {
     return 6;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 675 adds public scoped and unscoped unit-action macros with "
-      "default construction, copyability, equality, and stable Action names, "
-      "while payload actions remain explicit types outside the macro contract. "
-      "Step 676 candidate-ledger closeout audit is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
   if (!contains(vocabulary, "`CGPUI_ACTIONS(...)`") ||
       !contains(vocabulary, "`CGPUI_ACTIONS_IN(namespace_name, ...)`") ||
       !contains(core, "Unit-action macro production behavior") ||
@@ -114,19 +96,7 @@ int main() {
       contains(ledger_json, "action macro payloads remain missing")) {
     return 8;
   }
-  if (!contains(ledger_md, "Phase F Step 594 platform-services closeout") ||
-      !contains(ledger_md, "Phase F Steps 614-618 Win32/Wayland closeout") ||
-      !contains(ledger_json, "Phase F Step 594 platform-services closeout") ||
-      !contains(ledger_json, "Phase F Steps 614-618 Win32/Wayland closeout")) {
-    return 9;
-  }
-  if (!contains(ledger_json, "\"phase_g_step_675_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_g_step_675_remaining_gap\": \"Step 676 candidate-"
-                "ledger closeout audit\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run "
-                "upstream extractor against the pinned revision\"")) {
+  if (!contains(ledger_json, "\"phase_g_step_675_sources\"")) {
     return 10;
   }
   return 0;

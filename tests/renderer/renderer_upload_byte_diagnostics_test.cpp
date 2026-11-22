@@ -106,7 +106,7 @@ int test_upload_byte_comparison() {
              : 41;
 }
 
-int test_step_516_structure_and_documentation() {
+int test_structure() {
   const std::string header = read_source(
       "include/cgpui/renderer/renderer_frame_diagnostics.hpp");
   const std::string source = read_source(
@@ -120,28 +120,6 @@ int test_step_516_structure_and_documentation() {
     return 50;
   }
 
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 516",
-      "RendererUploadByteCounts",
-      "glyph and image upload payload bytes",
-      "saturation-safe upload-byte accounting",
-      "Step 517 draw-count accounting",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 60;
-    }
-  }
   return 0;
 }
 
@@ -161,5 +139,5 @@ int main() {
   if (const int result = test_upload_byte_comparison(); result != 0) {
     return result;
   }
-  return test_step_516_structure_and_documentation();
+  return test_structure();
 }

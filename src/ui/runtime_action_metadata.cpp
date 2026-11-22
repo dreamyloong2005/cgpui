@@ -17,26 +17,26 @@ bool same_action_registration_key(
 
 void WindowRuntime::upsert_action_registration(
     ActionRegistration registration) {
-  for (auto existing = action_registrations_.begin();
-       existing != action_registrations_.end();
+  for (auto existing = state_->actions.action_registrations_.begin();
+       existing != state_->actions.action_registrations_.end();
        ++existing) {
     if (same_action_registration_key(*existing, registration)) {
-      action_registrations_.erase(existing);
+      state_->actions.action_registrations_.erase(existing);
       break;
     }
   }
-  action_registrations_.push_back(std::move(registration));
+  state_->actions.action_registrations_.push_back(std::move(registration));
 }
 
 std::span<const ActionRegistration> WindowRuntime::action_registrations()
     const {
-  return action_registrations_;
+  return state_->actions.action_registrations_;
 }
 
 std::vector<ActionRegistration> WindowRuntime::action_registrations_for_scope(
     ActionRegistrationScope scope) const {
   std::vector<ActionRegistration> registrations;
-  for (const ActionRegistration& registration : action_registrations_) {
+  for (const ActionRegistration& registration : state_->actions.action_registrations_) {
     if (registration.registration_scope == scope) {
       registrations.push_back(registration);
     }
@@ -47,7 +47,7 @@ std::vector<ActionRegistration> WindowRuntime::action_registrations_for_scope(
 std::vector<ActionRegistration> WindowRuntime::action_registrations_for_enabled(
     bool enabled) const {
   std::vector<ActionRegistration> registrations;
-  for (const ActionRegistration& registration : action_registrations_) {
+  for (const ActionRegistration& registration : state_->actions.action_registrations_) {
     if (registration.enabled == enabled) {
       registrations.push_back(registration);
     }
@@ -60,8 +60,8 @@ std::optional<bool> WindowRuntime::action_registration_enabled(
     ActionScope dispatch_scope,
     std::optional<ViewId> view_id,
     std::optional<ElementId> element_id) const {
-  for (auto registration = action_registrations_.rbegin();
-       registration != action_registrations_.rend();
+  for (auto registration = state_->actions.action_registrations_.rbegin();
+       registration != state_->actions.action_registrations_.rend();
        ++registration) {
     if (registration->name == name &&
         registration->dispatch_scope == dispatch_scope &&

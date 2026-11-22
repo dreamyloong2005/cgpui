@@ -2,6 +2,7 @@
 
 #include "vulkan_image_texture_cache_internal.hpp"
 #include "vulkan_image_texture_invalidation_internal.hpp"
+#include "vulkan_image_upload_retirement_internal.hpp"
 
 namespace cgpui {
 namespace {
@@ -59,12 +60,12 @@ Result<void> VulkanRendererState::prepare_image_texture_frame(
     return result;
   }
 
-  vulkan_destroy_image_texture_upload_resources(
-      device_, image_texture_uploads_);
+  const auto retained_uploads = vulkan_prepare_image_upload_retirement(
+      device_, image_draws, image_uploads, image_invalidations, image_texture_uploads_);
   (void)vulkan_invalidate_image_texture_resources(
       device_, image_invalidations, image_texture_resources_);
   (void)vulkan_prepare_image_texture_cache_frame(
-      device_, image_draws, image_uploads, image_texture_resources_);
+      device_, image_draws, image_uploads, image_texture_resources_, retained_uploads);
   if (auto result = vulkan_update_image_texture_resources(
           physical_device_,
           device_,

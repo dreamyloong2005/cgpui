@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
-#include "cgpui/ui/text.hpp"
 #include "wayland_backdrop_internal.hpp"
 #include "wayland_output_scale.hpp"
 #include "wayland_input_internal.hpp"

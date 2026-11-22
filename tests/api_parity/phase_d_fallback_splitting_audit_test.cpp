@@ -58,9 +58,9 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string text_shape_header =
-      read_source("include/cgpui/ui/text_shape.hpp");
+      read_source("include/cgpui/renderer/text/text_shape.hpp");
   const std::string fallback_source =
-      read_source("src/ui/text_shaping_fallback.cpp");
+      read_source("src/renderer/text/text_shaping_fallback.cpp");
   const std::string structure_test =
       read_source("tests/architecture/ui_source_structure_test.cpp");
   const std::string text_model_test =

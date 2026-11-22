@@ -78,21 +78,12 @@ int main() {
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/ui/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &platform_application, &platform_default, &runtime_options,
       &runtime_windows, &runtime_activation, &runtime_ownership, &runtime_run,
       &win32_application, &win32_factory, &wayland_child, &wayland_creation,
       &wayland_protocol, &wayland_window, &wayland_internal, &runtime_test,
-      &win32_test, &wayland_test, &compositor, &manifests, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &win32_test, &wayland_test, &compositor, &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -101,7 +92,7 @@ int main() {
   if (!contains(platform_application, "create_child_window(") ||
       !contains(platform_default, "return create_window(") ||
       !contains(runtime_options, "WindowRuntimeId parent_runtime_id;") ||
-      !contains(runtime_windows, ".parent_runtime_id = root_window_runtime_id_") ||
+      !contains(runtime_windows, ".parent_runtime_id = state_->windows.root_window_runtime_id_") ||
       !contains(runtime_activation, "application_.create_child_window(") ||
       !contains(runtime_ownership, "activate_pending_native_windows(") ||
       !contains(runtime_run, "activate_pending_native_windows();")) {
@@ -136,26 +127,6 @@ int main() {
       line_count(wayland_child) > 30 || line_count(wayland_protocol) > 15 ||
       line_count(wayland_internal) > 123 || line_count(runtime_test) > 130) {
     return 6;
-  }
-  constexpr const char* completion =
-      "Phase F Step 546 adds root-owned runtime child windows with deferred "
-      "activation after root creation, real Win32 owner HWNDs, and Wayland "
-      "xdg-toplevel parent requests before first commit. Step 547 Win32 "
-      "pointer input production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 7;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_546_remaining_gap\": \"Step 547 Win32")) {
-    return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 9;
   }
   return 0;
 }

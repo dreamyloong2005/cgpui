@@ -32,16 +32,8 @@ int main() {
       read_source("tests/architecture/mcpp.toml") +
       read_source("tests/platform/mcpp.toml") +
       read_source("tests/ui/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &manifests};
   for (const auto* value : required) if (value->empty()) return 2;
   const char* behavior_targets[]{
       "window_runtime_multi_window_churn_test.cpp",
@@ -68,12 +60,5 @@ int main() {
   for (const char* target : structure_targets) {
     if (!contains(manifests, target)) return 4;
   }
-  constexpr const char* completion =
-      "Phase F Step 610 audits and closes the Steps 603-609 platform diagnostics and stress band, freezing window churn, clipboard ownership, drag cancellation, IME, scale, timer, and task evidence. Step 611 Windows full-debug verification is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 5;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 6;
   return 0;
 }

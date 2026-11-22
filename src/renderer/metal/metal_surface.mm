@@ -33,7 +33,9 @@ Result<void> configure_metal_surface(
   state.scale = scale;
   state.layer.device = state.device;
   state.layer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-  state.layer.framebufferOnly = YES;
+  // request_pixel_capture() is legal after begin_frame() acquired a drawable.
+  // Its blit readback therefore needs a readable drawable from the outset.
+  state.layer.framebufferOnly = NO;
   state.layer.opaque = transparent_background ? NO : YES;
   state.layer.maximumDrawableCount = 3;
   state.layer.allowsNextDrawableTimeout = YES;

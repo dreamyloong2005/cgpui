@@ -5,9 +5,9 @@ namespace cgpui {
 bool WindowRuntime::cancel_animation(AnimationId id) {
   if (id.value == 0) return false;
   const auto animation = std::find_if(
-      animations_.begin(), animations_.end(),
+      state_->animations.animations_.begin(), state_->animations.animations_.end(),
       [id](const RuntimeAnimation& item) { return item.id == id; });
-  if (animation == animations_.end()) return false;
+  if (animation == state_->animations.animations_.end()) return false;
 
   const std::optional<AnimationSnapshot> snapshot = animation_snapshot(id);
   if (animation->complete || animation->cancelled || !snapshot.has_value() ||
@@ -18,7 +18,7 @@ bool WindowRuntime::cancel_animation(AnimationId id) {
   animation->cancelled = true;
   animation->frame_pending = false;
   animation->callback = {};
-  last_animation_cancellation_ = AnimationCancellationDiagnostic{
+  state_->animations.last_animation_cancellation_ = AnimationCancellationDiagnostic{
       .id = id,
       .elapsed_ms = snapshot->elapsed_ms,
       .duration_ms = snapshot->duration_ms,

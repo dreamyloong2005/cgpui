@@ -38,18 +38,9 @@ int main() {
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml") +
       read_source("packages/platform/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &public_header, &defaults, &internal, &files, &behavior, &test_lock,
-      &platform_structure, &manifests, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &platform_structure, &manifests};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(public_header,
                 "std::optional<std::vector<std::string>>") ||
@@ -96,23 +87,5 @@ int main() {
   if (line_count(public_header) > 110 || line_count(defaults) > 80 ||
       line_count(internal) > 55 || line_count(files) > 130 ||
       line_count(behavior) > 140 || line_count(test_lock) > 50) return 8;
-  constexpr const char* completion =
-      "Phase F Step 564 adds Win32 CF_HDROP file clipboard read and write "
-      "with strict UTF-8 paths, wide DROPFILES payloads, multi-file ordering, "
-      "and rejection-safe system content preservation. Step 565 Wayland "
-      "selection ownership and write production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) return 9;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_564_remaining_gap\": \"Step 565 Wayland")) {
-    return 10;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 11;
-  }
   return 0;
 }

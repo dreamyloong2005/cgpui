@@ -49,6 +49,7 @@ jobs:
         with:
           platform: macos
       - run: python3 tests/ci/macos_sdk_arch_test.py
+      - run: python3 -B tests/ci/sdk_package_headers_test.py
       - run: bash ./scripts/ci/run-with-github-annotation.sh "$RUNNER_TEMP/macos-release.log" -- bash ./scripts/ci/macos-phase-j-release.sh arm64
       - uses: actions/upload-artifact@v4
         with:

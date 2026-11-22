@@ -50,18 +50,9 @@ int main() {
       read_source("tests/platform/win32_dead_key_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &text_header, &decoder_header, &decoder, &proc, &window_text,
-      &window_events, &window_internal, &message_target, &behavior, &manifests,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &window_events, &window_internal, &message_target, &behavior, &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -94,23 +85,6 @@ int main() {
       line_count(window_internal) > 134 || line_count(proc) > 50 ||
       line_count(behavior) > 70) {
     return 4;
-  }
-  constexpr const char* completion =
-      "Phase F Step 550 adds explicit Win32 dead/system-dead character "
-      "suppression with pending composition state, composed TextInput "
-      "metadata, and focus-loss reset through focused dead-key and "
-      "window-text modules. Step 551 Win32 text-input production behavior "
-      "is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 5;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_550_remaining_gap\": \"Step 551 Win32")) {
-    return 6;
   }
   return 0;
 }

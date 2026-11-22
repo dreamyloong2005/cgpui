@@ -61,13 +61,13 @@ bool WindowRuntime::key_binding_context_active(
       if (!context.view_id.has_value()) {
         return false;
       }
-      if (current_event_route_.has_value()) {
-        return route_contains_view(*current_event_route_, *context.view_id);
+      if (state_->input.current_event_route_.has_value()) {
+        return route_contains_view(*state_->input.current_event_route_, *context.view_id);
       }
-      return *context.view_id == root_view_id_;
+      return *context.view_id == state_->views.root_view_id_;
     case KeyBindingContextKind::focused_element:
       return context.element_id.has_value() &&
-             keyboard_focus_element_owner_ == context.element_id;
+             state_->input.keyboard_focus_element_owner_ == context.element_id;
   }
   return false;
 }

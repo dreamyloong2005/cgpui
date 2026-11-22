@@ -1,11 +1,16 @@
 # Using the macOS Phase J SDK
 
 The SDK supports only Apple Silicon (arm64). There is no Intel or Universal build.
-Extract the entire `cgpui-macos-arm64-release.tar.gz` archive. Keep `src/ui/`
-alongside `include/`: some public headers include these implementation headers.
+Extract the entire `cgpui-macos-arm64-release.tar.gz` archive. Current packages
+use manifest schema 2 and self-contained public headers under `include/`;
+they neither require nor ship private `src/ui/` headers. Packaging rejects a
+stale `src/` directory from an older SDK, so use a fresh output directory.
+Rebuild consumers and libraries together after the opaque runtime-state ABI change.
 Use a C++23-capable Xcode toolchain, libc++, and the architecture named in
 `manifest.json`. The SDK is built with a macOS 26.0 deployment target.
-The demo and consumer were verified on macOS 27.2.1 (arm64), not on macOS 13.
+Historical demo and consumer runs used macOS 27.2.1 (arm64), not macOS 13;
+see [native validation history](macos-validation.md). Those runs do not validate
+the current header-isolation changes; a new native consumer run is required.
 
 To compile the included consumer in a directory outside the checkout:
 

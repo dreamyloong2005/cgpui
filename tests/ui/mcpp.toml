@@ -36,6 +36,15 @@ defines = [
 
 [test]
 discover = [
+    "window_runtime_window_callback_context_test.cpp",
+    "window_runtime_window_callback_ownership_test.cpp",
+    "window_runtime_reentrant_retirement_test.cpp",
+    "window_runtime_reentrant_lifecycle_test.cpp",
+    "window_runtime_reentrant_close_test.cpp",
+    "window_runtime_window_redraw_test.cpp",
+    "window_runtime_renderer_ownership_test.cpp",
+    "window_runtime_failed_renderer_cleanup_test.cpp",
+    "window_runtime_frame_retry_test.cpp",
     "accessibility_pattern_action_test.cpp",
     "accessibility_pattern_runtime_test.cpp",
     "action_bubbling_test.cpp",

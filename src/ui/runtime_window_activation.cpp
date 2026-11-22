@@ -1,5 +1,6 @@
 #include "ui_internal.hpp"
 #include "runtime_popup_support_internal.hpp"
+#include "runtime_window_lifetime_internal.hpp"
 
 namespace cgpui {
 
@@ -15,20 +16,17 @@ void WindowRuntime::activate_native_window_for_record(
         .message = "Child window parent runtime record not found"};
     return;
   }
-  if (!runtime_accept_popup_renderer(record, application_, parent_record->renderer)) return;
+  if (!runtime_accept_popup_renderer(record, state_->core.application_, parent_record->renderer)) return;
   if (!parent_record->active || parent_record->window == nullptr) {
     return;
   }
-  auto window_result = application_.create_child_window(
+  auto window_result = state_->core.application_.create_child_window(
       record.descriptor,
       *parent_record->window,
       [this, runtime_id = record.runtime_id](const PlatformEvent& event) {
         handle_native_additional_window_event(runtime_id, event);
       });
   if (!window_result) {
-    record.window = nullptr;
-    record.renderer = nullptr;
-    record.active = false;
     record.native_window_error = window_result.error();
     return;
   }
@@ -44,16 +42,16 @@ void WindowRuntime::activate_native_window_for_record(
               runtime_wants_transparent_surface(record.descriptor)},
       "Renderer factory returned an empty child renderer");
   if (!renderer_result) {
-    record.window = nullptr;
-    record.renderer = nullptr;
-    record.active = false;
     record.native_window_error = renderer_result.error();
     return;
   }
-  if (!runtime_accept_popup_renderer(record, application_, *renderer_result)) return;
+  if (!runtime_accept_popup_renderer(record, state_->core.application_, *renderer_result)) {
+    state_->windows.window_lifetime_->release(*renderer_result); return;
+  }
 
   record.window = window.get();
   record.renderer = *renderer_result;
+  record.owns_renderer = state_->windows.window_lifetime_->owns(record.renderer);
   (void)runtime_apply_window_backdrop(*window, record.renderer, record.descriptor.backdrop);
   record.framebuffer_size = window_state.framebuffer_size;
   record.viewport_size = to_logical_pixels(
@@ -64,7 +62,7 @@ void WindowRuntime::activate_native_window_for_record(
   record.input = {};
   reset_event_state_for_record(record);
   record.active = true;
-  native_additional_windows_.push_back(std::move(window));
+  state_->windows.native_additional_windows_.push_back(std::move(window));
 }
 
 } // namespace cgpui

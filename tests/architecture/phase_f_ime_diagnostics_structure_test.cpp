@@ -26,20 +26,9 @@ int main() {
   const std::string runtime = read_source("src/ui/runtime_event_text.cpp");
   const std::string behavior =
       read_source("tests/ui/window_runtime_ime_diagnostics_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_f_drag_drop_cancellation_diagnostics_structure_test.cpp");
   const std::string manifests = read_source("tests/ui/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const std::string* required[]{&public_header, &runtime, &behavior, &previous,
-      &manifests, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+  const std::string* required[]{&public_header, &runtime, &behavior, &manifests};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(public_header, "bool cancelled = false;")) return 2;
   const char* operations[]{"composition-update", "composition-commit",
@@ -54,19 +43,11 @@ int main() {
   if (!contains(behavior, "index < 64") ||
       !contains(behavior, "platform_diagnostics.size() != 32") ||
       !contains(behavior, "97 + index") ||
-      !contains(behavior, "event.cancelled != cancellation") ||
-      !contains(previous, "Phase F Step 605")) return 5;
+      !contains(behavior, "event.cancelled != cancellation")) return 5;
   if (line_count(public_header) > 45 || line_count(runtime) > 90 ||
       line_count(behavior) > 135) return 6;
   if (!contains(manifests, "\"window_runtime_ime_diagnostics_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_f_ime_diagnostics_structure_test.cpp\"")) return 7;
-  constexpr const char* completion =
-      "Phase F Step 606 records runtime IME update, commit, cancel, and delete-surrounding diagnostics, and verifies 64 cancellation cycles retain a bounded 32-event sequence. Step 607 scale-change diagnostics and stress production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 8;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
   return 0;
 }

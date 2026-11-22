@@ -156,7 +156,7 @@ int test_text_draw_commands_preserve_effective_clip() {
              : 41;
 }
 
-int test_recording_structure_and_documentation() {
+int test_recording_structure() {
   const std::string clip_header = read_source(
       "src/renderer/vulkan/vulkan_clip_scissor_internal.hpp");
   const std::string clip_source =
@@ -189,27 +189,6 @@ int test_recording_structure_and_documentation() {
     return 52;
   }
 
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* docs_required[] = {
-      "Phase E Step 483",
-      "vulkan_resolve_clip_stack_scissor",
-      "per-draw dynamic scissor",
-      "Step 484",
-  };
-  for (const char* value : docs_required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 60;
-    }
-  }
   return 0;
 }
 
@@ -231,5 +210,5 @@ int main() {
       result != 0) {
     return result;
   }
-  return test_recording_structure_and_documentation();
+  return test_recording_structure();
 }

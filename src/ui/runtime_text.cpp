@@ -16,10 +16,10 @@ void WindowRuntime::bind_text_model(ElementId element_id, TextModel* model) {
     return;
   }
   if (model == nullptr) {
-    text_models_.erase(element_id.value);
+    state_->text.text_models_.erase(element_id.value);
     return;
   }
-  text_models_[element_id.value] = model;
+  state_->text.text_models_[element_id.value] = model;
 }
 
 } // namespace cgpui

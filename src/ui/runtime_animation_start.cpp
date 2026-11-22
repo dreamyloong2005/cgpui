@@ -5,7 +5,7 @@ namespace cgpui {
 AnimationHandle WindowRuntime::start_animation(
     AnimationOptions options,
     AnimationCallback callback) {
-  if (!callback) {
+  if (!callback || state_->core.shutting_down_) {
     return {};
   }
 
@@ -13,13 +13,13 @@ AnimationHandle WindowRuntime::start_animation(
     options.tick_interval_ms = 16;
   }
 
-  const AnimationId id{next_animation_id_++};
-  animations_.push_back(RuntimeAnimation{
+  const AnimationId id{state_->animations.next_animation_id_++};
+  state_->animations.animations_.push_back(RuntimeAnimation{
       .id = id,
       .options = options,
       .callback = std::move(callback),
-      .started_ms = current_time_ms_,
-      .last_tick_ms = current_time_ms_,
+      .started_ms = state_->scheduling.current_time_ms_,
+      .last_tick_ms = state_->scheduling.current_time_ms_,
       .next_tick_ms = next_animation_frame_deadline(0, options.tick_interval_ms),
       .complete = options.duration_ms == 0,
       .cancelled = false,
@@ -28,14 +28,14 @@ AnimationHandle WindowRuntime::start_animation(
 
   if (options.duration_ms == 0) {
     const std::optional<AnimationSnapshot> snapshot = animation_snapshot(id);
-    AnimationCallback immediate_callback = animations_.back().callback;
+    AnimationCallback immediate_callback = state_->animations.animations_.back().callback;
     if (snapshot.has_value() && immediate_callback) {
       immediate_callback(context(), *snapshot);
     }
     const auto completed = std::find_if(
-        animations_.begin(), animations_.end(),
+        state_->animations.animations_.begin(), state_->animations.animations_.end(),
         [id](const RuntimeAnimation& animation) { return animation.id == id; });
-    if (completed != animations_.end()) completed->callback = {};
+    if (completed != state_->animations.animations_.end()) completed->callback = {};
   } else {
     schedule_animation_frame_wakeup(true);
   }

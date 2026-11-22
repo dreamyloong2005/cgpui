@@ -61,7 +61,9 @@ Steps:
    `release` profile. On Windows the SDK passes `-Runtimes MD`
    (`cxx_runtime = "toolchain-coupled"`) for both modes: mcpp has no debug
    CRT. On Linux the system libstdc++ is used (`host-coupled`).
-3. **Finalize.** `sdk-package.py finalize` takes the link order from the
+3. **Finalize.** `sdk-package.py finalize` first validates the staged public
+   header closure and rejects any stale package-root `src/` directory. It
+   takes the link order from the
    `example_workbench` dependency graph (each library before those it
    depends on, read from the members' `mcpp.toml`), copies the CGPUI and
    vendored (lunasvg, plutovg) static libraries from the build directory,
@@ -81,7 +83,6 @@ Steps:
 
 ```text
 include/cgpui/...                 public headers
-src/ui/*_internal.hpp             private headers the public ones include
 lib/*.lib | lib/*.a               CGPUI + bundled static libraries
 lib/cmake/cgpui/cgpuiConfig.cmake, cgpuiConfigVersion.cmake
 bin/hello_window, bin/example_workbench (.exe on Windows)
@@ -89,14 +90,25 @@ share/cgpui/sdk_consumer/         sample: main.cpp, CMakeLists.txt, xmake.lua
 README.md, manifest.json, release-manifest.json
 ```
 
-`include/cgpui/ui/window_runtime.hpp` declares `WindowRuntime`'s private
-members by including `../../../src/ui/window_runtime_internal.hpp`, which
-pulls in 15 more `src/ui/*_internal.hpp` headers. A package with only
-`include/` therefore fails to compile any consumer (found by the consumer
-smoke test: C1083 on `window_runtime_internal.hpp`). `sdk-package.py`
-copies that header closure to the same relative path and lists it in
-`private_headers`. Moving those members behind a pimpl would remove the
-need; it is not done here.
+Public headers close over `include/`; no private source headers are shipped.
+`WindowRuntime` owns opaque state implemented in the library, rather than
+including its storage definitions from `src/ui/`. This changes its binary
+layout: rebuild the libraries and consumers together, even though existing
+public method signatures remain source-compatible.
+
+Before copying libraries, both SDK `finalize` and macOS `stage-macos` check
+every quoted include in the staged headers, including conditional platform
+branches. Resolution uses the current header's directory and then the SDK's
+`include/` root. Missing headers, paths escaping that root, absolute include
+paths and header symlinks are rejected. A leftover package-root `src/` from
+an older SDK is also rejected, not silently reused or deleted; choose a fresh
+output directory. System angle includes remain toolchain dependencies.
+
+The fast packaging regression suite is
+`python -B tests/ci/sdk_package_headers_test.py`. It does not replace the
+external include-only compile and packaged-library link smoke tests. Current
+working-tree validation is not a new clean committed SDK release; native
+macOS validation must be performed on a Mac.
 
 Shaders are written in Slang and compiled to SPIR-V at development time
 (`scripts/dev/compile_shaders.py`); the SPIR-V is embedded in
@@ -105,7 +117,11 @@ renderer requires Vulkan 1.1 (SPIR-V 1.3).
 
 ## manifest.json
 
-`schema_version` 3 (the mcpp build; 2 was the xmake build) extends the Phase G package manifest. Fields:
+`schema_version` 4 removes the obsolete `private_headers` and
+`private_headers_reason` fields. Version 3 was the first mcpp SDK schema;
+version 2 was the xmake build. The separate macOS Phase J manifest advances
+from version 1 to version 2 for the same public-header-only contract; its
+build-metadata schema is unchanged. Windows/Linux SDK fields:
 
 | Field | Meaning |
 |---|---|
@@ -119,7 +135,7 @@ renderer requires Vulkan 1.1 (SPIR-V 1.3).
 | `libraries`, `link_names`, `library_origins` | packaged libraries in link order and where each came from (`cgpui` or `vendored <name> <version>`) |
 | `vendored_dependencies` | per row of `third_party/VENDORED.md`: name, directory, version, upstream commit, license, source archive SHA-256, `tree_sha256` (SHA-256 over `<sha256>  <path>` lines of the directory's files as committed at HEAD, so checkout line endings cannot change it) and `bundled` (copied into `lib/`) |
 | `system_libraries` | libraries the consumer links from the system, in order |
-| `private_headers` | `src/ui` headers shipped because public headers include them |
+| `header_root` | `include/cgpui`; quoted dependencies must remain inside the SDK's `include/` tree |
 | `executables`, `cmake_config`, `consumer_sample`, `shaders`, `documents` | package contents |
 | `files` | path, size and SHA-256 of every file except `manifest.json` and `release-manifest.json` |
 

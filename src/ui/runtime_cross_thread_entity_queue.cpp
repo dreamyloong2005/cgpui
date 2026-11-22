@@ -22,9 +22,10 @@ CrossThreadEntityQueueState::take_operations() {
 }
 
 void CrossThreadEntityQueueState::shutdown() {
+  std::vector<CrossThreadEntityOperation> retired;
   std::lock_guard lock(mutex_);
   runtime_ = nullptr;
-  operations_.clear();
+  retired.swap(operations_);
 }
 
 bool enqueue_cross_thread_entity_operation(

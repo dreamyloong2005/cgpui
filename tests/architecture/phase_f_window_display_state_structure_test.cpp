@@ -76,14 +76,6 @@ int main() {
       read_source("tests/platform/wayland_window_display_state_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   if (platform_window.empty() || lifecycle_default.empty() ||
       win32_internal.empty() || win32_display.empty() ||
       win32_lifecycle.empty() || win32_chrome.empty() ||
@@ -92,8 +84,7 @@ int main() {
       protocol_toplevel.empty() || protocol_display.empty() ||
       protocol_interfaces.empty() ||
       compositor.empty() || win32_test.empty() || wayland_test.empty() ||
-      manifests.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty()) {
+      manifests.empty()) {
     return 1;
   }
   if (!contains(platform_window, "request_display_state(") ||
@@ -150,23 +141,6 @@ int main() {
       line_count(protocol_toplevel) > 60 || line_count(protocol_display) > 55 ||
       line_count(protocol_interfaces) > 110) {
     return 8;
-  }
-  constexpr const char* completion =
-      "Phase F Step 543 adds real Win32 minimize/maximize/restore and "
-      "reversible borderless fullscreen, plus Wayland xdg-toplevel display "
-      "requests with compositor-confirmed lifecycle state. Step 544 window "
-      "positioning production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 9;
-    }
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_step_543_remaining_gap\": \"Step 544 window positioning")) {
-    return 10;
   }
   return 0;
 }

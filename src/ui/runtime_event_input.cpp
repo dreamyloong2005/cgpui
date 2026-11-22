@@ -5,22 +5,22 @@ namespace cgpui {
 void WindowRuntime::update_input_state_for_event(const PlatformEvent& event) {
   if (const auto* focused = std::get_if<WindowFocused>(&event);
       focused != nullptr) {
-    input_.focused = focused->focused;
+    state_->input.input_.focused = focused->focused;
   } else if (const auto* capture = std::get_if<PointerCaptureChanged>(&event);
              capture != nullptr) {
     handle_pointer_capture_changed(*capture);
   } else if (const auto* moved = std::get_if<PointerMoved>(&event);
              moved != nullptr) {
-    input_.pointer_position = moved->position;
+    state_->input.input_.pointer_position = moved->position;
   } else if (const auto* exited = std::get_if<PointerExited>(&event);
              exited != nullptr) {
-    input_.pointer_position = exited->position;
+    state_->input.input_.pointer_position = exited->position;
   } else if (const auto* button = std::get_if<PointerButton>(&event);
              button != nullptr) {
-    input_.pointer_position = button->position;
+    state_->input.input_.pointer_position = button->position;
   } else if (const auto* scrolled = std::get_if<PointerScrolled>(&event);
              scrolled != nullptr) {
-    input_.pointer_position = scrolled->position;
+    state_->input.input_.pointer_position = scrolled->position;
   } else if (const std::optional<Point> drag_position =
                  pointer_position_for(event);
              drag_position.has_value() &&
@@ -28,7 +28,7 @@ void WindowRuntime::update_input_state_for_event(const PlatformEvent& event) {
               std::holds_alternative<DragUpdated>(event) ||
               std::holds_alternative<DragDropped>(event) ||
               std::holds_alternative<DragExited>(event))) {
-    input_.pointer_position = *drag_position;
+    state_->input.input_.pointer_position = *drag_position;
   }
 
   if (std::holds_alternative<DragEntered>(event) ||
@@ -57,7 +57,7 @@ std::optional<ElementId> WindowRuntime::hit_test_target_for_event(
   }
 
   if (static_element_tree_installed()) {
-    const ElementId hit = static_element_tree_.hit_test(*pointer_position);
+    const ElementId hit = state_->elements.static_element_tree_.hit_test(*pointer_position);
     return hit.value == 0 ? std::optional<ElementId>{}
                           : std::optional<ElementId>{hit};
   }
@@ -67,8 +67,8 @@ std::optional<ElementId> WindowRuntime::hit_test_target_for_event(
   }
 
   const ElementId hit = hit_test_runtime_element_root(
-      owned_element_tree_.get(),
-      element_root_,
+      state_->elements.owned_element_tree_.get(),
+      state_->elements.element_root_,
       *pointer_position);
   if (hit.value == 0) {
     return {};
@@ -86,12 +86,12 @@ void WindowRuntime::update_hover_cursor_for_event(
   }
 
   const std::optional<ElementId> previous_hovered_element_id =
-      hovered_element_id_;
-  hovered_element_id_.reset();
-  cursor_shape_ = CursorShape::default_arrow;
+      state_->input.hovered_element_id_;
+  state_->input.hovered_element_id_.reset();
+  state_->input.cursor_shape_ = CursorShape::default_arrow;
   if (!pointer_exited &&
       (static_element_tree_installed() || element_root() != nullptr)) {
-    hovered_element_id_ = hit_element_id;
+    state_->input.hovered_element_id_ = hit_element_id;
     if (hit_element_id.has_value()) {
       const Element* hovered_element = routed_element(*hit_element_id);
       const bool enabled =
@@ -99,55 +99,55 @@ void WindowRuntime::update_hover_cursor_for_event(
               ? element_enabled(*hit_element_id)
               : (hovered_element == nullptr || hovered_element->enabled());
       if (enabled) {
-        if (const auto cursor = element_cursors_.find(hit_element_id->value);
-            cursor != element_cursors_.end()) {
-          cursor_shape_ = cursor->second;
+        if (const auto cursor = state_->elements.element_cursors_.find(hit_element_id->value);
+            cursor != state_->elements.element_cursors_.end()) {
+          state_->input.cursor_shape_ = cursor->second;
         }
       }
     }
   }
-  apply_cursor_shape(cursor_shape_);
+  apply_cursor_shape(state_->input.cursor_shape_);
   request_style_state_invalidation(
       previous_hovered_element_id,
-      hovered_element_id_);
+      state_->input.hovered_element_id_);
 }
 
 void WindowRuntime::resolve_event_route_target(
     const PlatformEvent& event,
     std::optional<ElementId> hit_element_id) {
-  if (!current_event_route_.has_value()) {
+  if (!state_->input.current_event_route_.has_value()) {
     return;
   }
 
-  if (keyboard_focus_element_owner_.has_value() &&
+  if (state_->input.keyboard_focus_element_owner_.has_value() &&
       is_keyboard_routed_event(event)) {
-    current_event_route_->target_element_id = keyboard_focus_element_owner_;
-  } else if (pointer_capture_owner_.has_value() &&
+    state_->input.current_event_route_->target_element_id = state_->input.keyboard_focus_element_owner_;
+  } else if (state_->input.pointer_capture_owner_.has_value() &&
              pointer_position_for(event).has_value()) {
     apply_pointer_capture_owner_to_route(
-        *pointer_capture_owner_,
-        *current_event_route_);
+        *state_->input.pointer_capture_owner_,
+        *state_->input.current_event_route_);
   } else if (hit_element_id.has_value()) {
-    current_event_route_->target_element_id = hit_element_id;
+    state_->input.current_event_route_->target_element_id = hit_element_id;
   }
 }
 
 void WindowRuntime::apply_focus_activation_for_event(
     const PlatformEvent& event) {
-  if (!current_event_route_.has_value() || !is_focus_activation_event(event) ||
-      !current_event_route_->target_element_id.has_value()) {
+  if (!state_->input.current_event_route_.has_value() || !is_focus_activation_event(event) ||
+      !state_->input.current_event_route_->target_element_id.has_value()) {
     return;
   }
 
-  if (!element_focusable(*current_event_route_->target_element_id)) {
+  if (!element_focusable(*state_->input.current_event_route_->target_element_id)) {
     return;
   }
 
-  request_keyboard_focus(*current_event_route_->target_element_id);
-  if (Element* element = routed_element(*current_event_route_->target_element_id);
+  request_keyboard_focus(*state_->input.current_event_route_->target_element_id);
+  if (Element* element = routed_element(*state_->input.current_event_route_->target_element_id);
       element != nullptr) {
     element->focus(ElementFocusContext{
-        .element_id = *current_event_route_->target_element_id,
+        .element_id = *state_->input.current_event_route_->target_element_id,
     });
   }
 }

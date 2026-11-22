@@ -33,25 +33,15 @@ int main() {
   const std::string window = read_source("src/ui/window.cpp");
   const std::string behavior =
       read_source("tests/ui/test_app_simulated_input_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_test_app_window_setup_structure_test.cpp");
   const std::string manifests = read_source("tests/ui/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &header, &internal, &input, &platform, &window, &behavior, &previous,
-      &manifests, &vocabulary, &core, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &header, &internal, &input, &platform, &window, &behavior, &manifests, &vocabulary, &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "simulate_keystrokes(std::string_view keystrokes)") ||
@@ -70,8 +60,7 @@ int main() {
       !contains(behavior, "Second Input Window") ||
       !contains(behavior, "second.input_state().pointer_position") ||
       contains(behavior, "[DEBUG-step660]")) return 4;
-  if (!contains(previous, "Phase J Step 799 re-run upstream extractor against the pinned revision") ||
-      !contains(manifests, "\"test_app_simulated_input_test.cpp\"") ||
+  if (!contains(manifests, "\"test_app_simulated_input_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_test_app_simulated_input_structure_test.cpp\"")) {
     return 5;
@@ -80,21 +69,8 @@ int main() {
       line_count(input) > 120 || line_count(platform) > 75 ||
       line_count(window) > 80 || line_count(behavior) > 125) return 6;
 
-  constexpr const char* completion =
-      "Phase G Step 660 routes GPUI-style keyboard, key-sequence, pointer, "
-      "scroll, activation, window-focus, and element-focus simulation through "
-      "TestAppWindow and the private test-platform callback, with window-scoped "
-      "input snapshots and invalid grammar rejection. Step 661 GPUI-style "
-      "timer control production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
   if (!contains(vocabulary, "`TestAppWindow::simulate_keystrokes(...)`") ||
       !contains(core, "Window-scoped `TestAppWindow` input simulation") ||
-      !contains(ledger_json, "\"phase_g_step_660_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 8;
+      !contains(ledger_json, "\"phase_g_step_660_sources\"")) return 8;
   return 0;
 }

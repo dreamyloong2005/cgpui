@@ -70,49 +70,49 @@ namespace {
 } // namespace
 
 void WindowRuntime::refresh_disabled_interaction_state() {
-  if (hovered_element_id_.has_value() &&
-      disabled_or_missing(*this, *hovered_element_id_)) {
-    const std::optional<ElementId> previous = hovered_element_id_;
-    hovered_element_id_.reset();
-    cursor_shape_ = CursorShape::default_arrow;
-    apply_cursor_shape(cursor_shape_);
-    request_style_state_invalidation(previous, hovered_element_id_);
+  if (state_->input.hovered_element_id_.has_value() &&
+      disabled_or_missing(*this, *state_->input.hovered_element_id_)) {
+    const std::optional<ElementId> previous = state_->input.hovered_element_id_;
+    state_->input.hovered_element_id_.reset();
+    state_->input.cursor_shape_ = CursorShape::default_arrow;
+    apply_cursor_shape(state_->input.cursor_shape_);
+    request_style_state_invalidation(previous, state_->input.hovered_element_id_);
   }
 
-  if (active_element_id_.has_value() &&
-      disabled_or_missing(*this, *active_element_id_)) {
-    const std::optional<ElementId> previous = active_element_id_;
-    active_element_id_.reset();
-    request_style_state_invalidation(previous, active_element_id_);
+  if (state_->input.active_element_id_.has_value() &&
+      disabled_or_missing(*this, *state_->input.active_element_id_)) {
+    const std::optional<ElementId> previous = state_->input.active_element_id_;
+    state_->input.active_element_id_.reset();
+    request_style_state_invalidation(previous, state_->input.active_element_id_);
   }
 
-  if (keyboard_focus_element_owner_.has_value() &&
-      disabled_or_missing(*this, *keyboard_focus_element_owner_)) {
-    const std::optional<ElementId> previous = keyboard_focus_element_owner_;
-    keyboard_focus_element_owner_.reset();
-    request_style_state_invalidation(previous, keyboard_focus_element_owner_);
+  if (state_->input.keyboard_focus_element_owner_.has_value() &&
+      disabled_or_missing(*this, *state_->input.keyboard_focus_element_owner_)) {
+    const std::optional<ElementId> previous = state_->input.keyboard_focus_element_owner_;
+    state_->input.keyboard_focus_element_owner_.reset();
+    request_style_state_invalidation(previous, state_->input.keyboard_focus_element_owner_);
     apply_focused_text_ime_placement();
   }
 
-  if (pointer_capture_owner_.has_value() &&
-      pointer_capture_owner_->is_element() &&
-      disabled_or_missing(*this, *pointer_capture_owner_->element_id())) {
-    release_pointer(*pointer_capture_owner_);
+  if (state_->input.pointer_capture_owner_.has_value() &&
+      state_->input.pointer_capture_owner_->is_element() &&
+      disabled_or_missing(*this, *state_->input.pointer_capture_owner_->element_id())) {
+    release_pointer(*state_->input.pointer_capture_owner_);
   }
 
-  if (input_.pointer_down_element_id.has_value() &&
-      disabled_or_missing(*this, *input_.pointer_down_element_id)) {
-    input_.pointer_down_element_id.reset();
-    input_.dragging = false;
+  if (state_->input.input_.pointer_down_element_id.has_value() &&
+      disabled_or_missing(*this, *state_->input.input_.pointer_down_element_id)) {
+    state_->input.input_.pointer_down_element_id.reset();
+    state_->input.input_.dragging = false;
   }
-  if (input_.clicked_element_id.has_value() &&
-      disabled_or_missing(*this, *input_.clicked_element_id)) {
-    input_.clicked_element_id.reset();
+  if (state_->input.input_.clicked_element_id.has_value() &&
+      disabled_or_missing(*this, *state_->input.input_.clicked_element_id)) {
+    state_->input.input_.clicked_element_id.reset();
   }
-  if (input_.dragging_element_id.has_value() &&
-      disabled_or_missing(*this, *input_.dragging_element_id)) {
-    input_.dragging_element_id.reset();
-    input_.dragging = false;
+  if (state_->input.input_.dragging_element_id.has_value() &&
+      disabled_or_missing(*this, *state_->input.input_.dragging_element_id)) {
+    state_->input.input_.dragging_element_id.reset();
+    state_->input.input_.dragging = false;
   }
 }
 

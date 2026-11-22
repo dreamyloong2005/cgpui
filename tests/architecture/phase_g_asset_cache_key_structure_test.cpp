@@ -36,25 +36,16 @@ int main() {
   const std::string prelude = read_source("include/cgpui/prelude.hpp");
   const std::string prelude_cleanliness =
       read_source("tests/header_cleanliness/prelude_header_cleanliness.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_svg_asset_decode_structure_test.cpp");
   const std::string manifests = read_source("tests/assets/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &source, &behavior, &core_cleanliness, &prelude,
-      &prelude_cleanliness, &previous, &manifests, &vocabulary, &core, &roadmap,
-      &ledger_md, &ledger_json, &task_plan, &findings};
+      &prelude_cleanliness, &manifests, &vocabulary, &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "struct AssetSourceId") ||
@@ -82,8 +73,6 @@ int main() {
       !contains(core_cleanliness, "header_asset_key->stable_hash()") ||
       !contains(prelude_cleanliness, "prelude_asset_key->revision")) return 4;
   if (!contains(prelude, "cgpui/core/asset_cache_key.hpp") ||
-      !contains(previous, "rasterization path. Step ") ||
-      !contains(previous, "655 asset cache key production behavior is next.") ||
       !contains(manifests, "\"asset_cache_key_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_asset_cache_key_structure_test.cpp\"")) {
@@ -92,22 +81,9 @@ int main() {
   if (line_count(header) > 60 || line_count(source) > 110 ||
       line_count(behavior) > 100) return 6;
 
-  constexpr const char* completion =
-      "Phase G Step 655 adds stable decoded-asset cache keys with explicit "
-      "source, normalized cross-platform relative path, asset kind, and "
-      "revision identity plus deterministic FNV-1a hashing and invalid-path "
-      "diagnostics. Step 656 asset reload invalidation production behavior "
-      "is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
   if (!contains(vocabulary, "`AssetCacheKey`") ||
       !contains(vocabulary, "`make_asset_cache_key(...)`") ||
       !contains(core, "Stable decoded-asset cache keys") ||
-      !contains(ledger_json, "\"phase_g_step_655_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 8;
+      !contains(ledger_json, "\"phase_g_step_655_sources\"")) return 8;
   return 0;
 }

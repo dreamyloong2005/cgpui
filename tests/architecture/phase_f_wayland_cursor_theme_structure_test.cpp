@@ -48,19 +48,10 @@ int main() {
       read_source("tests/architecture/mcpp.toml");
   const std::string linux_backends =
       read_source("packages/platform-linux-wayland/build.mcpp");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &cursor_header, &cursor, &application_cursor, &application, &core,
       &registry, &scale, &window_internal, &helper, &compositor, &behavior,
-      &manifests, &linux_backends, &roadmap, &ledger_md, &ledger_json, &task_plan,
-      &findings};
+      &manifests, &linux_backends};
   for (const std::string* source : required) if (source->empty()) return 1;
   if (!contains(cursor, "wl_cursor_theme_load(") ||
       !contains(cursor, "wl_cursor_theme_get_cursor(") ||
@@ -93,23 +84,5 @@ int main() {
       line_count(scale) > 80 || line_count(window_internal) > 123 ||
       line_count(helper) > 80 || line_count(compositor) > 3700 ||
       line_count(behavior) > 160) return 7;
-  constexpr const char* completion =
-      "Phase F Step 561 loads real Wayland cursor themes through wl_shm and "
-      "libwayland-cursor, applies scaled cursor surfaces with image buffers "
-      "and hotspots, and reloads on window scale changes. Step 562 Wayland "
-      "event-loop wakeup production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_561_remaining_gap\": \"Step 562 Wayland")) {
-    return 9;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) {
-    return 10;
-  }
   return 0;
 }

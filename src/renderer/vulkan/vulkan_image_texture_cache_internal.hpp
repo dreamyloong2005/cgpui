@@ -27,6 +27,7 @@ void vulkan_touch_image_texture_resource(
     VkDevice device,
     std::span<const ImageDraw> image_draws,
     std::span<const ImageUploadBatch> image_uploads,
-    VulkanImageTextureResources& resources);
+    VulkanImageTextureResources& resources,
+    std::span<const ImageAssetId> retained_uploads = {});
 
 } // namespace cgpui

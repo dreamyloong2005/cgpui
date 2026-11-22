@@ -12,46 +12,59 @@ TaskGroup::~TaskGroup() { (void)cancel(); }
 
 TaskGroup::TaskGroup(TaskGroup&& other) noexcept
     : runtime_(std::exchange(other.runtime_, nullptr)),
-      id_(std::exchange(other.id_, {})) {}
+      runtime_lifetime_(std::move(other.runtime_lifetime_)),
+      id_(std::exchange(other.id_, {})),
+      window_runtime_id_(std::exchange(other.window_runtime_id_, {})) {}
 
 TaskGroup& TaskGroup::operator=(TaskGroup&& other) noexcept {
   if (this == &other) return *this;
   (void)cancel();
   runtime_ = std::exchange(other.runtime_, nullptr);
+  runtime_lifetime_ = std::move(other.runtime_lifetime_);
   id_ = std::exchange(other.id_, {});
+  window_runtime_id_ = std::exchange(other.window_runtime_id_, {});
   return *this;
 }
 
 TaskGroup TaskGroup::create_child_group() const {
-  if (runtime_ == nullptr) return {};
+  auto* runtime = attached_runtime();
+  if (runtime == nullptr) return {};
   const TaskGroupId child_id =
-      runtime_->task_group_store_->create_child(*runtime_, id_);
-  return child_id.value == 0 ? TaskGroup{} : TaskGroup(*runtime_, child_id);
+      runtime->state_->tasks.task_group_store_->create_child(*runtime, id_);
+  if (child_id.value == 0) return {};
+  TaskGroup child(*runtime, child_id);
+  child.window_runtime_id_ = window_runtime_id_;
+  return child;
 }
 
 std::size_t TaskGroup::task_count() const {
-  return runtime_ == nullptr ? 0 :
-      runtime_->task_group_store_->task_count(*runtime_, id_);
+  auto* runtime = attached_runtime();
+  return runtime == nullptr ? 0 :
+      runtime->state_->tasks.task_group_store_->task_count(*runtime, id_);
 }
 
 std::size_t TaskGroup::active_task_count() const {
-  return runtime_ == nullptr ? 0 :
-      runtime_->task_group_store_->active_task_count(*runtime_, id_);
+  auto* runtime = attached_runtime();
+  return runtime == nullptr ? 0 :
+      runtime->state_->tasks.task_group_store_->active_task_count(*runtime, id_);
 }
 
 bool TaskGroup::complete() const {
-  return runtime_ != nullptr &&
-      runtime_->task_group_store_->complete(*runtime_, id_);
+  auto* runtime = attached_runtime();
+  return runtime != nullptr &&
+      runtime->state_->tasks.task_group_store_->complete(*runtime, id_);
 }
 
 bool TaskGroup::cancelled() const {
-  return runtime_ != nullptr &&
-      runtime_->task_group_store_->cancelled(*runtime_, id_);
+  auto* runtime = attached_runtime();
+  return runtime != nullptr &&
+      runtime->state_->tasks.task_group_store_->cancelled(*runtime, id_);
 }
 
 bool TaskGroup::cancel() {
-  return runtime_ != nullptr &&
-      runtime_->task_group_store_->cancel(*runtime_, id_);
+  auto* runtime = attached_runtime();
+  return runtime != nullptr &&
+      runtime->state_->tasks.task_group_store_->cancel(*runtime, id_);
 }
 
 TaskHandle TaskGroup::spawn_task(TaskCompletionCallback callback) const {
@@ -61,9 +74,10 @@ TaskHandle TaskGroup::spawn_task(TaskCompletionCallback callback) const {
 TaskHandle TaskGroup::spawn_task(
     TaskPriority priority,
     TaskCompletionCallback callback) const {
-  return runtime_ == nullptr ? TaskHandle{} :
-      runtime_->task_group_store_->spawn_task(
-          *runtime_, id_, priority, std::move(callback));
+  auto* runtime = attached_runtime();
+  return runtime == nullptr ? TaskHandle{} :
+      runtime->state_->tasks.task_group_store_->spawn_task(
+          *runtime, id_, priority, bind_callback(std::move(callback)));
 }
 
 Result<TaskHandle> TaskGroup::try_spawn_task(
@@ -99,9 +113,10 @@ TaskHandle TaskGroup::spawn_background_task(
     TaskPriority priority,
     BackgroundTaskCallback work,
     TaskCompletionCallback completion) const {
-  return runtime_ == nullptr ? TaskHandle{} :
-      runtime_->task_group_store_->spawn_background_task(
-          *runtime_, id_, priority, std::move(work), std::move(completion));
+  auto* runtime = attached_runtime();
+  return runtime == nullptr ? TaskHandle{} :
+      runtime->state_->tasks.task_group_store_->spawn_background_task(
+          *runtime, id_, priority, std::move(work), bind_callback(std::move(completion)));
 }
 
 Result<TaskHandle> TaskGroup::try_spawn_background_task(

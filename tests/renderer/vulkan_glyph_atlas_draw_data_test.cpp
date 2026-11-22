@@ -181,7 +181,9 @@ int test_draw_data_module_structure() {
   if (!contains(internal, "struct VulkanGlyphAtlasDrawData") ||
       !contains(internal, "first_quad_index") ||
       !contains(draw_data, "vulkan_plan_glyph_atlas_draw_data(") ||
-      !contains(draw_data, "vulkan_build_textured_glyph_quads(") ||
+      !contains(draw_data, "cgpui/renderer/planning/glyph_geometry.hpp") ||
+      !contains(draw_data, "build_textured_glyph_quads(") ||
+      contains(draw_data, "vulkan_build_textured_glyph_quads(") ||
       !contains(bindings, "first_quad_index = usage.first_quad_index") ||
       !contains(frame, "VulkanGlyphAtlasDrawData draw_data") ||
       !contains(state,
@@ -189,32 +191,6 @@ int test_draw_data_module_structure() {
       !contains(command_header, "std::span<const TexturedGlyphQuad>") ||
       !contains(command_source, "glyph_atlas_draw_quads")) {
     return 31;
-  }
-  return 0;
-}
-
-int test_step_465_documentation() {
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 465",
-      "VulkanGlyphAtlasDrawData",
-      "first_quad_index",
-      "contiguous page runs",
-      "Step 466",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 40;
-    }
   }
   return 0;
 }
@@ -233,5 +209,5 @@ int main() {
   if (const int result = test_draw_data_module_structure(); result != 0) {
     return result;
   }
-  return test_step_465_documentation();
+  return 0;
 }

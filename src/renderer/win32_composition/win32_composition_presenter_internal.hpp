@@ -62,9 +62,9 @@ class Win32CompositionPresenter {
   std::unique_ptr<Win32CompositionObjects> objects_;
 };
 
-// True when a hardware D3D11 device and a DirectComposition device can be
-// created (checked once per process). PlatformApplication's
-// popup_windows_supported() on Win32 is this probe.
+// Bridge smoke-test: a default hardware D3D11 and DirectComposition device
+// can be created (checked once per process). This is not platform host support
+// or a replacement for interop validation on the renderer's selected adapter.
 [[nodiscard]] bool win32_composition_available();
 
 } // namespace cgpui

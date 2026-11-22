@@ -20,6 +20,13 @@ sources = []
 
 [test]
 discover = [
+    "runtime_public_state_isolation_test.cpp",
+    "runtime_task_group_lifetime_structure_test.cpp",
+    "renderer_planning_ownership_structure_test.cpp",
+    "text_ownership_structure_test.cpp",
+    "structural_assertion_policy_test.cpp",
+    "runtime_window_lifetime_structure_test.cpp",
+    "renderer_platform_recovery_structure_test.cpp",
     "app_source_structure_test.cpp",
     "backdrop_blur_structure_test.cpp",
     "backdrop_erase_structure_test.cpp",

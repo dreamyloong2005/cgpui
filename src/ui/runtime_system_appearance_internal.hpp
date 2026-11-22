@@ -1,3 +1,2 @@
 SystemAppearanceCallback system_appearance_callback_;
 bool system_appearance_bridge_installed_ = false;
-void handle_system_appearance_change(const SystemAppearanceChange& change);

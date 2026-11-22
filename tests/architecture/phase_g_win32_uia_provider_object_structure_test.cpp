@@ -49,17 +49,10 @@ int main() {
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("packages/platform-win32/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &provider_header, &provider_object_header, &provider, &provider_state,
       &lifetime, &adapter_header, &adapter, &updates, &window,
-      &application, &behavior, &manifests, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &application, &behavior, &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(provider_header, "struct Win32UiaProviderNode") ||
@@ -100,16 +93,5 @@ int main() {
       line_count(window) > 130 || line_count(application) > 220 ||
       line_count(behavior) > 180) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 619 adds production Win32 `IRawElementProviderSimple` "
-      "objects with COM identity and reference counting, HWND host providers, "
-      "stable automation ids, role control types, basic properties, and "
-      "adapter element lookup. Step 620 Win32 UIA tree navigation production "
-      "behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 8;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
   return 0;
 }

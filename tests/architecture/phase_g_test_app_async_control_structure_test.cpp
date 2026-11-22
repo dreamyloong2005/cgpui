@@ -31,24 +31,16 @@ int main() {
   const std::string async = read_source("src/ui/test_app_async.cpp");
   const std::string behavior =
       read_source("tests/ui/test_app_async_control_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_test_app_timer_control_structure_test.cpp");
   const std::string manifests = read_source("tests/ui/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &header, &internal, &async, &behavior, &previous, &manifests, &vocabulary,
-      &core, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &header, &internal, &async, &behavior, &manifests, &vocabulary,
+      &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "bool complete_task(TaskId id) const") ||
@@ -62,8 +54,7 @@ int main() {
       !contains(behavior, "normal_second") ||
       !contains(behavior, "TaskId{999999}") ||
       !contains(behavior, "app.run_until_parked()")) return 4;
-  if (!contains(previous, "Phase J Step 799 re-run upstream extractor against the pinned revision") ||
-      !contains(manifests, "\"test_app_async_control_test.cpp\"") ||
+  if (!contains(manifests, "\"test_app_async_control_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_test_app_async_control_structure_test.cpp\"")) {
     return 5;
@@ -71,21 +62,8 @@ int main() {
   if (line_count(header) > 125 || line_count(internal) > 140 ||
       line_count(async) > 40 || line_count(behavior) > 105) return 6;
 
-  constexpr const char* completion =
-      "Phase G Step 662 adds deterministic TestApp async control for manual "
-      "task completion, priority-ordered and FIFO draining, nested ready-task "
-      "completion, invalid or repeated id rejection, and parked draining "
-      "without a test-only executor. Step 663 GPUI-style rendering control "
-      "production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
   if (!contains(vocabulary, "`TestApp::complete_task(...)`") ||
       !contains(core, "Deterministic `TestApp` async control") ||
-      !contains(ledger_json, "\"phase_g_step_662_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 8;
+      !contains(ledger_json, "\"phase_g_step_662_sources\"")) return 8;
   return 0;
 }

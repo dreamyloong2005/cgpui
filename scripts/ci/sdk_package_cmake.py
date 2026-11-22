@@ -99,6 +99,10 @@ def readme(manifest: dict) -> str:
         "the toolchain, dependency versions, link order and a SHA-256 for "
         "every file. C++23 is required.",
         "",
+        "Headers are self-contained under `include/`; no checkout `src/`",
+        "headers are required or shipped. Rebuild consumers and libraries",
+        "together when updating the SDK: WindowRuntime's opaque state changes its ABI.",
+        "",
         "## CMake",
         "",
         "```cmake",

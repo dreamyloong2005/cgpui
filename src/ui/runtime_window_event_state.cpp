@@ -12,18 +12,18 @@ void WindowRuntime::begin_event_route_for_record(
 void WindowRuntime::finish_event_dispatch_for_record(
     WindowRuntimeRecord& record,
     EventResult result) {
-  if (!record.event_route.has_value()) {
+  if (!record.active || !record.event_route.has_value()) {
     return;
   }
   record.last_event_result = result;
   record.last_event_dispatch = EventDispatchRecord{
-      .sequence = ++event_dispatch_sequence_,
+      .sequence = ++state_->diagnostics.event_dispatch_sequence_,
       .view_id = record.event_route->target_view_id,
       .event_kind = record.event_route->event_kind,
       .route = *record.event_route,
       .result = record.last_event_result};
-  if (after_event_callback_) {
-    after_event_callback_(context_for_record(record), *record.last_event_dispatch);
+  if (state_->core.after_event_callback_) {
+    state_->core.after_event_callback_(context_for_record(record), *record.last_event_dispatch);
   }
   drain_deferred_callbacks();
   flush_deferred_redraw_request();
@@ -31,11 +31,11 @@ void WindowRuntime::finish_event_dispatch_for_record(
 
 void WindowRuntime::sync_root_event_record() {
   WindowRuntimeRecord* record =
-      find_window_runtime_record(root_window_runtime_id_);
+      find_window_runtime_record(state_->windows.root_window_runtime_id_);
   if (record != nullptr) {
-    record->event_route = current_event_route_;
-    record->last_event_result = last_event_result_;
-    record->last_event_dispatch = last_event_dispatch_;
+    record->event_route = state_->input.current_event_route_;
+    record->last_event_result = state_->input.last_event_result_;
+    record->last_event_dispatch = state_->diagnostics.last_event_dispatch_;
   }
 }
 

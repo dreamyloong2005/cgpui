@@ -35,7 +35,7 @@ Result<NativeMessageDialogResult>
 WindowRuntime::try_show_native_message_dialog(
     NativeMessageDialogOptions options) {
   NativeMessageDialogResult result =
-      application_.show_native_message_dialog(std::move(options));
+      state_->core.application_.show_native_message_dialog(std::move(options));
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::message_dialog,
       .backend = result.backend,
@@ -47,17 +47,17 @@ WindowRuntime::try_show_native_message_dialog(
   if (!result.supported) {
     return unsupported_service_result("native message dialog", result);
   }
-  native_message_dialog_result_ = std::move(result);
-  return native_message_dialog_result_;
+  state_->platform.native_message_dialog_result_ = std::move(result);
+  return state_->platform.native_message_dialog_result_;
 }
 
 const NativeMessageDialogResult&
 WindowRuntime::native_message_dialog_result() const {
-  return native_message_dialog_result_;
+  return state_->platform.native_message_dialog_result_;
 }
 
 Result<PlatformOpenUrlResult> WindowRuntime::try_open_url(std::string url) {
-  PlatformOpenUrlResult result = application_.open_url(std::move(url));
+  PlatformOpenUrlResult result = state_->core.application_.open_url(std::move(url));
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::open_url,
       .backend = result.backend,
@@ -69,16 +69,16 @@ Result<PlatformOpenUrlResult> WindowRuntime::try_open_url(std::string url) {
   if (!result.supported) {
     return unsupported_service_result("open URL", result);
   }
-  open_url_result_ = std::move(result);
-  return open_url_result_;
+  state_->platform.open_url_result_ = std::move(result);
+  return state_->platform.open_url_result_;
 }
 
 const PlatformOpenUrlResult& WindowRuntime::open_url_result() const {
-  return open_url_result_;
+  return state_->platform.open_url_result_;
 }
 
 Result<PlatformReopenResult> WindowRuntime::try_request_reopen() {
-  PlatformReopenResult result = application_.request_reopen();
+  PlatformReopenResult result = state_->core.application_.request_reopen();
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::reopen,
       .backend = result.backend,
@@ -90,12 +90,12 @@ Result<PlatformReopenResult> WindowRuntime::try_request_reopen() {
   if (!result.supported) {
     return unsupported_service_result("reopen", result);
   }
-  reopen_result_ = std::move(result);
-  return reopen_result_;
+  state_->platform.reopen_result_ = std::move(result);
+  return state_->platform.reopen_result_;
 }
 
 const PlatformReopenResult& WindowRuntime::reopen_result() const {
-  return reopen_result_;
+  return state_->platform.reopen_result_;
 }
 
 } // namespace cgpui

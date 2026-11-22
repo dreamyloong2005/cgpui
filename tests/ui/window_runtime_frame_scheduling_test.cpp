@@ -109,27 +109,31 @@ int test_after_frame_invalidation_schedules_one_next_frame() {
              : 20;
 }
 
-int test_structure_and_documentation() {
+int test_structure() {
   const std::string scheduling =
       read_source("src/ui/runtime_frame_scheduling.cpp");
   const std::string redraw = read_source("src/ui/runtime_scheduling.cpp");
   const std::string frame_results =
       read_source("src/ui/runtime_renderer_frame_results.cpp");
   const std::string internal =
-      read_source("src/ui/window_runtime_internal.hpp");
+      read_source("src/ui/runtime_state_scheduling_internal.hpp");
   const std::string scheduling_header =
       read_source("src/ui/runtime_frame_scheduling_internal.hpp");
+  const std::string declarations = read_source(
+      "include/cgpui/ui/detail/window_runtime_frame_scheduling_declarations.hpp");
   const std::string run = read_source("src/ui/runtime_run.cpp");
   const std::string structure =
       read_source("tests/architecture/ui_source_structure_test.cpp");
   if (scheduling.empty() || redraw.empty() || frame_results.empty() ||
-      internal.empty() || scheduling_header.empty() || run.empty() ||
+      internal.empty() || scheduling_header.empty() || declarations.empty() || run.empty() ||
       structure.empty()) {
     return 30;
   }
   if (!contains(scheduling, "WindowRuntime::begin_frame_scheduling()") ||
       !contains(scheduling, "WindowRuntime::complete_frame_scheduling()") ||
       !contains(scheduling, "WindowRuntime::abort_frame_scheduling()") ||
+      !contains(declarations, "void begin_frame_scheduling(), complete_frame_scheduling();") ||
+      !contains(declarations, "void abort_frame_scheduling();") ||
       !contains(redraw, "next_frame_redraw_requested_") ||
       !contains(redraw, "rendering_frame_") ||
       !contains(frame_results, "begin_frame_scheduling()") ||
@@ -147,28 +151,6 @@ int test_structure_and_documentation() {
     return 31;
   }
 
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 513",
-      "next-frame scheduling",
-      "render-time invalidation survives frame completion",
-      "coalesced into exactly one platform redraw",
-      "Step 514 batching and scheduling closeout",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 40;
-    }
-  }
   return 0;
 }
 
@@ -185,5 +167,5 @@ int main() {
       result != 0) {
     return result;
   }
-  return test_structure_and_documentation();
+  return test_structure();
 }

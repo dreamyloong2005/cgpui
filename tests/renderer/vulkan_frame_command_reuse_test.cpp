@@ -216,7 +216,7 @@ int test_bulk_invalidation_retains_counters() {
              : 40;
 }
 
-int test_structure_and_documentation() {
+int test_structure() {
   const std::string header = read_source(
       "src/renderer/vulkan/vulkan_frame_command_reuse_internal.hpp");
   const std::string source = read_source(
@@ -256,28 +256,6 @@ int test_structure_and_documentation() {
     return 51;
   }
 
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 508",
-      "exact semantic command signature",
-      "per-swapchain-image recorded command reuse",
-      "pending uploads force recording",
-      "Step 509 pipeline-switch batching",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 60;
-    }
-  }
   return 0;
 }
 
@@ -298,5 +276,5 @@ int main() {
   if (const int result = test_bulk_invalidation_retains_counters(); result != 0) {
     return result;
   }
-  return test_structure_and_documentation();
+  return test_structure();
 }

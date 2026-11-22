@@ -1,5 +1,4 @@
-# Platform-neutral platform layer, and src/ui/text_font.cpp (font database)
-# for this package and packages/renderer (see there).
+# Platform-neutral services and the font database.
 [package]
 namespace = "cgpui"
 name = "platform"
@@ -16,7 +15,6 @@ include_dirs = ["../../include"]
 sources = [
     "../../src/platform/*.cpp",
     "!../../src/platform/platform_unimplemented.cpp",
-    "../../src/ui/text_font.cpp",
 ]
 
 [target.'cfg(os = "windows")'.build]

@@ -3,26 +3,26 @@
 namespace cgpui {
 
 void WindowRuntime::set_static_element_tree(StaticElementTreeView tree) {
-  owned_element_tree_.reset();
-  view_rendered_element_tree_ = false;
-  element_root_ = nullptr;
-  static_element_tree_ = tree;
-  has_static_element_tree_ = !tree.empty() && tree.valid();
+  state_->elements.owned_element_tree_.reset();
+  state_->elements.view_rendered_element_tree_ = false;
+  state_->elements.element_root_ = nullptr;
+  state_->elements.static_element_tree_ = tree;
+  state_->elements.has_static_element_tree_ = !tree.empty() && tree.valid();
   apply_focused_text_ime_placement();
 }
 
 void WindowRuntime::clear_static_element_tree() {
-  static_element_tree_ = {};
-  has_static_element_tree_ = false;
+  state_->elements.static_element_tree_ = {};
+  state_->elements.has_static_element_tree_ = false;
 }
 
 bool WindowRuntime::static_element_tree_installed() const {
-  return has_static_element_tree_ && !static_element_tree_.empty() &&
-         static_element_tree_.valid();
+  return state_->elements.has_static_element_tree_ && !state_->elements.static_element_tree_.empty() &&
+         state_->elements.static_element_tree_.valid();
 }
 
 const StaticElementTreeView* WindowRuntime::static_element_tree() const {
-  return static_element_tree_installed() ? &static_element_tree_ : nullptr;
+  return static_element_tree_installed() ? &state_->elements.static_element_tree_ : nullptr;
 }
 
 const StaticElementNode* WindowRuntime::static_element_node(
@@ -55,8 +55,8 @@ std::optional<ElementId> WindowRuntime::element_parent(
       node != nullptr && node->parent_id.value != 0) {
     return node->parent_id;
   }
-  if (owned_element_tree_ != nullptr) {
-    return owned_element_tree_->parent(element_id);
+  if (state_->elements.owned_element_tree_ != nullptr) {
+    return state_->elements.owned_element_tree_->parent(element_id);
   }
   return {};
 }

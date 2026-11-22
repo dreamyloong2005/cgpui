@@ -1,0 +1,66 @@
+#pragma once
+
+#include "cgpui/renderer/text/text_measurement.hpp"
+
+#include <cstddef>
+#include <cstdint>
+
+namespace cgpui {
+
+struct TextSelectionRange {
+  std::size_t start = 0;
+  std::size_t end = 0;
+  bool collapsed = true;
+};
+
+enum class TextSelectionDragDirection {
+  collapsed,
+  forward,
+  backward,
+};
+
+enum class TextSelectionGranularity {
+  caret,
+  word,
+  line,
+};
+
+struct TextSelectionDrag {
+  std::size_t anchor_offset = 0;
+  std::size_t head_offset = 0;
+  TextSelectionRange range;
+  TextSelectionDragDirection direction =
+      TextSelectionDragDirection::collapsed;
+};
+
+struct TextHitTestResult {
+  std::size_t byte_offset = 0;
+  Point local_position;
+  bool inside_bounds = false;
+};
+
+[[nodiscard]] TextHitTestResult hit_test_text_position(
+    const TextMeasurement& measurement,
+    Rect bounds,
+    Point point);
+
+[[nodiscard]] TextSelectionRange text_selection_range_from_points(
+    const TextMeasurement& measurement,
+    Rect bounds,
+    Point anchor,
+    Point head);
+
+[[nodiscard]] TextSelectionDrag text_selection_drag_from_offsets(
+    std::size_t anchor_offset,
+    std::size_t head_offset);
+
+[[nodiscard]] TextSelectionDrag text_selection_drag_from_points(
+    const TextMeasurement& measurement,
+    Rect bounds,
+    Point anchor,
+    Point head);
+
+[[nodiscard]] TextSelectionGranularity
+text_selection_granularity_for_click_count(std::uint8_t click_count);
+
+} // namespace cgpui

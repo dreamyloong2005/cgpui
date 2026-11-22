@@ -78,15 +78,15 @@ int main() {
     require(has(win32_window, "place_popup(WindowPopupPlacement placement) override") &&
                 has(native_surface, ".composition = win32_is_popup_window(hwnd_)") &&
                 has(application, "create_win32_popup_window(") &&
-                application.find("if (popup) return") < application.find("windows_.push_back(") &&
-                has(system, "win32_composition_available()"),
+                has(application, "windows_.add(") &&
+                application.find("if (popup) return") < application.find("windows_.add(") &&
+                has(system, "win32_composition_host_available()"),
             "popups mark their surface, skip the menu bar and window list, and are "
             "supported where the composition probe passes");
     const auto package = read("packages/platform-win32/mcpp.toml");
-    const auto windows_dependencies = package.find("[target.'cfg(os = \"windows\")'.dependencies]");
-    require(windows_dependencies != std::string::npos &&
-                package.find("cgpui.renderer-win32-composition") > windows_dependencies,
-            "the probe comes from the composition module, on Windows only");
+    require(!has(package, "cgpui.renderer-win32-composition") &&
+                has(package, "dcomp.lib") && !has(system, "renderer/"),
+            "the platform owns its host probe without a renderer dependency");
     const auto platform_tests = read("tests/platform/mcpp.toml");
     const auto behavior = read("tests/platform/win32_popup_window_test.cpp");
     require(platform_tests.find("\"win32_popup_window_test.cpp\"") >

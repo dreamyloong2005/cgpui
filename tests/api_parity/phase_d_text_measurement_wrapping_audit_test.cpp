@@ -58,16 +58,16 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string measurement_header =
-      read_source("include/cgpui/ui/text_measurement.hpp");
+      read_source("include/cgpui/renderer/text/text_measurement.hpp");
   const std::string wrapping_header =
-      read_source("include/cgpui/ui/text_wrapping.hpp");
+      read_source("include/cgpui/renderer/text/text_wrapping.hpp");
   const std::string paragraph_header =
-      read_source("include/cgpui/ui/text_paragraph_layout.hpp");
+      read_source("include/cgpui/renderer/text/text_paragraph_layout.hpp");
   const std::string grapheme_source =
-      read_source("src/ui/text_measurement_grapheme.cpp");
-  const std::string wrapping_source = read_source("src/ui/text_wrapping.cpp");
+      read_source("src/renderer/text/text_measurement_grapheme.cpp");
+  const std::string wrapping_source = read_source("src/renderer/text/text_wrapping.cpp");
   const std::string paragraph_source =
-      read_source("src/ui/text_paragraph_layout.cpp");
+      read_source("src/renderer/text/text_paragraph_layout.cpp");
   const std::string structure_test =
       read_source("tests/architecture/ui_source_structure_test.cpp");
   const std::string text_model_test =

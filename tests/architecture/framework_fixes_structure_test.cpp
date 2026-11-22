@@ -40,6 +40,8 @@ const std::vector<std::pair<std::string, std::size_t>> source_limits{
     {"src/ui/element_stack_paint.cpp", 40},
     {"src/ui/element_tree_traversal.cpp", 150},
     {"src/ui/runtime_window_element_host_internal.hpp", 45},
+    {"include/cgpui/ui/detail/window_runtime_window_element_host_declarations.hpp", 45},
+    {"src/ui/runtime_state_elements_types_internal.hpp", 45},
     {"src/ui/runtime_window_element_trees.cpp", 120},
     {"src/ui/runtime_window_element_routing.cpp", 110},
     {"src/platform/win32/win32_uia_item_patterns_internal.hpp", 60},
@@ -71,6 +73,13 @@ int main() {
             "the widget tree has no private hit-test root");
     // Item 2: window records own their element tree; the widget tree
     // installs it for every window through the runtime context.
+    require(has(read("src/ui/runtime_state_elements_internal.hpp"),
+                "runtime_window_element_host_internal.hpp") &&
+                has(read("src/ui/runtime_state_elements_types_internal.hpp"),
+                    "struct WindowRuntime::WindowElementHost") &&
+                has(read("include/cgpui/ui/detail/window_runtime_window_element_host_declarations.hpp"),
+                    "set_element_tree_for_window("),
+            "window element state is private and its bridge remains declaration-only");
     require(has(read("src/ui/runtime_event_windows.cpp"),
                 "dispatch_record_event_through_elements(") &&
                 has(read("src/ui/runtime_context_input.cpp"),

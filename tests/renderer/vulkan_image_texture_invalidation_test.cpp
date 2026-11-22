@@ -84,7 +84,7 @@ int test_resource_invalidation_is_idempotent() {
              : 20;
 }
 
-int test_structure_and_documentation() {
+int test_structure() {
   const std::string renderer_frame =
       read_source("include/cgpui/renderer/renderer_frame.hpp");
   const std::string header = read_source(
@@ -130,28 +130,6 @@ int test_structure_and_documentation() {
     return 31;
   }
 
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const char* required[] = {
-      "Phase E Step 497",
-      "RenderFrame::invalidate_image",
-      "deduplicated image invalidations",
-      "fence-safe resource destruction",
-      "Step 498 image integration closeout",
-  };
-  for (const char* value : required) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
-      return 40;
-    }
-  }
   return 0;
 }
 
@@ -165,5 +143,5 @@ int main() {
       result != 0) {
     return result;
   }
-  return test_structure_and_documentation();
+  return test_structure();
 }

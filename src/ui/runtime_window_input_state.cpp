@@ -4,7 +4,7 @@ namespace cgpui {
 
 void WindowRuntime::sync_root_input_record() {
   WindowRuntimeRecord* record =
-      find_window_runtime_record(root_window_runtime_id_);
+      find_window_runtime_record(state_->windows.root_window_runtime_id_);
   if (record != nullptr) {
     record->input = input_state();
   }
@@ -33,7 +33,7 @@ void WindowRuntime::update_input_state_for_record(
 void WindowRuntime::capture_pointer_for_window(
     WindowRuntimeId runtime_id,
     PointerCaptureOwner owner) {
-  if (runtime_id == root_window_runtime_id_) {
+  if (runtime_id == state_->windows.root_window_runtime_id_) {
     capture_pointer(owner);
     return;
   }
@@ -53,7 +53,7 @@ void WindowRuntime::capture_pointer_for_window(
 void WindowRuntime::release_pointer_for_window(
     WindowRuntimeId runtime_id,
     PointerCaptureOwner owner) {
-  if (runtime_id == root_window_runtime_id_) {
+  if (runtime_id == state_->windows.root_window_runtime_id_) {
     release_pointer(owner);
     return;
   }
@@ -71,7 +71,7 @@ void WindowRuntime::release_pointer_for_window(
 void WindowRuntime::request_keyboard_focus_for_window(
     WindowRuntimeId runtime_id,
     ViewId view_id) {
-  if (runtime_id == root_window_runtime_id_) {
+  if (runtime_id == state_->windows.root_window_runtime_id_) {
     request_keyboard_focus(view_id);
     return;
   }
@@ -85,7 +85,7 @@ void WindowRuntime::request_keyboard_focus_for_window(
 void WindowRuntime::request_keyboard_focus_for_window(
     WindowRuntimeId runtime_id,
     ElementId element_id) {
-  if (runtime_id == root_window_runtime_id_) {
+  if (runtime_id == state_->windows.root_window_runtime_id_) {
     request_keyboard_focus(element_id);
     return;
   }
@@ -99,7 +99,7 @@ void WindowRuntime::request_keyboard_focus_for_window(
 void WindowRuntime::release_keyboard_focus_for_window(
     WindowRuntimeId runtime_id,
     ViewId view_id) {
-  if (runtime_id == root_window_runtime_id_) {
+  if (runtime_id == state_->windows.root_window_runtime_id_) {
     release_keyboard_focus(view_id);
     return;
   }
@@ -114,7 +114,7 @@ void WindowRuntime::release_keyboard_focus_for_window(
 void WindowRuntime::release_keyboard_focus_for_window(
     WindowRuntimeId runtime_id,
     ElementId element_id) {
-  if (runtime_id == root_window_runtime_id_) {
+  if (runtime_id == state_->windows.root_window_runtime_id_) {
     release_keyboard_focus(element_id);
     return;
   }

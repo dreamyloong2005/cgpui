@@ -46,6 +46,7 @@ int main() {
   const std::string provenance =
       read_source("scripts/ci/sdk_package_provenance.py");
   const std::string cmake = read_source("scripts/ci/sdk_package_cmake.py");
+  const std::string headers = read_source("scripts/ci/sdk_package_headers.py");
   const std::string archiver =
       read_source("scripts/ci/create-release-artifact.py");
   const std::string base = read_source("scripts/ci/windows-package.ps1");
@@ -56,7 +57,7 @@ int main() {
   const std::string matrix =
       read_source("scripts/ci/architecture-header-targets.txt");
   if (windows.empty() || linux_script.empty() || packer.empty() ||
-      provenance.empty() || cmake.empty() ||
+      provenance.empty() || cmake.empty() || headers.empty() ||
       doc.empty() || sample_cmake.empty() || sample_xmake.empty()) {
     return fail(1, "SDK scripts, sample and docs/sdk-packaging.md must exist");
   }
@@ -82,8 +83,18 @@ int main() {
       !has(packer, "\"cxx_standard\"") || !has(packer, "\"sha256\"") ||
       !has(packer, "msvc_runtime(") || !has(packer, "example_workbench") ||
       !has(packer, "\"build_system\"") ||
-      !has(packer, "copy_private_headers(")) {
+      !has(packer, "\"schema_version\": 4") ||
+      !has(packer, "\"schema_version\": 2")) {
     return fail(4, "the manifest records source, toolchain, links and hashes");
+  }
+  if (!has(packer, "validate_sdk_headers(root)") ||
+      !has(packer, "validate_sdk_headers(package_root)") ||
+      has(packer, "private_header_closure") || has(packer, "copy_private_headers") ||
+      has(packer, "\"private_headers\"") || has(packer, "private_headers_reason") ||
+      !has(headers, "resolve_quoted_header(") || !has(headers, "source_root.is_symlink()") ||
+      !has(headers, "target.is_relative_to(include_root)") ||
+      read_source("tests/ci/sdk_package_headers_test.py").empty()) {
+    return fail(11, "SDK headers must close over include/ without copied or stale src/");
   }
   // Vendored dependency provenance comes from third_party/VENDORED.md and
   // the trees as committed at HEAD (git show HEAD:<path>), so the line
@@ -106,7 +117,7 @@ int main() {
   }
   // Tripwires: split the modules before raising these.
   if (line_count(packer) > 540 || line_count(provenance) > 160 ||
-      line_count(cmake) > 170 || line_count(windows) > 140 ||
+      line_count(cmake) > 170 || line_count(headers) > 100 || line_count(windows) > 140 ||
       line_count(linux_script) > 80) {
     return fail(6, "SDK packaging scripts exceed their line limits");
   }

@@ -8,6 +8,13 @@ consume the shaped advances. Applications keep calling `PaintList::fill_text`,
 `measure_text` and `shape_text`; the public API is unchanged apart from
 additive fields.
 
+The owning public leaves are under `include/cgpui/renderer/text`; existing
+`include/cgpui/ui/text_*.hpp` includes remain source-compatible facades.
+Shaping, layout and rasterization sources/private headers live together in
+`src/renderer/text`. Font descriptors are core values; discovery and the font
+database belong to platform. Editable text models and UI interaction remain
+in `src/ui`, so lower text modules do not depend on UI authoring headers.
+
 | Platform | Shaping | Fallback | Metrics | Rasterization |
 | --- | --- | --- | --- | --- |
 | Windows | DirectWrite `IDWriteTextAnalyzer` (`AnalyzeScript`, `AnalyzeBidi`, `GetGlyphs`, `GetGlyphPlacements`) | `IDWriteFontFallback::MapCharacters`; CJK prefers "Microsoft YaHei UI" unless the language is `ja`/`ko` | `IDWriteFontFace::GetMetrics` | `CreateGlyphRunAnalysis` on a one-glyph `DWRITE_GLYPH_RUN` |
@@ -71,7 +78,7 @@ disables `liga` and `calt` unless `features` sets them explicitly, so `->` and
 - `script_runs`, `missing_glyphs` (glyph id 0 for a visible character) and
   `color_glyphs` (emoji code points).
 
-The shared `NativeShapeBuilder` (`src/ui/text_shaping_native.cpp`) turns the
+The shared `NativeShapeBuilder` (`src/renderer/text/text_shaping_native.cpp`) turns the
 backend's per-face glyphs into this form for both platforms. Tabs advance to
 the next stop of `TextShapingOptions::tab_width_in_spaces` (default 4) space
 advances of the primary face, measured from the start of the run, and draw
@@ -106,7 +113,7 @@ runs are shaped right-to-left and stored in logical order.
 ## Caching
 
 - Shape cache (`include/cgpui/ui/text_shape_cache.hpp`,
-  `src/ui/text_shape_cache.cpp`): natively shaped runs are cached per thread,
+  `src/renderer/text/text_shape_cache.cpp`): natively shaped runs are cached per thread,
   keyed by text, full `FontDescriptor` (family, weight, style, features), size,
   DPI scale, backend, direction, script, language and tab width. Lookups use a
   borrowed key view, so a hit does not allocate before the result copy.
@@ -136,8 +143,8 @@ below the glyph's device origin. The Vulkan quad builder
 3. snaps the baseline to a whole device row.
 
 `rasterize_text_glyph` dispatches `directwrite` glyphs to
-`src/ui/text_glyph_id_raster_win32.cpp` and `harfbuzz` glyphs on Linux to
-`src/ui/text_glyph_id_raster_freetype.cpp`. Both return a tight grayscale
+`src/renderer/text/text_glyph_id_raster_win32.cpp` and `harfbuzz` glyphs on Linux to
+`src/renderer/text/text_glyph_id_raster_freetype.cpp`. Both return a tight grayscale
 bitmap whose bearings are relative to the pen on the baseline. DirectWrite
 ClearType coverage is averaged to one channel; the atlas stores coverage only.
 Deterministic-fallback glyphs keep the earlier cell-fitted path
@@ -178,7 +185,7 @@ which module calls which native API.
   runs are not split separately; glyphs come back from its runs (visual
   order) and are put back in logical order by cluster. Face identity is
   in-process: `face_index` carries a registry slot in its upper 16 bits
-  (`src/ui/text_coretext_fonts_macos.cpp`), because the variable system
+  (`src/renderer/text/text_coretext_fonts_macos.cpp`), because the variable system
   font has every weight in one file. `synthetic_bold` / `synthetic_oblique`
   are not reported; Core Text applies its own synthesis inside the font.
   Color emoji draw as grayscale coverage.

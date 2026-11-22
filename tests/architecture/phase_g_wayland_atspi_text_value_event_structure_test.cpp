@@ -40,23 +40,11 @@ int main() {
       "tests/platform/wayland_atspi_dbus_test_support.hpp");
   const std::string behavior = read_source(
       "tests/platform/wayland_atspi_text_value_event_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_wayland_atspi_role_state_structure_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source(
-      "docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source(
-      "docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &event_header, &event_source, &adapter_header, &adapter_source,
-      &adapter_bus, &support, &behavior, &previous, &manifests, &roadmap,
-      &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &adapter_bus, &support, &behavior, &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(event_header, "struct WaylandAtspiEventDiagnostics") ||
@@ -117,21 +105,5 @@ int main() {
     return 9;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 630 publishes Linux AT-SPI value property and text change "
-      "events from runtime accessibility live updates with standard Object "
-      "event signals, UTF-8 text lengths, source references, and publication "
-      "diagnostics. Step 631 Linux AT-SPI focus event production behavior is "
-      "next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 10;
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
-    return 11;
-  }
   return 0;
 }

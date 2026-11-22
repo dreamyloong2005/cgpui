@@ -29,9 +29,8 @@ while IFS= read -r target; do
   fi
 done < "$repo_root/scripts/ci/example-targets.txt"
 
-# The native tests of the xmake script, by member. The xmake list named
-# phase_f_multi_window_lifecycle_churn_test/default, which is no target
-# (docs/migration/README.md, macOS follow-up).
+# Native smoke programs registered in the current suite manifests.
+# Recorded results and their scope are in docs/macos-validation.md.
 "$mcpp" test -p tests/platform macos_example_smoke_test
 "$mcpp" test -p tests/renderer metal_primitive_pixel_test
 "$mcpp" test -p tests/renderer metal_text_image_pixel_test

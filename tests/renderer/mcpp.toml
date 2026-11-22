@@ -83,6 +83,7 @@ discover = [
     "vulkan_image_texture_invalidation_test.cpp",
     "vulkan_image_texture_resources_test.cpp",
     "vulkan_image_texture_upload_test.cpp",
+    "vulkan_image_upload_retry_test.cpp",
     "vulkan_image_tint_opacity_test.cpp",
     "vulkan_layer_ordering_test.cpp",
     "vulkan_nested_opacity_test.cpp",

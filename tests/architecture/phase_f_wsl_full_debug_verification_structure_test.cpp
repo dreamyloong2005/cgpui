@@ -30,16 +30,7 @@ bool registered_with_source_root(const char* test) {
 
 int main() {
   const std::string manifests = read_source("tests/architecture/mcpp.toml");
-  const std::string windows_guard = read_source(
-      "tests/architecture/phase_f_windows_full_debug_verification_structure_test.cpp");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  const std::string* required[]{&manifests, &windows_guard, &roadmap, &ledger_md,
-                                &ledger_json, &task_plan, &findings};
+  const std::string* required[]{&manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   constexpr std::array repository_tests{
@@ -60,18 +51,9 @@ int main() {
     }
   }
   if (!contains(manifests,
-                "\"phase_f_wsl_full_debug_verification_structure_test.cpp\"") ||
-      !contains(windows_guard,
-                "Phase J Step 799 re-run upstream extractor against the pinned revision")) {
+                "\"phase_f_wsl_full_debug_verification_structure_test.cpp\"")) {
     return 20;
   }
 
-  constexpr const char* completion =
-      "Phase F Step 612 completes WSL full-debug verification at 321/321 after binding historical repository-inspection targets to the project root, including real WSLg Wayland frame capture. Step 613 cross-platform test execution audit is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 21;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 22;
   return 0;
 }

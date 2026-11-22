@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/runtime.hpp"
+#include "runtime_state_internal.hpp"
 #include "ui_accessibility_internal.hpp"
 #include "ui_event_internal.hpp"
 #include "ui_paint_internal.hpp"

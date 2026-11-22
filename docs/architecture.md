@@ -3,14 +3,18 @@
 ## Module Ownership
 
 - `include/cgpui/core` and `src/core`: errors, geometry, events, entities,
-  assets, and platform-neutral value types.
+  assets, font/paint value types, and pixel-scale conversions.
 - `include/cgpui/app` and `src/app`: application and window facades.
-- `include/cgpui/platform` and `src/platform`: platform-neutral contracts plus
-  focused Win32, Wayland, X11, and Cocoa implementations.
-- `include/cgpui/renderer` and `src/renderer`: renderer contracts plus focused
-  Vulkan and Metal implementations.
-- `include/cgpui/ui` and `src/ui`: views, elements, layout, text, scheduling,
-  widgets, testing, and runtime orchestration.
+- `include/cgpui/platform` and `src/platform`: platform-neutral contracts,
+  font discovery/database, and focused Win32, Wayland, X11, and Cocoa implementations.
+- `include/cgpui/renderer` and `src/renderer`: renderer contracts, neutral text
+  shaping/measurement/rasterization under `text/`, and focused Vulkan/Metal backends.
+- `include/cgpui/ui` and `src/ui`: views, elements, layout, editable text models,
+  IME/interaction, scheduling, widgets, testing, and runtime orchestration.
+
+Platform and renderer do not include UI headers. The old `ui/text_*.hpp`
+entrypoints for shared text primitives remain thin compatibility includes;
+their implementation and native-private headers belong to `renderer/text`.
 
 Aggregate headers remain thin. Public non-template bodies live in focused
 `.cpp` files; template and constexpr bodies stay in focused public leaves.
@@ -54,6 +58,12 @@ heap allocation, broad type erasure, or avoidable virtual dispatch.
 5. Tasks, timers, animations, and cross-thread entity work wake the owning
    runtime and drain on its thread.
 
+[Runtime lifecycle](runtime-lifecycle.md) defines callback, window-resource,
+retry and popup capability boundaries. [Renderer planning](renderer-planning.md)
+describes shared CPU plans that do not require a GPU backend dependency.
+[Runtime state isolation](runtime-state-isolation.md) describes the installed
+header boundary, private state groups and terminal shutdown ordering.
+
 ## Linux Backend Selection
 
 Linux compiles focused Wayland and X11 targets. Selection is deterministic:
@@ -65,11 +75,17 @@ only the surface extension required by the selected native handle.
 Cocoa and Metal share the public runtime and renderer contracts. Native CI,
 performance and stress reports, and Release SDKs target only arm64, with a
 macOS 26.0 deployment target. The historical Phase J verification records
-both architectures under xmake. For current mcpp evidence see the
-[macOS migration record](migration/README.md#macos-follow-up).
+both architectures under xmake. For recorded mcpp evidence and
+revalidation requirements see [macOS validation](macos-validation.md).
 
 ## Structure Enforcement
 
 Architecture tests guard leaf ownership, aggregate-header cleanliness, source
 line budgets, mcpp manifest registrations, and public/private include boundaries. A
 behavior change is incomplete if these structure tests regress.
+
+Structure tests assert current ownership and registration contracts, not exact
+completion sentences, handoff labels, or entries in working logs. Historical
+plans and verification records remain evidence; changing their prose must not
+break otherwise unchanged implementation tests. Documentation tests may still
+check current public concepts, schema fields, and valid navigation.

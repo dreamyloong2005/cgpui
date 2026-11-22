@@ -6,7 +6,7 @@ NativeMenuInstallation WindowRuntime::install_native_menu(
     NativeMenuModel menu) {
   NativeMenuModel stored_menu = std::move(menu);
   const PlatformMenuInstallationResult platform_result =
-      application_.install_native_menu(stored_menu);
+      state_->core.application_.install_native_menu(stored_menu);
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::menu,
       .backend = platform_result.backend,
@@ -15,43 +15,43 @@ NativeMenuInstallation WindowRuntime::install_native_menu(
       .succeeded = platform_result.supported,
       .value_count = platform_result.item_count,
   });
-  native_menu_installation_ = NativeMenuInstallation{
+  state_->platform.native_menu_installation_ = NativeMenuInstallation{
       .model = std::move(stored_menu),
       .platform = platform_result,
   };
-  return native_menu_installation_;
+  return state_->platform.native_menu_installation_;
 }
 
 const NativeMenuInstallation& WindowRuntime::native_menu_installation() const {
-  return native_menu_installation_;
+  return state_->platform.native_menu_installation_;
 }
 
 NativeFileDialogResult WindowRuntime::show_native_file_dialog(
     NativeFileDialogOptions options) {
-  native_file_dialog_result_ =
-      application_.show_native_file_dialog(std::move(options));
+  state_->platform.native_file_dialog_result_ =
+      state_->core.application_.show_native_file_dialog(std::move(options));
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::file_dialog,
-      .backend = native_file_dialog_result_.backend,
+      .backend = state_->platform.native_file_dialog_result_.backend,
       .operation = "show-native-file-dialog",
-      .supported = native_file_dialog_result_.supported,
-      .succeeded = native_file_dialog_result_.accepted,
-      .value_count = native_file_dialog_result_.paths.size(),
+      .supported = state_->platform.native_file_dialog_result_.supported,
+      .succeeded = state_->platform.native_file_dialog_result_.accepted,
+      .value_count = state_->platform.native_file_dialog_result_.paths.size(),
   });
-  return native_file_dialog_result_;
+  return state_->platform.native_file_dialog_result_;
 }
 
 const NativeFileDialogResult& WindowRuntime::native_file_dialog_result()
     const {
-  return native_file_dialog_result_;
+  return state_->platform.native_file_dialog_result_;
 }
 
 void WindowRuntime::apply_cursor_shape(CursorShape cursor_shape) {
-  if (window_ == nullptr || applied_cursor_shape_ == cursor_shape) {
+  if (state_->windows.window_ == nullptr || state_->input.applied_cursor_shape_ == cursor_shape) {
     return;
   }
-  applied_cursor_shape_ = cursor_shape;
-  window_->set_cursor(cursor_shape);
+  state_->input.applied_cursor_shape_ = cursor_shape;
+  state_->windows.window_->set_cursor(cursor_shape);
 }
 
 void WindowRuntime::apply_focused_text_ime_placement() {
@@ -72,13 +72,13 @@ void WindowRuntime::apply_focused_text_ime_placement() {
   }
 
   if (ime_text_input_placement_equal(
-          applied_ime_text_input_placement_,
+          state_->text.applied_ime_text_input_placement_,
           placement)) {
     return;
   }
 
-  applied_ime_text_input_placement_ = placement;
-  if (window_ != nullptr) {
+  state_->text.applied_ime_text_input_placement_ = placement;
+  if (state_->windows.window_ != nullptr) {
     record_platform_diagnostic(PlatformDiagnosticEvent{
         .kind = PlatformDiagnosticKind::ime,
         .backend = "runtime",
@@ -88,21 +88,21 @@ void WindowRuntime::apply_focused_text_ime_placement() {
         .succeeded = true,
         .value_count = placement.has_value() ? placement->byte_offset : 0U,
     });
-    window_->set_ime_text_input_placement(placement);
+    state_->windows.window_->set_ime_text_input_placement(placement);
   }
 }
 
 void WindowRuntime::record_platform_diagnostic(
     PlatformDiagnosticEvent event) {
   constexpr std::size_t platform_diagnostic_limit = 32;
-  event.sequence = ++platform_diagnostic_sequence_;
+  event.sequence = ++state_->diagnostics.platform_diagnostic_sequence_;
   if (event.backend.empty()) {
     event.backend = "runtime";
   }
-  if (platform_diagnostics_.size() >= platform_diagnostic_limit) {
-    platform_diagnostics_.erase(platform_diagnostics_.begin());
+  if (state_->diagnostics.platform_diagnostics_.size() >= platform_diagnostic_limit) {
+    state_->diagnostics.platform_diagnostics_.erase(state_->diagnostics.platform_diagnostics_.begin());
   }
-  platform_diagnostics_.push_back(std::move(event));
+  state_->diagnostics.platform_diagnostics_.push_back(std::move(event));
 }
 
 } // namespace cgpui

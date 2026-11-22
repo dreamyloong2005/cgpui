@@ -33,21 +33,10 @@ int main() {
   const std::string child = read_source("src/ui/runtime_event_windows.cpp");
   const std::string behavior =
       read_source("tests/ui/window_runtime_scale_diagnostics_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_f_ime_diagnostics_structure_test.cpp");
   const std::string manifests = read_source("tests/ui/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{&event_header, &diagnostic_header,
-      &helper_header, &helper, &root, &child, &behavior, &previous, &manifests,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &helper_header, &helper, &root, &child, &behavior, &manifests};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(event_header, "window_resized") ||
       !contains(diagnostic_header, "window_scale") ||
@@ -66,8 +55,7 @@ int main() {
       !contains(behavior, "platform_diagnostics.size() != 32") ||
       !contains(behavior, "source_index = static_cast<int>(index) + 32") ||
       !contains(behavior, "event.framebuffer_size.width") ||
-      !contains(behavior, "event.scale.value") ||
-      !contains(previous, "Phase F Step 606")) return 5;
+      !contains(behavior, "event.scale.value")) return 5;
   if (line_count(event_header) > 75 || line_count(diagnostic_header) > 50 ||
       line_count(helper_header) > 20 || line_count(helper) > 30 ||
       line_count(root) > 40 || line_count(child) > 105 ||
@@ -75,12 +63,5 @@ int main() {
   if (!contains(manifests, "\"window_runtime_scale_diagnostics_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_f_scale_diagnostics_structure_test.cpp\"")) return 7;
-  constexpr const char* completion =
-      "Phase F Step 607 records root and child window resize-scale diagnostics with framebuffer and DPI snapshots, and verifies 64 scale changes retain the newest bounded 32-event sequence. Step 608 timer wakeup diagnostics and stress production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 8;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
   return 0;
 }

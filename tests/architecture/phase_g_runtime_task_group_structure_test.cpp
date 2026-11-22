@@ -39,6 +39,8 @@ int main() {
   const std::string aggregate = read_source("include/cgpui/ui/runtime.hpp");
   const std::string group_internal =
       read_source("src/ui/runtime_task_group_internal.hpp");
+  const std::string group_record =
+      read_source("src/ui/runtime_task_group_record_internal.hpp");
   const std::string group_source =
       read_source("src/ui/runtime_task_group.cpp");
   const std::string propagation_source =
@@ -50,7 +52,8 @@ int main() {
       read_source("src/ui/async_context_task_group.cpp");
   const std::string tasks_source = read_source("src/ui/runtime_tasks.cpp");
   const std::string runtime_internal =
-      read_source("src/ui/window_runtime_internal.hpp");
+      read_source("src/ui/runtime_state_tasks_internal.hpp");
+  const std::string task_types = read_source("src/ui/runtime_state_tasks_types_internal.hpp");
   const std::string behavior =
       read_source("tests/async/runtime_task_group_test.cpp");
   const std::string header_cleanliness =
@@ -64,22 +67,13 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &public_header, &ids_header, &runtime_header, &context_header,
+      &public_header, &ids_header, &runtime_header, &context_header, &group_record,
       &async_header, &aggregate, &group_internal, &group_source,
       &propagation_source,
       &handle_source, &context_source, &async_source, &tasks_source,
-      &runtime_internal, &behavior, &header_cleanliness, &ui_structure,
-      &previous, &manifests, &vocabulary, &core_parity, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &runtime_internal, &task_types, &behavior, &header_cleanliness, &ui_structure,
+      &previous, &manifests, &vocabulary, &core_parity};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(public_header, "class TaskGroup") ||
@@ -105,19 +99,20 @@ int main() {
     if (!contains(*surface, "TaskGroup create_task_group()")) return 5;
   }
   if (!contains(group_internal, "class WindowRuntime::RuntimeTaskGroupStore") ||
-      !contains(group_internal, "std::vector<TaskId> task_ids") ||
-      !contains(group_internal, "bool cancelled = false") ||
-      !contains(runtime_internal, "TaskGroupId group_id{}") ||
+      !contains(group_internal, "using Record = detail::RuntimeTaskGroupRecord") ||
+      !contains(group_record, "std::vector<TaskId> task_ids") ||
+      !contains(group_record, "bool cancelled = false") ||
+      !contains(task_types, "TaskGroupId group_id{}") ||
       !contains(runtime_internal, "task_group_store_")) return 6;
   if (!contains(group_source, "group->task_ids.push_back(id)") ||
       !contains(group_source, "task_pool_->submit(") ||
       !contains(group_source, ".group_id = group_id") ||
-      !contains(group_source, "runtime.tasks_mutex_") ||
+      !contains(group_source, "runtime.state_->tasks.tasks_mutex_") ||
       !contains(propagation_source, "std::ranges::all_of")) return 7;
   if (!contains(propagation_source, "cancellation_requested->store(true)") ||
       !contains(propagation_source, "task->cancelled = true") ||
       !contains(propagation_source, "task->queued = false") ||
-      !contains(propagation_source, "std::erase_if(runtime.task_completion_queue_") ||
+      !contains(propagation_source, "std::erase_if(runtime.state_->tasks.task_completion_queue_") ||
       !contains(tasks_source, "task->completed || task->cancelled")) return 8;
   if (!contains(handle_source, "TaskGroup::~TaskGroup() { (void)cancel(); }") ||
       !contains(handle_source, "std::exchange(other.runtime_, nullptr)") ||
@@ -141,37 +136,23 @@ int main() {
   for (const char* path : source_paths) {
     if (!contains(ui_structure, path)) return 11;
   }
-  if (!contains(previous, "Step 637 structured") ||
-      !contains(manifests, "\"runtime_task_group_test.cpp\"") ||
+  if (!contains(manifests, "\"runtime_task_group_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_runtime_task_group_structure_test.cpp\"")) {
     return 12;
   }
   if (line_count(public_header) > 80 || line_count(group_internal) > 70 ||
+      line_count(group_record) > 25 ||
       line_count(group_source) > 220 || line_count(propagation_source) > 220 ||
       line_count(handle_source) > 160 ||
       line_count(context_source) > 30 || line_count(async_source) > 30 ||
-      line_count(runtime_internal) > 260 || line_count(behavior) > 200) {
+      line_count(runtime_internal) > 260 || line_count(task_types) > 40 || line_count(behavior) > 200) {
     return 13;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 637 adds move-only structured task groups with runtime-owned "
-      "membership, normal and explicit-priority spawning, active and total task "
-      "observability, explicit bulk cancellation, and destructor cancellation "
-      "that signals background tokens and suppresses cancelled completions. "
-      "Step 638 task cancellation propagation production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 14;
-  }
   if (!contains(vocabulary, "`TaskGroup`") ||
       contains(vocabulary, "does not add structured task groups") ||
-      contains(core_parity, "priorities, structured task groups, pooled") ||
-      !contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
+      contains(core_parity, "priorities, structured task groups, pooled")) {
     return 15;
   }
   return 0;

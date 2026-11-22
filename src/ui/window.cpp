@@ -56,15 +56,15 @@ bool Window::focused() const {
 }
 
 void Window::request_render() const {
-  runtime_->request_render();
+  runtime_->request_render_for_window(runtime_id_);
 }
 
 void Window::request_layout() const {
-  runtime_->request_layout();
+  runtime_->request_layout_for_window(runtime_id_);
 }
 
 void Window::request_paint() const {
-  runtime_->request_paint();
+  runtime_->request_paint_for_window(runtime_id_);
 }
 
 const WindowRuntimeRecord* Window::record() const {

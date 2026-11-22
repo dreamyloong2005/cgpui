@@ -8,13 +8,13 @@ namespace cgpui {
 TaskHandle WindowRuntime::spawn_task(
     TaskPriority priority,
     TaskCompletionCallback callback) {
-  if (!callback) return {};
+  if (!callback || state_->core.shutting_down_) return {};
 
   TaskId id;
   {
-    std::lock_guard lock(tasks_mutex_);
-    id = TaskId{next_task_id_++};
-    tasks_.push_back(RuntimeTask{
+    std::lock_guard lock(state_->tasks.tasks_mutex_);
+    id = TaskId{state_->tasks.next_task_id_++};
+    state_->tasks.tasks_.push_back(RuntimeTask{
         .id = id,
         .priority = priority,
         .callback = std::move(callback),
@@ -27,14 +27,14 @@ TaskHandle WindowRuntime::spawn_background_task(
     TaskPriority priority,
     BackgroundTaskCallback work,
     TaskCompletionCallback completion) {
-  if (!work || !completion) return {};
+  if (!work || !completion || state_->core.shutting_down_) return {};
 
   auto cancellation_requested = std::make_shared<std::atomic_bool>(false);
   TaskId id;
   {
-    std::lock_guard lock(tasks_mutex_);
-    id = TaskId{next_task_id_++};
-    tasks_.push_back(RuntimeTask{
+    std::lock_guard lock(state_->tasks.tasks_mutex_);
+    id = TaskId{state_->tasks.next_task_id_++};
+    state_->tasks.tasks_.push_back(RuntimeTask{
         .id = id,
         .priority = priority,
         .callback = std::move(completion),
@@ -43,7 +43,7 @@ TaskHandle WindowRuntime::spawn_background_task(
     });
   }
 
-  const bool submitted = task_pool_->submit(
+  const bool submitted = state_->tasks.task_pool_->submit(
       priority,
       [this, id, cancellation_requested, work = std::move(work)]() mutable {
         try {

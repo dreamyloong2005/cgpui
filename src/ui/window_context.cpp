@@ -1,6 +1,7 @@
 #include "cgpui/ui/window_context.hpp"
 
 #include "cgpui/ui/runtime_context.hpp"
+#include "cgpui/ui/window_runtime.hpp"
 
 namespace cgpui {
 
@@ -65,7 +66,7 @@ Window WindowRuntimeContext::window() const {
 }
 
 Window WindowRuntimeContext::current_window() const {
-  return Window(runtime, window_runtime_id);
+  return Window(runtime, runtime.normalize_window_context_id(window_runtime_id));
 }
 
 WindowContextCapability WindowRuntimeContext::window_context() const {

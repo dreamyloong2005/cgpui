@@ -35,8 +35,6 @@ int main() {
   const std::string style = read_source("src/ui/style_tween.cpp");
   const std::string behavior =
       read_source("tests/animation/style_interpolation_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_animation_frame_pacing_structure_test.cpp");
   const std::string ui_structure =
       read_source("tests/architecture/ui_source_structure_test.cpp");
   const std::string manifests = read_source("tests/animation/mcpp.toml") +
@@ -44,18 +42,10 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &header, &geometry_header, &geometry, &style, &behavior, &previous,
-      &ui_structure, &manifests, &vocabulary, &core, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &header, &geometry_header, &geometry, &style, &behavior, &ui_structure, &manifests, &vocabulary, &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "Style tween(") ||
@@ -91,9 +81,7 @@ int main() {
       !contains(behavior, "test_discrete_optional_and_non_finite_policy") ||
       !contains(behavior, "std::isinf(middle.max_size.width)") ||
       !contains(behavior, "end.background_color.has_value()")) return 5;
-  if (!contains(previous, "Step 649 style ") ||
-      !contains(previous, "interpolation production behavior") ||
-      !contains(ui_structure, "src/ui/style_tween.cpp") ||
+  if (!contains(ui_structure, "src/ui/style_tween.cpp") ||
       !contains(manifests, "\"style_interpolation_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_style_interpolation_structure_test.cpp\"")) {
@@ -103,22 +91,8 @@ int main() {
       line_count(geometry) > 110 || line_count(style) > 80 ||
       line_count(behavior) > 180) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 649 broadens production style interpolation across "
-      "layout geometry, percentage sizing, spacing, borders, shadows, "
-      "clipping, flex, inset, typography, colors, opacity, and transforms, "
-      "preserves discrete and one-sided optional values until the endpoint, "
-      "and avoids NaNs for unchanged non-finite dimensions. Step 650 "
-      "official animation and opacity examples is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
   if (!contains(vocabulary, "broad style interpolation") ||
       !contains(core, "broad production style interpolation") ||
-      !contains(ledger_json, "\"phase_g_step_649_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
+      !contains(ledger_json, "\"phase_g_step_649_sources\"")) return 9;
   return 0;
 }

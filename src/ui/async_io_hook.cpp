@@ -34,8 +34,10 @@ bool AsyncIoHook::notify_error(Error error) const {
 
 bool AsyncIoHook::cancel() const {
   if (state_ == nullptr) return false;
+  AsyncIoCompletionCallback retired_callback;
   std::lock_guard lock(state_->mutex);
-  return state_->runtime != nullptr && state_->runtime->cancel_async_io(id_);
+  return state_->runtime != nullptr &&
+      state_->runtime->cancel_async_io(id_, retired_callback);
 }
 
 } // namespace cgpui

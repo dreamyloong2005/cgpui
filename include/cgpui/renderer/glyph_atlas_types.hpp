@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgpui/renderer/renderer_types.hpp"
-#include "cgpui/ui/text.hpp"
+#include "cgpui/renderer/text/text_glyphs.hpp"
 
 #include <cstddef>
 #include <optional>

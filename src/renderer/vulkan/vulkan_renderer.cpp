@@ -1,4 +1,5 @@
 #include "../renderer_device_pixels_internal.hpp"
+#include "cgpui/renderer/planning/image_uploads.hpp"
 #include "vulkan_internal.hpp"
 #include "vulkan_popup_support_internal.hpp"
 
@@ -127,7 +128,7 @@ VulkanRendererState::last_frame_diagnostic_snapshot() const {
 
 void VulkanFrame::upload_image(const ImageAsset& image) {
   const std::span<const ImageAsset> assets(&image, 1);
-  std::vector<ImageUploadBatch> batches = vulkan_plan_image_uploads(assets);
+  std::vector<ImageUploadBatch> batches = plan_image_uploads(assets);
   if (batches.empty()) {
     return;
   }

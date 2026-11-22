@@ -45,26 +45,17 @@ int main() {
       read_source("tests/header_cleanliness/prelude_header_cleanliness.cpp");
   const std::string inventory =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_gif_decode_structure_test.cpp");
   const std::string manifests = read_source("tests/assets/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &decoder, &bridge, &raster_header, &raster, &raster_backend,
-      &behavior, &prelude, &cleanliness, &inventory, &previous, &manifests,
-      &vocabulary, &core, &roadmap, &ledger_md, &ledger_json, &task_plan,
-      &findings};
+      &behavior, &prelude, &cleanliness, &inventory, &manifests,
+      &vocabulary, &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "enum class SvgAssetDecodeStatus") ||
@@ -98,8 +89,6 @@ int main() {
       !contains(inventory, "include/cgpui/renderer/svg_asset_decode.hpp") ||
       !contains(inventory, "src/renderer/svg_asset_decode_lunasvg.cpp") ||
       !contains(inventory, "src/renderer/svg_asset_rasterization.cpp") ||
-      !contains(previous, "Step 654 SVG asset decode boundary production ") ||
-      !contains(previous, "behavior is next.") ||
       !contains(manifests, "\"svg_asset_decode_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_svg_asset_decode_structure_test.cpp\"")) {
@@ -108,21 +97,9 @@ int main() {
   if (line_count(header) > 65 || line_count(decoder) > 75 ||
       line_count(bridge) > 35 || line_count(behavior) > 100) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 654 adds bounded SVG asset decoding from AssetBytes with "
-      "LunaSVG intrinsic-size validation and a lifetime-safe bridge into the "
-      "existing viewport-aware, recolorable RGBA8 rasterization path. Step "
-      "655 asset cache key production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
   if (!contains(vocabulary, "`decode_svg_asset(...)`") ||
       !contains(vocabulary, "`rasterize_svg_asset(...)`") ||
       !contains(core, "Bounded SVG asset decoding") ||
-      !contains(ledger_json, "\"phase_g_step_654_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
+      !contains(ledger_json, "\"phase_g_step_654_sources\"")) return 9;
   return 0;
 }

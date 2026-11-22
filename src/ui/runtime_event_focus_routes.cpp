@@ -3,7 +3,7 @@
 namespace cgpui {
 
 bool WindowRuntime::focus_next_element(bool reverse) {
-  if (owned_element_tree_ == nullptr) {
+  if (state_->elements.owned_element_tree_ == nullptr) {
     return false;
   }
 
@@ -13,11 +13,11 @@ bool WindowRuntime::focus_next_element(bool reverse) {
   }
 
   std::size_t next_index = reverse ? focusable_ids.size() - 1 : 0;
-  if (keyboard_focus_element_owner_.has_value()) {
+  if (state_->input.keyboard_focus_element_owner_.has_value()) {
     const auto current = std::find(
         focusable_ids.begin(),
         focusable_ids.end(),
-        *keyboard_focus_element_owner_);
+        *state_->input.keyboard_focus_element_owner_);
     if (current != focusable_ids.end()) {
       const std::size_t current_index =
           static_cast<std::size_t>(current - focusable_ids.begin());

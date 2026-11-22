@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/core/geometry.hpp"
+#include "cgpui/core/paint_values.hpp"
 #include "cgpui/ui/style_font.hpp"
 
 #include <algorithm>
@@ -186,64 +187,6 @@ struct PercentageSize {
     float left) {
   return EdgeSizes::trbl(top, right, bottom, left);
 }
-
-struct BorderRadii {
-  float top_left = 0.0F;
-  float top_right = 0.0F;
-  float bottom_right = 0.0F;
-  float bottom_left = 0.0F;
-
-  [[nodiscard]] static constexpr BorderRadii all(float value) {
-    return BorderRadii{
-        .top_left = value,
-        .top_right = value,
-        .bottom_right = value,
-        .bottom_left = value,
-    };
-  }
-
-  [[nodiscard]] static constexpr BorderRadii corners(
-      float top_left,
-      float top_right,
-      float bottom_right,
-      float bottom_left) {
-    return BorderRadii{
-        .top_left = top_left,
-        .top_right = top_right,
-        .bottom_right = bottom_right,
-        .bottom_left = bottom_left,
-    };
-  }
-};
-
-struct BoxShadow {
-  Color color;
-  Point offset;
-  float blur_radius = 0.0F;
-  float spread_radius = 0.0F;
-};
-
-// Blur of what is drawn behind a box (CSS backdrop-filter: blur()).
-// `radius` is the Gaussian standard deviation in logical pixels; `tint`
-// is mixed over the blurred backdrop by its alpha.
-struct BackdropBlur {
-  float radius = 0.0F;
-  std::optional<Color> tint;
-};
-
-// An empty family or a generic name ("sans-serif", "system-ui",
-// "monospace") resolves to the platform default. Monospaced faces disable
-// `liga` and `calt` unless `features` enables them explicitly.
-struct FontDescriptor {
-  std::string family;
-  std::uint16_t weight = font_weight_normal;
-  FontStyle style = FontStyle::normal;
-  std::vector<FontFeature> features;
-
-  friend bool operator==(
-      const FontDescriptor&,
-      const FontDescriptor&) = default;
-};
 
 struct StyleAuthoredTextFields {
   bool font = false;

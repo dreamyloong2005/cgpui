@@ -57,16 +57,16 @@ int main() {
   const std::string task_plan = read_source("task_plan.md");
   const std::string findings = read_source("findings.md");
   const std::string backend_header =
-      read_source("include/cgpui/ui/text_shaping_backend.hpp");
-  const std::string shape_header = read_source("include/cgpui/ui/text_shape.hpp");
+      read_source("include/cgpui/renderer/text/text_shaping_backend.hpp");
+  const std::string shape_header = read_source("include/cgpui/renderer/text/text_shape.hpp");
   const std::string backend_source =
-      read_source("src/ui/text_shaping_backend.cpp");
+      read_source("src/renderer/text/text_shaping_backend.cpp");
   const std::string dispatch_source =
-      read_source("src/ui/text_shaping_dispatch.cpp");
+      read_source("src/renderer/text/text_shaping_dispatch.cpp");
   const std::string harfbuzz_source =
-      read_source("src/ui/text_shaping_harfbuzz.cpp");
+      read_source("src/renderer/text/text_shaping_harfbuzz.cpp");
   const std::string fallback_source =
-      read_source("src/ui/text_shaping_fallback.cpp");
+      read_source("src/renderer/text/text_shaping_fallback.cpp");
   const std::string wayland_fontconfig_source =
       read_source("src/platform/linux/wayland_fontconfig_discovery.cpp");
   const std::string text_model_test =

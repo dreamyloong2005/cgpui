@@ -44,5 +44,5 @@ first-frame, resize, close, and complete interaction modes are documented in
 
 The scripts build targets serially, run noninteractive public entrypoints, and
 execute registered/native smoke modes. The macOS example and native smoke tests run on
-arm64 only. See [macOS follow-up](migration/README.md#macos-follow-up) for
-local and hosted mcpp results.
+arm64 only. See [macOS validation](macos-validation.md) for
+historical local/hosted results and revalidation requirements.

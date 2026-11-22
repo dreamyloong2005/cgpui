@@ -1,3 +1,4 @@
+#include "runtime_state_internal.hpp"
 #include "test_app_internal.hpp"
 
 #include <algorithm>
@@ -20,7 +21,7 @@ TestAppState::TestAppState()
             return result;
           }) {
   WindowRuntimeRecord* root_record =
-      runtime.find_window_runtime_record(runtime.root_window_runtime_id_);
+      runtime.find_window_runtime_record(runtime.state_->windows.root_window_runtime_id_);
   root_record->descriptor =
       WindowDescriptor{.title = "CGPUI Test Root", .size = {1.0F, 1.0F}};
   root_record->framebuffer_size = {1.0F, 1.0F};
@@ -31,8 +32,8 @@ TestAppState::TestAppState()
   root_record->owns_window = false;
   root_record->owns_renderer = false;
   root_record->active = true;
-  runtime.window_ = &parent_window;
-  runtime.renderer_ = &parent_renderer;
+  runtime.state_->windows.window_ = &parent_window;
+  runtime.state_->windows.renderer_ = &parent_renderer;
   runtime.set_clipboard(&clipboard);
 }
 

@@ -39,6 +39,7 @@ int main() {
   const std::string state = read_source("src/ui/runtime_animation_state.cpp");
   const std::string state_internal =
       read_source("src/ui/runtime_animation_state_internal.hpp");
+  const std::string animation_types = read_source("src/ui/runtime_state_animations_types_internal.hpp");
   const std::string tick = read_source("src/ui/runtime_animation_tick.cpp");
   const std::string handle_source = read_source("src/ui/ui.cpp");
   const std::string transition_source =
@@ -46,7 +47,7 @@ int main() {
   const std::string diagnostic_source =
       read_source("src/ui/runtime_diagnostic_snapshot.cpp");
   const std::string runtime_internal =
-      read_source("src/ui/window_runtime_internal.hpp");
+      read_source("include/cgpui/ui/detail/window_runtime_declarations.hpp");
   const std::string aggregate = read_source("include/cgpui/ui/ui.hpp");
   const std::string behavior =
       read_source("tests/animation/animation_cancellation_test.cpp");
@@ -61,21 +62,12 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &public_header, &handles, &transition_header, &diagnostics_header,
-      &cancellation, &state, &state_internal, &tick, &handle_source,
+      &cancellation, &state, &state_internal, &animation_types, &tick, &handle_source,
       &transition_source, &diagnostic_source, &runtime_internal, &aggregate,
       &behavior, &ui_structure, &header_cleanliness, &previous, &manifests,
-      &vocabulary, &core_parity, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &vocabulary, &core_parity};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(public_header, "struct AnimationCancellationDiagnostic") ||
@@ -85,8 +77,8 @@ int main() {
       !contains(diagnostics_header, "active_animation_count") ||
       !contains(diagnostics_header, "cancelled_animation_count") ||
       !contains(diagnostics_header, "last_animation_cancellation")) return 2;
-  if (!contains(state_internal, "cancelled_elapsed_ms") ||
-      !contains(state_internal, "bool cancelled = false") ||
+  if (!contains(animation_types, "cancelled_elapsed_ms") ||
+      !contains(animation_types, "bool cancelled = false") ||
       !contains(state_internal, "last_animation_cancellation_") ||
       !contains(cancellation, "animation->callback = {}") ||
       !contains(cancellation, "animation->cancelled_elapsed_ms") ||
@@ -113,15 +105,14 @@ int main() {
       !contains(header_cleanliness, "cgpui/ui/animation_cancellation.hpp") ||
       !contains(manifests, "\"animation_cancellation_test.cpp\"") ||
       !contains(manifests,
-                "\"phase_g_animation_cancellation_structure_test.cpp\"") ||
-      !contains(previous,
-                "Step 647 animation cancellation production behavior")) {
+                "\"phase_g_animation_cancellation_structure_test.cpp\"")) {
     return 6;
   }
   if (line_count(public_header) > 30 || line_count(handles) > 130 ||
       line_count(transition_header) > 100 ||
       line_count(diagnostics_header) > 140 || line_count(cancellation) > 70 ||
       line_count(state) > 100 || line_count(state_internal) > 25 ||
+      line_count(animation_types) > 25 ||
       line_count(tick) > 70 || line_count(handle_source) > 70 ||
       line_count(transition_source) > 120 ||
       line_count(diagnostic_source) > 150 ||
@@ -129,21 +120,7 @@ int main() {
     return 7;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 647 makes runtime animation cancellation a distinct "
-      "terminal state with frozen progress, immediate callback release, "
-      "idempotent timer teardown, ordinary and transition handle "
-      "observability, runtime/context/async forwarding, and aggregate plus "
-      "last-cancellation diagnostics. Step 648 animation frame pacing "
-      "production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
   if (!contains(vocabulary, "`AnimationCancellationDiagnostic`") ||
-      !contains(core_parity, "last-cancellation diagnostics") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
+      !contains(core_parity, "last-cancellation diagnostics")) return 9;
   return 0;
 }

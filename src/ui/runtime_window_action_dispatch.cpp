@@ -3,8 +3,8 @@
 namespace cgpui {
 
 WindowRuntime::ActionDispatchTarget WindowRuntime::action_dispatch_target() {
-  if (action_window_runtime_id_.has_value()) {
-    const WindowRuntimeId runtime_id = *action_window_runtime_id_;
+  if (state_->actions.action_window_runtime_id_.has_value()) {
+    const WindowRuntimeId runtime_id = *state_->actions.action_window_runtime_id_;
     if (const WindowRuntimeRecord* record =
             find_window_runtime_record(runtime_id);
         record != nullptr) {
@@ -18,14 +18,14 @@ WindowRuntime::ActionDispatchTarget WindowRuntime::action_dispatch_target() {
               [this, runtime_id] {
                 const WindowRuntimeRecord* current =
                     find_window_runtime_record(runtime_id);
-                return current != nullptr ? context_for_record(*current)
+                return current != nullptr && current->active ? context_for_record(*current)
                                           : context();
               },
       };
     }
   }
   return ActionDispatchTarget{
-      .focus_owner = keyboard_focus_element_owner_,
+      .focus_owner = state_->input.keyboard_focus_element_owner_,
       .view_id = action_dispatch_view_id(),
       .context = [this] { return context(); },
   };

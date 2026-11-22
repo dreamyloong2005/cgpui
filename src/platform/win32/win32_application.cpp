@@ -4,6 +4,7 @@
 #include "win32_message_dialog_internal.hpp"
 #include "win32_open_url_internal.hpp"
 #include "win32_timer_wakeup_internal.hpp"
+#include "win32_window_registry_internal.hpp"
 
 #include <memory>
 #include <utility>
@@ -50,7 +51,6 @@ class Win32Application final : public Win32SystemApplication {
       DispatchMessageW(&message);
     }
     running_thread_id_ = 0; timer_wakeup_.set_thread_id(0);
-    windows_.clear();
     return 0;
   }
 
@@ -58,14 +58,14 @@ class Win32Application final : public Win32SystemApplication {
 
   PlatformMenuInstallationResult install_native_menu(
       NativeMenuModel menu) override {
-    for (Win32Window* window : windows_) {
+    windows_.visit([&](Win32Window* window) {
       (void)win32_apply_native_menu(window_handle(window), nullptr);
-    }
+    });
     last_menu_installation_ =
         native_menu_state_.install_native_menu(std::move(menu));
-    for (Win32Window* window : windows_) {
+    windows_.visit([&](Win32Window* window) {
       apply_native_menu(window);
-    }
+    });
     return last_menu_installation_;
   }
 
@@ -119,7 +119,7 @@ class Win32Application final : public Win32SystemApplication {
     // does), so the many short-lived ones never stay in windows_.
     if (popup) return std::unique_ptr<PlatformWindow>(std::move(*window));
     apply_native_menu(window->get());
-    windows_.push_back(window->get());
+    windows_.add(**window);
     return std::unique_ptr<PlatformWindow>(std::move(*window));
   }
 
@@ -137,11 +137,7 @@ class Win32Application final : public Win32SystemApplication {
   }
 
   void dispatch_wakeup() {
-    for (Win32Window* window : windows_) {
-      if (window != nullptr) {
-        window->wakeup_requested();
-      }
-    }
+    windows_.visit([](Win32Window* window) { window->wakeup_requested(); });
   }
 
   HINSTANCE instance_ = nullptr;
@@ -153,7 +149,7 @@ class Win32Application final : public Win32SystemApplication {
   Win32NativeFileDialogState native_file_dialog_state_;
   NativeFileDialogResult last_file_dialog_result_;
   DWORD running_thread_id_ = 0; Win32TimerWakeup timer_wakeup_; bool running_ = true;
-  std::vector<Win32Window*> windows_;
+  Win32WindowRegistry windows_;
 };
 
 } // namespace

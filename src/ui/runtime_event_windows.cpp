@@ -1,5 +1,6 @@
 #include "ui_internal.hpp"
 #include "runtime_window_scale_diagnostics_internal.hpp"
+#include "runtime_window_lifetime_internal.hpp"
 
 namespace cgpui {
 
@@ -14,10 +15,10 @@ void WindowRuntime::dispatch_view_event_for_record(
   update_input_state_for_record(record, event);
 
   begin_event_route_for_record(record, event);
-  dispatching_view_event_ = true;
+  state_->input.dispatching_view_event_ = true;
   EventResult result =
       dispatch_record_event_through_elements(record, view, event);
-  dispatching_view_event_ = false;
+  state_->input.dispatching_view_event_ = false;
   finish_event_dispatch_for_record(record, result);
 }
 
@@ -28,8 +29,9 @@ void WindowRuntime::handle_native_additional_window_event(
   if (record == nullptr || !record->active) {
     return;
   }
+  const RuntimeWindowCallbackScope callback_scope(*this);
   // Actions fired while this event is handled run in this window.
-  const ActionWindowScope action_window{action_window_runtime_id_, runtime_id};
+  const ActionWindowScope action_window{state_->actions.action_window_runtime_id_, runtime_id};
   if (handle_accessibility_action_event(event, record->root_view_id, record)) {
     return;
   }
@@ -37,19 +39,7 @@ void WindowRuntime::handle_native_additional_window_event(
     return;
   }
   if (std::holds_alternative<WindowCloseRequested>(event)) {
-    const bool close_policy_pending = record->window != nullptr &&
-        record->window->close_request_state().pending;
-    record_lifecycle_event_for_record(*record, event);
-    if (close_policy_pending && record->window != nullptr) {
-      if (record->window->close_request_state().pending) {
-        (void)record->window->resolve_close_request(
-            PlatformWindowCloseResolution::accept);
-      }
-      if (!record->window->close_request_state().accepted) {
-        return;
-      }
-    }
-    cleanup_closed_additional_window(*record);
+    close_window_record_after_event(*record, event);
     return;
   }
   View* view = find_view(record->root_view_id);

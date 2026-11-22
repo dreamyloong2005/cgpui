@@ -30,7 +30,7 @@ Result<NativeMenuInstallation> WindowRuntime::try_install_native_menu(
     NativeMenuModel menu) {
   NativeMenuModel stored_menu = std::move(menu);
   const PlatformMenuInstallationResult platform_result =
-      application_.install_native_menu(stored_menu);
+      state_->core.application_.install_native_menu(stored_menu);
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::menu,
       .backend = platform_result.backend,
@@ -47,17 +47,17 @@ Result<NativeMenuInstallation> WindowRuntime::try_install_native_menu(
     });
   }
 
-  native_menu_installation_ = NativeMenuInstallation{
+  state_->platform.native_menu_installation_ = NativeMenuInstallation{
       .model = std::move(stored_menu),
       .platform = platform_result,
   };
-  return native_menu_installation_;
+  return state_->platform.native_menu_installation_;
 }
 
 Result<NativeFileDialogResult> WindowRuntime::try_show_native_file_dialog(
     NativeFileDialogOptions options) {
   NativeFileDialogResult result =
-      application_.show_native_file_dialog(std::move(options));
+      state_->core.application_.show_native_file_dialog(std::move(options));
   record_platform_diagnostic(PlatformDiagnosticEvent{
       .kind = PlatformDiagnosticKind::file_dialog,
       .backend = result.backend,
@@ -74,8 +74,8 @@ Result<NativeFileDialogResult> WindowRuntime::try_show_native_file_dialog(
     });
   }
 
-  native_file_dialog_result_ = std::move(result);
-  return native_file_dialog_result_;
+  state_->platform.native_file_dialog_result_ = std::move(result);
+  return state_->platform.native_file_dialog_result_;
 }
 
 } // namespace cgpui

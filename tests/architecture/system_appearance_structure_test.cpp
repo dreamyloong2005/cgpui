@@ -44,6 +44,9 @@ int main() {
     const auto factory = read("src/platform/win32/win32_window_factory.cpp");
     const auto runtime = read("src/ui/runtime_system_appearance.cpp");
     const auto runtime_state = read("src/ui/runtime_system_appearance_internal.hpp");
+    const auto runtime_declarations =
+        read("include/cgpui/ui/detail/window_runtime_system_appearance_declarations.hpp");
+    const auto platform_state = read("src/ui/runtime_state_platform_internal.hpp");
     const auto shutdown = read("src/ui/runtime_shutdown.cpp");
     const auto app = read("src/app/app_appearance.cpp");
     const auto window = read("src/ui/window_appearance.cpp");
@@ -81,6 +84,9 @@ int main() {
             has(factory, "win32_apply_immersive_dark_mode("),
             "application and factory must delegate to the focused appearance modules");
     require(lines(runtime) <= 60 && lines(runtime_state) <= 5 &&
+            lines(runtime_declarations) <= 5 &&
+            has(runtime_declarations, "handle_system_appearance_change(") &&
+            has(platform_state, "runtime_system_appearance_internal.hpp") &&
             has(runtime, "PlatformDiagnosticKind::appearance") &&
             has(shutdown, "set_system_appearance_callback({})"),
             "runtime bridge must be focused and detach on shutdown");

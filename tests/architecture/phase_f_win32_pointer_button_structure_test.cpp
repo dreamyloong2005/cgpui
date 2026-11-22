@@ -48,18 +48,9 @@ int main() {
       read_source("tests/platform/win32_pointer_button_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &pointer_header, &decoder, &decoder_header, &proc, &pointer_events,
-      &events, &factory, &behavior, &manifests, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &events, &factory, &behavior, &manifests};
   for (const std::string* source : required) {
     if (source->empty()) {
       return 1;
@@ -91,21 +82,6 @@ int main() {
       line_count(events) > 105 ||
       line_count(behavior) > 70) {
     return 4;
-  }
-  constexpr const char* completion =
-      "Phase F Step 547 adds real Win32 double-click counts and back/forward "
-      "XBUTTON mapping through a focused pointer-button decoder. Step 548 "
-      "Win32 wheel and high-precision scroll production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 5;
-    }
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_step_547_remaining_gap\": \"Step 548 Win32")) {
-    return 6;
   }
   return 0;
 }

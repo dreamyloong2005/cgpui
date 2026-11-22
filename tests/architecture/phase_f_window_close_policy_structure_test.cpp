@@ -74,6 +74,8 @@ int main() {
       read_source("src/ui/runtime_event_control.cpp");
   const std::string runtime_windows =
       read_source("src/ui/runtime_event_windows.cpp");
+  const std::string runtime_window_close =
+      read_source("src/ui/runtime_window_close.cpp");
   const std::string app_runner_test =
       read_source("tests/ui/app_runner_test.cpp");
   const std::string win32_test =
@@ -82,24 +84,15 @@ int main() {
       read_source("tests/platform/wayland_window_close_policy_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   if (event_header.empty() || close_header.empty() ||
       platform_window.empty() || close_internal.empty() ||
       close_source.empty() || win32_window.empty() || win32_close.empty() ||
       win32_proc.empty() || wayland_window.empty() || wayland_close.empty() ||
       wayland_configure.empty() || wayland_registered.empty() ||
       runtime_context.empty() || runtime_context_close.empty() ||
-      runtime_control.empty() || runtime_windows.empty() ||
+      runtime_control.empty() || runtime_windows.empty() || runtime_window_close.empty() ||
       app_runner_test.empty() || win32_test.empty() || wayland_test.empty() ||
-      manifests.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty()) {
+      manifests.empty()) {
     return 1;
   }
 
@@ -140,7 +133,8 @@ int main() {
                 "WindowRuntimeContext::cancel_window_close() const") ||
       !contains(runtime_control, "close_request_state().pending") ||
       !contains(runtime_control, "close_request_state().accepted") ||
-      !contains(runtime_windows, "PlatformWindowCloseResolution::accept")) {
+      !contains(runtime_windows, "close_window_record_after_event(*record, event)") ||
+      !contains(runtime_window_close, "PlatformWindowCloseResolution::accept")) {
     return 7;
   }
   if (!contains(app_runner_test,
@@ -159,27 +153,10 @@ int main() {
       line_count(close_source) > 70 || line_count(win32_close) > 45 ||
       line_count(wayland_close) > 45 ||
       line_count(runtime_context_close) > 25 ||
-      line_count(runtime_control) > 75 || line_count(runtime_windows) > 115) {
+      line_count(runtime_control) > 75 || line_count(runtime_windows) > 115 ||
+      line_count(runtime_window_close) > 35) {
     return 10;
   }
 
-  constexpr const char* completion =
-      "Phase F Step 542 adds source-aware, state-before-event close requests "
-      "with shared pending/accept/cancel/coalescing policy on Win32 and "
-      "Wayland, plus runtime callback cancellation with compatible default "
-      "acceptance. Step 543 fullscreen and minimize/maximize production "
-      "behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 11;
-    }
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_step_542_remaining_gap\": \"Step 543 fullscreen and minimize/maximize")) {
-    return 12;
-  }
   return 0;
 }

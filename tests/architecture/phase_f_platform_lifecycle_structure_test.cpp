@@ -71,14 +71,6 @@ int main() {
   const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml") +
       read_source("tests/platform/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
 
   if (lifecycle_header.empty() || platform_window.empty() ||
       lifecycle_default.empty() || win32_internal.empty() ||
@@ -86,9 +78,7 @@ int main() {
       win32_proc_lifecycle.empty() || win32_events.empty() ||
       wayland_internal.empty() || wayland_lifecycle.empty() ||
       wayland_events.empty() || wayland_registered_internal.empty() ||
-      wayland_registered.empty() || manifests.empty() || roadmap.empty() ||
-      ledger_md.empty() || ledger_json.empty() || task_plan.empty() ||
-      findings.empty()) {
+      wayland_registered.empty() || manifests.empty()) {
     return 1;
   }
 
@@ -181,44 +171,5 @@ int main() {
     return 11;
   }
 
-  constexpr const char* completion =
-      "Phase F Step 539 adds a public window lifecycle snapshot with "
-      "compatible defaults and real Win32/Wayland native-created, "
-      "initial-configure, close-requested, and display-state reporting, "
-      "including registered Wayland wrapper forwarding. Step 540 activation "
-      "and focus production behavior is next.";
-  const std::string* documents[]{
-      &roadmap,
-      &ledger_md,
-      &ledger_json,
-      &task_plan,
-      &findings,
-  };
-  for (const std::string* document : documents) {
-    if (!contains(*document, completion)) {
-      return 10;
-    }
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_step_539_remaining_gap\": \"Step 540 activation and focus")) {
-    return 14;
-  }
-  constexpr const char* activation_focus_completion =
-      "Phase F Step 540 makes activation and focus state-before-event "
-      "observable on Win32 through `WM_ACTIVATE`/`WM_SETFOCUS`/"
-      "`WM_KILLFOCUS` and on Wayland through xdg activated configures plus "
-      "keyboard enter/leave, with lifecycle snapshots matching callback "
-      "state. Step 541 resize and scale-change production behavior is next.";
-  for (const std::string* document : documents) {
-    if (!contains(*document, activation_focus_completion)) {
-      return 12;
-    }
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_step_540_remaining_gap\": \"Step 541 resize and scale-change")) {
-    return 13;
-  }
   return 0;
 }

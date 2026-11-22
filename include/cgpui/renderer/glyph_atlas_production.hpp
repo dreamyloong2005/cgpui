@@ -64,7 +64,7 @@ class GlyphAtlasProductionResourceState {
 
  private:
   friend GlyphAtlasProductionPlan
-  vulkan_plan_glyph_atlas_production_resources(
+  plan_glyph_atlas_production_resources(
       GlyphAtlasProductionResourceState& state,
       std::span<const GlyphAtlasUploadBatch> upload_batches);
 

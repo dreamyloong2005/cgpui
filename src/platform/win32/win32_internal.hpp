@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cgpui/platform/platform.hpp"
-#include "cgpui/ui/text.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

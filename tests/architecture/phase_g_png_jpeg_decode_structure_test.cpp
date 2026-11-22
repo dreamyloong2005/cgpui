@@ -39,26 +39,17 @@ int main() {
       read_source("tests/header_cleanliness/prelude_header_cleanliness.cpp");
   const std::string inventory =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
-  const std::string previous = read_source(
-      "tests/architecture/phase_g_file_asset_source_structure_test.cpp");
   const std::string manifests = read_source("packages/renderer/mcpp.toml") +
       read_source("tests/assets/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &source, &behavior, &vendor, &stb, &prelude, &cleanliness,
-      &inventory, &previous, &manifests, &vocabulary, &core, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &inventory, &manifests, &vocabulary, &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "enum class EncodedImageFormat") ||
@@ -91,8 +82,6 @@ int main() {
       !contains(prelude, "cgpui/renderer/image_decode.hpp")) return 5;
   if (!contains(inventory, "include/cgpui/renderer/image_decode.hpp") ||
       !contains(inventory, "src/renderer/image_decode_stb.cpp") ||
-      !contains(previous, "Step 652 PNG and JPEG decode boundary production ") ||
-      !contains(previous, "behavior is next.") ||
       !contains(manifests, "\"image_decode_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_png_jpeg_decode_structure_test.cpp\"")) {
@@ -101,21 +90,8 @@ int main() {
   if (line_count(header) > 55 || line_count(source) > 125 ||
       line_count(behavior) > 130) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 652 adds signature-detected PNG and JPEG decoding to "
-      "RGBA8 bitmaps through a fixed stb_image backend, with explicit empty, "
-      "unsupported, corrupt, decode-failure, dimension, pixel, stride, and "
-      "decoded-byte statuses enforced before output allocation. Step 653 GIF "
-      "decode boundary production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
   if (!contains(vocabulary, "`decode_image(...)`") ||
       !contains(core, "Signature-detected PNG and JPEG decoding") ||
-      !contains(ledger_json, "\"phase_g_step_652_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
+      !contains(ledger_json, "\"phase_g_step_652_sources\"")) return 9;
   return 0;
 }

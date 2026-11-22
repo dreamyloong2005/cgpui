@@ -7,14 +7,14 @@ bool WindowRuntime::task_active(TaskId id) const {
     return false;
   }
 
-  std::lock_guard lock(tasks_mutex_);
+  std::lock_guard lock(state_->tasks.tasks_mutex_);
   const auto task = std::find_if(
-      tasks_.begin(),
-      tasks_.end(),
+      state_->tasks.tasks_.begin(),
+      state_->tasks.tasks_.end(),
       [id](const RuntimeTask& task) {
         return task.id == id;
       });
-  return task != tasks_.end() && !task->queued && !task->completed &&
+  return task != state_->tasks.tasks_.end() && !task->queued && !task->completed &&
          !task->cancelled;
 }
 
@@ -23,14 +23,14 @@ bool WindowRuntime::task_complete(TaskId id) const {
     return false;
   }
 
-  std::lock_guard lock(tasks_mutex_);
+  std::lock_guard lock(state_->tasks.tasks_mutex_);
   const auto task = std::find_if(
-      tasks_.begin(),
-      tasks_.end(),
+      state_->tasks.tasks_.begin(),
+      state_->tasks.tasks_.end(),
       [id](const RuntimeTask& task) {
         return task.id == id;
       });
-  return task != tasks_.end() && task->completed;
+  return task != state_->tasks.tasks_.end() && task->completed;
 }
 
 bool WindowRuntime::task_cancelled(TaskId id) const {
@@ -38,14 +38,14 @@ bool WindowRuntime::task_cancelled(TaskId id) const {
     return false;
   }
 
-  std::lock_guard lock(tasks_mutex_);
+  std::lock_guard lock(state_->tasks.tasks_mutex_);
   const auto task = std::find_if(
-      tasks_.begin(),
-      tasks_.end(),
+      state_->tasks.tasks_.begin(),
+      state_->tasks.tasks_.end(),
       [id](const RuntimeTask& task) {
         return task.id == id;
       });
-  return task != tasks_.end() && task->cancelled;
+  return task != state_->tasks.tasks_.end() && task->cancelled;
 }
 
 bool WindowRuntime::cancel_task(TaskId id) {
@@ -53,14 +53,16 @@ bool WindowRuntime::cancel_task(TaskId id) {
     return false;
   }
 
-  std::lock_guard lock(tasks_mutex_);
+  // Captures may reenter the runtime when destroyed; release after unlocking.
+  TaskCompletionCallback retired_callback;
+  std::lock_guard lock(state_->tasks.tasks_mutex_);
   const auto task = std::find_if(
-      tasks_.begin(),
-      tasks_.end(),
+      state_->tasks.tasks_.begin(),
+      state_->tasks.tasks_.end(),
       [id](const RuntimeTask& task) {
         return task.id == id;
       });
-  if (task == tasks_.end() || task->completed || task->cancelled) {
+  if (task == state_->tasks.tasks_.end() || task->completed || task->cancelled) {
     return false;
   }
 
@@ -69,14 +71,15 @@ bool WindowRuntime::cancel_task(TaskId id) {
   }
   task->cancelled = true;
   task->queued = false;
-  task_completion_queue_.erase(
+  retired_callback = std::move(task->callback);
+  state_->tasks.task_completion_queue_.erase(
       std::remove_if(
-          task_completion_queue_.begin(),
-          task_completion_queue_.end(),
+          state_->tasks.task_completion_queue_.begin(),
+          state_->tasks.task_completion_queue_.end(),
           [id](const RuntimeTaskCompletion& completion) {
             return completion.id == id;
           }),
-      task_completion_queue_.end());
+      state_->tasks.task_completion_queue_.end());
   return true;
 }
 

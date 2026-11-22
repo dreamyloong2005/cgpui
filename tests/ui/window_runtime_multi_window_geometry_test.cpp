@@ -124,15 +124,15 @@ int main() {
   bool root_pending_after = false;
   bool child_record_resized = false;
   bool child_context_resized = false;
-  bool child_scheduled_during_render = false;
+  bool child_redraw_consumed_before_render = false;
   runtime.set_after_render_callback(
       [&](const cgpui::WindowRuntimeContext& context,
           const cgpui::RenderRecord&) {
         const cgpui::WindowRuntimeRecord* record =
             runtime.window_runtime_record(opened.runtime_id);
-        child_scheduled_during_render =
+        child_redraw_consumed_before_render =
             context.window_runtime_id == opened.runtime_id &&
-            record != nullptr && record->redraw_scheduled;
+            record != nullptr && !record->redraw_scheduled;
       });
   runtime.set_after_frame_callback(
       [&](const cgpui::WindowRuntimeContext& context) {
@@ -176,7 +176,7 @@ int main() {
       cgpui::WindowRuntimeOptions{.request_initial_redraw = false});
   return result == 0 && root_pending_before && root_pending_after &&
           child_record_resized && child_context_resized &&
-          child_scheduled_during_render &&
+          child_redraw_consumed_before_render &&
           renderers.size() == 2 && renderers[0]->resize_count == 0 &&
           renderers[0]->begin_frame_count == 0 &&
           renderers[1]->resize_count == 1 &&

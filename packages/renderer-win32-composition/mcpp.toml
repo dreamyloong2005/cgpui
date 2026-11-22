@@ -2,9 +2,8 @@
 # backend code: a D3D11 device on a given adapter, a premultiplied
 # composition swapchain shown by a DComp visual on a window, and a shared
 # texture (NT handle, keyed mutex) that a backend renders into
-# (src/renderer/win32_composition). It depends on core only, so the Win32
-# platform can use its probe and renderer-vulkan (or a later DX12 backend)
-# its presenter.
+# (src/renderer/win32_composition). This renderer-internal D3D11 sharing
+# bridge is independent of the platform's host-only capability probe.
 [package]
 namespace = "cgpui"
 name = "renderer-win32-composition"

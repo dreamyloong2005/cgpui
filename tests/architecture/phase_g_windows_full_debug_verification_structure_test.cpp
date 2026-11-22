@@ -30,22 +30,14 @@ int main() {
       read_source("tests/api_parity/phase_c_final_ledger_audit_test.cpp");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
-  const std::string predecessor = read_source(
-      "tests/architecture/phase_g_reproducible_dependency_setup_structure_test.cpp");
   const std::string manifests = read_source("tests/architecture/mcpp.toml");
   const std::string manifest =
       read_source("scripts/ci/architecture-header-targets.txt");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &phase_c_audit, &vocabulary, &predecessor, &manifests, &manifest,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &phase_c_audit, &vocabulary, &manifests, &manifest,
+      &ledger_json};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (contains(phase_c_audit, "production loading/upload remains later") ||
@@ -67,28 +59,8 @@ int main() {
                 "tests/architecture/phase_g_windows_full_debug_verification_structure_test.cpp")) {
     return 3;
   }
-  if (!contains(predecessor, "Step 673 Windows full-debug ") ||
-      !contains(predecessor, "verification is next.")) {
-    return 4;
-  }
 
-  constexpr const char* completion =
-      "Phase G Step 673 completes Windows full-debug verification at 450/450 "
-      "after updating the Phase C final ledger audit to guard stable historical "
-      "SVG/image scope rather than mutable current asset status. Step 674 WSL "
-      "full-debug verification is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 5;
-  }
-  if (!contains(ledger_json, "\"phase_g_step_673_sources\"") ||
-      !contains(ledger_json,
-                "\"phase_g_step_673_remaining_gap\": \"Step 674 WSL "
-                "full-debug verification\"") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run "
-                "upstream extractor against the pinned revision\"")) {
+  if (!contains(ledger_json, "\"phase_g_step_673_sources\"")) {
     return 6;
   }
   if (line_count(read_source("mcpp.toml")) > 100 ||

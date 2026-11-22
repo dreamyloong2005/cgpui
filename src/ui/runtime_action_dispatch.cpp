@@ -40,14 +40,14 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
         dispatch.view_id = view_id;
         dispatch.element_id = element_id;
         dispatch.result = result;
-        last_action_dispatch_ = dispatch;
+        state_->diagnostics.last_action_dispatch_ = dispatch;
         return true;
       };
 
   if (target.focus_owner.has_value()) {
-    const auto owner = focused_element_action_handlers_.find(
+    const auto owner = state_->actions.focused_element_action_handlers_.find(
         target.focus_owner->value);
-    if (owner != focused_element_action_handlers_.end()) {
+    if (owner != state_->actions.focused_element_action_handlers_.end()) {
       const auto handler = owner->second.find(dispatch.name);
       if (handler != owner->second.end() &&
           try_handler(
@@ -62,8 +62,8 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
 
   if (const std::optional<ViewId> view_id = target.view_id;
       view_id.has_value()) {
-    const auto owner = view_action_handlers_.find(view_id->value);
-    if (owner != view_action_handlers_.end()) {
+    const auto owner = state_->actions.view_action_handlers_.find(view_id->value);
+    if (owner != state_->actions.view_action_handlers_.end()) {
       const auto handler = owner->second.find(dispatch.name);
       if (handler != owner->second.end() &&
           try_handler(ActionScope::view, view_id, std::nullopt, handler->second)) {
@@ -72,14 +72,14 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
     }
   }
 
-  if (const auto handler = window_action_handlers_.find(dispatch.name);
-      handler != window_action_handlers_.end() &&
+  if (const auto handler = state_->actions.window_action_handlers_.find(dispatch.name);
+      handler != state_->actions.window_action_handlers_.end() &&
       try_handler(ActionScope::window, std::nullopt, std::nullopt, handler->second)) {
     return dispatch;
   }
 
-  if (const auto handler = action_handlers_.find(dispatch.name);
-      handler != action_handlers_.end()) {
+  if (const auto handler = state_->actions.action_handlers_.find(dispatch.name);
+      handler != state_->actions.action_handlers_.end()) {
     (void)try_handler(
         ActionScope::app,
         std::nullopt,
@@ -87,13 +87,13 @@ ActionDispatchResult WindowRuntime::dispatch_action(std::string name) {
         handler->second);
   }
 
-  last_action_dispatch_ = dispatch;
+  state_->diagnostics.last_action_dispatch_ = dispatch;
   return dispatch;
 }
 
 std::optional<ActionDispatchResult> WindowRuntime::last_action_dispatch()
     const {
-  return last_action_dispatch_;
+  return state_->diagnostics.last_action_dispatch_;
 }
 
 } // namespace cgpui

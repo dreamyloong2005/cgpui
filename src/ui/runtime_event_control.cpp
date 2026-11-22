@@ -5,40 +5,40 @@ namespace cgpui {
 bool WindowRuntime::handle_window_control_event(const PlatformEvent& event) {
   if (std::holds_alternative<WindowCloseRequested>(event)) {
     const bool close_policy_pending =
-        window_ != nullptr && window_->close_request_state().pending;
-    if (window_ != nullptr && renderer_ != nullptr) {
+        state_->windows.window_ != nullptr && state_->windows.window_->close_request_state().pending;
+    if (state_->windows.window_ != nullptr && state_->windows.renderer_ != nullptr) {
       record_lifecycle_event(event);
     }
-    if (close_requested_callback_ && window_ != nullptr &&
-        renderer_ != nullptr) {
-      close_requested_callback_(context());
+    if (state_->core.close_requested_callback_ && state_->windows.window_ != nullptr &&
+        state_->windows.renderer_ != nullptr) {
+      state_->core.close_requested_callback_(context());
     }
-    if (close_policy_pending && window_ != nullptr) {
-      if (window_->close_request_state().pending) {
-        (void)window_->resolve_close_request(
+    if (close_policy_pending && state_->windows.window_ != nullptr) {
+      if (state_->windows.window_->close_request_state().pending) {
+        (void)state_->windows.window_->resolve_close_request(
             PlatformWindowCloseResolution::accept);
       }
-      if (!window_->close_request_state().accepted) {
+      if (!state_->windows.window_->close_request_state().accepted) {
         return true;
       }
     }
-    should_quit_ = true;
-    application_.quit();
+    state_->core.should_quit_ = true;
+    state_->core.application_.quit();
     return true;
   }
 
   if (std::holds_alternative<WindowActivated>(event) ||
       std::holds_alternative<WindowMinimized>(event) ||
       std::holds_alternative<WindowRestored>(event)) {
-    if (window_ != nullptr && renderer_ != nullptr) {
+    if (state_->windows.window_ != nullptr && state_->windows.renderer_ != nullptr) {
       if (const auto* activated = std::get_if<WindowActivated>(&event);
           activated != nullptr) {
-        input_.focused = activated->active;
+        state_->input.input_.focused = activated->active;
       } else if (const auto* minimized = std::get_if<WindowMinimized>(&event);
                  minimized != nullptr) {
-        input_.focused = !minimized->minimized;
+        state_->input.input_.focused = !minimized->minimized;
       } else {
-        input_.focused = false;
+        state_->input.input_.focused = false;
       }
       record_lifecycle_event(event);
     }
@@ -46,7 +46,7 @@ bool WindowRuntime::handle_window_control_event(const PlatformEvent& event) {
   }
 
   if (std::holds_alternative<WindowMoved>(event)) {
-    if (window_ != nullptr && renderer_ != nullptr) {
+    if (state_->windows.window_ != nullptr && state_->windows.renderer_ != nullptr) {
       record_lifecycle_event(event);
     }
     return true;

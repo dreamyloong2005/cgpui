@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cgpui/ui/text_glyphs.hpp"
+#include "cgpui/renderer/text/text_glyphs.hpp"
 
 #include <string>
 

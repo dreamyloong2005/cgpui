@@ -58,13 +58,17 @@ std::size_t vulkan_prepare_image_texture_cache_frame(
     VkDevice device,
     std::span<const ImageDraw> image_draws,
     std::span<const ImageUploadBatch> image_uploads,
-    VulkanImageTextureResources& resources) {
+    VulkanImageTextureResources& resources,
+    std::span<const ImageAssetId> retained_uploads) {
   vulkan_begin_image_texture_cache_frame(resources);
   for (const ImageDraw& draw : image_draws) {
     vulkan_touch_image_texture_resource(resources, draw.asset.id);
   }
   for (const ImageUploadBatch& upload : image_uploads) {
     vulkan_touch_image_texture_resource(resources, upload.image.id);
+  }
+  for (ImageAssetId asset_id : retained_uploads) {
+    vulkan_touch_image_texture_resource(resources, asset_id);
   }
   return vulkan_evict_idle_image_texture_resources(device, resources);
 }

@@ -61,17 +61,17 @@ int main() {
   const std::string findings = read_source("findings.md");
   const std::string text_aggregate = read_source("include/cgpui/ui/text.hpp");
   const std::string text_rich_text_header =
-      read_source("include/cgpui/ui/text_rich_text.hpp");
+      read_source("include/cgpui/renderer/text/text_rich_text.hpp");
   const std::string text_rich_text_source =
-      read_source("src/ui/text_rich_text.cpp");
+      read_source("src/renderer/text/text_rich_text.cpp");
   const std::string text_rich_text_hit_testing_header =
       read_source("include/cgpui/ui/text_rich_text_hit_testing.hpp");
   const std::string text_rich_text_hit_testing_source =
       read_source("src/ui/text_rich_text_hit_testing.cpp");
   const std::string text_rich_text_inline_image_header =
-      read_source("include/cgpui/ui/text_rich_text_inline_image.hpp");
+      read_source("include/cgpui/renderer/text/text_rich_text_inline_image.hpp");
   const std::string text_rich_text_inline_image_source =
-      read_source("src/ui/text_rich_text_inline_image.cpp");
+      read_source("src/renderer/text/text_rich_text_inline_image.cpp");
   const std::string text_rich_text_syntax_header =
       read_source("include/cgpui/ui/text_rich_text_syntax.hpp");
   const std::string text_rich_text_syntax_source =

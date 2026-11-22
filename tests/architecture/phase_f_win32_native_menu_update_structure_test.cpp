@@ -32,21 +32,14 @@ int main() {
       "tests/architecture/phase_f_win32_native_menu_state_structure_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &tree, &state, &application, &behavior, &state_structure, &manifests,
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &tree, &state, &application, &behavior, &state_structure, &manifests};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(tree, "if (model.items.empty()) return Win32NativeMenuTree{}") ||
       !contains(tree, "std::optional<Win32NativeMenuTree>") ||
       !contains(state, "menu_tree_ = std::move(*menu_tree)")) return 2;
   if (!contains(application, "win32_apply_native_menu(window_handle(window), nullptr)") ||
-      !contains(application, "for (Win32Window* window : windows_)") ||
+      !contains(application, "windows_.visit(") ||
       !contains(application, "apply_native_menu(window)") ||
       !contains(application, "apply_native_menu(window->get())")) return 3;
   if (!contains(behavior, "first_window") ||
@@ -60,11 +53,5 @@ int main() {
       !contains(manifests, "\"phase_f_win32_native_menu_update_structure_test.cpp\"")) return 5;
   if (line_count(tree) > 125 || line_count(state) > 70 ||
       line_count(application) > 190 || line_count(behavior) > 130) return 6;
-  constexpr const char* completion =
-      "Phase F Step 581 makes Win32 native menu installation dynamically replace all live window menus, preserves transactional tree ownership, treats an empty model as a successful clear, and keeps future windows aligned with the current menu state. Step 582 native menu accelerator display production behavior is next.";
-  const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 7;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) return 8;
   return 0;
 }

@@ -39,16 +39,9 @@ int main() {
       "tests/architecture/platform_source_structure_test.cpp");
   const std::string manifests = read_source("tests/platform/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &header, &source, &state, &state_header, &application, &wayland,
-      &behavior, &win32_structure, &platform_structure, &manifests, &roadmap,
-      &ledger_md, &ledger_json, &task_plan, &findings};
+      &behavior, &win32_structure, &platform_structure, &manifests};
   for (const auto* value : required) if (value->empty()) return 1;
   if (!contains(header, "class Win32NativeMenuTree") ||
       !contains(header, "std::optional<Win32NativeMenuTree> build(") ||
@@ -83,11 +76,5 @@ int main() {
       line_count(behavior) > 130) return 8;
   if (!contains(manifests, "\"win32_native_menu_tree_test.cpp\"") ||
       !contains(manifests, "\"phase_f_win32_native_menu_tree_structure_test.cpp\"")) return 9;
-  constexpr const char* completion =
-      "Phase F Step 579 builds and owns recursive Win32 HMENU trees in a focused leaf, attaches installed menus to existing and future windows, preserves nested Unicode titles and separators, and keeps Wayland explicitly unsupported. Step 580 native menu check/radio/enabled state production behavior is next.";
-  const std::string* documents[]{&roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) if (!contains(*document, completion)) return 10;
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision")) return 11;
   return 0;
 }

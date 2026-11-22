@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cgpui/ui/style_values.hpp"
+#include "cgpui/core/paint_values.hpp"
 #include "vulkan_rounded_rect_vertex_internal.hpp"
 
 #include <cstddef>

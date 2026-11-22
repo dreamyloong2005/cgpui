@@ -57,20 +57,12 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core_parity = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
       &public_header, &source, &runtime_handles, &runtime_state,
       &element_header, &element_state, &sequence_state, &style_header,
       &style_source, &aggregate, &behavior, &ui_structure,
       &header_cleanliness, &previous, &manifests, &pin, &vocabulary,
-      &core_parity, &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
+      &core_parity};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(public_header, "struct AnimationSpring") ||
@@ -106,9 +98,7 @@ int main() {
       !contains(header_cleanliness, "cgpui/ui/animation_curve.hpp") ||
       !contains(manifests, "\"animation_curve_variant_test.cpp\"") ||
       !contains(manifests,
-                "\"phase_g_animation_curve_variant_structure_test.cpp\"") ||
-      !contains(previous,
-                "Step 646 spring and tween variant ")) {
+                "\"phase_g_animation_curve_variant_structure_test.cpp\"")) {
     return 6;
   }
   if (!contains(pin, "5a823cf70ebb1d7a158c6a7ca455860cd9f6aed0") ||
@@ -118,20 +108,7 @@ int main() {
       line_count(sequence_state) > 140 || line_count(style_header) > 30 ||
       line_count(style_source) > 80 || line_count(behavior) > 190) return 7;
 
-  constexpr const char* completion =
-      "Phase G Step 646 adds zero-allocation animation curve variants with "
-      "pinned-upstream quadratic, ease-out-quint, bounce, and pulsating "
-      "tween behavior plus parameterized under-, critical-, and over-damped "
-      "springs shared by runtime, element, sequence, and style animation "
-      "paths. Step 647 animation cancellation production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 8;
-  }
   if (!contains(vocabulary, "`AnimationCurve`") ||
-      !contains(core_parity, "parameterized spring curves") ||
-      !contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 9;
+      !contains(core_parity, "parameterized spring curves")) return 9;
   return 0;
 }

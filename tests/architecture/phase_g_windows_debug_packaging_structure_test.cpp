@@ -30,20 +30,11 @@ int main() {
   const std::string core = read_source("scripts/ci/windows-package.ps1");
   const std::string workflow =
       read_source(".github/workflows/phase-g-windows-linux.yml");
-  const std::string previous =
-      read_source("tests/api_parity/phase_g_test_support_closeout_test.cpp");
   const std::string manifests = read_source("tests/architecture/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &wrapper, &core, &workflow, &previous, &manifests, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &wrapper, &core, &workflow, &manifests, &ledger_json};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(wrapper, "windows-package.ps1") ||
@@ -74,33 +65,16 @@ int main() {
     return 4;
   }
 
-  if (!contains(previous, "Step 667 Windows debug build and packaging coverage") ||
-      !contains(manifests,
-                "\"phase_g_windows_debug_packaging_structure_test.cpp\"") ||
-      !contains(roadmap,
-                "- [x] Phase G Step 667 adds a Windows Debug CI packaging")) {
+  if (!contains(manifests,
+                "\"phase_g_windows_debug_packaging_structure_test.cpp\"")) {
     return 5;
   }
   if (line_count(wrapper) > 35 || line_count(core) > 190 ||
       line_count(workflow) > 150 ||
       line_count(read_source("mcpp.toml")) > 100) return 6;
 
-  constexpr const char* completion =
-      "Phase G Step 667 adds a Windows Debug CI packaging path with "
-      "workspace-confined output cleanup, serial Xmake configuration and "
-      "build, public headers, framework libraries, demo executable, README, "
-      "manifest validation, and uploaded artifact coverage. Step 668 Linux "
-      "debug build and packaging coverage is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 7;
-  }
   if (!contains(ledger_json, "\"phase_g_step_667_sources\"") ||
-      !contains(ledger_json, "scripts/ci/windows-package.ps1") ||
-      !contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
+      !contains(ledger_json, "scripts/ci/windows-package.ps1")) {
     return 8;
   }
   return 0;
