@@ -1,15 +1,10 @@
 # xmake -> mcpp migration (branch `mcpp-migration`)
 
-`xmake-targets.json` is the inventory of every xmake target at `31607247`
-(`scripts/migration/build_inventory.py`); `mcpp-target-map.json` maps each
-of them to its mcpp counterpart (`scripts/migration/reconcile.py`). The
-merge of `origin/master` (`19c51989`) added its two new targets (its
-`build/xmake/phase_j_macos_targets.lua`, recorded as `merged_targets`; the
-file itself is not kept).
-All 676 targets map; none is dropped. At migration time Windows listed 581
-test programs and Linux 561, matching xmake. On arm64 macOS, mcpp now lists
-466: the 465 migrated entries plus `shader_source_structure_test`. Listing
-does not run the tests; see [macOS follow-up](#macos-follow-up).
+The build moved from xmake to mcpp. Every xmake target was mapped to an
+mcpp counterpart and the test programs per platform were checked against
+the xmake inventory on Windows, Linux and macOS; that one-time check is
+complete, and its inventory, map and scripts were removed on 2026-11-22.
+Tests are now registered only in the `tests/*/mcpp.toml` manifests.
 
 ## Layout
 
@@ -127,17 +122,9 @@ Native arm64 evidence (2026-11-21) and remaining work:
    `scripts/dev/macos-ar.py` to expand it before invoking the native archiver.
    The shared backend-selection test needs `linux_backend_selection.cpp` in
    macOS test support, just as on Windows; it has no Linux system dependencies.
-3. **Test count.** The xmake inventory (`xmake-targets.json`, `31607247`)
-   has 487 macOS targets with 465 test entries (463 at `31607247`, plus
-   `phase_j_macos_completion_test` and
-   `phase_j_macos_completion_structure_test` from `19c51989`). Run
-   `mcpp test --list > macos-tests.txt` on the Mac and
-   `python3.11 scripts/migration/reconcile.py --listed macosx=macos-tests.txt`
-   (Python 3.11 or newer). Verified on arm64: 466 programs, including
-   `shader_source_structure_test` added after migration. The checker accounts
-   for that test separately; the historical xmake count stays 465. Tests
-   added later are listed in `POST_MIGRATION` with the platforms that build
-   them.
+3. **Test count.** Migration verified the macOS test programs against the
+   xmake inventory (465 migrated programs); the check has since been
+   retired.
 4. **Debug and example smoke: passed.** `scripts/ci/macos-debug.sh` reports
    466 passed, 0 failed. With `MACOSX_DEPLOYMENT_TARGET=13.0`,
    `scripts/ci/macos-example-smoke.sh` runs 21 examples and 12 focused tests
