@@ -114,6 +114,7 @@ discover = [
     "win32_pointer_button_test.cpp",
     "win32_pointer_capture_test.cpp",
     "win32_pointer_scroll_test.cpp",
+    "win32_popup_window_test.cpp",
     "win32_system_appearance_test.cpp",
     "win32_text_input_production_test.cpp",
     "win32_text_input_test.cpp",

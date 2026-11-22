@@ -9,5 +9,7 @@ Result<std::unique_ptr<Win32Window>> create_win32_window(
     const WindowDescriptor& descriptor,
     PlatformEventCallback callback,
     HWND owner);
+// The HWND behind a Win32 PlatformWindow; nullptr for any other window.
+[[nodiscard]] HWND win32_window_hwnd(const PlatformWindow& window);
 
 } // namespace cgpui

@@ -1,4 +1,5 @@
 #include "win32_window_factory_internal.hpp"
+#include "win32_popup_window_internal.hpp"
 #include "win32_system_application_internal.hpp"
 #include "win32_message_dialog_internal.hpp"
 #include "win32_open_url_internal.hpp"
@@ -27,18 +28,13 @@ class Win32Application final : public Win32SystemApplication {
       const WindowDescriptor& descriptor,
       PlatformWindow& parent,
       PlatformEventCallback callback) override {
-    const NativeSurfaceHandle native_parent = parent.native_surface();
-    const auto* parent_surface =
-        std::get_if<Win32SurfaceHandle>(&native_parent);
-    if (parent_surface == nullptr || parent_surface->hwnd == nullptr) {
+    const HWND owner = win32_window_hwnd(parent);
+    if (owner == nullptr) {
       return std::unexpected(Error{
           .code = ErrorCode::invalid_argument,
           .message = "Win32 child window requires a Win32 parent"});
     }
-    return create_window_with_owner(
-        descriptor,
-        std::move(callback),
-        static_cast<HWND>(parent_surface->hwnd));
+    return create_window_with_owner(descriptor, std::move(callback), owner);
   }
 
   int run() override {
@@ -112,23 +108,23 @@ class Win32Application final : public Win32SystemApplication {
       const WindowDescriptor& descriptor,
       PlatformEventCallback callback,
       HWND owner) {
-    auto window =
-        create_win32_window(instance_, descriptor, std::move(callback), owner);
+    const bool popup = descriptor.kind == WindowKind::popup;
+    auto window = popup
+        ? create_win32_popup_window(instance_, descriptor, std::move(callback), owner)
+        : create_win32_window(instance_, descriptor, std::move(callback), owner);
     if (!window) {
       return std::unexpected(window.error());
     }
+    // Popups take neither the menu bar nor wakeups (their root window
+    // does), so the many short-lived ones never stay in windows_.
+    if (popup) return std::unique_ptr<PlatformWindow>(std::move(*window));
     apply_native_menu(window->get());
     windows_.push_back(window->get());
     return std::unique_ptr<PlatformWindow>(std::move(*window));
   }
 
   [[nodiscard]] static HWND window_handle(Win32Window* window) {
-    if (window == nullptr) return nullptr;
-    const NativeSurfaceHandle surface = window->native_surface();
-    const auto* win32_surface = std::get_if<Win32SurfaceHandle>(&surface);
-    return win32_surface == nullptr
-        ? nullptr
-        : static_cast<HWND>(win32_surface->hwnd);
+    return window == nullptr ? nullptr : win32_window_hwnd(*window);
   }
 
   void apply_native_menu(Win32Window* window) {

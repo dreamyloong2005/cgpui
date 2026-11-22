@@ -4,6 +4,7 @@
 #include "win32_window_proc_pointer_capture_internal.hpp"
 #include "win32_window_proc_accessibility_internal.hpp"
 #include "win32_window_proc_background_internal.hpp"
+#include "win32_window_proc_popup_internal.hpp"
 
 namespace cgpui {
 
@@ -15,7 +16,8 @@ LRESULT CALLBACK win32_window_proc(
   auto* window = reinterpret_cast<Win32WindowMessageTarget*>(
       GetWindowLongPtrW(hwnd, GWLP_USERDATA));
   LRESULT result = 0;
-  if (win32_window_proc_handle_test_drag(window, message, lparam, result) ||
+  if (win32_window_proc_handle_popup(hwnd, message, result) ||
+      win32_window_proc_handle_test_drag(window, message, lparam, result) ||
       win32_window_proc_handle_accessibility(
           message, wparam, lparam, window, result) ||
       win32_window_proc_handle_command(
