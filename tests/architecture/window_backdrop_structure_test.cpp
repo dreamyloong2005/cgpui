@@ -87,9 +87,10 @@ int main() {
             has(win32, "DwmExtendFrameIntoClientArea(") &&
             has(win32, "DwmSetWindowAttribute(") &&
             !has(win32, "SetLayeredWindowAttributes") &&
-            has(win32_plan, "WS_EX_LAYERED") &&
+            !has(win32_plan, "layered") && !has(win32_header, "layered") &&
             has(monitor, "win32_reevaluate_thread_window_backdrops("),
-            "Win32 backdrop is DWM-only, uses RtlGetVersion, and follows the monitor");
+            "Win32 backdrop is DWM-only, uses RtlGetVersion, follows the monitor, "
+            "and is not blocked by transparent_background");
     require(lines(wayland_header) <= 95 && lines(wayland_globals) <= 130 &&
             lines(wayland_window) <= 115 && lines(wayland_fragment) <= 8 &&
             lines(protocol) <= 100 && lines(protocol_header) <= 70 &&

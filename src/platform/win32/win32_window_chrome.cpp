@@ -17,25 +17,17 @@ PlatformWindowChromeState Win32Window::apply_window_chrome(
               .applied = options,
           },
       .style = win32_window_style_for(options),
-      .extended_style = win32_window_extended_style_for(options),
   };
 
   if (hwnd_ != nullptr) {
     title_bar_.dpi = GetDpiForWindow(hwnd_);
     if (display_command_state_.fullscreen) {
       display_command_state_.windowed_style = chrome_state_.style;
-      display_command_state_.windowed_extended_style =
-          chrome_state_.extended_style;
       return chrome_state_.platform;
     }
+    // Chrome sets no extended style: transparent_background only asks the
+    // renderer for a transparent surface (docs/window-backdrop.md, Windows).
     SetWindowLongPtrW(hwnd_, GWL_STYLE, static_cast<LONG_PTR>(chrome_state_.style));
-    SetWindowLongPtrW(
-        hwnd_,
-        GWL_EXSTYLE,
-        static_cast<LONG_PTR>(chrome_state_.extended_style));
-    if (options.transparent_background) {
-      SetLayeredWindowAttributes(hwnd_, 0, 255, LWA_ALPHA);
-    }
     SetWindowPos(
         hwnd_,
         nullptr,

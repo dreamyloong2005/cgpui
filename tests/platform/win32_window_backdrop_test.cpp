@@ -25,12 +25,6 @@ int check_plan() {
   if (old.state.supported || old.touch_dwm || old.state.reason.empty()) {
     return fail(1, "builds before 22621 must be unsupported");
   }
-  const auto layered = plan({.requested = WindowBackdrop::mica,
-                             .transparent_surface = true, .os_build = 22621,
-                             .layered = true});
-  if (layered.state.supported || layered.touch_dwm) {
-    return fail(2, "WS_EX_LAYERED must not be combined with a backdrop");
-  }
   const auto ok = plan({.requested = WindowBackdrop::mica_alt,
                         .transparent_surface = true, .os_build = 26100});
   if (ok.state.applied != WindowBackdrop::mica_alt || !ok.extend_frame ||
@@ -79,12 +73,18 @@ int main() {
   descriptor.title = "CGPUI backdrop test";
   descriptor.size = cgpui::Size{.width = 320.0F, .height = 200.0F};
   descriptor.backdrop = WindowBackdrop::mica;
+  // transparent_background sets no window style, so it does not stop the
+  // backdrop from covering the client area (code 16).
+  descriptor.chrome.transparent_background = true;
   auto window = (*app)->create_window(descriptor, [](const auto&) {});
   if (!window) return fail(11, "window was not created");
   const cgpui::NativeSurfaceHandle native = (*window)->native_surface();
   const auto* surface = std::get_if<cgpui::Win32SurfaceHandle>(&native);
   if (surface == nullptr || surface->hwnd == nullptr) return fail(12, "no HWND");
   const HWND hwnd = static_cast<HWND>(surface->hwnd);
+  if ((GetWindowLongPtrW(hwnd, GWL_EXSTYLE) & WS_EX_LAYERED) != 0) {
+    return fail(2, "transparent_background must not make the window layered");
+  }
   const std::uint32_t build = cgpui::win32_os_build_number();
   const bool enabled = (*app)->system_appearance().transparency_effects_enabled;
   std::cout << "build " << build << ", transparency " << enabled << '\n';

@@ -110,10 +110,11 @@ int main() {
     return 2;
   }
   if (!contains(win32_chrome, "SetWindowLongPtrW") ||
-      !contains(win32_chrome, "SetLayeredWindowAttributes") ||
+      contains(win32_chrome, "SetLayeredWindowAttributes") ||
+      contains(win32_chrome, "GWL_EXSTYLE") ||
       !contains(win32_chrome, "decoration_control_supported = true") ||
       !contains(win32_chrome, "transparency_supported = true") ||
-      !contains(win32_test, "WS_EX_LAYERED") ||
+      !contains(win32_test, "(extended_style & WS_EX_LAYERED) != 0") ||
       !contains(win32_test, "WS_OVERLAPPEDWINDOW")) {
     return 3;
   }

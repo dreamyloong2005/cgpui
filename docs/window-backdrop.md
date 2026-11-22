@@ -142,21 +142,30 @@ Decision order:
 
 1. The build comes from `RtlGetVersion` (GetVersionEx lies without a
    manifest). Below 22621: `supported = false`, DWM is not touched.
-2. `chrome.transparent_background` makes the window `WS_EX_LAYERED`. System
-   backdrops are not combined with it: `supported = false` with that reason.
-3. `SystemAppearance::transparency_effects_enabled == false`: the type is set
+2. `SystemAppearance::transparency_effects_enabled == false`: the type is set
    to `DWMSBT_NONE`, `applied = none`, reason "transparency effects are
    turned off in Windows settings".
-4. The renderer surface is not alpha-composited (opaque or inherit): the
+3. The renderer surface is not alpha-composited (opaque or inherit): the
    type is set, so DWM draws the material on the title bar
    (`title_bar = <material>`), the frame is not extended, `applied = none`,
    and the reason says the material is on the title bar only.
-5. Otherwise the type is set and `DwmExtendFrameIntoClientArea` gets margins
+4. Otherwise the type is set and `DwmExtendFrameIntoClientArea` gets margins
    of -1, so the material extends behind the whole client area;
    `applied = title_bar = <material>`. A failing DWM call turns `applied`
    back to `none` with the call named in `reason`. Every decision that
    touches DWM also sets the margins: -1 when covering the client area, 0
    otherwise.
+
+`chrome.transparent_background` sets no window style. It only asks the
+renderer for a transparent surface, so it combines with every backdrop.
+Until 2026-11-22 it also made the window `WS_EX_LAYERED` with alpha 255,
+and the decision refused backdrops on layered windows. A screen read-back
+over a green window, with frames cleared to alpha 0, found no other effect
+of the layered style: on the NVIDIA GPU (`PRE_MULTIPLIED`) the cleared
+area showed the green window with and without it, on the Intel GPU
+(`INHERIT`) it was black in both cases, and `WindowFromPoint` returned the
+window in both cases. With Mica, the NVIDIA window now shows the material
+(rgb(32,32,32) on this machine).
 
 Re-evaluation: each window's `Win32WindowBackdrop` registers itself as the
 window property `CGPUIWindowBackdrop`. The existing appearance monitor
@@ -168,9 +177,6 @@ runtime bridge then requests a render when `changed` is true, and the next
 frame picks the clear color from the new state. Without a runtime callback
 installed, the DWM state still follows; the clear color updates on the next
 frame.
-
-Changing `chrome.transparent_background` after a backdrop was applied does
-not re-run the decision; apply the backdrop again.
 
 Redirection surface: with the frame extended, DWM composites the window's
 GDI redirection surface under the transparent swapchain. The class has no

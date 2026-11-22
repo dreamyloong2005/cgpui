@@ -26,12 +26,4 @@ DWORD win32_window_style_for(const WindowChromeOptions& chrome) {
   return style;
 }
 
-DWORD win32_window_extended_style_for(const WindowChromeOptions& chrome) {
-  DWORD style = 0;
-  if (chrome.transparent_background) {
-    style |= WS_EX_LAYERED;
-  }
-  return style;
-}
-
 } // namespace cgpui

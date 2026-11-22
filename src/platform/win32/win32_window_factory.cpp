@@ -36,7 +36,6 @@ Result<std::unique_ptr<Win32Window>> create_win32_window(
           .ime_text_input_support = ImeTextInputSupport::available});
   const auto title = widen(descriptor.title);
   const DWORD style = win32_window_style_for(descriptor.chrome);
-  const DWORD extended_style = win32_window_extended_style_for(descriptor.chrome);
   const int initial_x = descriptor.position.has_value()
       ? static_cast<int>(descriptor.position->x)
       : CW_USEDEFAULT;
@@ -44,7 +43,7 @@ Result<std::unique_ptr<Win32Window>> create_win32_window(
       ? static_cast<int>(descriptor.position->y)
       : CW_USEDEFAULT;
   HWND hwnd = CreateWindowExW(
-      extended_style, class_name, title.c_str(), style, initial_x, initial_y,
+      0, class_name, title.c_str(), style, initial_x, initial_y,
       static_cast<int>(descriptor.size.width),
       static_cast<int>(descriptor.size.height), owner, nullptr, instance,
       static_cast<Win32WindowMessageTarget*>(window.get()));

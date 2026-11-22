@@ -24,7 +24,6 @@ PlatformWindowBackdropState Win32WindowBackdrop::apply(
     HWND hwnd,
     WindowBackdrop backdrop,
     bool transparent_surface,
-    bool layered,
     bool client_title_bar) {
   if (hwnd != hwnd_) {
     detach();
@@ -33,7 +32,6 @@ PlatformWindowBackdropState Win32WindowBackdrop::apply(
   }
   requested_ = backdrop;
   transparent_surface_ = transparent_surface;
-  layered_ = layered;
   client_title_bar_ = client_title_bar;
   return reevaluate(win32_read_system_appearance());
 }
@@ -44,7 +42,6 @@ PlatformWindowBackdropState Win32WindowBackdrop::reevaluate(
       .requested = requested_,
       .transparent_surface = transparent_surface_,
       .os_build = win32_os_build_number(),
-      .layered = layered_,
       .transparency_effects_enabled = appearance.transparency_effects_enabled,
       .client_title_bar = client_title_bar_,
   }));
