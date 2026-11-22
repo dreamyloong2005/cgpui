@@ -34,6 +34,7 @@ cgpui.build-support = { path = "../../tools/mcpp" }
 [build]
 sources = []
 include_dirs = [
+    "../../src/platform",
     "../../src/platform/linux",
     "../../tests/ui",
 ]
@@ -71,6 +72,7 @@ discover = [
     "clipboard_test.cpp",
     "linux_backend_selection_test.cpp",
     "platform_font_discovery_test.cpp",
+    "platform_popup_placement_test.cpp",
     "platform_reopen_lifecycle_test.cpp",
 ]
 

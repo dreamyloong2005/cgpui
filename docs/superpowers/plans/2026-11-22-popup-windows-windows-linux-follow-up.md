@@ -1,7 +1,8 @@
 # Popup Windows: Windows and Linux Follow-up
 
 Date: 2026-11-22
-Status: to do. Covers popup windows and native context menus. macOS is done; see
+Status: in progress (see [Progress](#progress)). Covers popup windows and
+native context menus. macOS is done; see
 `docs/superpowers/plans/2026-11-22-native-popup-windows-plan.md` (Progress)
 and `docs/workbench-widgets.md` (Popup windows).
 
@@ -45,8 +46,9 @@ widget handles keys through the root view anyway. Pointer input in a menu
 popup is handed back to the root window (`forward_pointer_input_to_root`),
 so outside clicks, hit testing and activation are shared code.
 
-The macOS implementation is the reference: `macos_popup_frame` (placement
-math, y-down, with a unit table in `macos_popup_window_test`),
+The macOS implementation is the reference: `platform_popup_frame`
+(shared placement math, y-down, `src/platform/platform_popup_placement.cpp`,
+with a unit table in `platform_popup_placement_test`),
 `macos_make_popup_panel` / `macos_attach_popup_panel`, and
 `MacOSWindow::place_popup` (`src/platform/macos/macos_popup_window.mm`).
 
@@ -64,8 +66,8 @@ math, y-down, with a unit table in `macos_popup_window_test`),
 - Placement: anchor to screen with `ClientToScreen` after converting
   logical to physical pixels (`WindowState::scale`, as the IME placement
   does); work area from `MonitorFromPoint(..., MONITOR_DEFAULTTONEAREST)` +
-  `GetMonitorInfoW(rcWork)`. Port `macos_popup_frame` to a shared,
-  platform-neutral function (it is pure math) instead of copying it.
+  `GetMonitorInfoW(rcWork)`, then `platform_popup_frame` (shared, see
+  Progress).
 - Transparency: this is the hard part. The Vulkan swapchain on the Intel
   GPU of the test machine has no `PRE_MULTIPLIED` composite alpha
   (`docs/window-backdrop.md`), and `WS_EX_LAYERED` is not combined with
@@ -174,6 +176,18 @@ popup windows once the backend has them.
 - Keep `workbench_popup_windows_test` and `window_runtime_popup_test` (fake
   platforms) as the widget and runtime contract; each backend adds only
   platform tests.
+
+## Progress
+
+Shared placement (2026-11-22): `macos_popup_frame` moved to
+`platform_popup_frame` (`src/platform/platform_popup_placement.cpp`,
+internal header `platform_popup_placement_internal.hpp`, compiled into
+`packages/platform` on every OS); `MacOSWindow::place_popup` calls it.
+Behaviour is unchanged. `platform_popup_placement_test` (tests/platform,
+all platforms) holds the former macOS table plus above, left, no room on
+either side, a work area off the origin and a popup larger than the work
+area; `popup_placement_structure_test` keeps the function neutral and
+shared. Not built on macOS in this change.
 
 ## Known limits on macOS (for parity checks)
 

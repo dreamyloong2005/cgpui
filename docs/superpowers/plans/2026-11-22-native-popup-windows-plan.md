@@ -104,6 +104,9 @@ Step 1 (macOS platform, 2026-11-22):
 - `macos_popup_window_test`: placement table (below, flip above, flip
   left with a shift, shift left), panel properties, placement in parent
   coordinates, and the popup moving with its parent.
+- Later moved (follow-up plan, Progress): the placement math is now the
+  shared `platform_popup_frame`, and its table is
+  `platform_popup_placement_test` on every platform.
 
 Step 2 (runtime, 2026-11-22):
 - `include/cgpui/ui/runtime_popups.hpp`: `popup_windows_supported`,

@@ -7,20 +7,8 @@
 
 namespace cgpui {
 
-struct MacOSPopupFrame {
-  Rect bounds;
-  bool flipped = false;
-  bool shifted = false;
-};
-
-// Popup frame for `placement` in a y-down space shared by the anchor and
-// the work area (macos_popup_window.mm converts screen coordinates).
-[[nodiscard]] MacOSPopupFrame macos_popup_frame(
-    Rect anchor,
-    Size size,
-    WindowPopupSide side,
-    float gap,
-    Rect work_area);
+// Placement math: platform_popup_frame (platform_popup_placement_internal.hpp);
+// macos_popup_window.mm converts AppKit's y-up screen coordinates for it.
 
 // A frameless, non-activating, transparent NSPanel at the pop-up menu
 // level that hides when the app deactivates.

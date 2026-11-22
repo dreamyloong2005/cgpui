@@ -191,6 +191,7 @@ discover = [
     "phase_j_upstream_audit_structure_test.cpp",
     "platform_font_discovery_structure_test.cpp",
     "platform_source_structure_test.cpp",
+    "popup_placement_structure_test.cpp",
     "renderer_source_structure_test.cpp",
     "sdk_packaging_structure_test.cpp",
     "shader_source_structure_test.cpp",

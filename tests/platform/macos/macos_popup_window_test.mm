@@ -1,4 +1,3 @@
-#include "macos_popup_window_internal.hpp"
 #include "macos_window_internal.hpp"
 
 #include "cgpui/platform/platform.hpp"
@@ -19,34 +18,10 @@ bool same(Rect rect, float x, float y, float width, float height) {
          near(rect.size.width, width) && near(rect.size.height, height);
 }
 
-// Placement in a 1000 x 800 work area (y-down).
-int test_frames() {
-  const Rect work{{0, 0}, {1000, 800}};
-  const cgpui::Size menu{200, 300};
-  const auto below = cgpui::macos_popup_frame({{100, 100}, {50, 20}}, menu,
-                                              WindowPopupSide::below, 4, work);
-  if (!same(below.bounds, 100, 124, 200, 300) || below.flipped || below.shifted) return 1;
-  // Near the bottom edge "below" flips above the anchor.
-  const auto flipped = cgpui::macos_popup_frame({{100, 700}, {50, 20}}, menu,
-                                                WindowPopupSide::below, 4, work);
-  if (!same(flipped.bounds, 100, 396, 200, 300) || !flipped.flipped) return 2;
-  // Near the right edge "right" flips left; near the bottom it shifts up.
-  const auto left = cgpui::macos_popup_frame({{900, 650}, {60, 20}}, menu,
-                                             WindowPopupSide::right, 0, work);
-  if (!same(left.bounds, 700, 500, 200, 300) || !left.flipped || !left.shifted) return 3;
-  // Below at the right edge shifts left to stay on screen.
-  const auto shifted = cgpui::macos_popup_frame({{900, 100}, {50, 20}}, menu,
-                                                WindowPopupSide::below, 0, work);
-  return same(shifted.bounds, 800, 120, 200, 300) && shifted.shifted && !shifted.flipped
-             ? 0
-             : 4;
-}
-
 }  // namespace
 
 int main() {
   @autoreleasepool {
-    if (const int frames = test_frames(); frames != 0) return frames;
     auto application = cgpui::create_platform_application();
     if (!application || !(*application)->popup_windows_supported()) return 10;
     auto parent = (*application)->create_window(
