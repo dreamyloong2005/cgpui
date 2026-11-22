@@ -34,6 +34,10 @@ class Window {
   [[nodiscard]] PlatformWindowFrameMetrics frame_metrics() const;
   PlatformWindowActionResult perform_window_action(
       PlatformWindowActionRequest request) const;
+  // Native context menu at a client point (macOS); other backends report
+  // supported = false, so keep an in-window menu as the fallback.
+  PlatformContextMenuResult show_context_menu(
+      const NativeMenuModel& menu, Point position) const;
 
   void request_render() const;
   void request_layout() const;

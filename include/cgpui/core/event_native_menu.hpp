@@ -8,6 +8,7 @@ namespace cgpui {
 enum class NativeMenuCommandSource {
   menu,
   accelerator,
+  context_menu,  // PlatformWindow::show_context_menu
 };
 
 struct NativeMenuCommand {

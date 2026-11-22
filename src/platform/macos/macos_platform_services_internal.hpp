@@ -17,6 +17,10 @@ struct MacOSNativeMenuBuild {
 [[nodiscard]] MacOSNativeMenuBuild macos_build_native_menu(
     const NativeMenuModel& model,
     void* application);
+// Items of `model`; command items call [target performMenuCommand:] with
+// the action name as the item's representedObject. Item enablement is
+// taken from the model (autoenablesItems is off).
+[[nodiscard]] NSMenu* macos_build_menu(const NativeMenuModel& model, id target);
 [[nodiscard]] NativeMenuCommandSource macos_native_menu_command_source(
     NSEvent* event);
 void macos_configure_open_panel(

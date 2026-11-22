@@ -190,10 +190,18 @@ void on_close(PopoverCloseHandler handler);     // activated / escape / outside_
 - Accessibility: `menu` (focusable) with `menu_item` children (`enabled`,
   value = accelerator, `selected` = highlighted, `expanded` on submenu items)
   and `separator`; an open submenu is a `menu` child of its item.
-- Limitation: menus are in-window overlays and cannot extend outside the
-  window. Native popups (`xdg_popup`, Win32 popup windows, macOS NSMenu) are
-  not used; the public API does not depend on them, so the macOS plan C9 row
-  is unchanged.
+- Limitation: in-window menus cannot extend outside the window.
+- Native context menu: `PopoverMenuOptions::prefer_native_menu` makes
+  `open_at` call `PlatformWindow::show_context_menu` first
+  (`src/ui/workbench/popover_menu_native.cpp`). Where it is shown (macOS
+  `NSMenu popUpMenuPositioningItem:atLocation:inView:`, which can extend
+  outside the window and uses the system look, keyboard navigation and
+  VoiceOver), the chosen item goes to the activate handler; elsewhere
+  (`supported = false`: Win32, Wayland, X11) the in-window menu opens as
+  before. The native menu shows no accelerator text (`MenuItem::accelerator`
+  is a display string, not a key), no theme or blur, and runs modally: the
+  call returns when the menu closes, and timers and rendering wait until
+  then. `example_workbench` uses it with `CGPUI_WORKBENCH_NATIVE_MENU=1`.
 
 ## Theming
 

@@ -5,6 +5,7 @@
 //   CGPUI_EXAMPLE_BACKDROP=1      Mica behind the window
 //   CGPUI_WORKBENCH_THEME=dark    force dark (or light) instead of the system
 //   CGPUI_WORKBENCH_BLUR=1        backdrop blur under the context menu
+//   CGPUI_WORKBENCH_NATIVE_MENU=1 native context menu where available (macOS)
 #include "cgpui/cgpui.hpp"
 #include "cgpui/ui/workbench_widgets.hpp"
 
@@ -63,8 +64,9 @@ class WorkbenchView final : public View {
                    SplitterPaneOptions{.default_fraction = 0.25F, .min_size = 220.0F,
                                        .collapsible = true}}),
         tree_(TreeViewOptions{.name = "Explorer"}),
-        menu_(PopoverMenuOptions{.backdrop_blur =
-                                     std::getenv("CGPUI_WORKBENCH_BLUR") != nullptr}) {
+        menu_(PopoverMenuOptions{
+            .backdrop_blur = std::getenv("CGPUI_WORKBENCH_BLUR") != nullptr,
+            .prefer_native_menu = std::getenv("CGPUI_WORKBENCH_NATIVE_MENU") != nullptr}) {
     tree_.on_event([this](const TreeViewEvent& event) {
       if (event.kind == TreeViewEventKind::children_requested) {
         tree_.set_children(event.item, folder_children(event.item));

@@ -67,6 +67,10 @@ struct PopoverMenuOptions {
   // renderer has no blur).
   bool backdrop_blur = false;
   float blur_radius = 16.0F;
+  // open_at shows a native context menu where the platform has one (macOS
+  // NSMenu, which can extend outside the window) and falls back to the
+  // in-window menu elsewhere. Native menus show no accelerator text.
+  bool prefer_native_menu = false;
   std::string name = "Context menu";
 };
 
@@ -138,6 +142,9 @@ class PopoverMenu {
   };
 
   void open(std::vector<MenuItem> items, const WindowRuntimeContext& context);
+  // True when a native menu was shown (popover_menu_native.cpp).
+  bool open_native(Point position, const std::vector<MenuItem>& items,
+                   const WindowRuntimeContext& context);
   void measure(Level& level);
   void place();
   void open_submenu(std::size_t level, std::size_t index);

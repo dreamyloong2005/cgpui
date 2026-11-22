@@ -38,7 +38,7 @@ NSEventModifierFlags modifier_flags(const cgpui::KeyboardModifiers& modifiers) {
 void append_items(
     NSMenu* menu,
     const std::vector<cgpui::NativeMenuItem>& items,
-    CGPUIMacOSMenuTarget* target,
+    id target,
     std::size_t& registered,
     std::size_t& skipped) {
   for (const auto& item : items) {
@@ -116,6 +116,26 @@ MacOSNativeMenuBuild macos_build_native_menu(
           .accelerator_count = accelerators,
           .registered_accelerator_count = registered,
           .skipped_accelerator_count = skipped}};
+}
+
+namespace {
+
+void disable_autoenable(NSMenu* menu) {
+  [menu setAutoenablesItems:NO];
+  for (NSMenuItem* item in [menu itemArray]) {
+    if ([item submenu] != nil) disable_autoenable([item submenu]);
+  }
+}
+
+}  // namespace
+
+NSMenu* macos_build_menu(const NativeMenuModel& model, id target) {
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"CGPUI"];
+  std::size_t registered = 0;
+  std::size_t skipped = 0;
+  append_items(menu, model.items, target, registered, skipped);
+  disable_autoenable(menu);
+  return menu;
 }
 
 NativeMenuCommandSource macos_native_menu_command_source(NSEvent* event) {

@@ -65,6 +65,8 @@ class MacOSWindow final : public PlatformWindow {
   [[nodiscard]] PlatformWindowFrameMetrics frame_metrics() const override;
   PlatformWindowActionResult perform_window_action(
       PlatformWindowActionRequest request) override;
+  PlatformContextMenuResult show_context_menu(
+      const NativeMenuModel& menu, Point position) override;
   void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update) override;
 
@@ -159,6 +161,8 @@ class MacOSWindow final : public PlatformWindow {
   bool drag_active_ = false;
   MacOSTextInputState text_input_state_;
   MacOSAccessibilityState accessibility_state_;
+  // Expires with the window; deferred main-queue work checks it first.
+  std::shared_ptr<MacOSWindow*> lifetime_ = std::make_shared<MacOSWindow*>(this);
 };
 
 WindowState make_macos_window_state(NSWindow* window);

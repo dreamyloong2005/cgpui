@@ -42,6 +42,7 @@ void PopoverMenu::open_at(
     Point position,
     std::vector<MenuItem> items,
     const WindowRuntimeContext& context) {
+  if (options_.prefer_native_menu && open_native(position, items, context)) return;
   anchored_to_rect_ = false;
   position_ = position;
   open(std::move(items), context);

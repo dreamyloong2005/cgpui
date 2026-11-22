@@ -4,6 +4,7 @@
 #include "cgpui/core/window.hpp"
 #include "cgpui/platform/native_surface.hpp"
 #include "cgpui/platform/platform_accessibility.hpp"
+#include "cgpui/platform/platform_context_menu.hpp"
 #include "cgpui/platform/platform_window_backdrop.hpp"
 #include "cgpui/platform/platform_window_chrome.hpp"
 #include "cgpui/platform/platform_window_close.hpp"
@@ -55,6 +56,10 @@ class PlatformWindow {
       PlatformWindowActionRequest request);
   virtual void update_accessibility_tree(
       PlatformAccessibilityTreeUpdate update);
+  // Native context menu at `position` (logical client pixels); returns
+  // when it closes.
+  virtual PlatformContextMenuResult show_context_menu(
+      const NativeMenuModel& menu, Point position);
 };
 
 using PlatformEventCallback = std::function<void(const PlatformEvent&)>;
