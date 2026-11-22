@@ -84,6 +84,7 @@ Result<bool> VulkanRendererState::has_device_extension(
 }
 
 Result<void> VulkanRendererState::select_physical_device() {
+  if (composition_surface()) return select_composition_device();
   std::uint32_t device_count = 0;
   if (auto result = require_vk_success(
           vkEnumeratePhysicalDevices(instance_, &device_count, nullptr),

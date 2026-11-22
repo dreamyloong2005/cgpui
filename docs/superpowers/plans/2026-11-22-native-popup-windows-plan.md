@@ -1,7 +1,7 @@
 # Native Popup Windows (C9 step 2)
 
 Date: 2026-11-22
-Status: approved 2026-11-22; steps 1-3 done on macOS (see [Progress](#progress)); step 4 (Windows, Linux) is described in `2026-11-22-popup-windows-windows-linux-follow-up.md`. The in-window overlay stays as the fallback where popups are unsupported or fail.
+Status: approved 2026-11-22; steps 1-3 done on macOS (see [Progress](#progress)); step 4 is described in `2026-11-22-popup-windows-windows-linux-follow-up.md`: Win32 done 2026-11-22, Wayland and X11 open. The in-window overlay stays as the fallback where popups are unsupported or fail.
 
 ## Goal
 
@@ -133,3 +133,10 @@ deferred; a closed popup's native window is destroyed at once; the
 examples read title bar metrics from the root window only (a popup has no
 traffic lights, and its metrics turned the app's own caption buttons back
 on).
+
+Step 4, Win32 (2026-11-22): popup windows present through
+DirectComposition (a composition module without GPU backend code and a
+Vulkan presenter that imports its texture); `popup_windows_supported()` is
+true where the composition probe passes, so `Tooltip` and `PopoverMenu`
+use popups on Win32 too. Details, test numbers and limits: the follow-up
+plan, Progress, "Win32 popup windows".

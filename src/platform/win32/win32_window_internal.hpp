@@ -48,6 +48,7 @@ class Win32Window final
   void update_accessibility_tree(PlatformAccessibilityTreeUpdate update) override;
   PlatformContextMenuResult show_context_menu(
       const NativeMenuModel& menu, Point position) override;
+  PlatformPopupPlacementResult place_popup(WindowPopupPlacement placement) override;
   bool accessibility_object(WPARAM wparam, LPARAM lparam, LRESULT& result) override;
 
   void update_size() override;

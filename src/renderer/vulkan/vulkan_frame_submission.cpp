@@ -10,6 +10,10 @@ Result<void> VulkanRendererState::submit_frame(
       !result) {
     return result;
   }
+  // Composition surfaces order the image with D3D11 by its keyed mutex.
+  if (composition_ != nullptr) {
+    return composition_->submit(graphics_queue_, command_buffer, in_flight_);
+  }
   const VkPipelineStageFlags wait_stage =
       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
   const VkSubmitInfo submit_info{

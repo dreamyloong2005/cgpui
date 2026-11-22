@@ -1,4 +1,6 @@
 #include "win32_window_internal.hpp"
+#include "win32_popup_window_internal.hpp"
+#include "win32_window_factory_internal.hpp"
 
 #include <utility>
 
@@ -41,7 +43,15 @@ void Win32Window::detach() {
 }
 
 NativeSurfaceHandle Win32Window::native_surface() const {
-  return Win32SurfaceHandle{.hinstance = instance_, .hwnd = hwnd_};
+  return Win32SurfaceHandle{.hinstance = instance_,
+                            .hwnd = hwnd_,
+                            .composition = win32_is_popup_window(hwnd_)};
+}
+
+HWND win32_window_hwnd(const PlatformWindow& window) {
+  const NativeSurfaceHandle surface = window.native_surface();
+  const auto* win32_surface = std::get_if<Win32SurfaceHandle>(&surface);
+  return win32_surface == nullptr ? nullptr : static_cast<HWND>(win32_surface->hwnd);
 }
 
 WindowState Win32Window::state() const {

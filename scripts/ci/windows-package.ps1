@@ -91,6 +91,7 @@ $libraries = [ordered]@{
   "cgpui_platform.lib" = "platform"
   "cgpui_platform_win32.lib" = "platform-win32"
   "cgpui_renderer.lib" = "renderer"
+  "cgpui_renderer_win32_composition.lib" = "renderer-win32-composition"
   "cgpui_renderer_vulkan.lib" = "renderer-vulkan"
   "cgpui_ui.lib" = "ui"
   "cgpui_app.lib" = "app"

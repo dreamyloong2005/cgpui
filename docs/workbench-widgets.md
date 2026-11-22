@@ -205,9 +205,10 @@ void on_close(PopoverCloseHandler handler);     // activated / escape / outside_
 
 ## Popup windows
 
-Where the platform has popup windows (`popup_windows_supported`, macOS
-today), `Tooltip` and `PopoverMenu` draw into them instead of the in-window
-overlay, so they can extend outside the window. `TooltipOptions::popup_window`
+Where the platform has popup windows (`popup_windows_supported`: macOS,
+and Win32 where its DirectComposition probe passes), `Tooltip` and
+`PopoverMenu` draw into them instead of the in-window overlay, so they can
+extend outside the window. Wayland and X11 keep the overlay. `TooltipOptions::popup_window`
 and `PopoverMenuOptions::popup_window` (both `true`) choose it; without
 popups, or when opening one fails, the overlay is used as before.
 
@@ -227,7 +228,16 @@ popups, or when opening one fails, the overlay is used as before.
   surfaces are opaque (no in-app blur behind a separate window).
 - Tooltips: the popup is pointer-transparent
   (`WindowPopupOptions::pointer_transparent`), so it never takes hover
-  from the target under it.
+  from the target under it. On Win32 such a popup is layered and
+  transparent (`WS_EX_LAYERED | WS_EX_TRANSPARENT`), which passes the
+  pointer to the window below on any thread.
+- Win32: popups have no redirection surface; their renderer draws into a
+  D3D11 texture shown with DirectComposition (premultiplied alpha), and
+  each popup opens its own Vulkan, D3D11 and DComp devices (65 to 132 ms
+  per popup renderer on Intel and 99 to 485 ms on NVIDIA in the pixel
+  tests). See
+  `docs/superpowers/plans/2026-11-22-popup-windows-windows-linux-follow-up.md`
+  (Progress).
 - Closing is deferred (the popup's view may be handling the click that
   closes it) and destroys the native window right away. Popup redraws are
   deferred too: widgets request them from the root window's layout, and a
@@ -239,8 +249,10 @@ popups, or when opening one fails, the overlay is used as before.
   window's right edge.
 - Tests: `workbench_popup_windows_test` (fake popup platform: placement,
   root paints nothing, click in the popup activates the item, the popup
-  window closes); the existing widget tests cover the overlay. Windows and
-  Linux: `docs/superpowers/plans/2026-11-22-popup-windows-windows-linux-follow-up.md`.
+  window closes); the existing widget tests cover the overlay. Win32:
+  `win32_popup_window_test` and `win32_popup_pixel_test`. Not observed on
+  screen on Windows. Linux:
+  `docs/superpowers/plans/2026-11-22-popup-windows-windows-linux-follow-up.md`.
 
 ## Theming
 
@@ -295,7 +307,7 @@ model. `PaintList::fill_text` copies the string per paint command.
 
 - Text in tabs, tree rows, tooltips and menus is single-line and clipped,
   with no ellipsis.
-- Menus cannot leave the window; no native popup windows.
+- Without popup windows (Wayland, X11), menus cannot leave the window.
 - No cross-strip or cross-window tab drag.
 - The tree keys rows by id and assumes each id appears once; moving an item
   to another parent with the same id is not supported.

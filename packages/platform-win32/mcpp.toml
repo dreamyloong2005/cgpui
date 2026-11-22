@@ -10,6 +10,10 @@ kind = "lib"
 cgpui.core = { path = "../core" }
 cgpui.platform = { path = "../platform" }
 
+# popup_windows_supported() probes the DirectComposition presentation.
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.renderer-win32-composition = { path = "../renderer-win32-composition" }
+
 [build]
 include_dirs = ["../../include"]
 sources = []

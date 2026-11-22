@@ -17,6 +17,8 @@ class Win32SystemApplication : public PlatformApplication {
   void set_system_appearance_callback(
       SystemAppearanceCallback callback) override;
   [[nodiscard]] PlatformDpiAwarenessState dpi_awareness() const override;
+  // Popups present through DirectComposition: true when its probe passes.
+  [[nodiscard]] bool popup_windows_supported() const override;
 
  private:
   PlatformDpiAwarenessState dpi_awareness_;

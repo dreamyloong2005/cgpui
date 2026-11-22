@@ -1,0 +1,28 @@
+# DirectComposition presentation of popup windows on Windows, without GPU
+# backend code: a D3D11 device on a given adapter, a premultiplied
+# composition swapchain shown by a DComp visual on a window, and a shared
+# texture (NT handle, keyed mutex) that a backend renders into
+# (src/renderer/win32_composition). It depends on core only, so the Win32
+# platform can use its probe and renderer-vulkan (or a later DX12 backend)
+# its presenter.
+[package]
+namespace = "cgpui"
+name = "renderer-win32-composition"
+version = "0.1.0"
+
+[targets.cgpui_renderer_win32_composition]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+
+[build]
+include_dirs = ["../../include"]
+sources = []
+
+[target.'cfg(os = "windows")'.build]
+sources = ["../../src/renderer/win32_composition/*.cpp"]
+ldflags = ["d3d11.lib", "dxgi.lib", "dcomp.lib"]
+
+[target.'cfg(not(os = "windows"))'.build]
+sources = ["../../tools/mcpp/empty_library.cpp"]

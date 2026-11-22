@@ -28,13 +28,15 @@ VulkanRendererState::prepare_frame_pixel_capture(
   if (auto result = request_pixel_capture(); !result) {
     return std::unexpected(result.error());
   }
-  return vulkan_prepare_frame_pixel_capture(
+  auto capture = vulkan_prepare_frame_pixel_capture(
       physical_device_,
       device_,
       image,
       swapchain_extent_,
       swapchain_format_,
       frame_pixel_capture_);
+  if (capture) capture->layout = presented_image_layout();
+  return capture;
 }
 
 Result<void> VulkanRendererState::complete_frame_pixel_capture(

@@ -12,7 +12,7 @@ Result<void> VulkanRendererState::create_swapchain_render_pass(
       .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
       .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
       .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-      .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+      .finalLayout = presented_image_layout(),
   };
   const VkAttachmentReference color_attachment_reference{
       .attachment = 0,
