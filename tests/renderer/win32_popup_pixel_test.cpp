@@ -1,4 +1,6 @@
-// Win32 popup windows end to end, once per GPU vendor
+// Win32 popup interop, once per GPU vendor. This verifies the private
+// presentation path used by Vulkan application popups without exposing
+// platform-specific presentation modes to application code.
 // (VK_LOADER_VENDOR_ID_FILTER): a parent window drawn green by its own
 // renderer (VkSwapchainKHR), and a popup and a pointer-transparent
 // (layered) popup, each with a renderer on its composition surface as the
@@ -41,6 +43,7 @@ int check_popup(cgpui::PlatformWindow& popup) {
   const auto started = std::chrono::steady_clock::now();
   auto renderer = renderer_for(popup, true);
   if (renderer == nullptr) return 1;
+  if (!renderer->popup_windows_supported()) return 7;
   std::cout << "popup renderer created in "
             << std::chrono::duration<double, std::milli>(
                    std::chrono::steady_clock::now() - started).count()

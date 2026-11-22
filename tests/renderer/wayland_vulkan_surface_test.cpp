@@ -51,6 +51,7 @@ int main() {
   }
 
   auto frame = (*renderer)->begin_frame();
+  if (!(*renderer)->popup_windows_supported()) return 10;
   if (!frame) {
     std::cerr << frame.error().message << '\n';
     return 7;

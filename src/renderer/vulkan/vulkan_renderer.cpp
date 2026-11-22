@@ -1,5 +1,6 @@
 #include "../renderer_device_pixels_internal.hpp"
 #include "vulkan_internal.hpp"
+#include "vulkan_popup_support_internal.hpp"
 
 #include <algorithm>
 
@@ -102,6 +103,9 @@ class VulkanRenderer final : public Renderer {
   }
   [[nodiscard]] RendererEffectSupport backdrop_blur_support() const override {
     return state_->backdrop_blur_support();
+  }
+  [[nodiscard]] bool popup_windows_supported() const override {
+    return vulkan_popup_windows_supported();
   }
   Result<RendererSurfaceComposition> set_transparent_surface(
       bool transparent) override {

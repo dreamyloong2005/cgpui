@@ -23,10 +23,6 @@ bool popup_windows_supported(const WindowRuntime& runtime) {
   return RuntimePopups::supported(runtime);
 }
 
-bool RuntimePopups::supported(const WindowRuntime& runtime) {
-  return runtime.application_.popup_windows_supported();
-}
-
 Result<AppOpenedWindow> open_popup(
     WindowRuntime& runtime, WindowPopupPlacement placement, Size size,
     std::unique_ptr<View> view, WindowPopupOptions options) {

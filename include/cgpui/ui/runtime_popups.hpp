@@ -10,6 +10,8 @@ namespace cgpui {
 // that never take key focus and may extend outside it. A popup that takes
 // the keyboard receives the root window's key and text events while it is
 // open, because popups are never key windows.
+// Requires both native platform support and an active popup-capable renderer.
+// Without them, widgets retain their in-window overlay; direct opens fail.
 [[nodiscard]] bool popup_windows_supported(const WindowRuntime& runtime);
 [[nodiscard]] Result<AppOpenedWindow> open_popup(
     WindowRuntime& runtime, WindowPopupPlacement placement, Size size,

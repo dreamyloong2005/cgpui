@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include "runtime_popup_support_internal.hpp"
 
 namespace cgpui {
 
@@ -14,6 +15,7 @@ void WindowRuntime::activate_native_window_for_record(
         .message = "Child window parent runtime record not found"};
     return;
   }
+  if (!runtime_accept_popup_renderer(record, application_, parent_record->renderer)) return;
   if (!parent_record->active || parent_record->window == nullptr) {
     return;
   }
@@ -48,6 +50,7 @@ void WindowRuntime::activate_native_window_for_record(
     record.native_window_error = renderer_result.error();
     return;
   }
+  if (!runtime_accept_popup_renderer(record, application_, *renderer_result)) return;
 
   record.window = window.get();
   record.renderer = *renderer_result;

@@ -11,6 +11,7 @@ int main() {
         .framebuffer_size = {64.0F, 64.0F},
         .scale = {1.0F}});
     if (!renderer) return 2;
+    if (!(*renderer)->popup_windows_supported()) return 9;
     const cgpui::RendererSurfaceComposition opaque =
         (*renderer)->surface_composition();
     if (!opaque.supported || opaque.transparent_requested ||

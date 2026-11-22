@@ -52,6 +52,7 @@ class PlatformApplication {
       SystemAppearanceCallback callback);
   [[nodiscard]] virtual PlatformDpiAwarenessState dpi_awareness() const;
   // create_child_window accepts WindowKind::popup (macOS, Win32).
+  // Native-window capability only; the runtime also checks its renderer.
   [[nodiscard]] virtual bool popup_windows_supported() const;
 
   virtual int run() = 0;

@@ -44,6 +44,10 @@ class Renderer {
   [[nodiscard]] virtual const RendererFramePixels* last_frame_pixels() const;
   [[nodiscard]] virtual RendererSurfaceComposition surface_composition() const;
   [[nodiscard]] virtual RendererEffectSupport backdrop_blur_support() const;
+  // Whether this backend supports independent transparent popup windows.
+  // The runtime also requires platform support. Custom renderers opt in;
+  // this does not select an OS-specific presentation mode.
+  [[nodiscard]] virtual bool popup_windows_supported() const;
   // Recreates the presentation surface with or without alpha composition.
   virtual Result<RendererSurfaceComposition> set_transparent_surface(
       bool transparent);

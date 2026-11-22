@@ -46,6 +46,7 @@ int main() {
     std::cerr << renderer.error().message << '\n';
     return 3;
   }
+  if (!(*renderer)->popup_windows_supported()) return 7;
   auto frame = (*renderer)->begin_frame();
   if (!frame) return 4;
   (*frame)->clear({.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F});

@@ -28,6 +28,9 @@ class MetalRenderer final : public Renderer {
   RendererEffectSupport backdrop_blur_support() const override {
     return RendererEffectSupport{.supported = true};
   }
+  bool popup_windows_supported() const override {
+    return true;
+  }
 
   RendererSurfaceComposition surface_composition() const override {
     return metal_surface_composition(*state_);

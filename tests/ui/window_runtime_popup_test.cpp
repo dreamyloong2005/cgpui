@@ -77,6 +77,7 @@ class FakeFrame final : public cgpui::RenderFrame {
 
 class FakeRenderer final : public cgpui::Renderer {
  public:
+  bool popup_windows_supported() const override { return true; }
   cgpui::Result<void> resize(cgpui::Size, cgpui::DpiScale) override { return {}; }
   cgpui::Result<std::unique_ptr<cgpui::RenderFrame>> begin_frame() override {
     return std::make_unique<FakeFrame>();

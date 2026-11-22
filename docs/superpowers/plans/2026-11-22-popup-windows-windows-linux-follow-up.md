@@ -1,8 +1,15 @@
 # Popup Windows: Windows and Linux Follow-up
 
 Date: 2026-11-22
+Revision: the runtime capability policy below is superseded by
+`2026-11-22-popup-presentation-policy-revision.md`. The completed Win32
+mechanism and historical results are retained. Windows Vulkan application
+popups keep the independent Vulkan/D3D11/DComp route when supported;
+overlays are fallback for genuine unavailability or actual failure, not a
+preemptive backend policy. DX12 support remains future work.
+
 Status: in progress (see [Progress](#progress)). Covers popup windows and
-native context menus. macOS is done; Win32 popup windows are done
+native context menus. macOS is done; the low-level Win32 popup mechanism is implemented
 (2026-11-22, DirectComposition presentation, see Progress); Wayland and X11
 remain. See `docs/superpowers/plans/2026-11-22-native-popup-windows-plan.md`
 (Progress) and `docs/workbench-widgets.md` (Popup windows).
@@ -10,9 +17,12 @@ remain. See `docs/superpowers/plans/2026-11-22-native-popup-windows-plan.md`
 Wayland and X11 report `PlatformApplication::popup_windows_supported()
 == false`, so `Tooltip` and `PopoverMenu` use the in-window overlay there;
 Win32 reports `true` when its DirectComposition probe passes.
-The overlay stays as the fallback on every platform. Nothing above the
-platform layer needs to change: a backend becomes popup-capable by
-implementing the contract below and returning `true`.
+The overlay stays as the fallback on every platform. The platform result
+describes the native mechanism only: application-runtime popup support
+also requires the active renderer's `popup_windows_supported()` opt-in.
+Vulkan retains that opt-in; there is no Windows/Vulkan blacklist.
+The contract below records the low-level platform work, not permission to
+bypass that renderer-aware policy.
 
 ## Contract a backend implements
 
@@ -406,7 +416,7 @@ Win32 popup windows (2026-11-22, stage B with the DX12 amendment):
 
 ## Known limits on macOS (for parity checks)
 
-- Menus in popups draw an opaque surface: in-app backdrop blur has nothing
+- Menus in popups draw an opaque panel on a transparent surface: in-app backdrop blur has nothing
   of the app behind a separate window. An `NSVisualEffectView` backdrop on
   the popup would give a system blur; not done.
 - The overlay node of an open menu still covers the root window, so

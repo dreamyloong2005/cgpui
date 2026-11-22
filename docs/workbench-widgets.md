@@ -205,12 +205,18 @@ void on_close(PopoverCloseHandler handler);     // activated / escape / outside_
 
 ## Popup windows
 
-Where the platform has popup windows (`popup_windows_supported`: macOS,
-and Win32 where its DirectComposition probe passes), `Tooltip` and
+Where both the platform and the active renderer support popup windows
+(`popup_windows_supported`), `Tooltip` and
 `PopoverMenu` draw into them instead of the in-window overlay, so they can
-extend outside the window. Wayland and X11 keep the overlay. `TooltipOptions::popup_window`
+extend outside the window. Windows with Vulkan retains its independent
+popup path when the platform and renderer support it; macOS with Metal
+retains popup support. Wayland and X11 currently lack platform support and
+use the overlay. DX12 popup support is planned, not implemented yet.
+`TooltipOptions::popup_window`
 and `PopoverMenuOptions::popup_window` (both `true`) choose it; without
-popups, or when opening one fails, the overlay is used as before.
+popups, or when creation, renderer initialization or placement actually
+fails, the overlay is used as before. Windows/Vulkan is not preemptively
+forced to the overlay; the existing explicit widget opt-out remains valid.
 
 - `src/ui/workbench/widget_popup.cpp` (`WidgetPopup`): one popup window per
   tooltip and per open menu level, opened with `open_popup`
@@ -225,17 +231,24 @@ popups, or when opening one fails, the overlay is used as before.
   window after the current event, so the root view's `PopoverMenu`
   handles it with the root context. The overlay node still covers the
   root window while the menu is open, so outside clicks close it. Popup
-  surfaces are opaque (no in-app blur behind a separate window).
+  panels are opaque (no in-app blur behind a separate window), but their
+  rounded edges and shadow margins require a transparent window surface.
 - Tooltips: the popup is pointer-transparent
   (`WindowPopupOptions::pointer_transparent`), so it never takes hover
   from the target under it. On Win32 such a popup is layered and
   transparent (`WS_EX_LAYERED | WS_EX_TRANSPARENT`), which passes the
   pointer to the window below on any thread.
-- Win32: popups have no redirection surface; their renderer draws into a
-  D3D11 texture shown with DirectComposition (premultiplied alpha), and
+- Windows/Vulkan implementation: popups have no redirection surface; the
+  Vulkan interop renderer draws into a shared D3D11 texture, synchronized
+  with a keyed mutex and copied into a DirectComposition composition
+  swapchain (premultiplied alpha). The copy/synchronization is per frame, and
   each popup opens its own Vulkan, D3D11 and DComp devices (65 to 132 ms
   per popup renderer on Intel and 99 to 485 ms on NVIDIA in the pixel
-  tests). See
+  tests). This is the existing independent application-runtime popup path,
+  not a reason to force overlay fallback. Device sharing is not implemented;
+  these setup and per-frame costs remain optimization work. The platform
+  probe alone is insufficient: the runtime also requires renderer support
+  and successful popup creation. See
   `docs/superpowers/plans/2026-11-22-popup-windows-windows-linux-follow-up.md`
   (Progress).
 - Closing is deferred (the popup's view may be handling the click that
@@ -249,10 +262,18 @@ popups, or when opening one fails, the overlay is used as before.
   window's right edge.
 - Tests: `workbench_popup_windows_test` (fake popup platform: placement,
   root paints nothing, click in the popup activates the item, the popup
-  window closes); the existing widget tests cover the overlay. Win32:
+  window closes). Policy acceptance also covers menu and tooltip overlay
+  fallback after genuine capability refusal or actual creation, renderer
+  initialization or placement failure with the default popup preference,
+  plus cleanup of partial popups. Win32 low-level regression:
   `win32_popup_window_test` and `win32_popup_pixel_test`. Not observed on
   screen on Windows. Linux:
   `docs/superpowers/plans/2026-11-22-popup-windows-windows-linux-follow-up.md`.
+
+Applications do not choose native/composition presentation modes. The
+runtime combines platform and renderer capabilities; the implementation
+policy and DX12 follow-up are in
+`docs/superpowers/plans/2026-11-22-popup-presentation-policy-revision.md`.
 
 ## Theming
 
