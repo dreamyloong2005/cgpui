@@ -19,6 +19,7 @@
 #include "cgpui/ui/runtime_context.hpp"
 #include "cgpui/ui/runtime_types.hpp"
 #include "cgpui/ui/window_runtime.hpp"
+#include "cgpui/ui/runtime_popups.hpp"
 #include "cgpui/ui/runtime_rendering.hpp"
 #include "cgpui/ui/runtime_action_templates.hpp"
 #include "cgpui/ui/runtime_action_enablement_templates.hpp"

@@ -239,6 +239,8 @@ bool handling_wakeup_ = false;
 int update_batch_depth_ = 0;
 std::vector<AppOpenedWindow> app_opened_windows_;
 WindowRuntimeId root_window_runtime_id_{1};
+WindowRuntimeId keyboard_popup_{};  // takes the root's keys (runtime_popups.cpp)
+friend struct RuntimePopups;
 std::uint64_t next_window_runtime_id_ = 2;
 std::vector<WindowRuntimeRecord> window_runtime_records_;
 #include "runtime_window_ownership_state_internal.hpp"

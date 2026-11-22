@@ -146,7 +146,7 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
       record.viewport_size,
       record.scale,
       nullptr,
-      runtime_window_clear_color(record.window),
+      runtime_window_clear_color(record),
       &window_control_regions,
       element_tree_for_record(record),
       &frame_statistics);

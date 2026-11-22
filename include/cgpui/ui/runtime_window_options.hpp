@@ -27,6 +27,8 @@ struct WindowOptions {
   WindowOptions& transparent(bool enabled);
   WindowOptions& backdrop(WindowBackdrop backdrop);
   WindowOptions& title_bar(WindowTitleBarMode mode);
+  // A popup window (WindowKind::popup) opened at `placement`.
+  WindowOptions& popup(WindowPopupPlacement placement);
   [[nodiscard]] WindowDescriptor to_descriptor() const;
 };
 

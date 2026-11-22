@@ -4,6 +4,7 @@
 #include "cgpui/core/window.hpp"
 #include "cgpui/platform/platform_window.hpp"
 #include "cgpui/renderer/renderer.hpp"
+#include "cgpui/ui/runtime_window_options.hpp"
 
 namespace cgpui {
 
@@ -25,5 +26,6 @@ PlatformWindowBackdropState runtime_apply_window_backdrop(
 
 // Transparent clear only while a material is visible behind the client area.
 [[nodiscard]] Color runtime_window_clear_color(const PlatformWindow* window);
+[[nodiscard]] Color runtime_window_clear_color(const WindowRuntimeRecord& record);
 
 } // namespace cgpui

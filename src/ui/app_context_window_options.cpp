@@ -47,6 +47,12 @@ WindowOptions& WindowOptions::title_bar(WindowTitleBarMode mode) {
   return *this;
 }
 
+WindowOptions& WindowOptions::popup(WindowPopupPlacement placement) {
+  descriptor.kind = WindowKind::popup;
+  descriptor.popup = placement;
+  return *this;
+}
+
 WindowDescriptor WindowOptions::to_descriptor() const {
   return descriptor;
 }

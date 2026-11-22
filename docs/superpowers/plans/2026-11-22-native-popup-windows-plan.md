@@ -1,7 +1,7 @@
 # Native Popup Windows (C9 step 2)
 
 Date: 2026-11-22
-Status: approved 2026-11-22; step 1 done (see [Progress](#progress)).
+Status: approved 2026-11-22; steps 1 and 2 done (see [Progress](#progress)). The in-window overlay stays as the fallback where popups are unsupported or fail.
 
 ## Goal
 
@@ -104,3 +104,19 @@ Step 1 (macOS platform, 2026-11-22):
 - `macos_popup_window_test`: placement table (below, flip above, flip
   left with a shift, shift left), panel properties, placement in parent
   coordinates, and the popup moving with its parent.
+
+Step 2 (runtime, 2026-11-22):
+- `include/cgpui/ui/runtime_popups.hpp`: `popup_windows_supported`,
+  `open_popup(runtime, placement, size, view, takes_keyboard)`,
+  `place_popup`, `request_popup_redraw`, `close_popup`. Free functions,
+  because `WindowRuntime`'s header is capped at 263 lines; private access
+  goes through `RuntimePopups` (a friend, `src/ui/runtime_popups_internal.hpp`).
+- A popup is a child record of the root window (`try_open_window` with
+  `WindowOptions::popup`), with a transparent renderer and a transparent
+  clear. Popups are never key windows, so the root window's `KeyboardKey`
+  and `TextInput` go to the popup opened with `takes_keyboard` until it
+  closes. `open_popup` fails with `unsupported_platform` where the backend
+  has no popups; widgets then keep the overlay.
+- `window_runtime_popup_test` (fake platform, all platforms): unsupported
+  backend, popup descriptor and transparent renderer, keyboard forwarding,
+  placement and redraw forwarding, closing (keys return to the root).

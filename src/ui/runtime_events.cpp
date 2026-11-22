@@ -1,8 +1,13 @@
 #include "ui_internal.hpp"
 
+#include "runtime_popups_internal.hpp"
+
 namespace cgpui {
 
 void WindowRuntime::handle_event(const PlatformEvent& event) {
+  if (RuntimePopups::forward_keyboard(*this, event)) {
+    return;
+  }
   if (handle_accessibility_action_event(event, root_view_id_)) {
     return;
   }

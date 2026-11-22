@@ -28,7 +28,15 @@ PlatformWindowBackdropState runtime_apply_window_backdrop(
 
 bool runtime_wants_transparent_surface(const WindowDescriptor& descriptor) {
   return descriptor.chrome.transparent_background ||
-         descriptor.backdrop != WindowBackdrop::none;
+         descriptor.backdrop != WindowBackdrop::none ||
+         descriptor.kind == WindowKind::popup;
+}
+
+// Popups draw rounded corners and shadows over transparent pixels.
+Color runtime_window_clear_color(const WindowRuntimeRecord& record) {
+  return record.descriptor.kind == WindowKind::popup
+      ? Color{.r = 0.0F, .g = 0.0F, .b = 0.0F, .a = 0.0F}
+      : runtime_window_clear_color(record.window);
 }
 
 Color runtime_window_clear_color(const PlatformWindow* window) {
