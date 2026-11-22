@@ -10,10 +10,11 @@ namespace cgpui {
 
 class Win32CompositionPresenter;
 
-// Surfaces of popup windows on Windows (Win32SurfaceHandle::composition):
-// the renderer draws into one image imported from the shared D3D11
-// texture of a Win32CompositionPresenter (src/renderer/win32_composition)
-// and presents through DirectComposition instead of a VkSwapchainKHR.
+// Composition surfaces (Win32SurfaceHandle::composition; Win32 popup
+// windows set it): the renderer draws into one image imported from the
+// shared D3D11 texture of a Win32CompositionPresenter
+// (src/renderer/win32_composition) and presents through DirectComposition
+// instead of a VkSwapchainKHR.
 [[nodiscard]] bool vulkan_composition_surface(const NativeSurfaceHandle& surface);
 // VK_KHR_external_memory_win32 and VK_KHR_win32_keyed_mutex; none off Windows.
 [[nodiscard]] std::span<const char* const> vulkan_composition_device_extensions();

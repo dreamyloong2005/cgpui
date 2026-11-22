@@ -2,12 +2,14 @@
 
 Date: 2026-11-22
 Status: in progress (see [Progress](#progress)). Covers popup windows and
-native context menus. macOS is done; see
-`docs/superpowers/plans/2026-11-22-native-popup-windows-plan.md` (Progress)
-and `docs/workbench-widgets.md` (Popup windows).
+native context menus. macOS is done; Win32 popup windows are done
+(2026-11-22, DirectComposition presentation, see Progress); Wayland and X11
+remain. See `docs/superpowers/plans/2026-11-22-native-popup-windows-plan.md`
+(Progress) and `docs/workbench-widgets.md` (Popup windows).
 
-Win32, Wayland and X11 report `PlatformApplication::popup_windows_supported()
-== false`, so `Tooltip` and `PopoverMenu` use the in-window overlay there.
+Wayland and X11 report `PlatformApplication::popup_windows_supported()
+== false`, so `Tooltip` and `PopoverMenu` use the in-window overlay there;
+Win32 reports `true` when its DirectComposition probe passes.
 The overlay stays as the fallback on every platform. Nothing above the
 platform layer needs to change: a backend becomes popup-capable by
 implementing the contract below and returning `true`.
@@ -62,7 +64,9 @@ with a unit table in `platform_popup_placement_test`),
   SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOZORDER)`.
 - `WM_MOUSEACTIVATE` returns `MA_NOACTIVATE`; `WM_NCHITTEST` returns
   `HTTRANSPARENT` when `pointer_transparent` (or add `WS_EX_TRANSPARENT |
-  WS_EX_LAYERED`).
+  WS_EX_LAYERED`). Implemented with the layered transparent styles:
+  `HTTRANSPARENT` hands the pointer to same-thread windows only (see
+  Progress).
 - Placement: anchor to screen with `ClientToScreen` after converting
   logical to physical pixels (`WindowState::scale`, as the IME placement
   does); work area from `MonitorFromPoint(..., MONITOR_DEFAULTTONEAREST)` +
@@ -75,7 +79,8 @@ with a unit table in `platform_popup_placement_test`),
   for popups as for backdrops (`vulkan_device_preference.cpp`), or a
   DirectComposition path (see the DX11/DX12 discussion). Without
   transparency the shadow margin would show as a black frame, so keep
-  `popup_windows_supported()` false until it composites.
+  `popup_windows_supported()` false until it composites. Resolved with the
+  DirectComposition path below.
 - Per-monitor DPI: a popup on another monitor gets that monitor's scale
   (`WM_DPICHANGED` on the popup); the runtime resizes its renderer from
   `WindowResized`, which already works for child windows.
@@ -334,6 +339,67 @@ submenu item; the command arrives only after the call returns), the empty
 model, and a window destroyed before delivery. Wayland and X11 keep
 `supported = false`. Not checked on screen (example_workbench with
 `CGPUI_WORKBENCH_NATIVE_MENU=1`).
+
+Win32 popup windows (2026-11-22, stage B with the DX12 amendment):
+- Composition module (`packages/renderer-win32-composition`,
+  `src/renderer/win32_composition`): `Win32CompositionPresenter` and
+  `win32_composition_available()` as in the amendment. It holds no Vulkan
+  code (`win32_composition_structure_test`). `win32_composition_presenter_test`
+  renders with a second D3D11 device in place of a backend, on every
+  hardware adapter, and reads the screen back: 50% red over green reads
+  128, 127, 0 on Intel and NVIDIA; after a resize to 32 x 32, 50% blue
+  reads 0, 127, 128 and the uncovered part of the popup shows the green
+  window (0, 255, 0); a present without a rendered frame fails after one
+  second instead of hanging.
+- Vulkan side (`src/renderer/vulkan/vulkan_composition_*`): keyed on
+  `Win32SurfaceHandle::composition`, not on the window kind. The device is
+  the first enumerated Vulkan 1.1 device with graphics, the two interop
+  extensions, a LUID and an importable D3D11 texture format, with no
+  premultiplied-alpha preference (Intel(R) Graphics here); swapchain
+  windows keep their selection. The branches are `create_surface`,
+  `select_physical_device`, `create_device`, `create_swapchain_resources`,
+  `submit_frame` and the acquire and present in `present_frame` (stage B
+  counted three). A composition frame ends its render pass in
+  `COLOR_ATTACHMENT_OPTIMAL`, because `PRESENT_SRC_KHR` is for presentable
+  images only, so the pixel capture command carries the layout it
+  restores.
+- Platform (`src/platform/win32/win32_popup_window*.cpp`,
+  `win32_popup_placement.cpp`, `win32_window_proc_popup.cpp`): a window
+  class of its own whose extra bytes keep the popup state (the owner
+  offset), so `Win32Window` only declares `place_popup`;
+  `native_surface()` sets `composition` for popups only. Popups never
+  enter `Win32Application::windows_` (no menu bar, no wakeups), so
+  destroyed tooltips leave no dangling pointer there; destroyed normal
+  child windows still do (unchanged).
+- Pointer transparency: `HTTRANSPARENT` hands the pointer to windows of
+  the same thread only. An experiment outside the repo put a window of
+  another thread under a DComp popup and moved the mouse over it with
+  `SendInput`: with `HTTRANSPARENT` neither window received a
+  `WM_MOUSEMOVE` (the popup only got the hit tests); with
+  `WS_EX_LAYERED | WS_EX_TRANSPARENT` the window below received 11 and the
+  popup none (6 and none for a same-thread window below), and the
+  popup's DComp content still read 128, 127, 0. Pointer-transparent
+  popups use those two styles (`SetLayeredWindowAttributes` 255, alpha
+  unchanged); other popups and windows do not get `WS_EX_LAYERED`.
+- Tests: `win32_popup_window_test` (scale 1.5 here: placement below an
+  anchor at 10, 34, 120 x 80 in parent coordinates, the popup moving 30,
+  20 with its parent, a flip above at the work area's bottom edge, and
+  `WindowFromPoint` at a pointer-transparent popup returning the parent);
+  `vulkan_composition_pixel_test` and `win32_popup_pixel_test`, once per
+  GPU vendor with `VK_LOADER_VENDOR_ID_FILTER`: a 50% red rect over a
+  transparent clear is captured as 128, 0, 0, 128 on Intel and
+  127, 0, 0, 127 on NVIDIA, the screen reads 128, 127, 0 (127, 128, 0 on
+  NVIDIA) over green, and the cleared half shows the green window.
+- Creation cost per popup (each opens its own Vulkan instance and device,
+  D3D11 device and DComp device), over five test runs: a composition
+  renderer took 65 to 132 ms on Intel and 99 to 485 ms on NVIDIA (317 to
+  485 ms when it was the process's first renderer on NVIDIA, 99 to 170 ms
+  after the parent's); the module alone 45 to 106 ms on Intel and 180 to
+  199 ms on NVIDIA. Sharing devices across popups is still not covered.
+- Not verified: the on-screen look of `example_workbench` menus and
+  tooltips in popups, multi-monitor placement (one 2560 x 1600 display at
+  150% here), and a popup moving to a monitor of another scale
+  (`WM_DPICHANGED`).
 
 ## Known limits on macOS (for parity checks)
 
