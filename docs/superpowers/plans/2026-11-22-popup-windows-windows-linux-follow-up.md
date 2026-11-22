@@ -117,7 +117,8 @@ need D3D11.4 and semaphore import for the same result. Preferring the
 premultiplied-capable GPU for popups (as for backdrops) would leave
 popups without transparency on Intel-only machines.
 
-Seam in the renderer (smallest found): the platform marks the popup's
+Seam in the renderer (smallest found; split in two by the amendment
+below): the platform marks the popup's
 surface, `Win32SurfaceHandle::composition = true` ("no redirection
 surface; present through DirectComposition"). The Vulkan renderer then
 creates no `VkSurfaceKHR`, takes the first Vulkan 1.1 device with
@@ -158,6 +159,52 @@ Not covered: sharing one Vulkan device across windows (each popup creates
 its own instance, device, D3D11 device and DComp device; creation time is
 measured in the pixel test), and popups on a monitor whose scale differs
 from the parent's beyond `WM_DPICHANGED`.
+
+### Win32 design amendment: presentation split for a DX12 backend
+
+A DX12 renderer backend is planned on Windows next to Vulkan. Its popups
+must reuse the DXGI and DirectComposition half of the path above without
+any Vulkan code, so the presentation is split in two parts (this replaces
+the single `VulkanCompositionPresenter` of the seam paragraph above):
+
+1. A Windows-only composition module, `src/renderer/win32_composition/`,
+   in its own package `packages/renderer-win32-composition` (Windows
+   sources, an empty library elsewhere, like `renderer-vulkan`). It
+   depends on `cgpui.core` only and links `d3d11`, `dxgi` and `dcomp`.
+   `Win32CompositionPresenter::create(LUID, HWND, size)` owns:
+   - the D3D11 device on the adapter with that LUID
+     (`IDXGIFactory4::EnumAdapterByLuid`);
+   - the premultiplied composition swapchain
+     (`CreateSwapChainForComposition`, flip sequential, 2 buffers) and
+     its `ResizeBuffers`;
+   - the DComp device, the target on the HWND and the visual whose
+     content is the swapchain, committed after the first present;
+   - the shared texture (`B8G8R8A8_UNORM`, `SHARED_NTHANDLE |
+     SHARED_KEYEDMUTEX`); `shared_texture_handle()` returns its NT handle,
+     which a resize replaces;
+   - `present()`: the D3D11 side acquires the keyed mutex with key 1,
+     copies the texture into the back buffer, releases key 0 and
+     presents.
+   `win32_composition_available()` is the probe behind
+   `popup_windows_supported()`: a hardware D3D11 device and a DComp
+   device, once per process. The Win32 platform calls it, which is why
+   the module depends on nothing but core.
+2. The Vulkan side, `src/renderer/vulkan/vulkan_composition_*`: device
+   selection for composition surfaces (the first Vulkan 1.1 device with
+   graphics, `VK_KHR_external_memory_win32`, `VK_KHR_win32_keyed_mutex`,
+   a valid LUID and an importable D3D11 texture format), and a
+   `VulkanCompositionPresenter` that imports the module's handle as a
+   `VkImage` (external memory, dedicated allocation), records the
+   ownership transfers from and to `VK_QUEUE_FAMILY_EXTERNAL`, submits
+   the frame with the keyed mutex (acquire key 0, release key 1,
+   `VK_KHR_win32_keyed_mutex`) and then calls the module's `present()`.
+   The renderer uses it instead of `VkSwapchainKHR` for surfaces marked
+   `Win32SurfaceHandle::composition`, that is for popups only.
+
+A DX12 backend would open the same handle and call the same `present()`;
+how it synchronizes with the module (the keyed mutex through D3D11On12,
+or a shared fence the module would add) is decided with that backend.
+Normal windows keep `VkSwapchainKHR`, unchanged.
 
 ## Wayland
 
