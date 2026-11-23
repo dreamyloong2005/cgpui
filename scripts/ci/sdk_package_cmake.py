@@ -28,8 +28,9 @@ def cmake_config(platform: str, mode: str, runtime: str | None,
             'set CMAKE_MSVC_RUNTIME_LIBRARY to MultiThreadedDLL '
             '(it is ${CMAKE_MSVC_RUNTIME_LIBRARY})")',
             "endif()",
-            "find_dependency(Vulkan)",
         ]
+        if "vulkan-1" in system:
+            lines.append("find_dependency(Vulkan)")
     lines += ["if(NOT TARGET cgpui::cgpui)"]
     link_items = []
     for library in libraries:
@@ -127,8 +128,16 @@ def readme(manifest: dict) -> str:
             "runs its tests under AddressSanitizer instead. The debug package",
             "has `/Z7` debug information inside its `.lib` files and no `.pdb`",
             "files: the consumer's linker writes it into the consumer's PDB.",
-            "Vulkan comes from `find_package(Vulkan)` (set `VULKAN_SDK`).",
         ]
+        if "vulkan-1" in manifest["system_libraries"]:
+            lines.append("Vulkan comes from `find_package(Vulkan)` (set `VULKAN_SDK`).")
+        else:
+            lines += [
+                "Windows loads vulkan-1.dll only when the Vulkan backend is selected.",
+                "SDK consumers need no Vulkan import library, headers or delay-load flags.",
+                "Vulkan runtime selection still requires a working loader/driver;",
+                "DX12 selection does not load it and failures never select another backend.",
+            ]
     lines += [
         "",
         "## xmake",
@@ -148,7 +157,7 @@ def readme(manifest: dict) -> str:
         "    add_links(" + ", ".join(f'"{n}"' for n in manifest["link_names"]) + ")",
         "    add_syslinks(" + ", ".join(f'"{n}"' for n in manifest["system_libraries"]) + ")",
     ]
-    if windows:
+    if windows and "vulkan-1" in manifest["system_libraries"]:
         lines.append('    add_linkdirs(path.join(os.getenv("VULKAN_SDK"), "Lib"))')
     lines += [
         "```",

@@ -121,6 +121,24 @@ remains the default; the [DX12 bootstrap](dx12-backend.md) is not feature-comple
 `python -B tests/ci/dx12_package_graph_test.py` checks both the SDK graph and the
 base Windows package's copied libraries so neither can omit the factory owner.
 
+Newly built Windows SDKs do not statically import `vulkan-1.dll`. Only selecting
+Vulkan initializes its private runtime loader; explicit DX12 selection does not
+load Vulkan. Loading uses the safe default search (application directory,
+System32 and directories registered with `AddDllDirectory`), not the current
+directory or ambient `PATH`. All 88 required exports must bind before the typed
+table is published; existing optional version/device-extension queries remain
+optional under their previous checks. Missing/damaged DLLs and missing required
+exports return `renderer_initialization_failed`, with the DLL/Win32 error or
+missing symbol, without selecting another backend. Failed bindings are retryable;
+a successful binding retains the DLL for process lifetime.
+
+Building the repository or packaging these libraries still requires the Vulkan
+SDK headers on Windows. An installed consumer needs no Vulkan SDK, Vulkan import
+library or delay-load flags/hooks; a Vulkan runtime is needed only if Vulkan is
+selected (including the unchanged default/`auto` selection). Linux keeps its
+direct system Vulkan linkage. This describes the current packaging code, not a
+claim that a new clean committed SDK release has been published.
+
 ## manifest.json
 
 `schema_version` 4 removes the obsolete `private_headers` and
@@ -160,9 +178,11 @@ Point CMake at the package with `-Dcgpui_DIR=<sdk>/lib/cmake/cgpui` or
 `CMAKE_PREFIX_PATH=<sdk>`. Each library is an imported static target
 (`cgpui::cgpui_core`, ..., `cgpui::lunasvg`); `cgpui::cgpui` carries the
 include directory, `cxx_std_23` and `INTERFACE_LINK_LIBRARIES` with all of
-them in link order followed by the system libraries. On Windows,
-`vulkan-1` becomes `Vulkan::Vulkan` from `find_dependency(Vulkan)` (set
-`VULKAN_SDK`). See [C++ runtime (Windows)](#c-runtime-windows) for the
+them in link order followed by the system libraries. Current Windows packages
+omit `vulkan-1` from `system_libraries`, so the config does not call
+`find_dependency(Vulkan)` or require `VULKAN_SDK`. For legacy packages whose
+manifest still lists `vulkan-1`, that entry becomes `Vulkan::Vulkan` and retains
+`find_dependency(Vulkan)` (set `VULKAN_SDK`). See [C++ runtime (Windows)](#c-runtime-windows) for the
 CRT the config enforces. The version file accepts requests up to the package version
 with the same major version (same minor while the major is 0), 64-bit
 only.
@@ -227,18 +247,25 @@ target("app")
         for _, name in ipairs(manifest.link_names) do
             target:add("links", name)
         end
+        local needs_vulkan_sdk = false
         for _, name in ipairs(manifest.system_libraries) do
             target:add("syslinks", name)
+            if name == "vulkan-1" then needs_vulkan_sdk = true end
         end
         if manifest.platform == "windows" then
             target:set("runtimes", manifest.msvc_runtime)
-            target:add("linkdirs", path.join(os.getenv("VULKAN_SDK"), "Lib"))
+            if needs_vulkan_sdk then
+                local vulkan_sdk = os.getenv("VULKAN_SDK")
+                assert(vulkan_sdk, "legacy SDK links vulkan-1; set VULKAN_SDK")
+                target:add("linkdirs", path.join(vulkan_sdk, "Lib"))
+            end
         end
     end)
 ```
 
 The package `README.md` also has a static snippet with the libraries
-spelled out.
+spelled out. The Vulkan SDK link directory is added only for a legacy manifest
+that explicitly requires `vulkan-1`, not merely because the platform is Windows.
 
 ## Replaces
 

@@ -20,8 +20,10 @@ target("sdk_consumer")
         for _, name in ipairs(manifest.link_names) do
             target:add("links", name)
         end
+        local needs_vulkan_sdk = false
         for _, name in ipairs(manifest.system_libraries) do
             target:add("syslinks", name)
+            if name == "vulkan-1" then needs_vulkan_sdk = true end
         end
         for _, name in ipairs(manifest.frameworks or {}) do
             target:add("frameworks", name)
@@ -29,6 +31,11 @@ target("sdk_consumer")
         if manifest.platform == "windows" then
             -- The package's CRT (/MD in both packages: mcpp has no debug CRT).
             target:set("runtimes", manifest.msvc_runtime)
-            target:add("linkdirs", path.join(os.getenv("VULKAN_SDK"), "Lib"))
+            -- Older static-import packages still declare this dependency.
+            if needs_vulkan_sdk then
+                local vulkan_sdk = os.getenv("VULKAN_SDK")
+                assert(vulkan_sdk, "legacy SDK links vulkan-1; set VULKAN_SDK")
+                target:add("linkdirs", path.join(vulkan_sdk, "Lib"))
+            end
         end
     end)

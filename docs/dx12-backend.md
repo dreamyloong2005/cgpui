@@ -265,10 +265,30 @@ Windows applications using `create_renderer` link `cgpui.renderer-windows`,
 which owns both backend dependencies. Backend-only consumers may link the
 named backend package. SDK link closure includes the dispatcher and both
 backends, but this does not change the default or certify a DX12 release.
-The dispatcher still carries the normal Vulkan loader dependency: selecting
-`dx12` does not provide loader-free startup. Vulkan delay-loading is not
-implemented. Linking only the named DX12 package avoids its Vulkan package
-dependency.
+On Windows, neither the dispatcher nor the installed SDK imports `vulkan-1.dll`
+at process startup. Selecting DX12 does not load Vulkan, even though both backend
+libraries remain in the SDK link closure. Only Vulkan initialization loads the
+DLL, through a private `LoadLibraryExW` owner using
+`LOAD_LIBRARY_SEARCH_DEFAULT_DIRS`: the application directory, System32 and
+explicit user directories registered with `AddDllDirectory`. It neither searches
+the current directory/ambient `PATH` nor changes the process DLL-search policy.
+
+The loader resolves all **88 required exports** into a typed candidate table
+before publishing any function pointer. Existing optional version and
+device-extension queries retain their previous checks. Missing or damaged DLLs
+return `renderer_initialization_failed` with `vulkan-1.dll` and the Win32 error
+code; missing required exports return the same typed error naming the export.
+There is no backend fallback: default/`auto` still means Vulkan, and a failed
+Vulkan initialization does not select DX12. Failed binding attempts release
+their module reference and can be retried; successful binding is serialized and
+keeps its module reference for process lifetime, including late resource teardown.
+
+Building the repository on Windows still needs the Vulkan SDK headers.
+Consumers of a newly built installed Windows SDK need neither the Vulkan SDK nor
+its import library or delay-load flags/hooks; they need a Vulkan runtime only
+when selecting Vulkan. Older static-import SDKs keep their manifest-declared
+dependencies. Linux retains its original direct Vulkan linkage. This is startup
+dependency isolation, not a DX12 default switch or a new release.
 
 Run the native acceptance suite from PowerShell:
 

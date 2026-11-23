@@ -5,6 +5,8 @@ namespace cgpui {
 Result<void> VulkanRendererState::create_instance() {
 #if defined(_WIN32) || defined(__linux__)
 #if defined(_WIN32)
+  if (auto loaded = ensure_vulkan_windows_loader(); !loaded)
+    return std::unexpected(loaded.error());
   const std::array<const char*, 2> extensions{
       VK_KHR_SURFACE_EXTENSION_NAME,
       VK_KHR_WIN32_SURFACE_EXTENSION_NAME,

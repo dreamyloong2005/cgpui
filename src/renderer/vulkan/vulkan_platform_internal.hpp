@@ -12,6 +12,7 @@
 #include <windows.h>
 #include <vulkan/vulkan_core.h>
 #include <vulkan/vulkan_win32.h>
+#include "vulkan_loader_windows_internal.hpp"
 #elif defined(__linux__)
 #include <wayland-client.h>
 #include <xcb/xcb.h>

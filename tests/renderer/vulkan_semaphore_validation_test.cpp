@@ -5,6 +5,9 @@
 #include "cgpui/renderer/renderer.hpp"
 
 #include <vulkan/vulkan.h>
+#if defined(_WIN32)
+#include "vulkan_loader_windows_internal.hpp"
+#endif
 
 #include <cstdio>
 #include <cstdlib>
@@ -31,12 +34,19 @@ void set_env(const char* name, const std::string& value) {
 }
 
 bool validation_layer_available() {
+#if defined(_WIN32)
+  const auto enumerate_layers = reinterpret_cast<PFN_vkEnumerateInstanceLayerProperties>(
+      cgpui::vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceLayerProperties"));
+  if (!enumerate_layers) return false;
+#else
+  const auto enumerate_layers = &vkEnumerateInstanceLayerProperties;
+#endif
   std::uint32_t count = 0;
-  if (vkEnumerateInstanceLayerProperties(&count, nullptr) != VK_SUCCESS) {
+  if (enumerate_layers(&count, nullptr) != VK_SUCCESS) {
     return false;
   }
   std::vector<VkLayerProperties> layers(count);
-  if (vkEnumerateInstanceLayerProperties(&count, layers.data()) != VK_SUCCESS) {
+  if (enumerate_layers(&count, layers.data()) != VK_SUCCESS) {
     return false;
   }
   for (const VkLayerProperties& layer : layers) {
@@ -68,7 +78,12 @@ std::string read_file(const std::filesystem::path& path) {
 } // namespace
 
 int main() {
-#if !defined(_WIN32)
+#if defined(_WIN32)
+  if (const auto loader = cgpui::ensure_vulkan_windows_loader(); !loader) {
+    std::cerr << loader.error().message << '\n';
+    return 1;
+  }
+#else
   const char* wayland_display = std::getenv("WAYLAND_DISPLAY");
   if (wayland_display == nullptr || std::string_view(wayland_display).empty()) {
     std::cout << "WAYLAND_DISPLAY is not set; skipping the validation run\n";

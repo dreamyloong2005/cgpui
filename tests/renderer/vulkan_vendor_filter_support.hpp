@@ -11,6 +11,7 @@
 #endif
 #include <windows.h>
 #include <vulkan/vulkan.h>
+#include "vulkan_loader_windows_internal.hpp"
 
 #include <cstdint>
 #include <cstdio>
@@ -22,23 +23,27 @@ namespace cgpui_test {
 
 // The Vulkan 1.1 devices the loader shows under the current environment.
 inline std::vector<VkPhysicalDeviceProperties> visible_vulkan_devices() {
+  if (const auto loader = cgpui::ensure_vulkan_windows_loader(); !loader) {
+    std::cerr << loader.error().message << '\n';
+    return {};
+  }
   const VkApplicationInfo application{.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
                                       .apiVersion = VK_API_VERSION_1_1};
   const VkInstanceCreateInfo create{.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
                                     .pApplicationInfo = &application};
   VkInstance instance = VK_NULL_HANDLE;
-  if (vkCreateInstance(&create, nullptr, &instance) != VK_SUCCESS) return {};
+  if (cgpui::vkCreateInstance(&create, nullptr, &instance) != VK_SUCCESS) return {};
   std::uint32_t count = 0;
-  vkEnumeratePhysicalDevices(instance, &count, nullptr);
+  cgpui::vkEnumeratePhysicalDevices(instance, &count, nullptr);
   std::vector<VkPhysicalDevice> devices(count);
-  vkEnumeratePhysicalDevices(instance, &count, devices.data());
+  cgpui::vkEnumeratePhysicalDevices(instance, &count, devices.data());
   std::vector<VkPhysicalDeviceProperties> result;
   for (VkPhysicalDevice device : devices) {
     VkPhysicalDeviceProperties properties{};
-    vkGetPhysicalDeviceProperties(device, &properties);
+    cgpui::vkGetPhysicalDeviceProperties(device, &properties);
     if (properties.apiVersion >= VK_API_VERSION_1_1) result.push_back(properties);
   }
-  vkDestroyInstance(instance, nullptr);
+  cgpui::vkDestroyInstance(instance, nullptr);
   return result;
 }
 
