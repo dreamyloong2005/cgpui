@@ -8,8 +8,10 @@ from pathlib import Path
 
 import compile_shaders as shared
 
-PIPELINES = {"rounded_rect": "rect", "text": "text", "image": "image", "box_shadow": "shadow"}
-FLAGS = ["-target", "dxil", "-profile", "sm_6_0", "-O2", "-DCGPUI_CLIP_Y_UP=1"]
+PIPELINES = {"rounded_rect": "rect", "text": "text", "image": "image",
+             "box_shadow": "shadow", "backdrop_blur": "backdrop"}
+FLAGS = ["-target", "dxil", "-profile", "sm_6_0", "-O2",
+         "-DCGPUI_CLIP_Y_UP=1", "-DCGPUI_DX12=1"]
 
 
 def output(pipeline: str) -> str:
@@ -18,6 +20,10 @@ def output(pipeline: str) -> str:
     body = []
     with tempfile.TemporaryDirectory() as directory:
         for _, source_name, entry, stage in shared.VULKAN[pipeline]:
+            # DX12 snapshots the current swapchain instead of presenting an
+            # offscreen scene; it needs the filter/composite entries only.
+            if pipeline == "backdrop_blur" and entry == "present_fragment":
+                continue
             source = f"src/renderer/vulkan/shaders/{source_name}.slang"
             output = Path(directory) / f"{entry}.dxil"
             shared.compile_one(compiler, source, entry, stage, FLAGS, output)
@@ -25,7 +31,8 @@ def output(pipeline: str) -> str:
             if data[:4] != b"DXBC":
                 raise SystemExit("Slang did not emit a DXIL container")
             shared.run([validator, "-dumpbin", str(output)])
-            name = f"{PIPELINES[pipeline]}_{stage}_dxil"
+            suffix = entry if pipeline == "backdrop_blur" else stage
+            name = f"{PIPELINES[pipeline]}_{suffix}_dxil"
             body.append(f"constexpr std::array<std::uint8_t, {len(data)}> {name}{{")
             for index in range(0, len(data), 16):
                 body.append("    " + " ".join(f"0x{x:02x}," for x in data[index:index + 16]))

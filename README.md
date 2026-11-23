@@ -13,7 +13,7 @@ without a Rust FFI layer.
 - macOS: Cocoa + Metal on Apple Silicon (arm64) only
 
 Windows also has an opt-in [experimental DX12 bootstrap](docs/dx12-backend.md)
-for opaque-window rectangles, text, images and shadows. It is not feature-complete; Vulkan stays
+for opaque-window rectangles, text, images, shadows and backdrop blur. It is not feature-complete; Vulkan stays
 the default.
 
 The [macOS SDK](docs/macos-sdk.md) targets arm64; no Intel (x86_64) or

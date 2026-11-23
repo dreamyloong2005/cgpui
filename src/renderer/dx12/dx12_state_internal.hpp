@@ -11,6 +11,7 @@ namespace cgpui {
 class Dx12ImageCache;
 struct Dx12TextCache;
 struct Dx12TextureRenderer;
+struct Dx12BackdropBlurRenderer;
 struct Dx12State {
   Dx12State();
   ~Dx12State();
@@ -33,6 +34,7 @@ struct Dx12State {
   std::unique_ptr<Dx12ImageCache> image_cache;
   std::unique_ptr<Dx12TextCache> text_cache;
   std::unique_ptr<Dx12TextureRenderer> texture_renderer;
+  std::unique_ptr<Dx12BackdropBlurRenderer> backdrop_blur;
   std::vector<Dx12Ptr<ID3D12Resource>> uploads;
   Dx12Ptr<ID3D12Resource> readback;
   D3D12_PLACED_SUBRESOURCE_FOOTPRINT capture_layout{};

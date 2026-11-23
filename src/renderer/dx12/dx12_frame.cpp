@@ -45,10 +45,6 @@ void Dx12Frame::draw_rounded_rect(const RoundedRectDraw& rect) {
   const auto device = renderer_to_device_pixels(rect, state_->scale);
   append(build_rounded_rect_geometry(std::span{&device, 1}));
 }
-void Dx12Frame::unsupported(const char* feature) {
-  if (!released_ && !error_) error_ = dx12_unsupported(feature);
-}
-void Dx12Frame::draw_backdrop_blur(const BackdropBlurDraw&) { unsupported("backdrop blur"); }
 void Dx12Frame::draw_text_selection(const TextSelectionDraw& selection) {
   draw_rect(SolidRect{.rect = selection.rect, .color = selection.color,
       .clip_rect = selection.clip_rect, .clip_stack = selection.clip_stack,

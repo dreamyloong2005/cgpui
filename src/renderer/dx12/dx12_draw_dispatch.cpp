@@ -1,5 +1,6 @@
 #include "dx12_frame_internal.hpp"
 #include "dx12_shadow_internal.hpp"
+#include "dx12_backdrop_blur_internal.hpp"
 
 namespace cgpui {
 namespace {
@@ -13,6 +14,9 @@ struct DrawRecorder {
   }
   Result<void> operator()(const BoxShadowGeometry& geometry) const {
     return dx12_record_shadow_geometry(state, geometry);
+  }
+  Result<void> operator()(const BackdropBlurPlan& plan) const {
+    return dx12_record_backdrop_blur(state, plan);
   }
 };
 } // namespace

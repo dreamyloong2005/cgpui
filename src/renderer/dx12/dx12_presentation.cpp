@@ -1,5 +1,6 @@
 #include "dx12_frame_internal.hpp"
 #include "dx12_texture_renderer_internal.hpp"
+#include "dx12_backdrop_blur_internal.hpp"
 
 namespace cgpui {
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
@@ -7,6 +8,7 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   if (auto idle = dx12_wait_idle(state); !idle) return idle;
   state.uploads.clear();
   dx12_begin_texture_frame(state);
+  dx12_begin_backdrop_blur_frame(state);
   state.readback.Reset();
   if (capture) {
     if (auto prepared = dx12_prepare_capture(state); !prepared) return prepared;

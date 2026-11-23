@@ -359,7 +359,7 @@ def finalize(args) -> None:
         "cmake_config": "lib/cmake/cgpui/cgpuiConfig.cmake",
         "consumer_sample": "share/cgpui/sdk_consumer",
         "shaders": ("embedded as SPIR-V in cgpui_renderer_vulkan; "
-                    "experimental rectangle/text/image/shadow DXIL in cgpui_renderer_dx12"
+                    "experimental rectangle/text/image/shadow/backdrop DXIL in cgpui_renderer_dx12"
                     if args.platform == "windows" else
                     "embedded as SPIR-V in cgpui_renderer_vulkan"),
         "documents": ["README.md"],

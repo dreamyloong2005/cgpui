@@ -20,6 +20,11 @@ and macOS stays Metal. The previous Popup policy is unchanged for Vulkan.
   blur radius/sigma and spread, rounded corners, original-box clip-out, affine
   transforms, composed opacity, clips and DPI. Shadow commands retain their
   position in the same rectangle/text/image draw stream.
+- Backdrop blur snapshots the scene immediately before each effect, reuses the
+  shared downsample/separable Gaussian/rounded-mask shader, mixes tint and
+  composed opacity, then resumes the original draw stream. `blur_radius` is
+  Gaussian sigma (unlike outer-shadow CSS radius/2). The actual RGBA8
+  render/load/filter-sample capability is queried from the device.
 - Pixel readback with row-pitch handling, resize, and explicit rejection of
   overlapping frames or resize while a frame is outstanding. Destroying a
   renderer before its outstanding frame is safe; that frame cannot present.
@@ -42,6 +47,15 @@ lazily when first drawn; images are evicted after more than 120 successfully
 presented idle frames. Glyph pages are cached for the renderer lifetime and
 republished as full-page snapshots when dirty. This is correctness-first, not a
 partial-upload, pooled-descriptor or bounded-glyph-cache performance guarantee.
+
+Backdrop PSOs are lazy and cached. Each visible effect owns a full-frame scene
+snapshot and two region-sized downsample targets with immutable descriptors.
+They are retained until the next successful frame-start idle wait or renderer
+destruction, including across resize; frames without effects allocate none.
+This avoids reusing resource states from unsubmitted command lists, but is not
+target pooling or a bounded peak-memory/performance guarantee. Full renderer
+diagnostic snapshots/timings remain unimplemented; effect capability reporting
+does not imply diagnostic parity.
 
 Resource-lifetime validation covers normal submission, resize and orphan frames,
 not arbitrary GPU failures. Repeated queue Signal, event-registration or wait
@@ -92,25 +106,26 @@ support returns an error instead of silently claiming validation. Debug
 configuration is fixed before the process's first DX12 device and cannot be
 changed by later renderer creations. These environment variables are diagnostic
 controls, not cross-platform window options. Use a separate process per debug
-configuration. The hello-window demo smoke can run with `-Renderer dx12`;
-examples requiring backdrop blur still exceed this subset. Use the dedicated
-native tests rather than expecting full workbench rendering.
+configuration. The hello-window and backdrop-blur examples can use this opaque
+subset. Use the dedicated native tests for pixel acceptance; one first-frame
+smoke does not establish full workbench interaction or desktop appearance.
 
 ## Not implemented yet
 
-Backdrop blur, transparent ordinary windows,
+Transparent ordinary windows,
 DirectComposition Popup presentation and device-loss recovery are future work.
-Unimplemented drawing methods reject the frame rather than silently dropping
+Unsupported capabilities reject their commands rather than silently dropping
 content. Transparent/composition descriptors fail during creation;
 `popup_windows_supported()` is false. This genuine missing capability permits
 the existing overlay fallback; Vulkan is not preemptively disabled.
 
 The original DX12 plan's shared extraction and shader phases are only partially
-complete: rectangle/text/image/shadow algorithms and DXIL are implemented, not every planned
-primitive. Full parity, transparent-window/native-menu compatibility, recovery,
+complete: rectangle/text/image/shadow/backdrop algorithms and DXIL are implemented,
+but full parity, transparent-window/native-menu compatibility, diagnostics, recovery,
 performance gates and default-switch/release verification must precede automatic
 DX12 selection. No release was published by this milestone.
 
 See `.planning/2026-11-23-dx12-bootstrap/`,
-`.planning/2026-11-23-dx12-textures/` and
-`.planning/2026-11-23-dx12-shadows/` for dated validation evidence.
+`.planning/2026-11-23-dx12-textures/`,
+`.planning/2026-11-23-dx12-shadows/` and
+`.planning/2026-11-23-dx12-backdrop/` for dated validation evidence.

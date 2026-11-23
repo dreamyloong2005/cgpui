@@ -1,6 +1,8 @@
 #pragma once
 
 #include "cgpui/renderer/renderer_commands.hpp"
+#include "cgpui/renderer/planning/backdrop_blur_vertex.hpp"
+#include "cgpui/renderer/planning/backdrop_blur_parameters.hpp"
 #include "vulkan_platform_internal.hpp"
 
 #include <array>
@@ -12,16 +14,7 @@
 
 namespace cgpui {
 
-// Composite quad vertex. `region` = {scene origin x, scene origin y,
-// downsample factor, composed opacity}; rect/radii are in local space.
-struct VulkanBackdropBlurVertex {
-  std::array<float, 2> position{};
-  std::array<float, 2> local{};
-  std::array<float, 4> rect{};
-  std::array<float, 4> radii{};
-  std::array<float, 4> tint{};
-  std::array<float, 4> region{};
-};
+using VulkanBackdropBlurVertex = BackdropBlurVertex;
 
 // One backdrop: blur `region` (scene pixels, the rect's device bounds grown
 // by 3 sigma and clamped to the frame) downsampled by `factor` into
@@ -42,8 +35,8 @@ struct VulkanBackdropBlurPlan {
   std::vector<VulkanBackdropBlurPass> passes;
 };
 
-inline constexpr std::uint32_t kVulkanBackdropBlurVerticesPerPass = 6;
-inline constexpr int kVulkanBackdropBlurMaxRadius = 48;
+inline constexpr std::uint32_t kVulkanBackdropBlurVerticesPerPass = kBackdropBlurVerticesPerPass;
+inline constexpr int kVulkanBackdropBlurMaxRadius = kBackdropBlurMaxRadius;
 
 // 1 up to sigma 4 device px, 2 up to 16, 4 up to 48, else 8.
 [[nodiscard]] std::uint32_t vulkan_backdrop_blur_downsample_factor(float sigma);

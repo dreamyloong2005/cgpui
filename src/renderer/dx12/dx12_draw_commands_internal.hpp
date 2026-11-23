@@ -3,6 +3,7 @@
 #include "dx12_texture_internal.hpp"
 #include "cgpui/renderer/planning/rect_geometry.hpp"
 #include "cgpui/renderer/planning/box_shadow_geometry.hpp"
+#include "cgpui/renderer/planning/backdrop_blur_plan.hpp"
 #include <array>
 #include <optional>
 #include <variant>
@@ -21,7 +22,7 @@ struct Dx12TexturedDraw {
   ImageSamplingMode sampling = ImageSamplingMode::linear;
   bool glyph = false;
 };
-using Dx12DrawCommand = std::variant<RectGeometry, Dx12TexturedDraw, BoxShadowGeometry>;
+using Dx12DrawCommand = std::variant<RectGeometry, Dx12TexturedDraw, BoxShadowGeometry, BackdropBlurPlan>;
 
 Result<void> dx12_record_draw(Dx12State& state, const Dx12DrawCommand& draw);
 bool dx12_finite_textured_draw(const Dx12TexturedDraw& draw);

@@ -12,6 +12,10 @@ sources = []
 
 [test]
 discover = [
+    "backdrop_blur_plan_test.cpp",
+    "backdrop_blur_extreme_sigma_test.cpp",
+    "backdrop_blur_extent_safety_test.cpp",
+    "backdrop_blur_planning_ownership_test.cpp",
     "box_shadow_geometry_test.cpp",
     "box_shadow_planning_ownership_test.cpp",
     "image_text_geometry_test.cpp",

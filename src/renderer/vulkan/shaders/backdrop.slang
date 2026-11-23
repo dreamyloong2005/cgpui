@@ -15,7 +15,14 @@ struct PushConstants {
 };
 [[vk::push_constant]] ConstantBuffer<PushConstants> push_constants;
 
+#if CGPUI_DX12
+// Slang's combined Sampler2D.Load lowers to an invalid HLSL Texture.Load
+// with a sampler argument. Keep DX12's native texture/sampler binding explicit.
+Texture2D<float4> source_image : register(t0);
+SamplerState source_sampler : register(s0);
+#else
 [[vk::binding(0, 0)]] Sampler2D source_image;
+#endif
 
 float4 fetch(int2 texel) {
   return source_image.Load(int3(texel, 0));
@@ -93,6 +100,9 @@ CompositeVaryings composite_vertex(CompositeInput input) {
       input.position / max(push_constants.framebuffer_size, float2(1.0));
   CompositeVaryings output;
   output.position = float4(normalized * 2.0 - 1.0, 0.0, 1.0);
+#if CGPUI_CLIP_Y_UP
+  output.position.y = -output.position.y;
+#endif
   output.local = input.local;
   output.rect = input.rect;
   output.radii = input.radii;
@@ -113,7 +123,11 @@ float4 composite_fragment(CompositeVaryings input) : SV_Target0 {
   source_image.GetDimensions(width, height);
   float2 texel = clamp((input.position.xy - input.region.xy) / input.region.z,
                        float2(0.5), float2(push_constants.source_max) + 0.5);
+#if CGPUI_DX12
+  float4 blurred = source_image.Sample(source_sampler, texel / float2(width, height));
+#else
   float4 blurred = source_image.Sample(texel / float2(width, height));
+#endif
   float3 color = lerp(blurred.rgb, input.tint.rgb, input.tint.a);
   return float4(color, mask * input.region.w);
 }

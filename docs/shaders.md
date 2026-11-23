@@ -22,11 +22,14 @@ sources:
 - `src/renderer/metal/generated/<function>.metal`: one Metal source per
   function (slangc gives every entry point of one compile all global
   parameters), embedded by `packages/renderer-metal/build.mcpp`.
-- `src/renderer/dx12/generated/{rounded_rect,text,image,box_shadow}_dxil.inc`: DXIL shader
-  model 6.0, compiled from the same Slang sources with `CGPUI_CLIP_Y_UP=1` and
+- `src/renderer/dx12/generated/{rounded_rect,text,image,box_shadow,backdrop_blur}_dxil.inc`: DXIL shader
+  model 6.0, compiled from the same Slang sources with `CGPUI_CLIP_Y_UP=1`, `CGPUI_DX12=1` and
   checked with `dxc -dumpbin` (`DXC` or the Vulkan SDK). The focused
   `compile_dx12_shaders.py` helper is included by the default/`--check` command;
   `--dxil --check` validates just this experimental slice. No runtime DXC is used.
+  Backdrop shaders use explicit DX12 texture/sampler bindings because the current
+  Slang combined-sampler `Load` lowering emits an invalid HLSL overload. Vulkan
+  retains its combined sampler and the same filter/composite mathematics.
 
 Each output names its Slang sources with a hash of their text (FNV-1a 64,
 LF line ends);

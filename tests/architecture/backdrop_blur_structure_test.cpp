@@ -38,6 +38,12 @@ int main() {
   try {
     limit("src/renderer/vulkan/vulkan_backdrop_blur_plan_internal.hpp", 70);
     limit("src/renderer/vulkan/vulkan_backdrop_blur_plan.cpp", 170);
+    limit("include/cgpui/renderer/planning/backdrop_blur_vertex.hpp", 50);
+    limit("include/cgpui/renderer/planning/backdrop_blur_pass.hpp", 50);
+    limit("include/cgpui/renderer/planning/backdrop_blur_plan.hpp", 50);
+    limit("include/cgpui/renderer/planning/backdrop_blur_parameters.hpp", 30);
+    limit("src/renderer/planning/backdrop_blur_plan.cpp", 170);
+    limit("src/renderer/planning/backdrop_blur_parameters.cpp", 30);
     limit("src/renderer/vulkan/vulkan_backdrop_blur_resources_internal.hpp", 95);
     limit("src/renderer/vulkan/vulkan_backdrop_blur_targets.cpp", 200);
     limit("src/renderer/vulkan/vulkan_backdrop_blur_descriptors.cpp", 100);
@@ -49,6 +55,8 @@ int main() {
     limit("src/renderer/vulkan/vulkan_frame_effects_internal.hpp", 25);
     limit("src/renderer/renderer_effect_fallback.cpp", 40);
     const auto effects = read("src/renderer/vulkan/vulkan_frame_effects.cpp");
+    const auto plan = read("src/renderer/planning/backdrop_blur_plan.cpp");
+    const auto adapter = read("src/renderer/vulkan/vulkan_backdrop_blur_plan.cpp");
     const auto recording = read("src/renderer/vulkan/vulkan_command_recording.cpp");
     const auto renderer = read("src/renderer/vulkan/vulkan_renderer.cpp");
     const auto fallback = read("src/renderer/renderer_effect_fallback.cpp");
@@ -60,6 +68,14 @@ int main() {
     require(has(effects, "if (backdrops.empty()) {") &&
                 has(effects, "vulkan_prepare_backdrop_blur_resources("),
             "offscreen resources are created only for frames with a backdrop");
+    require(has(plan, "plan_backdrop_blur(") && has(plan, "blur_region(") &&
+                has(plan, "resolve_rounded_rect_radii(") && !has(plan, "Vk"),
+            "backdrop CPU regions and vertices have a native-free planning owner");
+    require(has(adapter, "plan_backdrop_blur(") && has(adapter, "pass.region.x") &&
+                has(adapter, "vulkan_backdrop_blur_support(") &&
+                has(adapter, "vulkan_backdrop_blur_offscreen_pass_count(") &&
+                !has(adapter, "std::ceil") && !has(adapter, "std::sqrt"),
+            "Vulkan adapts plan types and retains its own capability and renderpass policy");
     require(has(recording, "if (effects.backdrop_blur.active()) {") &&
                 has(recording, "vkCmdBeginRenderPass"),
             "the direct swapchain pass stays the path without backdrops");

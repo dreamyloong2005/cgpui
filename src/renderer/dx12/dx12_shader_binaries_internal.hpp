@@ -10,4 +10,9 @@ D3D12_SHADER_BYTECODE dx12_image_vertex_shader();
 D3D12_SHADER_BYTECODE dx12_image_fragment_shader();
 D3D12_SHADER_BYTECODE dx12_shadow_vertex_shader();
 D3D12_SHADER_BYTECODE dx12_shadow_fragment_shader();
+D3D12_SHADER_BYTECODE dx12_backdrop_fullscreen_vertex_shader();
+D3D12_SHADER_BYTECODE dx12_backdrop_downsample_fragment_shader();
+D3D12_SHADER_BYTECODE dx12_backdrop_blur_fragment_shader();
+D3D12_SHADER_BYTECODE dx12_backdrop_composite_vertex_shader();
+D3D12_SHADER_BYTECODE dx12_backdrop_composite_fragment_shader();
 }

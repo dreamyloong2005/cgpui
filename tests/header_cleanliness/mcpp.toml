@@ -22,6 +22,10 @@ sources = []
 
 [test]
 discover = [
+    "planning_backdrop_blur_vertex_header_test.cpp",
+    "planning_backdrop_blur_pass_header_test.cpp",
+    "planning_backdrop_blur_plan_header_test.cpp",
+    "planning_backdrop_blur_parameters_header_test.cpp",
     "planning_box_shadow_vertex_header_test.cpp",
     "planning_box_shadow_geometry_header_test.cpp",
     "planning_box_shadow_parameters_header_test.cpp",

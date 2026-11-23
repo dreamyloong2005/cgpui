@@ -1,4 +1,5 @@
 #include "dx12_frame_internal.hpp"
+#include "dx12_backdrop_blur_internal.hpp"
 #include "cgpui/renderer/renderer_backend.hpp"
 
 namespace cgpui {
@@ -26,7 +27,7 @@ class Dx12Renderer final : public Renderer {
   }
   bool popup_windows_supported() const override { return false; }
   RendererEffectSupport backdrop_blur_support() const override {
-    return {.supported = false, .reason = "DX12 bootstrap rejects backdrop blur commands"};
+    return state_->backdrop_blur->support;
   }
   Result<RendererSurfaceComposition> set_transparent_surface(bool transparent) override {
     if (transparent) return std::unexpected(dx12_unsupported("transparent surfaces"));
@@ -55,6 +56,7 @@ Result<std::unique_ptr<Renderer>> create_dx12_renderer(const RenderSurfaceDescri
   state->height = static_cast<UINT>(descriptor.framebuffer_size.height);
   state->scale = descriptor.scale;
   if (auto device = dx12_create_device(*state); !device) return std::unexpected(device.error());
+  state->backdrop_blur->support = dx12_backdrop_blur_support(*state->device.Get());
   if (auto pipeline = dx12_create_pipeline(*state); !pipeline) return std::unexpected(pipeline.error());
   if (auto surface = dx12_create_swapchain(*state); !surface) return std::unexpected(surface.error());
   if (auto debug = dx12_check_debug_errors(*state); !debug) return std::unexpected(debug.error());

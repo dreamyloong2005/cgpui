@@ -83,9 +83,9 @@ int main() {
   frame = (*renderer)->begin_frame();
   if (!frame) return fail(12, frame.error().message.c_str());
   (*frame)->draw_backdrop_blur({});
-  const auto unsupported = (*frame)->present();
-  if (unsupported || unsupported.error().code != cgpui::ErrorCode::unsupported_platform) {
-    return fail(13, "unsupported backdrop blur must reject the frame");
+  const auto empty_backdrop = (*frame)->present();
+  if (!empty_backdrop) {
+    return fail(13, "empty backdrop must be a valid no-op");
   }
   renderer->reset();
   descriptor.transparent_background = true;

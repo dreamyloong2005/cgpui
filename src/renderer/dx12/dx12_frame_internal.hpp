@@ -28,7 +28,6 @@ class Dx12Frame final : public RenderFrame {
   Result<void> present() override;
 
  private:
-  void unsupported(const char* feature);
   void append(RectGeometry geometry);
   void append(Dx12TexturedDraw draw);
   void release();
