@@ -3,6 +3,7 @@
 #include "dx12_text_cache_internal.hpp"
 #include "dx12_texture_renderer_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
+#include "dx12_retirement_internal.hpp"
 
 namespace cgpui {
 Dx12State::Dx12State()
@@ -12,6 +13,6 @@ Dx12State::Dx12State()
       backdrop_blur(std::make_unique<Dx12BackdropBlurRenderer>()) {}
 
 Dx12State::~Dx12State() {
-  if (submitted && queue && fence && fence_event.value) (void)dx12_wait_idle(*this);
+  dx12_retire_submitted_work(*this);
 }
 } // namespace cgpui

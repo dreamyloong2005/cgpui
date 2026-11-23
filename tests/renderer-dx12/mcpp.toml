@@ -22,6 +22,13 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_device_removed_test.cpp",
+    "dx12_sync_retirement_test.cpp",
+    "dx12_sync_ticket_test.cpp",
+    "dx12_sync_wake_test.cpp",
+    "dx12_sync_poll_retirement_test.cpp",
+    "dx12_sync_terminal_test.cpp",
+    "dx12_sync_wait_error_test.cpp",
     "dx12_backdrop_blur_pixels_test.cpp",
     "dx12_backdrop_blur_effects_test.cpp",
     "dx12_backdrop_blur_mixed_test.cpp",

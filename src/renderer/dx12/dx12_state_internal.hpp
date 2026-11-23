@@ -12,6 +12,7 @@ class Dx12ImageCache;
 struct Dx12TextCache;
 struct Dx12TextureRenderer;
 struct Dx12BackdropBlurRenderer;
+class Dx12SynchronizationApi;
 struct Dx12State {
   Dx12State();
   ~Dx12State();
@@ -22,6 +23,8 @@ struct Dx12State {
   Dx12Ptr<ID3D12Fence> fence;
   Dx12Event fence_event;
   std::uint64_t fence_value = 0;
+  std::uint64_t pending_fence_value = 0;
+  HRESULT removal_reason = S_OK;
   Dx12Ptr<IDXGISwapChain3> swapchain;
   Dx12Ptr<ID3D12DescriptorHeap> rtv_heap;
   std::array<Dx12Ptr<ID3D12Resource>, 2> targets;
@@ -47,6 +50,8 @@ struct Dx12State {
   bool frame_active = false;
   bool submitted = false;
   bool failed = false;
+  // Optional private test boundary; its owner must outlive this state.
+  Dx12SynchronizationApi* synchronization_api = nullptr;
 };
 
 Result<void> dx12_create_device(Dx12State& state);

@@ -57,10 +57,21 @@ target pooling or a bounded peak-memory/performance guarantee. Full renderer
 diagnostic snapshots/timings remain unimplemented; effect capability reporting
 does not imply diagnostic parity.
 
-Resource-lifetime validation covers normal submission, resize and orphan frames,
-not arbitrary GPU failures. Repeated queue Signal, event-registration or wait
-failures have not been fault-injected; safe retirement during destruction after
-such failures remains a production-readiness gate.
+Synchronization retains each successfully queued fence ticket across event or
+wait failures. An event wake alone is not completion: the completed fence value
+must reach that ticket. Destruction retains GPU ownership and retries with
+backoff until completion or actual device removal is observed. Device removal
+is a terminal error, not successful presentation or a usable frame retry.
+
+Private fault-injection tests cover repeated Signal failure, event/wait failure,
+and premature event wake at the actual state-destructor/synchronization boundary.
+A separate public-renderer test removes a real native idle device. These do not
+certify arbitrary driver failure, TDR recovery, or automatic device recreation.
+If Signal permanently fails while the driver reports a live device and no
+completion can be proven, destruction can block indefinitely. A timeout cannot
+make releasing in-use GPU resources safe. The backend does not force device
+removal (the native device may be shared by other renderers), leak the state as
+normal recovery, or silently switch backends.
 
 ## Selection and testing
 
@@ -127,5 +138,6 @@ DX12 selection. No release was published by this milestone.
 
 See `.planning/2026-11-23-dx12-bootstrap/`,
 `.planning/2026-11-23-dx12-textures/`,
-`.planning/2026-11-23-dx12-shadows/` and
-`.planning/2026-11-23-dx12-backdrop/` for dated validation evidence.
+`.planning/2026-11-23-dx12-shadows/`,
+`.planning/2026-11-23-dx12-backdrop/` and
+`.planning/2026-11-23-dx12-retirement/` for dated validation evidence.
