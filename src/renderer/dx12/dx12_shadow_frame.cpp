@@ -14,6 +14,6 @@ void Dx12Frame::draw_box_shadow(const BoxShadowDraw& shadow) {
         .message = "DX12 box shadow geometry must be finite and indexable"};
     return;
   }
-  draws_.push_back(std::move(geometry));
+  draws_.push_back({std::move(geometry), RendererPrimitiveKind::box_shadow, command_count_++});
 }
 } // namespace cgpui

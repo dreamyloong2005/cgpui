@@ -22,7 +22,13 @@ struct Dx12TexturedDraw {
   ImageSamplingMode sampling = ImageSamplingMode::linear;
   bool glyph = false;
 };
-using Dx12DrawCommand = std::variant<RectGeometry, Dx12TexturedDraw, BoxShadowGeometry, BackdropBlurPlan>;
+using Dx12DrawPayload = std::variant<RectGeometry, Dx12TexturedDraw, BoxShadowGeometry, BackdropBlurPlan>;
+struct Dx12DrawCommand {
+  Dx12DrawPayload payload;
+  RendererPrimitiveKind kind = RendererPrimitiveKind::solid_rect;
+  std::size_t command_index = 0;
+  std::size_t resource_offset = 0;
+};
 
 Result<void> dx12_record_draw(Dx12State& state, const Dx12DrawCommand& draw);
 bool dx12_finite_textured_draw(const Dx12TexturedDraw& draw);

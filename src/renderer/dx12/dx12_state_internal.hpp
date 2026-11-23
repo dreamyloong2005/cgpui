@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dx12_native_internal.hpp"
+#include "cgpui/renderer/renderer_frame_diagnostic_snapshot.hpp"
 #include <array>
 #include <cstdint>
 #include <memory>
@@ -16,6 +17,7 @@ struct Dx12BackdropBlurRenderer;
 struct Dx12CompositionHost;
 struct Dx12WindowAlphaLease;
 class Dx12SynchronizationApi;
+class Dx12FrameDiagnostics;
 struct Dx12State {
   Dx12State();
   ~Dx12State();
@@ -50,6 +52,9 @@ struct Dx12State {
   Dx12Ptr<ID3D12Resource> readback;
   D3D12_PLACED_SUBRESOURCE_FOOTPRINT capture_layout{};
   std::optional<RendererFramePixels> pixels;
+  // Last successful frame, independent of the current surface/device generation.
+  std::optional<RendererFrameDiagnosticSnapshot> diagnostics;
+  Dx12FrameDiagnostics* active_diagnostics = nullptr;
   RendererBackendInfo info;
   HWND hwnd = nullptr;
   UINT width = 0, height = 0;

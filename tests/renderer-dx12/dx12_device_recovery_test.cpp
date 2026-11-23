@@ -66,6 +66,11 @@ int main() {
   if (!(*old_frame)->request_pixel_capture() || !(*old_frame)->present() ||
       !scene_visible((*renderer)->last_frame_pixels(), {255, 0, 0, 255}))
     return dx12_fail(5, "old image/text/effect warmup failed");
+  const auto* initial_diagnostics = (*renderer)->last_frame_diagnostic_snapshot();
+  if (!initial_diagnostics || initial_diagnostics->upload_bytes.image_byte_count != 4 ||
+      !initial_diagnostics->upload_bytes.glyph_atlas_byte_count)
+    return dx12_fail(15, "initial diagnostic texture uploads absent");
+  const auto glyph_bytes = initial_diagnostics->upload_bytes.glyph_atlas_byte_count;
   auto current_frame = (*renderer)->begin_frame();
   if (!current_frame) return dx12_fail(6, "replacement snapshot warmup begin failed");
   (*current_frame)->invalidate_image(asset.id);
@@ -74,6 +79,10 @@ int main() {
   if (!(*current_frame)->request_pixel_capture() || !(*current_frame)->present() ||
       !scene_visible((*renderer)->last_frame_pixels(), {0, 255, 0, 255}))
     return dx12_fail(7, "replacement image/text/effect warmup failed");
+  const auto* replacement_diagnostics = (*renderer)->last_frame_diagnostic_snapshot();
+  if (!replacement_diagnostics || replacement_diagnostics->upload_bytes.image_byte_count != 4 ||
+      replacement_diagnostics->upload_bytes.glyph_atlas_byte_count)
+    return dx12_fail(16, "replacement image or cached glyph diagnostic uploads differ");
   const auto expected = (*renderer)->last_frame_pixels()->rgba8;
   // Keep both finished frames alive: the invalidated red snapshot is no longer
   // reachable through the current image cache, but must not pin the old device.
@@ -91,6 +100,11 @@ int main() {
   if (!(*recovered_frame)->request_pixel_capture() || !(*recovered_frame)->present() ||
       !scene_visible((*renderer)->last_frame_pixels(), {0, 255, 0, 255}))
     return dx12_fail(12, "recovered cached image/text/effect rendering failed");
+  const auto* recovered_diagnostics = (*renderer)->last_frame_diagnostic_snapshot();
+  if (!recovered_diagnostics || recovered_diagnostics->upload_bytes.image_byte_count != 4 ||
+      recovered_diagnostics->upload_bytes.glyph_atlas_byte_count != glyph_bytes ||
+      !recovered_diagnostics->work.exact_match())
+    return dx12_fail(17, "diagnostics did not count actual image/glyph recovery reuploads");
   if ((*renderer)->last_frame_pixels()->rgba8 != expected)
     return dx12_fail(13, "recovered scene differs from the validated pre-loss scene");
   if ((*old_frame)->present() || (*current_frame)->present())

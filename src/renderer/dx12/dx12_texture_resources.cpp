@@ -1,6 +1,7 @@
 #include "dx12_texture_renderer_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_buffers_internal.hpp"
+#include "dx12_frame_diagnostics_internal.hpp"
 #include <algorithm>
 #include <cstring>
 
@@ -73,6 +74,8 @@ Result<void> record_upload(
   target.pResource = native.resource.Get();
   target.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
   state.commands->CopyTextureRegion(&target, 0, 0, 0, &source, nullptr);
+  if (state.active_diagnostics) state.active_diagnostics->uploaded(
+      texture.format == DXGI_FORMAT_R8_UNORM, static_cast<std::size_t>(row_bytes) * rows);
   dx12_transition(*state.commands.Get(), *native.resource.Get(),
       D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
   state.uploads.push_back(std::move(*upload));

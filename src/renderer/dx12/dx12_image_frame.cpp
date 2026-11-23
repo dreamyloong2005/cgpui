@@ -28,6 +28,6 @@ void Dx12Frame::draw_image(const ImageDraw& image) {
   for (const auto& vertex : build_image_vertices(std::span{&device, 1})) {
     draw.vertices.push_back({vertex.position, vertex.image_uv, vertex.color});
   }
-  append(std::move(draw));
+  append(std::move(draw), RendererPrimitiveKind::image, command_count_++);
 }
 } // namespace cgpui

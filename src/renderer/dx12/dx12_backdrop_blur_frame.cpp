@@ -25,6 +25,6 @@ void Dx12Frame::draw_backdrop_blur(const BackdropBlurDraw& backdrop) {
         .message = "DX12 backdrop plan must have finite vertices and bounded passes"};
     return;
   }
-  if (!plan.passes.empty()) draws_.push_back(std::move(plan));
+  draws_.push_back({std::move(plan), RendererPrimitiveKind::backdrop_blur, command_count_++});
 }
 } // namespace cgpui

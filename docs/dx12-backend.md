@@ -63,9 +63,8 @@ They are retained until the next successful frame-start idle wait or renderer
 destruction (or confirmed removed-device retirement), including across resize;
 frames without effects allocate none.
 This avoids reusing resource states from unsubmitted command lists, but is not
-target pooling or a bounded peak-memory/performance guarantee. Full renderer
-diagnostic snapshots/timings remain unimplemented; effect capability reporting
-does not imply diagnostic parity.
+target pooling or a bounded peak-memory/performance guarantee. The bounded frame
+diagnostics below do not imply performance or diagnostic parity with Vulkan.
 
 Composition-surface clears are premultiplied before ClearRenderTargetView;
 opaque ordinary HWND clear behavior is unchanged. Existing draw blending produces premultiplied target
@@ -81,6 +80,52 @@ intent becomes false, as on the existing Vulkan Popup composition path.
 `set_transparent_surface` updates that intent/report without changing the HWND
 topology or actual alpha mode. An opaque ordinary renderer still rejects an
 attempt to enable transparency; it never silently changes presentation routes.
+
+## Frame diagnostics
+
+DX12 implements the existing `Renderer::last_frame_diagnostic_snapshot()` API;
+there is no DX12-specific public diagnostic type. It returns null until the first
+fully successful present. Publication follows submission, GPU completion,
+optional pixel readback, debug-layer checks and composition commit. A failed or
+abandoned frame never publishes its candidate snapshot. Resize and device
+recovery preserve the last successful snapshot, even when it describes an older
+device generation; it is not evidence that the current device has presented.
+The borrowed result remains subject to renderer lifetime, the next successful
+publication and the existing caller synchronization requirements. Copy the
+snapshot when retaining historical measurements across later presents.
+
+Counts describe logical backend work, not GPU draw-call or pixel counts:
+
+- Commands retain their original public draw-call identity and primitive kind,
+  including selection and caret rectangles. Clear/upload/invalidation operations
+  are not draw commands. One text command can produce several texture runs.
+- A planned batch is a backend payload group with at least one eligible resource.
+  Planned draws include only nonempty geometry ranges, textured runs and backdrop
+  composites whose resolved scissor is visible. Fully culled commands remain in
+  the planned command count, but create neither planned resources nor dropped
+  resources; they can therefore appear as pending commands. Nonempty refers to
+  native payload, not pixel coverage: a zero-area image quad still counts if its
+  degenerate triangles and texture upload are actually recorded.
+- Submitted draws are recorded only after their native draw command is emitted.
+  Submitted commands and payload groups are counted once even when they emit
+  several resources. A backdrop composite is one logical draw; its downsample,
+  horizontal and vertical filtering contribute three offscreen passes instead.
+  Offscreen-target allocation reports actual retained native resources.
+- Upload bytes are the tightly packed texture payload of actual recorded upload
+  copies, separated into R8 glyph-atlas and RGBA8 image bytes. Repeated draws of
+  the same already prepared texture do not count another upload. Lazy first use,
+  immutable replacement snapshots and post-recovery reuploads count when copied.
+  CPU cache writes alone, row-pitch padding, vertex/index buffers, scene copies
+  and capture/readback are excluded. Counts use saturating arithmetic.
+
+Timings are CPU wall-clock stage durations inside presentation, including its
+synchronous GPU wait and optional readback. They exclude application time spent
+recording the frame and do not measure GPU timestamps, scanout or end-to-end
+input latency. Resource preparation includes the diagnostic planning pass.
+Resource realization may occur during command recording, so stage
+names do not promise identical work distribution across backends. Vulkan and
+DX12 have different batching and upload policies; their raw counts are not a
+cross-backend performance-equivalence claim.
 
 ## Bounded ordinary-window transparency
 
@@ -334,7 +379,7 @@ every desktop configuration, physical monitor migration or arbitrary driver TDR.
 
 The original DX12 plan's shared extraction and shader phases are only partially
 complete: rectangle/text/image/shadow/backdrop algorithms and DXIL are implemented,
-but full parity, broader transparent-window/native-menu compatibility, diagnostics, recovery,
+but full parity, broader transparent-window/native-menu compatibility, diagnostic/recovery parity,
 performance gates and default-switch/release verification must precede automatic
 DX12 selection. No release was published by this milestone.
 

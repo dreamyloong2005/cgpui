@@ -22,6 +22,6 @@ struct DrawRecorder {
 } // namespace
 
 Result<void> dx12_record_draw(Dx12State& state, const Dx12DrawCommand& draw) {
-  return std::visit(DrawRecorder{state}, draw);
+  return std::visit(DrawRecorder{state}, draw.payload);
 }
 } // namespace cgpui

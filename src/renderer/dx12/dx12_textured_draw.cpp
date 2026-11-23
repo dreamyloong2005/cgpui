@@ -2,6 +2,7 @@
 #include "dx12_texture_renderer_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_buffers_internal.hpp"
+#include "dx12_frame_diagnostics_internal.hpp"
 #include "cgpui/renderer/planning/clip_scissor.hpp"
 #include <cmath>
 
@@ -56,6 +57,7 @@ Result<void> dx12_record_textured_draw(Dx12State& state, const Dx12TexturedDraw&
       static_cast<LONG>(clip.y + clip.height)};
   state.commands->RSSetScissorRects(1, &scissor);
   state.commands->DrawInstanced(static_cast<UINT>(draw.vertices.size()), 1, 0, 0);
+  if (state.active_diagnostics) state.active_diagnostics->submitted();
   state.uploads.push_back(std::move(*vertices));
   return {};
 }

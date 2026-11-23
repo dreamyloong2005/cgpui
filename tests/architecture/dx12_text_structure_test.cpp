@@ -35,8 +35,13 @@ int main() {
     }
     const auto frame = read("src/renderer/dx12/dx12_text_frame.cpp");
     require(has(frame, "Dx12Frame::draw_text(") && has(frame, "renderer_to_device_pixels(") &&
-                has(frame, "dx12_build_text_draws(") && has(frame, "append(std::move(draw))"),
-            "text commands must join the ordered frame stream after one DPI conversion");
+                has(frame, "dx12_build_text_draws(") &&
+                has(frame, "append(std::move(draw), RendererPrimitiveKind::text, command, resource++)"),
+            "text commands must join the ordered typed frame stream after one DPI conversion");
+    require(has(frame, "std::size_t resource = 0;") && has(frame, "for (auto& draw : *prepared)") &&
+                frame.find("const auto command = command_count_++;") <
+                    frame.find("for (auto& draw : *prepared)"),
+            "split text runs must retain one original command identity and distinct resource offsets");
     const auto draws = read("src/renderer/dx12/dx12_text_draws.cpp");
     require(has(draws, "build_textured_glyph_quads(") && has(draws, "build_text_vertices(") &&
                 has(draws, "apply_composed_opacity(") && has(draws, "resolve_effective_clip_rect("),

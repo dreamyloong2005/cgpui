@@ -1,6 +1,7 @@
 #include "dx12_indexed_draw_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_buffers_internal.hpp"
+#include "dx12_frame_diagnostics_internal.hpp"
 #include "cgpui/renderer/planning/clip_scissor.hpp"
 
 namespace cgpui {
@@ -23,7 +24,8 @@ Result<void> dx12_record_indexed_draw(
   state.commands->SetGraphicsRoot32BitConstants(0, 2, extent, 0);
   state.commands->IASetVertexBuffers(0, 1, &vertex_view);
   state.commands->IASetIndexBuffer(&index_view);
-  for (const auto& draw : draws) {
+  for (std::size_t index = 0; index < draws.size(); ++index) {
+    const auto& draw = draws[index];
     const auto clipped = resolve_clip_stack_scissor(
         PixelExtent{state.width, state.height}, draw.clip_rect, {});
     if (!clipped.visible) continue;
@@ -33,6 +35,7 @@ Result<void> dx12_record_indexed_draw(
     state.commands->RSSetScissorRects(1, &scissor);
     state.commands->DrawIndexedInstanced(static_cast<UINT>(draw.index_count), 1,
         static_cast<UINT>(draw.first_index), 0, 0);
+    if (state.active_diagnostics && draw.index_count) state.active_diagnostics->submitted(index);
   }
   state.uploads.push_back(std::move(*vertices));
   state.uploads.push_back(std::move(*indices));

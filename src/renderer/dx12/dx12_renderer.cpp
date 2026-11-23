@@ -32,6 +32,10 @@ class Dx12Renderer final : public Renderer {
     Dx12OperationGuard operation(*state_);
     return !state_->recovery_pending && state_->pixels ? &*state_->pixels : nullptr;
   }
+  const RendererFrameDiagnosticSnapshot* last_frame_diagnostic_snapshot() const override {
+    Dx12OperationGuard operation(*state_);
+    return state_->diagnostics ? &*state_->diagnostics : nullptr;
+  }
   RendererBackendInfo backend_info() const override {
     Dx12OperationGuard operation(*state_);
     return state_->info;

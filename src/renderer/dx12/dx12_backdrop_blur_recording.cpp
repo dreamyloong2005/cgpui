@@ -1,5 +1,6 @@
 #include "dx12_backdrop_blur_internal.hpp"
 #include "dx12_state_internal.hpp"
+#include "dx12_frame_diagnostics_internal.hpp"
 #include "cgpui/renderer/planning/clip_scissor.hpp"
 
 namespace cgpui {
@@ -10,7 +11,8 @@ void dx12_begin_backdrop_blur_frame(Dx12State& state) {
 }
 
 Result<void> dx12_record_backdrop_blur(Dx12State& state, const BackdropBlurPlan& plan) {
-  for (const auto& pass : plan.passes) {
+  for (std::size_t pass_index = 0; pass_index < plan.passes.size(); ++pass_index) {
+    const auto& pass = plan.passes[pass_index];
     if (!resolve_clip_stack_scissor(PixelExtent{state.width, state.height}, pass.clip_rect, {}).visible) continue;
     if (auto pipelines = dx12_create_backdrop_blur_pipelines(state); !pipelines) return pipelines;
     auto created = dx12_create_backdrop_blur_targets(state, pass.texels);
@@ -31,6 +33,7 @@ Result<void> dx12_record_backdrop_blur(Dx12State& state, const BackdropBlurPlan&
     dx12_record_backdrop_blur_passes(state, targets, pass);
     if (auto composite = dx12_record_backdrop_blur_composite(state, targets, pass, plan.vertices);
         !composite) return composite;
+    if (state.active_diagnostics) state.active_diagnostics->submitted(pass_index);
   }
   return {};
 }

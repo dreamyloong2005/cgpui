@@ -1,4 +1,5 @@
 #include "dx12_recovery_test_support.hpp"
+#include "dx12_diagnostics_support.hpp"
 
 using namespace cgpui;
 using namespace cgpui_test;
@@ -18,6 +19,9 @@ int main() {
   if (!(*warmup)->request_pixel_capture() || !(*warmup)->present() ||
       !dx12_pixel((*renderer)->last_frame_pixels(), 8, 8, {255, 0, 0, 255}))
     return dx12_fail(4, "present recovery warmup failed");
+  const auto* borrowed = (*renderer)->last_frame_diagnostic_snapshot();
+  if (!borrowed) return dx12_fail(14, "present recovery diagnostic warmup absent");
+  const auto saved_diagnostics = *borrowed;
   const auto before = (*renderer)->backend_info();
   auto interrupted = (*renderer)->begin_frame();
   if (!interrupted) return dx12_fail(5, "interrupted frame begin failed");
@@ -27,6 +31,9 @@ int main() {
   const auto result = (*interrupted)->present();
   if (result || result.error().code != ErrorCode::frame_retry_required)
     return dx12_fail(7, "active-frame loss did not recover before present retry");
+  if ((*renderer)->last_frame_diagnostic_snapshot() != borrowed ||
+      !diagnostic_same(borrowed, saved_diagnostics))
+    return dx12_fail(15, "failed present/reconstruction changed the last successful snapshot");
   const auto after = (*renderer)->backend_info();
   if (after.adapter_luid != before.adapter_luid ||
       after.device_generation != before.device_generation + 1 || (*renderer)->last_frame_pixels())
@@ -49,6 +56,9 @@ int main() {
         !dx12_pixel((*renderer)->last_frame_pixels(), 8, 8, {255, 0, 0, 255}) ||
         !dx12_pixel((*renderer)->last_frame_pixels(), 40, 40, {0, 0, 255, 255}))
       return dx12_fail(12, "cached pixels failed after present recovery or old frame destruction");
+    const auto* diagnostics = (*renderer)->last_frame_diagnostic_snapshot();
+    if (!diagnostics || diagnostics->upload_bytes.image_byte_count != (pass ? 0U : 4U))
+      return dx12_fail(16, "present recovery image upload counted cached or missed fresh bytes");
   }
   return dx12_recovered_native_device_clean(after) ? 0 : dx12_fail(13, "recovered device debug errors");
 }

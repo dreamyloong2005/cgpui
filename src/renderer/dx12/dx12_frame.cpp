@@ -25,16 +25,17 @@ void Dx12Frame::clear(Color color) {
   }
   clear_ = color;
 }
-void Dx12Frame::append(RectGeometry geometry) {
+void Dx12Frame::append(RectGeometry geometry, RendererPrimitiveKind kind) {
   Dx12OperationGuard operation(*state_);
   if (released_ || error_) return;
   if (!dx12_finite_geometry(geometry)) {
     error_ = Error{.code = ErrorCode::invalid_argument, .message = "DX12 geometry must be finite and indexable"};
     return;
   }
-  draws_.push_back(std::move(geometry));
+  draws_.push_back({std::move(geometry), kind, command_count_++});
 }
-void Dx12Frame::append(Dx12TexturedDraw draw) {
+void Dx12Frame::append(Dx12TexturedDraw draw, RendererPrimitiveKind kind,
+                       std::size_t command_index, std::size_t resource_offset) {
   Dx12OperationGuard operation(*state_);
   if (released_ || error_) return;
   if (!dx12_finite_textured_draw(draw)) {
@@ -42,31 +43,36 @@ void Dx12Frame::append(Dx12TexturedDraw draw) {
         .message = "DX12 textured draw must have a valid texture and finite vertices"};
     return;
   }
-  draws_.push_back(std::move(draw));
+  draws_.push_back({std::move(draw), kind, command_index, resource_offset});
+}
+void Dx12Frame::append_rect(const SolidRect& rect, RendererPrimitiveKind kind) {
+  if (released_ || error_) return;
+  const auto device = renderer_to_device_pixels(rect, state_->scale);
+  append(build_solid_rect_geometry(std::span{&device, 1}), kind);
 }
 void Dx12Frame::draw_rect(const SolidRect& rect) {
   Dx12OperationGuard operation(*state_);
-  if (released_ || error_) return;
-  const auto device = renderer_to_device_pixels(rect, state_->scale);
-  append(build_solid_rect_geometry(std::span{&device, 1}));
+  append_rect(rect, RendererPrimitiveKind::solid_rect);
 }
 void Dx12Frame::draw_rounded_rect(const RoundedRectDraw& rect) {
   Dx12OperationGuard operation(*state_);
   if (released_ || error_) return;
   const auto device = renderer_to_device_pixels(rect, state_->scale);
-  append(build_rounded_rect_geometry(std::span{&device, 1}));
+  append(build_rounded_rect_geometry(std::span{&device, 1}), RendererPrimitiveKind::rounded_rect);
 }
 void Dx12Frame::draw_text_selection(const TextSelectionDraw& selection) {
   Dx12OperationGuard operation(*state_);
-  draw_rect(SolidRect{.rect = selection.rect, .color = selection.color,
+  append_rect(SolidRect{.rect = selection.rect, .color = selection.color,
       .clip_rect = selection.clip_rect, .clip_stack = selection.clip_stack,
-      .composition_stack = selection.composition_stack, .metadata = selection.metadata});
+      .composition_stack = selection.composition_stack, .metadata = selection.metadata},
+      RendererPrimitiveKind::text_selection);
 }
 void Dx12Frame::draw_text_caret(const TextCaretDraw& caret) {
   Dx12OperationGuard operation(*state_);
-  draw_rect(SolidRect{.rect = caret.rect, .color = caret.color,
+  append_rect(SolidRect{.rect = caret.rect, .color = caret.color,
       .clip_rect = caret.clip_rect, .clip_stack = caret.clip_stack,
-      .composition_stack = caret.composition_stack, .metadata = caret.metadata});
+      .composition_stack = caret.composition_stack, .metadata = caret.metadata},
+      RendererPrimitiveKind::text_caret);
 }
 Result<void> Dx12Frame::request_pixel_capture() {
   Dx12OperationGuard operation(*state_);
@@ -85,7 +91,7 @@ Result<void> Dx12Frame::present() {
   state_->pixels.reset();
   if (error_) return std::unexpected(*error_);
   if (auto ready = dx12_prepare_present(*state_, generation_); !ready) return ready;
-  auto result = dx12_submit_frame(*state_, clear_, draws_, capture_);
+  auto result = dx12_submit_frame(*state_, clear_, draws_, capture_, command_count_);
   if (result) state_->image_cache->finish_frame();
   if (!result) return dx12_handle_frame_failure(*state_, std::move(result.error()));
   return result;

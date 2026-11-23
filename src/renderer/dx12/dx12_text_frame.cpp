@@ -13,7 +13,11 @@ void Dx12Frame::draw_text(const TextDraw& text) {
     error_ = prepared.error();
     return;
   }
-  for (auto& draw : *prepared) append(std::move(draw));
+  const auto command = command_count_++;
+  std::size_t resource = 0;
+  for (auto& draw : *prepared) {
+    append(std::move(draw), RendererPrimitiveKind::text, command, resource++);
+  }
 }
 
 } // namespace cgpui

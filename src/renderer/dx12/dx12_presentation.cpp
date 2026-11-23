@@ -3,11 +3,15 @@
 #include "dx12_backdrop_blur_internal.hpp"
 #include "dx12_composition_internal.hpp"
 #include "dx12_surface_internal.hpp"
+#include "dx12_frame_diagnostics_internal.hpp"
 
 namespace cgpui {
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
-                              std::span<const Dx12DrawCommand> draws, bool capture) {
+                              std::span<const Dx12DrawCommand> draws, bool capture,
+                              std::size_t command_count) {
+  Dx12FrameDiagnostics diagnostics(state, draws, command_count);
   if (auto idle = dx12_wait_idle(state); !idle) return idle;
+  diagnostics.finish_stage(RendererFrameTimingStage::pacing_wait);
   state.uploads.clear();
   dx12_begin_texture_frame(state);
   dx12_begin_backdrop_blur_frame(state);
@@ -15,11 +19,13 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   if (capture) {
     if (auto prepared = dx12_prepare_capture(state); !prepared) return prepared;
   }
+  diagnostics.finish_stage(RendererFrameTimingStage::resource_preparation);
+  const UINT index = state.swapchain->GetCurrentBackBufferIndex();
+  diagnostics.finish_stage(RendererFrameTimingStage::image_acquisition);
   HRESULT result = state.allocator->Reset();
   if (FAILED(result)) return std::unexpected(dx12_error(result, "allocator reset"));
   result = state.commands->Reset(state.allocator.Get(), state.pipeline.Get());
   if (FAILED(result)) return std::unexpected(dx12_error(result, "command list reset"));
-  const UINT index = state.swapchain->GetCurrentBackBufferIndex();
   auto& target = *state.targets[index].Get();
   dx12_transition(*state.commands.Get(), target, D3D12_RESOURCE_STATE_PRESENT,
                    D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -33,7 +39,9 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
                                static_cast<float>(state.height), 0, 1};
   state.commands->RSSetViewports(1, &viewport);
   state.commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  for (const auto& draw : draws) {
+  for (std::size_t group = 0; group < draws.size(); ++group) {
+    diagnostics.begin_draw(group);
+    const auto& draw = draws[group];
     const auto recorded = dx12_record_draw(state, draw);
     if (!recorded) {
       (void)state.commands->Close();
@@ -50,9 +58,11 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
       D3D12_RESOURCE_STATE_PRESENT);
   result = state.commands->Close();
   if (FAILED(result)) return std::unexpected(dx12_error(result, "command list close"));
+  diagnostics.finish_stage(RendererFrameTimingStage::command_recording);
   ID3D12CommandList* lists[] = {state.commands.Get()};
   state.queue->ExecuteCommandLists(1, lists);
   state.submitted = true;
+  diagnostics.finish_stage(RendererFrameTimingStage::queue_submission);
   const HRESULT presented = state.swapchain->Present(1, 0);
   // The fence follows presentation as well as drawing; resize/destruction
   // cannot retire resources while DXGI is still using this queue's frame.
@@ -64,6 +74,8 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   }
   if (auto checked = dx12_check_debug_errors(state); !checked) return checked;
   if (auto committed = dx12_commit_composition(state); !committed) return committed;
+  diagnostics.finish_stage(RendererFrameTimingStage::presentation);
+  diagnostics.publish();
   // DXGI_STATUS_OCCLUDED is a valid hidden-window presentation. The render
   // and optional readback completed; avoid a tight retry loop for hidden HWNDs.
   return {};
