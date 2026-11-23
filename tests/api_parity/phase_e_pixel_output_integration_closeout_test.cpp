@@ -63,9 +63,9 @@ int main() {
 
   constexpr std::array target_evidence{
       "\"renderer_frame_pixels_test.cpp\"",
-      "\"vulkan_frame_pixel_capture_test.cpp\"",
-      "\"vulkan_text_pixel_test.cpp\"",
-      "\"vulkan_resize_pixel_test.cpp\"",
+      "\"renderer_frame_pixel_capture_test.cpp\"",
+      "\"renderer_text_pixel_test.cpp\"",
+      "\"renderer_resize_pixel_test.cpp\"",
       "\"wayland_frame_pixel_capture_test.cpp\"",
       "\"renderer_source_structure_test.cpp\"",
   };
@@ -107,24 +107,28 @@ int main() {
           "tests/renderer/renderer_frame_pixels_test.cpp",
           "test_pixel_snapshot_access"},
       SourceEvidence{
-          "tests/renderer/vulkan_frame_pixel_capture_test.cpp",
+          "tests/renderer/renderer_frame_pixel_capture_test.cpp",
           "test_captures_presented_clear_color"},
       SourceEvidence{
-          "tests/renderer/vulkan_text_pixel_test.cpp", "draw_text("},
+          "tests/renderer/renderer_text_pixel_test.cpp", "draw_text("},
       SourceEvidence{
-          "tests/renderer/vulkan_rounded_rect_pixel_test.cpp",
+          "tests/renderer/renderer_rounded_rect_pixel_test.cpp",
           "draw_rounded_rect("},
       SourceEvidence{
-          "tests/renderer/vulkan_image_pixel_test.cpp", "draw_image("},
+          "tests/renderer/renderer_image_pixel_test.cpp", "draw_image("},
       SourceEvidence{
-          "tests/renderer/vulkan_clip_pixel_test.cpp", ".clip_rect"},
+          "tests/renderer/renderer_clip_pixel_test.cpp", ".clip_rect"},
       SourceEvidence{
-          "tests/renderer/vulkan_transform_pixel_test.cpp",
+          "tests/renderer/renderer_transform_pixel_test.cpp",
           "AffineTransform::translation("},
       SourceEvidence{
-          "tests/renderer/vulkan_opacity_pixel_test.cpp", "encoded_channel("},
+          "tests/renderer/renderer_opacity_pixel_test.cpp", "encoded_channel("},
       SourceEvidence{
-          "tests/renderer/vulkan_resize_pixel_test.cpp", "resize_client("},
+          "tests/renderer/renderer_resize_pixel_test.cpp", "resize_client("},
+      SourceEvidence{
+          "tests/renderer/renderer_resize_pixel_test.cpp", "begin_pixel_capture("},
+      SourceEvidence{
+          "tests/renderer/renderer_pixel_test_capture.cpp", "request_pixel_capture()"},
       SourceEvidence{
           "tests/renderer/wayland_frame_pixel_capture_test.cpp",
           "request_pixel_capture()"},

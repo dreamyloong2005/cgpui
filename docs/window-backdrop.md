@@ -130,7 +130,9 @@ After the change the example's caption row is captured from the screen as
 rgb(32,34,38), the command box as rgb(52,55,61), and the clear as
 rgb(20,23,25). Text edge coverage is now blended in sRGB-encoded space
 rather than linear space, so anti-aliased edges of light text on a dark
-background look slightly thinner; `vulkan_text_pixel_test` still passes.
+background look slightly thinner; the Vulkan text pixel regression passed at
+that milestone. Its current shared scene is `renderer_text_pixel_test`, with
+explicit Vulkan/DX12 selection as described in [DX12 testing](dx12-backend.md#common-windows-pixel-contracts).
 
 ## Windows
 

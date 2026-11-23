@@ -207,10 +207,14 @@ testing inside the `ffi` ligature, monospace columns and tab stops, caret and
 hit-test round trips, selection across fallback runs, wrapping widths, DPI 1.0 /
 1.5 and the shape cache. `native_text_glyph_spacing_test` measures ink gaps
 through the production Vulkan quad builder at scale 1 and 1.5 with a 0.2 em
-limit. `vulkan_text_ink_extent_pixel_test` (Windows) renders "blur", "f",
+limit. `renderer_text_ink_extent_pixel_test` (Windows, explicitly selected
+Vulkan or DX12 via `scripts/dev/test.ps1 -Renderer`) renders "blur", "f",
 "W", "j" and italics at 48 px, scale 1 and 1.5, and requires the rendered ink
 extent to match the glyph bitmaps on both sides (no clip at the last pen
 position or at a negative left bearing).
+This common scene now uses the neutral quad builder and checks the actual
+selected backend before capture. Its availability does not turn the historical
+Windows/Vulkan measurements above into new DX12 validation results.
 
 Real window: `example_backdrop_blur` captured on Windows at 1350 x 900 shows
 "CGPUI backdrop blur" and "Floating panel" with natural proportional spacing

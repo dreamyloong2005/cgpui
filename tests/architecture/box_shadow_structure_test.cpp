@@ -75,7 +75,7 @@ int main() {
     require(has(submit, "frame.draw_box_shadow(") &&
                 has(recording, "VulkanFrameDrawResourceKind::box_shadow"),
             "shadow commands reach the frame and keep their draw order");
-    require(has(module, "\"vulkan_box_shadow_pixel_test.cpp\"") &&
+    require(has(module, "\"renderer_box_shadow_pixel_test.cpp\"") &&
                 has(module, "\"vulkan_box_shadow_geometry_test.cpp\"") &&
                 has(module, "\"box_shadow_submission_test.cpp\""),
             "the behavior tests are owned by the capability module");

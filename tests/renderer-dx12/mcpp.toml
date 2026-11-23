@@ -4,6 +4,9 @@ namespace = "cgpui"
 name = "tests-renderer-dx12"
 version = "0.1.0"
 
+[targets.cgpui_tests_renderer_dx12_support]
+kind = "lib"
+
 [dependencies]
 cgpui.renderer = { path = "../../packages/renderer" }
 
@@ -14,9 +17,18 @@ sources = []
 discover = []
 
 [target.'cfg(os = "windows")'.build]
+sources = [
+    "dx12_runtime_capture_test_support.cpp",
+    "dx12_runtime_recovery_scene_test_support.cpp",
+    "dx12_runtime_recovery_loop_test_support.cpp",
+]
 ldflags = ["user32.lib", "gdi32.lib"]
 
+[target.'cfg(not(os = "windows"))'.build]
+sources = ["../../tools/mcpp/empty_library.cpp"]
+
 [target.'cfg(os = "windows")'.dependencies]
+cgpui.ui = { path = "../../packages/ui" }
 cgpui.platform = { path = "../../packages/platform" }
 cgpui.platform-win32 = { path = "../../packages/platform-win32" }
 cgpui.renderer-dx12 = { path = "../../packages/renderer-dx12" }
@@ -24,6 +36,8 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_runtime_root_recovery_test.cpp",
+    "dx12_runtime_child_recovery_test.cpp",
     "dx12_texture_upload_budget_test.cpp",
     "dx12_texture_upload_pages_test.cpp",
     "dx12_texture_upload_allocator_test.cpp",

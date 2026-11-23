@@ -37,9 +37,12 @@ int main() {
     const auto coverage_header = read("src/renderer/text/text_glyph_coverage_win32_internal.hpp");
     const auto production = read("src/renderer/planning/glyph_geometry.cpp");
     const auto build = read("mcpp.toml");
-    const auto pixel_shape = read("tests/renderer/vulkan_text_pixel_shape_support.hpp");
-    require(lines(pixel_shape) <= 60 && has(pixel_shape, "text_ink_shape("),
-            "pixel glyph shape inspection must stay in a focused test helper");
+    const auto pixel_shape = read("tests/renderer/renderer_text_pixel_shape_support.hpp");
+    const auto pixel_shape_source = read("tests/renderer/renderer_text_pixel_shape_support.cpp");
+    require(lines(pixel_shape) + lines(pixel_shape_source) <= 60 &&
+                has(pixel_shape, "text_ink_shape(") && has(pixel_shape_source, "text_ink_shape(") &&
+                has(pixel_shape_source, "pixels.pixel_rgba8(") && !has(pixel_shape, "pixels.pixel_rgba8("),
+            "pixel glyph inspection keeps its original combined cap and owns non-template work in a cpp");
     require(has(leaf, "Result<RasterizedGlyph>") && has(leaf, "rasterize_text_glyph(") &&
             lines(leaf) <= 50 && !has(leaf, "<windows.h>") && !has(leaf, "<dwrite.h>"),
             "public rasterizer leaf must expose the result API without Windows implementation");

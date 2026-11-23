@@ -98,7 +98,7 @@ int test_structure() {
   const std::string capture_source = read_source(
       "src/renderer/vulkan/vulkan_frame_pixel_capture_recording.cpp");
   const std::string live_test =
-      read_source("tests/renderer/vulkan_frame_pixel_capture_test.cpp");
+      read_source("tests/renderer/renderer_frame_pixel_capture_test.cpp");
   if (!contains(public_header, "struct RendererFramePixels") ||
       !contains(public_source, "RendererFramePixels::valid()") ||
       !contains(private_header, "struct VulkanFramePixelCaptureResources") ||

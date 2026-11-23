@@ -2,6 +2,9 @@
 
 Both effects live in the shared Vulkan renderer (Win32 and Wayland) and in
 the Metal renderer (macOS); see [Metal](#metal) for the differences.
+The opt-in Windows [DX12 backend](dx12-backend.md) also implements these effects.
+The Vulkan pipeline details below are not a description of DX12's native
+resource topology; the shared Windows pixel scenes select either backend.
 
 ## C5 box shadow
 
@@ -62,7 +65,7 @@ the Metal renderer (macOS); see [Metal](#metal) for the differences.
 
 ### Tests
 
-- `vulkan_box_shadow_pixel_test` (Windows, real swapchain): falloff left of
+- `renderer_box_shadow_pixel_test` (Windows, selected Vulkan/DX12 real swapchain): falloff left of
   and above a 24 px box with blur 8 at scale 1 and 1.5 against the exact
   `erf` blurred rect (tolerance 3/255); rounded corner falloff at scale 1.5
   against a C++ port of the shader formula; clip rect cuts the shadow; zero
@@ -154,17 +157,22 @@ the Metal renderer (macOS); see [Metal](#metal) for the differences.
 
 ### Tests
 
-- `vulkan_backdrop_blur_pixel_test` (Windows, real swapchain) over 2 px
+- `renderer_backdrop_blur_pixel_test` (Windows, selected Vulkan/DX12 real swapchain) over 2 px
   black/white stripes: every pixel of a row inside the panel is 128 +- 4
   (the stripe mean; sigma 4 removes the 4 px period); pixels outside and in
   the corner cut by the 12 px radius keep exact 0/255; a 50% red tint gives
   (192, 64, 64) +- 5; a rect drawn afterwards lands on top unblurred; two
-  backdrops report 9 offscreen passes and the second blurs a black square
+  backdrops preserve their semantic counts and the second blurs a black square
   drawn after the first; scale 1.5 blurs inside and keeps outside exact; a
-  frame without a backdrop reports 0 passes and no targets. Under
-  `VK_LAYER_KHRONOS_validation` the only message is the pre-existing
-  `VUID-vkQueueSubmit-pSignalSemaphores-00067` (one `render_finished`
-  semaphore for all swapchain images), which two plain frames reproduce.
+  frame without a backdrop reports 0 passes and no targets.
+- Exact work topology is checked separately by
+  `vulkan_backdrop_pass_diagnostics_test` (0/5/9 passes for zero/one/two effects)
+  and `dx12_backdrop_pass_diagnostics_test` (0/3/6). They use explicit named
+  factories; neither the counts nor historical Vulkan-only results are
+  cross-backend performance/validation evidence. Earlier Vulkan measurements
+  recorded `VUID-vkQueueSubmit-pSignalSemaphores-00067` with one `render_finished`
+  semaphore for all swapchain images; that historical observation is not an
+  allowance for validation errors in a new run.
 - `vulkan_backdrop_blur_plan_test` (Windows and Linux, headless),
   `backdrop_blur_submission_test` (paint order, tint-only default),
   `backdrop_blur_structure_test`.
@@ -237,7 +245,7 @@ and the shared module src/renderer/shaders/cgpui_box_shadow.slang.
   targets exist.
 - Tests (macOS 27.2.1, Apple M4, 2026-11-22): `metal_box_shadow_pixel_test`
   compares the falloff at scale 1 and 2, a rounded corner at scale 2 and a
-  clip against the same references as `vulkan_box_shadow_pixel_test`
+  clip against the same references as `renderer_box_shadow_pixel_test`
   (tolerance 3 of 255). `metal_backdrop_blur_pixel_test` blurs 2 px stripes
   to mid gray (107..148) inside the backdrop, keeps them exact outside,
   mixes a 50 % red tint, keeps a rect drawn after the backdrop sharp, and

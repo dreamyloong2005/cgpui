@@ -13,10 +13,18 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Test SDK installed-header closure
+      - name: Test SDK installed-header closure and Windows driver fixtures
+        shell: pwsh
         run: |
           python -B tests/ci/sdk_package_headers_test.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -B tests/ci/dx12_package_graph_test.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          foreach ($hostName in @('pwsh', 'powershell.exe')) {
+            $env:CGPUI_DRIVER_TEST_POWERSHELL = (Get-Command $hostName -CommandType Application -ErrorAction Stop).Source
+            python -B -m unittest discover -s tests/ci -p "windows_test_driver*test.py" -v
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
       - uses: ./.github/actions/setup-phase-g-dependencies
         with:
           platform: windows

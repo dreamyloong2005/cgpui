@@ -1,12 +1,12 @@
 #include "metal_pixel_test_support.hpp"
-#include "vulkan_box_shadow_pixel_support.hpp"
+#include "renderer_box_shadow_pixel_support.hpp"
 
 #include "metal_effects_internal.hpp"
 
 #include <cstdio>
 
 // Box shadows on a CAMetalLayer, against the same references as the Vulkan
-// pixel test (vulkan_box_shadow_pixel_support.hpp): the exact Gaussian
+// pixel test (renderer_box_shadow_pixel_support.hpp): the exact Gaussian
 // blurred rect and a C++ port of the shader formula, at device pixel
 // centers. Blur radius 8 means sigma = 4 logical. The drawable is 64 x 64
 // device pixels at every scale.

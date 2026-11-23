@@ -68,3 +68,10 @@ redefined as complete solely to close the checklist.
 - Next common-pixel/runtime/driver candidate code is being prepared outside the
   repository under `D:/Dev/shots/cgpui-dx12-common-parity-20261124/candidates/`
   while this source stays frozen. Candidates are not applied, built or accepted.
+
+- Common pixel/runtime/driver slice accepted after a fully refrozen rerun:
+  `.planning/2026-11-24-dx12-common-parity/acceptance.md`. Thirteen real shared
+  scenes now select DX12; native runtime root/child retry acceptance is present.
+  This closes those bounded test gaps, not the remaining public-operation audit,
+  cross-thread recovery or full window compatibility. Unsupported-blur fallback
+  has reviewed external A/B candidates; pacing/CI proposals remain unimplemented.

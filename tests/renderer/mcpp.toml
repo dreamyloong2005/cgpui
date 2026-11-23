@@ -1,4 +1,4 @@
-# tests/renderer: Renderer, text pipeline and Vulkan backend.
+# tests/renderer: shared renderer contracts and backend-specific regression tests.
 # Every test program is named in [test] discover (registration is explicit,
 # as it was with xmake targets; structure tests check these entries).
 # build.mcpp defines CGPUI_SOURCE_ROOT for tests that read repository files.
@@ -6,6 +6,9 @@
 namespace = "cgpui"
 name = "tests-renderer"
 version = "0.1.0"
+
+[targets.cgpui_tests_renderer_support]
+kind = "lib"
 
 [dependencies]
 cgpui.core = { path = "../../packages/core" }
@@ -15,6 +18,7 @@ cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
 cgpui.ui = { path = "../../packages/ui" }
 
 [target.'cfg(os = "windows")'.dependencies]
+cgpui.renderer-dx12 = { path = "../../packages/renderer-dx12" }
 cgpui.platform-win32 = { path = "../../packages/platform-win32" }
 cgpui.renderer-win32-composition = { path = "../../packages/renderer-win32-composition" }
 
@@ -29,12 +33,26 @@ cgpui.renderer-metal = { path = "../../packages/renderer-metal" }
 cgpui.build-support = { path = "../../tools/mcpp" }
 
 [build]
-sources = []
+sources = [
+    "renderer_box_shadow_pixel_support.cpp",
+    "renderer_text_pixel_shape_support.cpp",
+    "renderer_pixel_test_probes.cpp",
+]
 include_dirs = [
     "../../src/renderer",
     "../../src/renderer/vulkan",
     "../../src/ui",
     ".",
+]
+
+# Native shared pixel harness; no Win32/DX12 source enters Linux or Metal builds.
+[target.'cfg(os = "windows")'.build]
+sources = [
+    "renderer_pixel_test_backend_policy.cpp",
+    "renderer_pixel_test_backend.cpp",
+    "renderer_pixel_test_window.cpp",
+    "renderer_pixel_test_capture.cpp",
+    "renderer_backdrop_pass_test_support.cpp",
 ]
 
 # Private headers for the native Metal pixel tests.
@@ -118,26 +136,29 @@ discover = [
 [target.'cfg(os = "windows")'.test]
 discover = [
     "native_text_rasterization_test.cpp",
-    "vulkan_backdrop_blur_pixel_test.cpp",
-    "vulkan_box_shadow_pixel_test.cpp",
-    "vulkan_clip_pixel_test.cpp",
-    "vulkan_color_encoding_pixel_test.cpp",
+    "renderer_pixel_backend_identity_test.cpp",
+    "vulkan_backdrop_pass_diagnostics_test.cpp",
+    "dx12_backdrop_pass_diagnostics_test.cpp",
+    "renderer_backdrop_blur_pixel_test.cpp",
+    "renderer_box_shadow_pixel_test.cpp",
+    "renderer_clip_pixel_test.cpp",
+    "renderer_color_encoding_pixel_test.cpp",
     "vulkan_composition_pixel_test.cpp",
     "vulkan_frame_lifetime_test.cpp",
-    "vulkan_frame_pixel_capture_test.cpp",
-    "vulkan_image_pixel_test.cpp",
+    "renderer_frame_pixel_capture_test.cpp",
+    "renderer_image_pixel_test.cpp",
     "vulkan_loader_binding_test.cpp",
     "vulkan_loader_concurrency_test.cpp",
-    "vulkan_opacity_pixel_test.cpp",
-    "vulkan_resize_pixel_test.cpp",
+    "renderer_opacity_pixel_test.cpp",
+    "renderer_resize_pixel_test.cpp",
     "vulkan_resize_test.cpp",
-    "vulkan_rounded_rect_pixel_test.cpp",
-    "vulkan_scale_pixel_test.cpp",
+    "renderer_rounded_rect_pixel_test.cpp",
+    "renderer_scale_pixel_test.cpp",
     "vulkan_solid_rect_test.cpp",
     "vulkan_surface_validation_test.cpp",
-    "vulkan_text_ink_extent_pixel_test.cpp",
-    "vulkan_text_pixel_test.cpp",
-    "vulkan_transform_pixel_test.cpp",
+    "renderer_text_ink_extent_pixel_test.cpp",
+    "renderer_text_pixel_test.cpp",
+    "renderer_transform_pixel_test.cpp",
     "win32_composition_presenter_test.cpp",
     "win32_popup_pixel_test.cpp",
     "win32_vulkan_surface_test.cpp",

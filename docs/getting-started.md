@@ -72,6 +72,19 @@ its suite's `[test] discover` (`tests/<suite>/mcpp.toml`) and is named after
 the file. Tests that read repository files get the repository root from the
 `CGPUI_SOURCE_ROOT` define of their suite's `build.mcpp`.
 
+### Windows renderer pixel contracts
+
+```powershell
+scripts/dev/test.ps1 -Renderer both -p tests/renderer
+scripts/dev/test.ps1 -Renderer dx12 -p tests/renderer renderer_text_ink_extent_pixel_test
+```
+
+The 13 common Windows scenes verify requested/actual backend identity: mismatch
+fails, never skips or falls back. Unset/empty/`auto` retains Vulkan; production
+defaults and private `vulkan_*` tests are unchanged. See
+[DX12 testing](dx12-backend.md#common-windows-pixel-contracts) for scenes and controls;
+these commands are instructions, not evidence of passing every configuration.
+
 ## 6. Start an Application
 
 Application code includes `cgpui/prelude.hpp`, implements a `View`, creates a

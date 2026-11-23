@@ -45,7 +45,7 @@ int main() {
             "every recorded Vulkan and Metal draw must be converted to device pixels");
     require(has(ime, "state_.scale.value"),
             "IME placement must convert logical rects to physical pixels");
-    require(has(module, "\"vulkan_scale_pixel_test.cpp\"") &&
+    require(has(module, "\"renderer_scale_pixel_test.cpp\"") &&
             has(module, "\"vulkan_device_pixels_test.cpp\"") &&
             has(module, "\"win32_ime_placement_scale_test.cpp\"") &&
             has(module, "\"metal/metal_*.mm\""),

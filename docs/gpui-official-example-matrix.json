@@ -20,7 +20,7 @@
           "hello_window/x11_first_frame"
         ],
         "pixel_tests": [
-          "vulkan_frame_pixel_capture_test/default",
+          "renderer_frame_pixel_capture_test/default",
           "wayland_frame_pixel_capture_test/default"
         ],
         "input_tests": [],
@@ -78,7 +78,7 @@
           "api_parity_public_image_example/registration_smoke"
         ],
         "pixel_tests": [
-          "vulkan_image_pixel_test/default",
+          "renderer_image_pixel_test/default",
           "wayland_image_pixel_test/default"
         ],
         "input_tests": [],
@@ -109,7 +109,7 @@
           "hello_window/x11_demo_smoke_flow"
         ],
         "pixel_tests": [
-          "vulkan_text_pixel_test/default"
+          "renderer_text_pixel_test/default"
         ],
         "input_tests": [
           "window_runtime_text_test/default",
@@ -170,7 +170,7 @@
           "api_parity_public_opacity_example/registration_smoke"
         ],
         "pixel_tests": [
-          "vulkan_opacity_pixel_test/default"
+          "renderer_opacity_pixel_test/default"
         ],
         "input_tests": [],
         "macos_tests": [
@@ -198,7 +198,7 @@
           "phase_e_svg_public_example_test/default"
         ],
         "pixel_tests": [
-          "vulkan_image_pixel_test/default"
+          "renderer_image_pixel_test/default"
         ],
         "input_tests": [],
         "macos_tests": [
@@ -253,7 +253,7 @@
           "paint_shadow_test/default"
         ],
         "pixel_tests": [
-          "vulkan_rounded_rect_pixel_test/default"
+          "renderer_rounded_rect_pixel_test/default"
         ],
         "input_tests": [],
         "macos_tests": [
@@ -281,7 +281,7 @@
           "phase_e_svg_public_example_test/default"
         ],
         "pixel_tests": [
-          "vulkan_image_pixel_test/default"
+          "renderer_image_pixel_test/default"
         ],
         "input_tests": [],
         "macos_tests": [
@@ -335,7 +335,7 @@
           "phase_d_rich_text_public_examples_test/default"
         ],
         "pixel_tests": [
-          "vulkan_text_pixel_test/default",
+          "renderer_text_pixel_test/default",
           "wayland_text_pixel_test/default"
         ],
         "input_tests": [
@@ -366,7 +366,7 @@
           "phase_d_text_wrapper_public_examples_test/default"
         ],
         "pixel_tests": [
-          "vulkan_text_pixel_test/default"
+          "renderer_text_pixel_test/default"
         ],
         "input_tests": [],
         "macos_tests": [
@@ -446,7 +446,7 @@
           "platform_window_options_test/default"
         ],
         "pixel_tests": [
-          "vulkan_rounded_rect_pixel_test/default"
+          "renderer_rounded_rect_pixel_test/default"
         ],
         "input_tests": [],
         "macos_tests": [
@@ -473,7 +473,7 @@
           "element_test/default"
         ],
         "pixel_tests": [
-          "vulkan_clip_pixel_test/default"
+          "renderer_clip_pixel_test/default"
         ],
         "input_tests": [],
         "macos_tests": [

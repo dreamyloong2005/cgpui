@@ -351,6 +351,17 @@ errors are not treated as removal, and no backend/adapter fallback occurs.
 Native acceptance uses explicit idle-device `RemoveDevice` and independently
 checked post-recovery pixels. It does not certify hardware reset/TDR behavior.
 
+The native `dx12_runtime_root_recovery_test` and
+`dx12_runtime_child_recovery_test` also run through the real `WindowRuntime`
+event loop, with root-first and child-first recovery on two same-thread windows.
+The fixture observes the actual typed begin-frame retry without retrying the
+frame itself or replacing the renderer factory. It checks the same adapter,
+advanced generation, newly painted pixels, retained image/glyph reuploads and
+the next warm frame's zero upload payload. Both tests passed under WARP with
+the DX12 debug layer on 2026-11-24; no production runtime change was required.
+This closes that bounded runtime-retry test gap, not foreign-thread recovery,
+arbitrary driver resets, hardware acceptance or the final full regression matrix.
+
 ## Selection and testing
 
 On Windows, `create_renderer` reads `CGPUI_RENDERER`:
@@ -418,6 +429,61 @@ controls, not cross-platform window options. Use a separate process per debug
 configuration. The hello-window and backdrop-blur examples can use the opaque
 ordinary-window subset. Use dedicated native tests for pixel acceptance; one first-frame
 smoke does not establish full workbench interaction or desktop appearance.
+
+### Common Windows pixel contracts
+
+`tests/renderer` contains 13 shared real-window scenes: backdrop blur, box
+shadow, clipping, color encoding, frame capture, images, opacity, resize,
+rounded rectangles, DPI scale, text, text ink extent and transforms. Their
+`renderer_*` sources use one test-only native creation helper; the same scene
+and pixel oracle runs against the backend explicitly requested by
+`-Renderer vulkan` or `-Renderer dx12`; explicit `both` runs them in that order:
+
+```powershell
+scripts/dev/test.ps1 -Renderer both -p tests/renderer
+scripts/dev/test.ps1 -Renderer vulkan -p tests/renderer
+scripts/dev/test.ps1 -Renderer dx12 -p tests/renderer
+scripts/dev/test.ps1 -Renderer dx12 -p tests/renderer renderer_pixel_backend_identity_test
+```
+
+`both` is a runner option, never a renderer environment value. Each backend gets
+the same forwarded arguments; both invocations run after an ordinary test failure,
+and the first nonzero exit code wins. A terminating setup/invocation exception
+remains fail-fast. No selector keeps one invocation with the inherited environment;
+explicit `auto`, `vulkan` and `dx12` also keep one invocation. ASan preparation and
+member-path translation happen once, and caller environment/location are restored.
+The Windows CI Python fixtures exercise orchestration with recording mocks under
+PowerShell 7 and Windows PowerShell 5; they are not real renderer or ASan runs.
+
+The helper calls the matching named factory, then requires the actual
+`backend_info().backend` and selection to match, with no fallback reason.
+It logs the requested/actual backend, adapter name, vendor, LUID and software
+flag. A DX12 WARP request additionally requires a software adapter. Invalid
+selectors, initialization failures, unsupported required capabilities,
+missing captures or identity mismatches fail rather than silently skip.
+Unset/empty/`auto` retains the common tests' existing named-Vulkan default;
+production dispatcher/default behavior is unchanged.
+
+Previously these scenes used a hard-coded Vulkan helper, so setting
+`CGPUI_RENDERER=dx12` alone could not demonstrate DX12 coverage. The common
+helper now reads the selector; it also owns the three formerly direct Vulkan
+creations in backdrop/frame-capture/resize tests. Backend-private `vulkan_*`
+tests still call Vulkan and are not DX12 evidence merely because the enclosing
+suite was launched with a DX12 selector.
+
+The focused `vulkan_backdrop_pass_diagnostics_test` and
+`dx12_backdrop_pass_diagnostics_test` deliberately use named factories and
+require exact offscreen pass counts **0/5/9** and **0/3/6**, respectively, for
+zero/one/two effects. These backend-specific work counts are not equated; the
+common backdrop scene retains its pixel/order/tint/scale and semantic-count
+checks. Mathematical shadow references remain shared with Metal without
+changing its native tests.
+
+The common scenes are Windows HWND tests, not new Linux/macOS pixel coverage.
+Their registration and strict selection are source facts, not a full-parity,
+all-adapter or performance acceptance claim. WARP/debug/GPU-validation controls
+above can be used for separate requested-backend runs; ordinary-window/menu,
+recovery, example/UI, CI and release-readiness gates remain independent.
 
 ## Not implemented yet
 

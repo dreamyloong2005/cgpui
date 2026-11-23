@@ -86,7 +86,7 @@ int main() {
                 has(read("src/renderer/vulkan/generated/backdrop_blur_spirv.inc"),
                     "scripts/dev/compile_shaders.py"),
             "the blur is separable and its SPIR-V records how it was generated");
-    require(has(module, "\"vulkan_backdrop_blur_pixel_test.cpp\"") &&
+    require(has(module, "\"renderer_backdrop_blur_pixel_test.cpp\"") &&
                 has(module, "\"vulkan_backdrop_blur_plan_test.cpp\"") &&
                 has(module, "\"backdrop_blur_submission_test.cpp\""),
             "the behavior tests are owned by the capability module");

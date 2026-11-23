@@ -187,16 +187,16 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_frame_pixel_capture_recording.cpp",
       "src/renderer/vulkan/vulkan_frame_pixel_capture_readback.cpp",
       "tests/renderer/renderer_frame_pixels_test.cpp",
-      "tests/renderer/vulkan_frame_pixel_capture_test.cpp",
-      "tests/renderer/vulkan_pixel_test_window.hpp",
-      "tests/renderer/vulkan_pixel_test_support.hpp",
-      "tests/renderer/vulkan_text_pixel_test.cpp",
-      "tests/renderer/vulkan_rounded_rect_pixel_test.cpp",
-      "tests/renderer/vulkan_image_pixel_test.cpp",
-      "tests/renderer/vulkan_clip_pixel_test.cpp",
-      "tests/renderer/vulkan_transform_pixel_test.cpp",
-      "tests/renderer/vulkan_opacity_pixel_test.cpp",
-      "tests/renderer/vulkan_resize_pixel_test.cpp",
+      "tests/renderer/renderer_frame_pixel_capture_test.cpp",
+      "tests/renderer/renderer_pixel_test_window.hpp",
+      "tests/renderer/renderer_pixel_test_support.hpp",
+      "tests/renderer/renderer_text_pixel_test.cpp",
+      "tests/renderer/renderer_rounded_rect_pixel_test.cpp",
+      "tests/renderer/renderer_image_pixel_test.cpp",
+      "tests/renderer/renderer_clip_pixel_test.cpp",
+      "tests/renderer/renderer_transform_pixel_test.cpp",
+      "tests/renderer/renderer_opacity_pixel_test.cpp",
+      "tests/renderer/renderer_resize_pixel_test.cpp",
       "tests/renderer/wayland_frame_pixel_capture_test.cpp",
       "src/renderer/renderer_frame_diagnostic_snapshot.cpp",
       "src/renderer/vulkan/vulkan_frame_diagnostic_snapshot_internal.hpp",
@@ -893,11 +893,17 @@ int main(int argc, char** argv) {
   const std::string pixel_capture_public_test = read_source(
       "tests/renderer/renderer_frame_pixels_test.cpp");
   const std::string pixel_capture_live_test = read_source(
-      "tests/renderer/vulkan_frame_pixel_capture_test.cpp");
+      "tests/renderer/renderer_frame_pixel_capture_test.cpp");
   const std::string pixel_capture_window = read_source(
-      "tests/renderer/vulkan_pixel_test_window.hpp");
+      "tests/renderer/renderer_pixel_test_window.hpp");
   const std::string pixel_capture_support = read_source(
-      "tests/renderer/vulkan_pixel_test_support.hpp");
+      "tests/renderer/renderer_pixel_test_support.hpp");
+  const std::string pixel_capture_probes = read_source(
+      "tests/renderer/renderer_pixel_test_probes.hpp");
+  const std::string pixel_capture_probe_source = read_source(
+      "tests/renderer/renderer_pixel_test_probes.cpp");
+  const std::string pixel_capture_test_source = read_source(
+      "tests/renderer/renderer_pixel_test_capture.cpp");
   if (line_count(frame_pixels_header) > 50 ||
       line_count(frame_pixels_source) > 80 ||
       line_count(pixel_capture_header) > 80 ||
@@ -942,12 +948,15 @@ int main(int argc, char** argv) {
       !contains(pixel_capture_public_test,
                 "test_pixel_snapshot_access") ||
       !contains(pixel_capture_live_test, "request_pixel_capture()") ||
-      !contains(pixel_capture_window, "class VulkanPixelTestWindow") ||
+      !contains(pixel_capture_window, "class RendererPixelTestWindow") ||
       !contains(pixel_capture_window, "resize_client(") ||
       !contains(pixel_capture_support,
-                "#include \"vulkan_pixel_test_window.hpp\"") ||
+                "#include \"renderer_pixel_test_window.hpp\"") ||
       !contains(pixel_capture_support, "capture_pixels(") ||
-      !contains(pixel_capture_support, "pixel_near(")) {
+      !contains(pixel_capture_support, "begin_pixel_capture(") ||
+      !contains(pixel_capture_test_source, "request_pixel_capture()") ||
+      !contains(pixel_capture_probes, "pixel_near(") ||
+      !contains(pixel_capture_probe_source, "bool pixel_near(")) {
     return 86;
   }
   struct PixelOutputSourceLimit {
@@ -957,25 +966,25 @@ int main(int argc, char** argv) {
   };
   const std::array pixel_output_sources{
       PixelOutputSourceLimit{
-          "tests/renderer/vulkan_text_pixel_test.cpp", 60, "draw_text("},
+          "tests/renderer/renderer_text_pixel_test.cpp", 60, "draw_text("},
       PixelOutputSourceLimit{
-          "tests/renderer/vulkan_rounded_rect_pixel_test.cpp",
+          "tests/renderer/renderer_rounded_rect_pixel_test.cpp",
           35,
           "draw_rounded_rect("},
       PixelOutputSourceLimit{
-          "tests/renderer/vulkan_image_pixel_test.cpp", 80, "draw_image("},
+          "tests/renderer/renderer_image_pixel_test.cpp", 80, "draw_image("},
       PixelOutputSourceLimit{
-          "tests/renderer/vulkan_clip_pixel_test.cpp", 35, ".clip_rect"},
+          "tests/renderer/renderer_clip_pixel_test.cpp", 35, ".clip_rect"},
       PixelOutputSourceLimit{
-          "tests/renderer/vulkan_transform_pixel_test.cpp",
+          "tests/renderer/renderer_transform_pixel_test.cpp",
           40,
           "AffineTransform::translation("},
       PixelOutputSourceLimit{
-          "tests/renderer/vulkan_opacity_pixel_test.cpp",
+          "tests/renderer/renderer_opacity_pixel_test.cpp",
           40,
           "encoded_channel("},
       PixelOutputSourceLimit{
-          "tests/renderer/vulkan_resize_pixel_test.cpp", 90, "resize_client("},
+          "tests/renderer/renderer_resize_pixel_test.cpp", 90, "resize_client("},
       PixelOutputSourceLimit{
           "tests/renderer/wayland_frame_pixel_capture_test.cpp",
           70,
@@ -986,7 +995,8 @@ int main(int argc, char** argv) {
     if (source.empty() || line_count(source) > source_limit.max_lines ||
         !contains(source, source_limit.evidence) ||
         (!contains(source, "capture_pixels(") &&
-         !contains(source, "request_pixel_capture()"))) {
+         !contains(source, "request_pixel_capture()") &&
+         !contains(source, "begin_pixel_capture("))) {
       return 87;
     }
   }
@@ -997,7 +1007,7 @@ int main(int argc, char** argv) {
       read_source("src/renderer/vulkan/shaders/text.slang");
   const std::string pixel_rounded_vertex_shader =
       read_source("src/renderer/vulkan/shaders/rounded_rect.slang");
-  // Wayland pixel capture is a Linux test program; the Vulkan pixel cases
+  // Wayland pixel capture is a Linux test program; the shared native pixel cases
   // are Windows test programs (tests/renderer/mcpp.toml).
   const std::size_t linux_tests =
       pixel_output_manifest.find("[target.'cfg(os = \"linux\")'.test]");
@@ -1009,7 +1019,7 @@ int main(int argc, char** argv) {
   for (const char* pixel_case : {"text", "rounded_rect", "image", "clip",
                                  "transform", "opacity", "resize"}) {
     const std::size_t position = pixel_output_manifest.find(
-        std::string{"\"vulkan_"} + pixel_case + "_pixel_test.cpp\"");
+        std::string{"\"renderer_"} + pixel_case + "_pixel_test.cpp\"");
     pixel_cases_registered = pixel_cases_registered &&
         position != std::string::npos && position > windows_tests;
   }

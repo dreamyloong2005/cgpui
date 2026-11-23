@@ -7,6 +7,12 @@ This ledger is the source of truth for full CGPUI replication work. It maps
 upstream GPUI concepts to the current C++23 surface, assigns a status, and
 records the next phase that must close each required gap.
 
+Windows pixel-test source pointers in the JSON ledger use the current shared
+`renderer_*` names. Their historical phase descriptions and pass counts remain
+historical Vulkan evidence, not new DX12 results. The same applies to renamed
+pixel targets in `gpui-official-example-matrix.json`; see
+[current renderer test selection](dx12-backend.md#common-windows-pixel-contracts).
+
 Status meanings:
 
 - `Required`: must be implemented for the active Windows/Linux target.
