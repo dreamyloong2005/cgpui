@@ -7,6 +7,10 @@ version = "0.1.0"
 [targets.cgpui_tests_renderer_dx12_support]
 kind = "lib"
 
+[targets.dx12_composition_pacing_probe]
+kind = "bin"
+main = "dx12_composition_pacing_probe.cpp"
+
 [dependencies]
 cgpui.renderer = { path = "../../packages/renderer" }
 
@@ -18,6 +22,19 @@ discover = []
 
 [target.'cfg(os = "windows")'.build]
 sources = [
+    "dx12_composition_pacing_pixels_test_support.cpp",
+    "dx12_composition_pacing_window_test_support.cpp",
+    "dx12_composition_first_begin_window_test_support.cpp",
+    "dx12_composition_first_begin_visibility_test_support.cpp",
+    "dx12_composition_first_begin_case_test_support.cpp",
+    "dx12_composition_probe_windows_test_support.cpp",
+    "dx12_composition_probe_trace_test_support.cpp",
+    "dx12_composition_probe_setup_test_support.cpp",
+    "dx12_composition_probe_wait_test_support.cpp",
+    "dx12_composition_probe_frame_test_support.cpp",
+    "dx12_composition_probe_pixels_test_support.cpp",
+    "dx12_composition_probe_resize_test_support.cpp",
+    "dx12_composition_probe_case_test_support.cpp",
     "dx12_runtime_pacing_capture_test_support.cpp",
     "dx12_runtime_pacing_scene_test_support.cpp",
     "dx12_runtime_pacing_loop_test_support.cpp",
@@ -50,6 +67,12 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_composition_pacing_cold_resize_test.cpp",
+    "dx12_composition_pacing_resize_test.cpp",
+    "dx12_composition_pacing_recovery_test.cpp",
+    "dx12_composition_pacing_orphan_lifetime_test.cpp",
+    "dx12_composition_first_begin_hidden_test.cpp",
+    "dx12_composition_first_begin_visible_test.cpp",
     "dx12_diagnostic_timing_test.cpp",
     "dx12_runtime_pacing_fairness_test.cpp",
     "dx12_runtime_pacing_backoff_test.cpp",

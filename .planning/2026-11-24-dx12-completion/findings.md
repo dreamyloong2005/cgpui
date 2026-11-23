@@ -46,3 +46,17 @@ Window compatibility proposals remain under read-only review. Do not rerun the
 already negative plain HWND/DWM or client-HMENU caption-band recipes unchanged.
 The all-composition-from-start experiment is not yet a default implementation
 or proof of menu/chrome/backdrop/rollback/opaque-clear compatibility.
+
+## Later status (same-day continuation; original audit above retained)
+
+- Items1/2: shared scene selection and actual native Runtime root/child recovery
+  accepted by the common-parity milestone; not a whole public-operation audit.
+- Item7: unsupported blur's shared tint-only contract accepted by blur-fallback.
+- Item3: opaque admission/runtime readiness accepted at `4d29c4e5`. Composition
+  admission now enabled in a subsequent accepted slice, with real A RED/GREEN,
+ 122 native WARP and225 structure pre-freeze passes; final2969path matrix accepted
+  in the composition milestone (Windows827/WSL667,122native per adapter,ASan/SDK).
+  Do not read the original missing-call finding as the current source behavior.
+- Items4/5/6/8 and broader window/performance/release gates remain open. DRED,
+  retained-image accounting and WARP-CI work currently exists only as external
+  candidates/design, not implemented or accepted repository behavior.

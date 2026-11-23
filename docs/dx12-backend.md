@@ -38,8 +38,8 @@ previous Popup policy is unchanged for Vulkan.
 - Pixel readback with row-pitch handling, resize, and explicit rejection of
   overlapping frames or resize while a frame is outstanding. Destroying a
   renderer before its outstanding frame is safe; that frame cannot present.
-- Nonblocking DXGI frame admission for opaque HWND chains, including the first
-  frame. A pending begin returns `frame_not_ready`; WindowRuntime defers redraw
+- Nonblocking DXGI frame admission for opaque HWND and composition chains,
+  including the first frame. A pending begin returns `frame_not_ready`; WindowRuntime defers redraw
   through its window-bound timer rather than publishing success or hot-looping.
 - Shared CPU geometry in `renderer/planning` and shared Slang primitive shaders;
   no DX12-to-Vulkan package dependency or runtime shader compiler.
@@ -56,7 +56,12 @@ This is not a frame-rate or performance-parity claim.
 Admission is separate from GPU retirement: it does not replace a fence wait or
 make Present/readback asynchronous. Direct clients must schedule their own
 bounded pending retry; fatal and recovery results keep their original meaning.
-Composition chains still have admission explicitly disabled, not assumed paced.
+Both routes retain the same waitable flag across same-chain resize, without
+reacquiring the app-owned handle. Native creation/configuration/wait errors are
+not converted to flags-zero retries or unpaced success. Composition admission
+does not require pre-Commit warmup: the visual still commits only after the first
+successful, validated Present. This does not change Popup's native-first,
+failure-only Overlay policy or expand ordinary-window alpha compatibility.
 See [frame readiness](frame-readiness.md) for grant lifetime, runtime cancellation
 and the native/controlled-test evidence boundaries.
 
@@ -215,9 +220,9 @@ waiting and optional readback. They are not one begin-to-Present stopwatch.
 `pacing_wait_nanoseconds` adds that one admission-call interval to the existing
 pre-record synchronization interval; it is not an exclusive DXGI wait duration
 or a measure of all synchronization. The post-Present fence wait remains in the
-presentation stage. Admission timing includes owner/API overhead; cached grants
-receive a fresh call sample, and explicitly disabled composition admission
-contributes zero. Zero is also valid on a coarse clock and does not prove readiness.
+presentation stage. Admission timing includes owner/API overhead for both opaque
+and composition chains; cached grants receive a fresh call sample without an
+extra native wait. Zero is valid on a coarse clock and does not prove readiness.
 
 Earlier pending probes, runtime timer/event-loop delays, time holding an abandoned
 or active frame, recovery handling and application frame recording are excluded.

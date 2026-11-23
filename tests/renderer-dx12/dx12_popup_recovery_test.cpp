@@ -1,5 +1,7 @@
 #include "../support/frame_wait_test_support.hpp"
 #include "dx12_popup_test_support.hpp"
+#include "dx12_pacing_begin_test_support.hpp"
+#include "../../src/renderer/dx12/dx12_renderer_creation_internal.hpp"
 
 using namespace cgpui;
 using namespace cgpui_test;
@@ -45,8 +47,11 @@ int main() {
   CompositionTestWindows windows(48, 48);
   if (!windows.valid() || !windows.expect({0, 255, 0}, windows.backdrop_point()))
     return dx12_fail(2, "popup recovery visible backdrop unavailable");
-  auto popup = create_dx12_renderer(dx12_popup_descriptor(windows.popup()));
+  Dx12PacingForwardApi api; // Outlives facade and every retained old-generation CPU frame.
+  auto popup = dx12_create_renderer(dx12_popup_descriptor(windows.popup()), api);
   if (!popup) return dx12_fail(3, popup.error().message.c_str());
+  if (api.sets != 1 || api.gets != 1 || !api.observed_handle || api.closes)
+    return dx12_fail(23, "popup recovery lacks a configured native pacing epoch");
   const ImageAsset image{.id = {8601}, .logical_size = {1, 1},
       .bitmap = {.width = 1, .height = 1, .stride = 4, .pixels = {255, 0, 0, 128}}};
   std::vector<std::unique_ptr<RenderFrame>> retained;
@@ -81,6 +86,7 @@ int main() {
     const auto* borrowed = (*popup)->last_frame_pixels();
     if (!borrowed) return dx12_fail(10, "pre-loss popup capture unavailable");
     const auto saved = borrowed->rgba8;
+    const auto polls = api.polls, ready = api.ready;
     // The helper drops both ID3D12Device5 and InfoQueue before any recovery.
     if (!dx12_remove_native_device(before)) return dx12_fail(11, "popup native removal failed");
     if (parent) {
@@ -97,10 +103,16 @@ int main() {
       // dereference it after the pending popup operation starts its rebuild.
       if (borrowed->rgba8 != saved || !dx12_pixel(borrowed, 10, 32, {128, 0, 0, 128}))
         return dx12_fail(14, "popup cohort purge invalidated a borrowed CPU capture");
+      if (api.closes != epoch + 1 || api.sets != epoch + 1 || api.gets != epoch + 1 ||
+          api.polls != polls || api.ready != ready || !api.close_ok)
+        return dx12_fail(24, "live peer purge polled/rebuilt instead of retiring only its old handle");
     }
     const auto retry = (*pending)->present();
     if (retry || retry.error().code != ErrorCode::frame_retry_required)
       return dx12_fail(15, "old popup CPU frame did not rebuild and request retry");
+    if (api.closes != epoch + 1 || api.sets != epoch + 2 || api.gets != epoch + 2 ||
+        api.polls != polls || api.ready != ready || !api.close_ok)
+      return dx12_fail(25, "lazy peer rebuild did not close old/configure new epoch before admission");
     const auto after = (*popup)->backend_info();
     if (after.device_generation != before.device_generation + 1 ||
         after.adapter_luid != before.adapter_luid || after.software_adapter != before.software_adapter ||
@@ -113,6 +125,8 @@ int main() {
     if (parent && !paint_parent(*parent)) return dx12_fail(18, "recovered opaque owner pixels differ");
     auto frame = cgpui_test::wait_for_test_frame(**popup);
     if (!frame) return dx12_fail(19, "recovered popup is not immediately usable");
+    if (api.polls <= polls || api.ready != ready + 1)
+      return dx12_fail(26, "rebuilt composition peer reused an old grant rather than native readiness");
     if (epoch == 1) {
       retained.clear();
       const auto overlap = (*popup)->begin_frame();
@@ -127,5 +141,8 @@ int main() {
     if (!dx12_recovered_native_device_clean(after))
       return dx12_fail(22, "recovered popup device reports debug errors");
   }
-  return 0;
+  retained.clear();
+  popup->reset();
+  return api.sets == 3 && api.gets == 3 && api.closes == 3 && api.close_ok
+      ? 0 : dx12_fail(27, "composition peer epochs did not each close once");
 }

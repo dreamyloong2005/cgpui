@@ -83,5 +83,12 @@ redefined as complete solely to close the checklist.
   native scheduling/lifetime controls, honest frame-owned CPU samples and bounded
   direct-client test migration. Frozen2940path matrix818Windows/664WSL,
   116native per adapter and ASan, common94-per-backend plus installed SDK passed.
-  Composition pacing is still disabled pending external native-capability probe;
-  this is not full pacing/performance, whole-backend or default-switch completion.
+  Composition pacing was disabled at that milestone; the following slice is now
+  being validated in `.planning/2026-11-24-dx12-composition-pacing/`. This is not
+  full pacing/performance, whole-backend or default-switch completion.
+- Composition admission accepted in
+  `.planning/2026-11-24-dx12-composition-pacing/acceptance.md`: native first-ready
+  without warmup, real resize/partial construction/cohort/orphan handle epochs,
+  final2969path matrix Windows827/WSL667 and122native per adapter plus ASan/SDK.
+  Prepared diagnostics/CI/window/recovery work and remaining public-operation
+  contract differences are indexed in `next-slices.md`, not marked implemented.

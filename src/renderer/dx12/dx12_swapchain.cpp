@@ -2,13 +2,9 @@
 #include "dx12_composition_internal.hpp"
 #include "dx12_window_alpha_internal.hpp"
 #include "dx12_frame_pacing_internal.hpp"
+#include "dx12_swapchain_flags_internal.hpp"
 
 namespace cgpui {
-namespace {
-UINT swapchain_flags(const Dx12State& state) {
-  return state.composition_surface ? 0 : DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
-}
-} // namespace
 
 Result<void> dx12_create_targets(Dx12State& state) {
   auto handle = state.rtv_heap->GetCPUDescriptorHandleForHeapStart();
@@ -35,7 +31,7 @@ Result<void> dx12_create_swapchain(Dx12State& state) {
   descriptor.AlphaMode = state.composition_surface
       ? DXGI_ALPHA_MODE_PREMULTIPLIED : DXGI_ALPHA_MODE_IGNORE;
   descriptor.Scaling = DXGI_SCALING_STRETCH;
-  descriptor.Flags = swapchain_flags(state);
+  descriptor.Flags = dx12_swapchain_flags();
   Dx12Ptr<IDXGISwapChain1> chain;
   HRESULT result = state.composition_surface
       ? state.factory->CreateSwapChainForComposition(state.queue.Get(), &descriptor, nullptr, &chain)
@@ -49,7 +45,8 @@ Result<void> dx12_create_swapchain(Dx12State& state) {
     result = state.factory->MakeWindowAssociation(state.hwnd, DXGI_MWA_NO_ALT_ENTER);
     if (FAILED(result)) return std::unexpected(dx12_error(result, "window association"));
   }
-  if (auto pacing = state.frame_pacing->configure(state.swapchain.Get(), !state.composition_surface); !pacing)
+  const bool waitable = (descriptor.Flags & DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT) != 0;
+  if (auto pacing = state.frame_pacing->configure(state.swapchain.Get(), waitable); !pacing)
     return pacing;
   D3D12_DESCRIPTOR_HEAP_DESC heap{};
   heap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -61,26 +58,4 @@ Result<void> dx12_create_swapchain(Dx12State& state) {
   return state.composition_surface ? dx12_create_composition_host(state) : Result<void>{};
 }
 
-Result<void> dx12_resize(Dx12State& state, Size size, DpiScale scale) {
-  if (auto valid = dx12_validate_extent(size, scale); !valid) return valid;
-  if (state.frame_active) return std::unexpected(Error{.code = ErrorCode::invalid_argument,
-      .message = "DX12 cannot resize while a frame is outstanding"});
-  if (state.failed) return std::unexpected(dx12_unsupported("recovery of a failed device"));
-  if (auto idle = dx12_wait_idle(state); !idle) { state.failed = true; return idle; }
-  const auto width = static_cast<UINT>(size.width), height = static_cast<UINT>(size.height);
-  state.scale = scale;
-  if (width == state.width && height == state.height) return {};
-  state.pixels.reset();
-  state.readback.Reset();
-  for (auto& target : state.targets) target.Reset();
-  const HRESULT result = state.swapchain->ResizeBuffers(
-      static_cast<UINT>(state.targets.size()), width, height, DXGI_FORMAT_R8G8B8A8_UNORM,
-      swapchain_flags(state));
-  if (FAILED(result)) { state.failed = true; return std::unexpected(dx12_error(result, "resize buffers")); }
-  state.width = width;
-  state.height = height;
-  auto targets = dx12_create_targets(state);
-  if (!targets) state.failed = true;
-  return targets;
-}
 } // namespace cgpui
