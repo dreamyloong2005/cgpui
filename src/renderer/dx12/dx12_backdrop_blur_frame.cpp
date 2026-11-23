@@ -1,9 +1,11 @@
+#include "dx12_operation_internal.hpp"
 #include "dx12_frame_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
 #include "renderer_device_pixels_internal.hpp"
 
 namespace cgpui {
 void Dx12Frame::draw_backdrop_blur(const BackdropBlurDraw& backdrop) {
+  Dx12OperationGuard operation(*state_);
   if (released_ || error_) return;
   if (!state_->backdrop_blur->support.supported) {
     error_ = Error{.code = ErrorCode::unsupported_platform,

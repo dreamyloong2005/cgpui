@@ -4,22 +4,11 @@ using namespace cgpui;
 using namespace cgpui_test;
 
 namespace {
-int blocked_generation(Renderer& renderer, const ImageAssetDescriptor& image, bool peer_blocker) {
+int blocked_generation(Renderer& renderer, const ImageAssetDescriptor& image) {
   const auto before = renderer.backend_info();
-  Dx12Window peer_window;
-  std::unique_ptr<Renderer> peer;
   auto held_device = dx12_acquire_native_device(before);
   if (!held_device) return dx12_fail(10, "external native device unavailable");
-  if (peer_blocker) {
-    if (!peer_window.hwnd) return dx12_fail(11, "peer window unavailable");
-    auto created = create_dx12_renderer(peer_window.descriptor());
-    if (!created) return dx12_fail(12, created.error().message.c_str());
-    peer = std::move(*created);
-    if (peer->backend_info().adapter_luid != before.adapter_luid)
-      return dx12_fail(13, "peer did not share the test adapter");
-  }
   if (!dx12_remove_native_device(before)) return dx12_fail(14, "blocked native removal failed");
-  if (peer_blocker) held_device.Reset(); // Isolate the peer's native ownership.
   for (unsigned attempt = 0; attempt < 2; ++attempt) {
     const auto blocked = renderer.begin_frame();
     if (blocked || blocked.error().code != ErrorCode::renderer_initialization_failed)
@@ -29,7 +18,6 @@ int blocked_generation(Renderer& renderer, const ImageAssetDescriptor& image, bo
         renderer.last_frame_pixels()) return dx12_fail(16, "blocked recovery published a new generation");
   }
   held_device.Reset();
-  peer.reset();
   // A manual later call may retry after the external obstacle is gone. Runtime
   // sees hard errors above and must not spin on an unusable renderer meanwhile.
   const auto retry = renderer.begin_frame();
@@ -65,6 +53,5 @@ int main() {
   if (!(*warmup)->request_pixel_capture() || !(*warmup)->present() ||
       !dx12_pixel((*renderer)->last_frame_pixels(), 8, 8, {0, 255, 0, 255}))
     return dx12_fail(4, "blocker warmup failed");
-  if (const auto result = blocked_generation(**renderer, describe_image_asset(image), false)) return result;
-  return blocked_generation(**renderer, describe_image_asset(image), true);
+  return blocked_generation(**renderer, describe_image_asset(image));
 }

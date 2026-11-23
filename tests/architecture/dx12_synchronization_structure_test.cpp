@@ -61,8 +61,9 @@ int main() {
               "synchronization and retirement policy must not absorb native operations");
     }
     const auto state = compact(read("src/renderer/dx12/dx12_state.cpp"));
-    require(has(state, "Dx12State::~Dx12State(){dx12_retire_submitted_work(*this);}"),
-            "state destruction must delegate safe retirement, never discard an idle-wait error");
+    require(has(state, "Dx12State::~Dx12State(){Dx12OperationGuardoperation(*this);") &&
+                has(state, "dx12_retire_submitted_work(*this);dx12_release_native_objects(*this);"),
+            "state destruction must lock and retire before explicit native release");
     const auto retirement = compact(read("src/renderer/dx12/dx12_retirement_internal.hpp"));
     require(has(retirement, "dx12_retire_submitted_work(Dx12State&") &&
                 has(retirement, "noexcept;"),

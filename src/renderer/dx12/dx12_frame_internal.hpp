@@ -32,6 +32,7 @@ class Dx12Frame final : public RenderFrame {
   void append(Dx12TexturedDraw draw);
   void release();
   std::shared_ptr<Dx12State> state_;
+  std::uint64_t generation_ = 0;
   Color clear_{0, 0, 0, 1};
   std::vector<Dx12DrawCommand> draws_;
   std::optional<Error> error_;

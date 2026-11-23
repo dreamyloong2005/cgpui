@@ -1,3 +1,4 @@
+#include "dx12_operation_internal.hpp"
 #include "dx12_frame_internal.hpp"
 #include "dx12_image_cache_internal.hpp"
 #include "renderer_device_pixels_internal.hpp"
@@ -6,14 +7,17 @@
 
 namespace cgpui {
 void Dx12Frame::upload_image(const ImageAsset& image) {
+  Dx12OperationGuard operation(*state_);
   if (released_ || error_) return;
   if (auto uploaded = state_->image_cache->upload(*state_, image); !uploaded) error_ = uploaded.error();
 }
 void Dx12Frame::invalidate_image(ImageAssetId id) {
+  Dx12OperationGuard operation(*state_);
   if (released_ || error_) return;
   state_->image_cache->invalidate(id);
 }
 void Dx12Frame::draw_image(const ImageDraw& image) {
+  Dx12OperationGuard operation(*state_);
   if (released_ || error_) return;
   auto texture = state_->image_cache->find(image.asset);
   if (!texture) { error_ = texture.error(); return; }

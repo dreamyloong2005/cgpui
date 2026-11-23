@@ -1,6 +1,7 @@
 #include "dx12_recovery_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_device_internal.hpp"
+#include "dx12_device_cohort_internal.hpp"
 #include "dx12_native_retirement_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
 #include <limits>
@@ -17,13 +18,19 @@ Result<void> rebuild(Dx12State& state, std::uint64_t luid) {
 } // namespace
 
 Result<bool> dx12_recover_removed_device(Dx12State& state) {
+  const HRESULT actual = state.device ? state.device->GetDeviceRemovedReason() : S_OK;
+  HRESULT reason = state.removal_reason;
+  if (SUCCEEDED(reason)) reason = actual;
+  if (!state.recovery_pending && SUCCEEDED(reason)) return false;
+  // A nested callback cannot discard resources still used by its outer entry.
+  if (state.operation_depth > 1) {
+    return std::unexpected(dx12_error(HRESULT_FROM_WIN32(ERROR_BUSY), "reentrant device recovery"));
+  }
   if (!state.recovery_pending) {
-    HRESULT reason = state.removal_reason;
-    if (SUCCEEDED(reason) && state.device) reason = state.device->GetDeviceRemovedReason();
-    if (SUCCEEDED(reason)) return false;
     state.removal_reason = reason;
     state.recovery_pending = true;
     state.failed = true;
+    if (FAILED(actual)) dx12_retire_removed_cohort_peers(state);
   }
   state.pixels.reset();
   if (!state.info.adapter_luid) return std::unexpected(Error{

@@ -5,9 +5,8 @@
 
 namespace cgpui {
 void dx12_release_native_objects(Dx12State& state) noexcept {
-  // The caller has removal evidence; partial rebuilds never submit commands.
+  // The caller proved completion/removal, or never submitted the partial build.
   state.submitted = false;
-  state.pixels.reset();
   state.commands.Reset();
   state.allocator.Reset();
   dx12_reset_texture_resources(state);
@@ -17,8 +16,6 @@ void dx12_release_native_objects(Dx12State& state) noexcept {
   backdrop.blur_pipeline.Reset();
   backdrop.downsample_pipeline.Reset();
   backdrop.root_signature.Reset();
-  backdrop.support.supported = false;
-  backdrop.support.reason.clear();
   state.uploads.clear();
   state.readback.Reset();
   state.capture_layout = {};

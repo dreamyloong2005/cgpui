@@ -28,4 +28,12 @@ Result<void> dx12_handle_frame_failure(Dx12State& state, Error error) {
   if (*recovered) return recovered_frame();
   return std::unexpected(std::move(error));
 }
+
+Result<void> dx12_prepare_present(Dx12State& state, std::uint64_t frame_generation) {
+  auto recovered = dx12_recover_removed_device(state);
+  if (!recovered) return std::unexpected(recovered.error());
+  if (*recovered || frame_generation != state.info.device_generation) return recovered_frame();
+  if (state.failed) return std::unexpected(dx12_unsupported("recovery of a failed live device"));
+  return {};
+}
 } // namespace cgpui

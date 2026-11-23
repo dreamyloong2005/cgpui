@@ -91,16 +91,40 @@ frame, not claim the lost frame was presented. Failed frames do not advance imag
 cache idle ages. Resize instead completes the requested extent/DPI after recovery
 and returns success, or returns an error; it never returns a frame retry.
 
-This is **single-owner recovery**, not coordinated multi-window recovery.
-D3D12 devices are shared within a process/adapter. Another renderer or an external
-native device reference may keep the removed device alive and prevent its
-replacement. Such an attempt returns the actual terminal initialization error,
-does not increment generation, and does not schedule an unbounded retry loop.
-After blockers are released, a caller may explicitly make a later operation on
-the same renderer to attempt reconstruction again. The normal UI runtime exits
-on terminal frame errors; it does not coordinate peer retirement or recreate
-the renderer factory automatically. Invalid input and live-device synchronization
-errors are not treated as device removal, and no backend/adapter fallback occurs.
+Recovery now coordinates renderers on the **same adapter and HWND-owning UI
+thread**. Confirmed native loss first retires eligible peers' old GPU resources;
+only the triggering renderer rebuilds immediately. Other peers remain pending
+until their next begin/present/resize, and increment their own generation only
+after their own complete reconstruction. An old active CPU frame requests a new
+frame rather than submitting across generations. It remains outstanding until
+presented or abandoned; old-frame destruction cannot unlock a newer frame.
+
+A private weak registry holds no device reference. Its metadata lock is never
+held across native calls. Per-renderer recursive operation gates protect state
+access, and peer gates use nonblocking try-locks. Orphan states kept alive by old
+frames can retire native resources but are not rebuilt for a dead renderer.
+An operation-depth guard also skips same-thread reentrant active entries;
+recursive lock acquisition alone is not treated as an idle-operation guarantee.
+If the triggering renderer is itself inside a nested operation, confirmed or
+pending recovery returns `ERROR_BUSY` before modifying recovery state or retiring
+any native resources. Peer retirement is itself an active guarded operation.
+Peers' CPU caches, capability reports and borrowed capture storage survive
+native-only retirement. Pending peers report no current capture; an existing
+borrowed capture remains alive until that peer's own next mutating operation.
+This is not a thread-safe borrowed-pointer guarantee or permission to race
+destruction with calls. Individual calls are not newly restricted to the creation
+thread, but automatic peer coordination only runs on the HWND-owning thread.
+
+External native references, different-window-thread peers, busy peer operations,
+or a concurrently finishing native destructor may still block replacement of
+the removed singleton. The attempt returns the actual terminal initialization
+error with unchanged generation, not an unbounded retry loop. A skipped peer
+must itself progress through recovery or release its native resources; simply
+unlocking its operation gate does not trigger background recovery. Once blockers
+are gone, an explicit later call can reconstruct the same renderer. The normal
+UI runtime exits on terminal frame errors and does not recreate factories or
+coordinate foreign threads automatically. Invalid input and live-device sync
+errors are not treated as removal, and no backend/adapter fallback occurs.
 
 Native acceptance uses explicit idle-device `RemoveDevice` and independently
 checked post-recovery pixels. It does not certify hardware reset/TDR behavior.
@@ -156,7 +180,7 @@ smoke does not establish full workbench interaction or desktop appearance.
 ## Not implemented yet
 
 Transparent ordinary windows,
-DirectComposition Popup presentation and coordinated multi-window device-loss
+native Popup presentation and coordinated cross-thread device-loss
 recovery are future work.
 Unsupported capabilities reject their commands rather than silently dropping
 content. Transparent/composition descriptors fail during creation;
@@ -172,6 +196,7 @@ DX12 selection. No release was published by this milestone.
 See `.planning/2026-11-23-dx12-bootstrap/`,
 `.planning/2026-11-23-dx12-textures/`,
 `.planning/2026-11-23-dx12-shadows/`,
-`.planning/2026-11-23-dx12-backdrop/` and
-`.planning/2026-11-23-dx12-retirement/` and
-`.planning/2026-11-23-dx12-recovery/` for dated validation evidence.
+`.planning/2026-11-23-dx12-backdrop/`,
+`.planning/2026-11-23-dx12-retirement/`,
+`.planning/2026-11-23-dx12-recovery/` and
+`.planning/2026-11-23-dx12-cohort/` for dated validation evidence.

@@ -4,6 +4,7 @@
 #include <array>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <vector>
 
@@ -16,6 +17,9 @@ class Dx12SynchronizationApi;
 struct Dx12State {
   Dx12State();
   ~Dx12State();
+  mutable std::recursive_mutex operation_mutex;
+  std::size_t operation_depth = 0;
+  DWORD window_thread_id = 0;
   Dx12Ptr<IDXGIFactory4> factory;
   Dx12Ptr<IDXGIAdapter1> adapter;
   Dx12Ptr<ID3D12Device> device;
