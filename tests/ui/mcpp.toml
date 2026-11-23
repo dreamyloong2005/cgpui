@@ -36,6 +36,8 @@ defines = [
 
 [test]
 discover = [
+    "window_runtime_transparent_clear_test.cpp",
+    "window_runtime_dynamic_backdrop_clear_test.cpp",
     "window_backend_info_test.cpp",
     "window_runtime_window_callback_context_test.cpp",
     "window_runtime_window_callback_ownership_test.cpp",

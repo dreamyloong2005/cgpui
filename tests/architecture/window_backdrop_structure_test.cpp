@@ -102,6 +102,16 @@ int main() {
             lines(facade) <= 50 && has(facade, "Window::set_backdrop(") &&
             has(runtime, "set_transparent_surface(true)"),
             "runtime and Window facade forward through focused sources");
+    const auto root_frames = read("src/ui/runtime_renderer_frame_results.cpp");
+    require(has(runtime, "record.descriptor.chrome.transparent_background") &&
+            has(runtime, "composition.supported && composition.alpha_composited()") &&
+            has(root_frames, "runtime_window_clear_color(*root_record)") &&
+            has(read("src/ui/runtime_window_frame_results.cpp"), "runtime_window_clear_color(record)"),
+            "root and secondary clear policy must consume window intent and live alpha in the backdrop leaf");
+    const auto ui_tests = read("tests/ui/mcpp.toml");
+    require(has(ui_tests, "window_runtime_transparent_clear_test.cpp") &&
+            has(ui_tests, "window_runtime_dynamic_backdrop_clear_test.cpp"),
+            "explicit transparency and live backdrop clear policy need public runtime regressions");
     require(has(module, "\"win32_window_backdrop_test.cpp\"") &&
             has(module, "\"wayland_window_backdrop_test.cpp\"") &&
             has(module, "\"vulkan_surface_composition_test.cpp\"") &&

@@ -56,13 +56,15 @@ Result<void> WindowRuntime::try_draw_frame() {
   apply_focused_text_ime_placement();
 
   std::vector<WindowControlRegion> window_control_regions;
+  const auto* root_record = find_window_runtime_record(state_->windows.root_window_runtime_id_);
   auto result = render_view(
       *state_->windows.renderer_,
       state_->core.view_,
       state_->windows.viewport_size_,
       state_->windows.scale_,
       nullptr,
-      runtime_window_clear_color(state_->windows.window_),
+      root_record != nullptr ? runtime_window_clear_color(*root_record)
+                             : runtime_window_clear_color(state_->windows.window_),
       &window_control_regions,
       element_tree(),
       &frame_statistics);

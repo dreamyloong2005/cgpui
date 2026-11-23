@@ -26,6 +26,8 @@ PlatformWindowBackdropState runtime_apply_window_backdrop(
 
 // Transparent clear only while a material is visible behind the client area.
 [[nodiscard]] Color runtime_window_clear_color(const PlatformWindow* window);
+// Also honors explicit transparent intent against the renderer's live capability;
+// a creation-time backdrop alone does not override a later material removal.
 [[nodiscard]] Color runtime_window_clear_color(const WindowRuntimeRecord& record);
 
 } // namespace cgpui

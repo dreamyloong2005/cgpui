@@ -32,11 +32,14 @@ bool runtime_wants_transparent_surface(const WindowDescriptor& descriptor) {
          descriptor.kind == WindowKind::popup;
 }
 
-// Popups draw rounded corners and shadows over transparent pixels.
 Color runtime_window_clear_color(const WindowRuntimeRecord& record) {
-  return record.descriptor.kind == WindowKind::popup
-      ? Color{.r = 0.0F, .g = 0.0F, .b = 0.0F, .a = 0.0F}
-      : runtime_window_clear_color(record.window);
+  // Popups draw rounded corners and shadows over transparent pixels.
+  if (record.descriptor.kind == WindowKind::popup) return Color{0, 0, 0, 0};
+  if (record.descriptor.chrome.transparent_background && record.renderer != nullptr) {
+    const auto composition = record.renderer->surface_composition();
+    if (composition.supported && composition.alpha_composited()) return Color{0, 0, 0, 0};
+  }
+  return runtime_window_clear_color(record.window);
 }
 
 Color runtime_window_clear_color(const PlatformWindow* window) {

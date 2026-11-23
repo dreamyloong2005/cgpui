@@ -75,21 +75,31 @@ if (state.applied == cgpui::WindowBackdrop::none) log(state.reason);
 1. The platform window applies the request at creation with
    `transparent_surface = false`, because no renderer exists yet. On Windows
    this already sets the title bar material.
-2. The runtime creates the renderer as before
-   (`transparent_background = chrome.transparent_background`).
+2. The runtime requests a transparent renderer surface for explicit
+   `chrome.transparent_background`, a non-`none` backdrop, or a Popup.
 3. `runtime_apply_window_backdrop` (src/ui/runtime_window_backdrop.cpp)
    re-applies the backdrop with the renderer's real composition. If the
    backend reports `supported` and the surface is opaque, it calls
    `Renderer::set_transparent_surface(true)` once and applies again with the
    new composition. `Window::set_backdrop` uses the same path at runtime.
-4. Each frame clears to `(0, 0, 0, 0)` while `applied != none` and
-   `transparent_surface` is true, otherwise to the usual opaque
-   `(0.08, 0.09, 0.10, 1)`. The new `render_view(..., Color clear_color, ...)`
-   overload carries the color. Content that paints an opaque root background
-   hides the material; leave the root transparent to see it.
+4. Root and secondary windows use the same clear policy. Explicit
+   `chrome.transparent_background` clears to `(0, 0, 0, 0)` when the renderer
+   currently reports `supported` and pre-/post-multiplied alpha, even with
+   backdrop `none`. Unknown, opaque, inherit or unsupported reports do not
+   satisfy that explicit-transparency branch. Otherwise an actually applied
+   material (`applied != none` and `transparent_surface`) requests transparent
+   clear; with neither, the usual opaque `(0.08, 0.09, 0.10, 1)` remains.
+   Popups retain their transparent clear for rounded corners and shadows.
+   The `render_view(..., Color clear_color, ...)` overload carries the color.
+   Content that paints an opaque root background still hides the material or
+   desktop; leave the root transparent to see it.
 
-Switching to `none` keeps the transparent swapchain; the clear turns opaque
-again.
+Switching to `none` keeps the transparent swapchain. A material-only window's
+clear turns opaque again; an explicitly transparent window keeps transparent
+clear while its renderer actually supports alpha. The creation-time backdrop
+in `Window::descriptor()` does not override the live material state. This
+runtime policy does not add alpha capability to a backend or platform; ordinary
+transparent DX12 windows remain unsupported pending native-menu validation.
 
 ## Vulkan composite alpha
 
@@ -342,6 +352,12 @@ hovered), although `DWMWA_CAPTION_BUTTON_BOUNDS` reports a button area.
 - `window_runtime_backdrop_test`: the runtime helper with a fake window and
   renderer (switch to transparent once, inherit treated as opaque,
   unsupported backend leaves the surface alone, clear color).
+- `window_runtime_transparent_clear_test`,
+  `window_runtime_dynamic_backdrop_clear_test`: public runtime root/secondary
+  creation and redraw through recording frames; explicit intent vs actual
+  composition, live capability changes, and `Window::set_backdrop` removal,
+  reapplication and material refusal. These are runtime policy tests, not
+  desktop transparency evidence.
 - `wayland_window_backdrop_test` (Linux): decision table; the test
   compositor without blur globals (unsupported, transparency off); the test
   compositor with a fake `ext_background_effect_manager_v1` global

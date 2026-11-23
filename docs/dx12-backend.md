@@ -210,6 +210,10 @@ smoke does not establish full workbench interaction or desktop appearance.
 
 Transparent ordinary windows/native-menu coexistence and coordinated
 cross-thread device-loss recovery are future work.
+The [ordinary transparency probe](dx12-ordinary-transparency-probe.md) records
+11 DWM/hosting recipes across three adapters: correct client alpha alone did not
+preserve native menu drawing. These observations do not enable a new surface
+route or establish that every possible topology is incompatible.
 Unsupported capabilities reject their commands rather than silently dropping
 content. `popup_windows_supported()` is true for the implemented native Popup
 path, including on an opaque parent renderer. The runtime still checks platform
@@ -234,4 +238,5 @@ See `.planning/2026-11-23-dx12-bootstrap/`,
 `.planning/2026-11-23-dx12-retirement/`,
 `.planning/2026-11-23-dx12-recovery/`,
 `.planning/2026-11-23-dx12-cohort/` and
-`.planning/2026-11-23-dx12-popup/` for dated validation evidence.
+`.planning/2026-11-23-dx12-popup/` and
+`.planning/2026-11-23-dx12-ordinary/` for dated validation evidence.
