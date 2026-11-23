@@ -14,6 +14,7 @@ struct Dx12TextCache;
 struct Dx12TextureRenderer;
 struct Dx12BackdropBlurRenderer;
 struct Dx12CompositionHost;
+struct Dx12WindowAlphaLease;
 class Dx12SynchronizationApi;
 struct Dx12State {
   Dx12State();
@@ -32,6 +33,7 @@ struct Dx12State {
   HRESULT removal_reason = S_OK;
   Dx12Ptr<IDXGISwapChain3> swapchain;
   std::unique_ptr<Dx12CompositionHost> composition_host;
+  std::unique_ptr<Dx12WindowAlphaLease> window_alpha;
   Dx12Ptr<ID3D12DescriptorHeap> rtv_heap;
   std::array<Dx12Ptr<ID3D12Resource>, 2> targets;
   UINT rtv_stride = 0;

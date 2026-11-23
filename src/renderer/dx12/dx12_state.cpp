@@ -7,6 +7,7 @@
 #include "dx12_retirement_internal.hpp"
 #include "dx12_native_retirement_internal.hpp"
 #include "dx12_composition_internal.hpp"
+#include "dx12_window_alpha_internal.hpp"
 
 namespace cgpui {
 Dx12State::Dx12State()
@@ -19,5 +20,6 @@ Dx12State::~Dx12State() {
   Dx12OperationGuard operation(*this);
   dx12_retire_submitted_work(*this);
   dx12_release_native_objects(*this);
+  window_alpha.reset();
 }
 } // namespace cgpui

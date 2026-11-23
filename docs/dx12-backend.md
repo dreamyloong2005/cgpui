@@ -1,7 +1,8 @@
 # Experimental Direct3D 12 backend
 
-DX12 is an **opt-in experimental backend** for opaque ordinary windows and
-alpha-composited native Popups, not a complete replacement for Vulkan. Vulkan
+DX12 is an **opt-in experimental backend** for opaque ordinary windows,
+bounded initially transparent ordinary windows and alpha-composited native
+Popups, not a complete replacement for Vulkan. Vulkan
 remains the Windows default; Linux stays Vulkan and macOS stays Metal. The
 previous Popup policy is unchanged for Vulkan.
 
@@ -11,8 +12,9 @@ previous Popup policy is unchanged for Vulkan.
   command queue, root signature/PSO, two-buffer swapchain and fence-based
   resource retirement. The first suitable hardware adapter is selected; software
   fallback is not automatic.
-- Ordinary windows retain an opaque HWND flip-discard swapchain. Native Popups
-  use a premultiplied flip-sequential composition swapchain on the same DX12
+- Opaque ordinary windows retain an opaque HWND flip-discard swapchain. Native
+  Popups and eligible initially transparent ordinary windows use a premultiplied
+  flip-sequential composition swapchain on the same DX12
   command queue, hosted privately by DirectComposition. There is no D3D11 device,
   shared texture/keyed mutex or extra presentation copy on this DX12 path, and
   no new application-facing window mode. The first successful presented and
@@ -65,8 +67,8 @@ target pooling or a bounded peak-memory/performance guarantee. Full renderer
 diagnostic snapshots/timings remain unimplemented; effect capability reporting
 does not imply diagnostic parity.
 
-Popup clears are premultiplied before ClearRenderTargetView; ordinary HWND clear
-behavior is unchanged. Existing draw blending produces premultiplied target
+Composition-surface clears are premultiplied before ClearRenderTargetView;
+opaque ordinary HWND clear behavior is unchanged. Existing draw blending produces premultiplied target
 pixels. On a composition surface, a dedicated backdrop shader replaces RGBA by
 interpolating the original scene and filtered/tinted scene through the rounded
 mask and effect opacity. It does not source-over the same scene alpha a second
@@ -74,11 +76,56 @@ time. This is still in-app backdrop blur, not sampling or blurring other desktop
 windows behind the Popup. The existing opaque and Vulkan shader entries are
 unchanged.
 
-Native Popup swapchains remain premultiplied even when transparent intent is
-false, as on the existing Vulkan composition path. `set_transparent_surface`
-updates that intent/report without changing the HWND topology or actual alpha
-mode. Ordinary HWND transparent creation and enabling transparency are still
-rejected; they must not silently become composition windows or lose native menus.
+Initially alpha-composited swapchains remain premultiplied even when transparent
+intent becomes false, as on the existing Vulkan Popup composition path.
+`set_transparent_surface` updates that intent/report without changing the HWND
+topology or actual alpha mode. An opaque ordinary renderer still rejects an
+attempt to enable transparency; it never silently changes presentation routes.
+
+## Bounded ordinary-window transparency
+
+Initial `transparent_background=true` is supported only for a CGPUI-owned,
+decorated ordinary window with its visible **system title bar**, on Windows
+build **26100 or newer**, and only if the real DWM alpha attribute succeeds.
+Use the normal cross-platform descriptor intent, not a DComp/native window mode.
+Raw HWNDs, client-drawn/hidden title bars, undecorated windows and older Windows
+remain unsupported for this ordinary-alpha route. Native Popup behavior is
+separate and unchanged. Fullscreen or incompatible chrome changes are rejected
+while the ordinary alpha lease is active.
+
+The platform owns `DWMWA_REDIRECTIONBITMAP_ALPHA` and native-menu alpha repair;
+DX12 owns its private composition host. A token-only, per-window-instance lease
+connects them without linking DX12 to concrete platform-window objects. Native
+HMENU rendering remains Windows-owned: after relevant native nonclient/menu
+events, the platform copies the existing menu RGB through a nonclient buffered
+paint and makes its alpha opaque. It does not redraw text, replace/hide the menu,
+use undocumented UAH drawing hooks, or repair pixels in every render frame.
+
+This is **initial-only**, not an opaque-to-transparent upgrade. Opaque windows
+keep their existing flip-discard and clear semantics. A recorded HWND-flip
+attempt permanently disqualifies that HWND instance from later ordinary-alpha
+creation, even after the opaque renderer is destroyed. A probe found stale
+opaque client content after retiring the old flip chain; success of GPU teardown
+alone was not sufficient. An all-composition-from-start experiment is research,
+not the production default. See the [probe evidence](dx12-ordinary-transparency-probe.md).
+
+The native alpha lease survives GPU recovery; native GPU objects retire before
+the lease releases. Ordinary-alpha factory/begin/present/resize/intent operations
+require the HWND-owning thread. Destruction on another thread queues only checked
+identity tokens to the window thread. This restriction does not redefine the
+existing opaque renderer's threading contract.
+
+Initial native acceptance on 2026-11-23 exercised public platform/renderer APIs:
+changing red/blue GPU RGBA and real desktop alpha over a green backing window;
+same-window opaque native menu references with exact whole-bar RGB/focus matches
+before, while highlighted in a real menu loop, and after; genuine command and
+Escape paths; late/replace/clear/reinstall menus; resize/renderer-scale changes;
+duplicate creation, lifetime and two explicit idle-device removals with an opaque
+peer. A separate Mica/none test reported actual Mica application and zero changed
+menu pixels, then restored desktop alpha with a new blue frame. These are bounded
+native tests, not physical mouse-hover, monitor-migration, all-driver or full
+workbench acceptance. Older builds assert `unsupported_platform` and explicitly
+skip only unsupported positive cases; that path has not been run on an old OS.
 
 Synchronization retains each successfully queued fence ticket across event or
 wait failures. An event wake alone is not completion: the completed fence value
@@ -113,7 +160,7 @@ frame, not claim the lost frame was presented. Failed frames do not advance imag
 cache idle ages. Resize instead completes the requested extent/DPI after recovery
 and returns success, or returns an error; it never returns a frame retry.
 
-Popup native retirement also detaches and releases the composition visual,
+Composition native retirement also detaches and releases the composition visual,
 target and device before releasing the swapchain. Detachment/commit is best
 effort during teardown; local references are released even on native errors.
 There is no unbounded wait for compositor commits. If an external/compositor
@@ -141,8 +188,9 @@ Peers' CPU caches, capability reports and borrowed capture storage survive
 native-only retirement. Pending peers report no current capture; an existing
 borrowed capture remains alive until that peer's own next mutating operation.
 This is not a thread-safe borrowed-pointer guarantee or permission to race
-destruction with calls. Individual calls are not newly restricted to the creation
-thread, but automatic peer coordination only runs on the HWND-owning thread.
+destruction with calls. Existing opaque/Popup calls are not newly restricted to
+the creation thread, but automatic peer coordination only runs on the HWND-owning
+thread. The new ordinary-alpha lease has the owning-thread restriction above.
 
 External native references, different-window-thread peers, busy peer operations,
 or a concurrently finishing native destructor may still block replacement of
@@ -208,12 +256,12 @@ smoke does not establish full workbench interaction or desktop appearance.
 
 ## Not implemented yet
 
-Transparent ordinary windows/native-menu coexistence and coordinated
-cross-thread device-loss recovery are future work.
-The [ordinary transparency probe](dx12-ordinary-transparency-probe.md) records
-11 DWM/hosting recipes across three adapters: correct client alpha alone did not
-preserve native menu drawing. These observations do not enable a new surface
-route or establish that every possible topology is incompatible.
+Dynamic opaque-to-transparent upgrades, ordinary alpha on custom/undecorated
+chrome or older Windows, and coordinated cross-thread device-loss recovery are
+future work. The [ordinary transparency probe](dx12-ordinary-transparency-probe.md)
+retains the earlier 11 uncorrected DWM/hosting recipes and the later alpha-only
+menu repair evidence; the negative recipes are not a claim that all DComp/native
+menu combinations are impossible.
 Unsupported capabilities reject their commands rather than silently dropping
 content. `popup_windows_supported()` is true for the implemented native Popup
 path, including on an opaque parent renderer. The runtime still checks platform
@@ -227,7 +275,7 @@ every desktop configuration, physical monitor migration or arbitrary driver TDR.
 
 The original DX12 plan's shared extraction and shader phases are only partially
 complete: rectangle/text/image/shadow/backdrop algorithms and DXIL are implemented,
-but full parity, transparent-window/native-menu compatibility, diagnostics, recovery,
+but full parity, broader transparent-window/native-menu compatibility, diagnostics, recovery,
 performance gates and default-switch/release verification must precede automatic
 DX12 selection. No release was published by this milestone.
 
@@ -239,4 +287,5 @@ See `.planning/2026-11-23-dx12-bootstrap/`,
 `.planning/2026-11-23-dx12-recovery/`,
 `.planning/2026-11-23-dx12-cohort/` and
 `.planning/2026-11-23-dx12-popup/` and
-`.planning/2026-11-23-dx12-ordinary/` for dated validation evidence.
+`.planning/2026-11-23-dx12-ordinary/` and
+`.planning/2026-11-23-dx12-nc-alpha/` for dated validation evidence.

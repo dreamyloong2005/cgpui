@@ -4,6 +4,7 @@
 #include "dx12_backdrop_blur_internal.hpp"
 #include "dx12_device_cohort_internal.hpp"
 #include "dx12_surface_internal.hpp"
+#include "dx12_window_alpha_internal.hpp"
 #include "cgpui/renderer/renderer_backend.hpp"
 
 namespace cgpui {
@@ -17,6 +18,7 @@ class Dx12Renderer final : public Renderer {
   }
   Result<void> resize(Size size, DpiScale scale) override {
     Dx12OperationGuard operation(*state_);
+    if (auto valid = dx12_validate_window_alpha(*state_); !valid) return valid;
     return dx12_resize_recovering(*state_, size, scale);
   }
   Result<std::unique_ptr<RenderFrame>> begin_frame() override {
@@ -60,6 +62,7 @@ Result<std::unique_ptr<Renderer>> create_dx12_renderer(const RenderSurfaceDescri
   if (auto device = dx12_create_device(*state); !device) return std::unexpected(device.error());
   state->backdrop_blur->support = dx12_backdrop_blur_support(*state->device.Get());
   if (auto pipeline = dx12_create_pipeline(*state); !pipeline) return std::unexpected(pipeline.error());
+  if (auto history = dx12_mark_opaque_window(*state); !history) return std::unexpected(history.error());
   if (auto surface = dx12_create_swapchain(*state); !surface) return std::unexpected(surface.error());
   if (auto debug = dx12_check_debug_errors(*state); !debug) return std::unexpected(debug.error());
   dx12_register_device_cohort(state);

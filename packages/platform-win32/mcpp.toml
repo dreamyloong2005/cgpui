@@ -27,6 +27,7 @@ ldflags = [
     "uiautomationcore.lib",
     "uuid.lib",
     "dwmapi.lib",
+    "uxtheme.lib",
     "dcomp.lib",
     "advapi32.lib",
 ]

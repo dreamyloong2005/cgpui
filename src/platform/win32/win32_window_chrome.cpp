@@ -4,6 +4,13 @@ namespace cgpui {
 
 PlatformWindowChromeState Win32Window::apply_window_chrome(
     WindowChromeOptions options) {
+  if (!surface_alpha_.accepts_chrome(options)) {
+    auto rejected = chrome_state_.platform;
+    rejected.requested = options;
+    rejected.reason = "transparent DX12 ordinary windows require decorated system title bars";
+    return rejected;
+  }
+  surface_alpha_.set_chrome(options);
   const WindowTitleBarMode previous_title_bar =
       chrome_state_.platform.applied.title_bar;
   chrome_state_ = Win32WindowChromeState{

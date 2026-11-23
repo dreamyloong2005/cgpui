@@ -20,6 +20,7 @@ Win32Window::Win32Window(
 
 Win32Window::~Win32Window() {
   invalidate_window_registration();
+  surface_alpha_.detach();
   if (hwnd_ != nullptr) {
     set_pointer_capture(false);
     revoke_drop_target();
@@ -31,12 +32,14 @@ Win32Window::~Win32Window() {
 
 void Win32Window::attach(HWND hwnd) {
   hwnd_ = hwnd;
+  surface_alpha_.attach(hwnd);
   uia_accessibility_.attach(hwnd);
   refresh_cursor(true);
   register_drop_target(hwnd);
 }
 
 void Win32Window::detach() {
+  surface_alpha_.detach();
   set_pointer_capture(false);
   revoke_drop_target();
   uia_accessibility_.detach();

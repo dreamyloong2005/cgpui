@@ -2,6 +2,7 @@
 
 #include "win32_internal.hpp"
 #include "win32_window_backdrop_internal.hpp"
+#include "win32_window_surface_alpha_internal.hpp"
 #include "win32_window_display_internal.hpp"
 #include "win32_window_dispatch_lifetime_internal.hpp"
 #include "../platform_window_close_internal.hpp"
@@ -35,12 +36,10 @@ class Win32Window final
   [[nodiscard]] PlatformPointerCaptureState pointer_capture_state() const override;
   void set_pointer_capture(bool captured) override;
   void set_ime_text_input_placement(std::optional<ImeTextInputPlacement> placement) override;
-  PlatformWindowChromeState apply_window_chrome(
-      WindowChromeOptions options) override;
+  PlatformWindowChromeState apply_window_chrome(WindowChromeOptions options) override;
   PlatformWindowBackdropState apply_window_backdrop(WindowBackdrop backdrop, bool transparent_surface) override;
   [[nodiscard]] PlatformWindowBackdropState window_backdrop_state() const override;
-  void set_window_control_regions(
-      std::vector<WindowControlRegion> regions) override;
+  void set_window_control_regions(std::vector<WindowControlRegion> regions) override;
   [[nodiscard]] PlatformWindowFrameMetrics frame_metrics() const override;
   PlatformWindowActionResult perform_window_action(
       PlatformWindowActionRequest request) override;
@@ -117,6 +116,7 @@ class Win32Window final
   PlatformWindowCloseController close_controller_;
   Win32WindowChromeState chrome_state_;
   Win32WindowBackdrop backdrop_;
+  Win32WindowSurfaceAlpha surface_alpha_;
   Win32ClientTitleBar title_bar_;
   bool active_ = false;
   bool focused_ = false;

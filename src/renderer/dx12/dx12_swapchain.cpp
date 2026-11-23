@@ -1,5 +1,6 @@
 #include "dx12_state_internal.hpp"
 #include "dx12_composition_internal.hpp"
+#include "dx12_window_alpha_internal.hpp"
 
 namespace cgpui {
 namespace {
@@ -20,6 +21,7 @@ Result<void> dx12_create_targets(Dx12State& state) {
 }
 
 Result<void> dx12_create_swapchain(Dx12State& state) {
+  if (auto valid = dx12_validate_window_alpha(state); !valid) return valid;
   DXGI_SWAP_CHAIN_DESC1 descriptor{};
   descriptor.Width = state.width;
   descriptor.Height = state.height;

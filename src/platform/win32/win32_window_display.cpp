@@ -70,6 +70,9 @@ bool Win32Window::request_display_state(
     return false;
   }
   if (display_state == PlatformWindowDisplayState::fullscreen) {
+    // The ordinary alpha lease currently validates the system-caption topology
+    // only. Keep the window untouched rather than hide its native menu/frame.
+    if (surface_alpha_.active()) return false;
     return enter_fullscreen(hwnd_, display_command_state_);
   }
   if (!leave_fullscreen(hwnd_, display_command_state_)) {

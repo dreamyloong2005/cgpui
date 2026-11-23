@@ -52,7 +52,7 @@ Entry points:
 | Layer | Set | Query |
 | --- | --- | --- |
 | `PlatformWindow` | `apply_window_backdrop(WindowBackdrop, bool transparent_surface)` | `window_backdrop_state() const` |
-| `Renderer` | `set_transparent_surface(bool)` (recreates the swapchain) | `surface_composition() const` |
+| `Renderer` | `set_transparent_surface(bool)` (backend-dependent; may recreate a swapchain or only update intent) | `surface_composition() const` |
 | `Window` (app facade) | `set_backdrop(WindowBackdrop) const` | `backdrop() const`, `surface_composition() const` |
 | `WindowOptions` | `backdrop(WindowBackdrop)` | `descriptor.backdrop` |
 
@@ -98,8 +98,9 @@ Switching to `none` keeps the transparent swapchain. A material-only window's
 clear turns opaque again; an explicitly transparent window keeps transparent
 clear while its renderer actually supports alpha. The creation-time backdrop
 in `Window::descriptor()` does not override the live material state. This
-runtime policy does not add alpha capability to a backend or platform; ordinary
-transparent DX12 windows remain unsupported pending native-menu validation.
+runtime policy does not add alpha capability to a backend or platform. DX12 now
+supports a bounded initially transparent ordinary-window route described below;
+it still refuses dynamic upgrades from an opaque ordinary renderer.
 
 ## Vulkan composite alpha
 
@@ -189,14 +190,49 @@ installed, the DWM state still follows; the clear color updates on the next
 frame.
 
 Redirection surface: with the frame extended, DWM composites the window's
-GDI redirection surface under the transparent swapchain. The class has no
-background brush and CGPUI never paints with GDI, so that surface stayed
-opaque white and covered the material. While the frame is extended,
+GDI redirection surface under the transparent swapchain. Before the backdrop
+erase handler, the class's null background brush and lack of GDI client painting
+left that surface opaque white, covering the material. While the frame is extended,
 `win32_window_proc_background.cpp` answers `WM_ERASEBKGND` by filling the
 client black (GDI black has alpha 0, which DWM treats as transparent in an
 extended frame), and `apply_plan` invalidates with `RDW_ERASE` whenever it
 changes the margins so the surface is repainted at once. Windows without an
-extended frame keep the null brush and the default handling.
+extended frame keep the null brush and the default handling, except for the
+independent DX12 ordinary-alpha lease below.
+
+### Experimental DX12 ordinary windows
+
+Windows build **26100+** can use DX12 initial ordinary transparency on a
+CGPUI-owned, decorated window with a visible system title bar. The real DWM
+alpha attribute must succeed. A creation-time backdrop already makes the runtime
+request initial renderer transparency; explicit `chrome.transparent_background`
+does likewise. There is no application-facing DComp/native window-mode choice.
+Raw HWNDs, custom/client title bars, undecorated windows and older OS versions
+remain unsupported for this route; Vulkan/default selection and Popups are not
+changed by it. See [DX12 backend scope](dx12-backend.md#bounded-ordinary-window-transparency).
+
+The alpha lease owns `DWMWA_REDIRECTIONBITMAP_ALPHA` independently of this
+material module's backdrop type and frame margins. Its redirected client remains
+alpha-zero black even when the material is `none`. Actual composition stays
+premultiplied after `set_transparent_surface(false)`; that call changes intent,
+not topology. The runtime still chooses an opaque clear when neither explicit
+transparency nor an applied material requires a transparent clear.
+
+An ordinary renderer created opaque keeps its old HWND flip swapchain.
+`set_backdrop(mica)` cannot upgrade that renderer to alpha; its report can expose
+only a title-bar material, not an applied client material. Destroying that opaque
+renderer does not erase the HWND's flip history or permit later alpha creation.
+Request a needed material/transparent surface at window creation instead.
+
+Native menus remain actual Windows HMENUs. The platform preserves the native
+menu RGB and repairs only its alpha through nonclient buffered painting after
+native events; it does not replace the menu with framework drawing. On
+2026-11-23, `dx12_ordinary_backdrop_menu_test` observed `mica` actually applied,
+premultiplied GPU pixels intact and **zero differing native menu-bar RGB pixels**
+before/during/after a real command loop against the same window's opaque
+reference. Removing Mica restored green-backdrop desktop alpha with a newly
+rendered blue frame and again exact menu pixels. This is one-host Mica/none
+coexistence evidence, not a Mica Alt/Acrylic or physical mouse-hover claim.
 
 ## Wayland
 
@@ -349,6 +385,11 @@ hovered), although `DWMWA_CAPTION_BUTTON_BOUNDS` reports a button area.
   masks above.
 - `win32_vulkan_backdrop_test`: real window and Vulkan renderer; the chosen
   device's composition and the applied backdrop must agree.
+- `dx12_ordinary_backdrop_menu_test`: bounded initial ordinary DX12 alpha,
+  actual Mica when OS/policy permits, exact native HMENU command-loop pixels,
+  and `none` restoration with new GPU/desktop pixels. On builds below 26100,
+  transparent creation must return `unsupported_platform` before positive cases
+  are explicitly skipped; newer builds never skip a failed alpha initialization.
 - `window_runtime_backdrop_test`: the runtime helper with a fake window and
   renderer (switch to transparent once, inherit treated as opaque,
   unsupported backend leaves the surface alone, clear color).

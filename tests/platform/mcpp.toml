@@ -78,6 +78,7 @@ discover = [
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "win32_surface_alpha_lease_test.cpp",
     "win32_window_registry_test.cpp",
     "win32_composition_host_test.cpp",
     "win32_runtime_frame_retry_test.cpp",
