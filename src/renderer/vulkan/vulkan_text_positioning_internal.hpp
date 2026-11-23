@@ -1,13 +1,10 @@
 #pragma once
 
-#include "cgpui/renderer/glyph_atlas_types.hpp"
+#include "cgpui/renderer/planning/text_positioning.hpp"
 
 namespace cgpui {
 
-enum class VulkanTextPositioningPolicy {
-  preserve_subpixel,
-  snap_to_device_pixels,
-};
+using VulkanTextPositioningPolicy = TextPositioningPolicy;
 
 [[nodiscard]] VulkanTextPositioningPolicy
 vulkan_default_text_positioning_policy();

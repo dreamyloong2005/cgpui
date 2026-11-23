@@ -54,6 +54,8 @@ int fail(int code, const std::string& message) {
 int main() {
   constexpr std::string_view outputs[] = {
       "src/renderer/dx12/generated/rounded_rect_dxil.inc",
+      "src/renderer/dx12/generated/text_dxil.inc",
+      "src/renderer/dx12/generated/image_dxil.inc",
       "src/renderer/vulkan/generated/rounded_rect_spirv.inc",
       "src/renderer/vulkan/generated/text_spirv.inc",
       "src/renderer/vulkan/generated/image_spirv.inc",
@@ -132,7 +134,9 @@ int main() {
   const std::string dx12_library = read_source("src/renderer/dx12/dx12_shader_binaries.cpp");
   if (!has(script, "--dxil") || !has(dx12_script, "sm_6_0") ||
       !has(dx12_script, "CGPUI_CLIP_Y_UP") || !has(dx12_script, "-dumpbin") ||
-      !has(dx12_library, "generated/rounded_rect_dxil.inc")) {
+      !has(dx12_library, "generated/rounded_rect_dxil.inc") ||
+      !has(dx12_library, "generated/text_dxil.inc") ||
+      !has(dx12_library, "generated/image_dxil.inc")) {
     return fail(7, "DX12 must validate and embed shaders from the shared Slang source");
   }
   return 0;

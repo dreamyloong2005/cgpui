@@ -122,12 +122,12 @@ int main() {
   }
 
   const char* module_evidence[] = {
-      "struct VulkanTextVertex",
+      "using VulkanTextVertex = TextVertex;",
       "struct VulkanTextPipelineResources",
       "vulkan_text_fragment_shader_spirv(",
       "struct VulkanTextVertexBufferResources",
       "vkCmdDraw",
-      "enum class VulkanTextPositioningPolicy",
+      "using VulkanTextPositioningPolicy = TextPositioningPolicy;",
       "struct VulkanTextCoveragePolicy",
       "coverage_gamma",
   };

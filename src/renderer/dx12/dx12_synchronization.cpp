@@ -23,10 +23,6 @@ Result<void> dx12_wait_idle(Dx12State& state) {
   return {};
 }
 
-Dx12State::~Dx12State() {
-  if (submitted && queue && fence && fence_event.value) (void)dx12_wait_idle(*this);
-}
-
 void dx12_transition(ID3D12GraphicsCommandList& commands, ID3D12Resource& resource,
                      D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after) {
   D3D12_RESOURCE_BARRIER barrier{};

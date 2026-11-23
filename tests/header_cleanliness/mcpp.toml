@@ -22,6 +22,12 @@ sources = []
 
 [test]
 discover = [
+    "planning_image_vertex_header_test.cpp",
+    "planning_image_geometry_header_test.cpp",
+    "planning_image_color_header_test.cpp",
+    "planning_text_vertex_header_test.cpp",
+    "planning_text_geometry_header_test.cpp",
+    "planning_text_positioning_header_test.cpp",
     "renderer_backend_header_test.cpp",
     "runtime_installed_include_consumer.cpp",
     "text_ownership_header_test.cpp",

@@ -28,4 +28,12 @@ discover = [
     "dx12_validation_test.cpp",
     "dx12_backend_selection_test.cpp",
     "dx12_multiple_renderers_test.cpp",
+    "dx12_image_pixels_test.cpp",
+    "dx12_text_pixels_test.cpp",
+    "dx12_mixed_primitives_test.cpp",
+    "dx12_image_cache_test.cpp",
+    "dx12_image_eviction_test.cpp",
+    "dx12_image_sampling_test.cpp",
+    "dx12_text_atlas_lifetime_test.cpp",
+    "dx12_image_validation_test.cpp",
 ]

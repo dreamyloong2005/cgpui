@@ -1,16 +1,13 @@
 #pragma once
 
 #include "vulkan_platform_internal.hpp"
+#include "cgpui/renderer/planning/image_vertex.hpp"
 
 #include <array>
 
 namespace cgpui {
 
-struct VulkanImageVertex {
-  std::array<float, 2> position{};
-  std::array<float, 2> image_uv{};
-  std::array<float, 4> color{};
-};
+using VulkanImageVertex = ImageVertex;
 
 struct VulkanImageShaderModules {
   VkShaderModule vertex = VK_NULL_HANDLE;

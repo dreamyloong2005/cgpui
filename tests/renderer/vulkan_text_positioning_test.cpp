@@ -91,20 +91,20 @@ int test_vertex_expansion_consumes_policy() {
 
 int test_positioning_module_structure() {
   const std::string header = read_source(
-      "src/renderer/vulkan/vulkan_text_positioning_internal.hpp");
+      "include/cgpui/renderer/planning/text_positioning.hpp");
   const std::string source =
-      read_source("src/renderer/vulkan/vulkan_text_positioning.cpp");
+      read_source("src/renderer/planning/text_positioning.cpp");
   const std::string vertices =
-      read_source("src/renderer/vulkan/vulkan_text_vertex_buffer.cpp");
+      read_source("src/renderer/planning/text_geometry.cpp");
   const std::string frame =
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_frame.cpp");
   if (header.empty() || source.empty() || vertices.empty() || frame.empty()) {
     return 30;
   }
-  if (!contains(header, "enum class VulkanTextPositioningPolicy") ||
-      !contains(source, "vulkan_position_text_bounds(") ||
+  if (!contains(header, "enum class TextPositioningPolicy") ||
+      !contains(source, "position_text_bounds(") ||
       !contains(source, "std::round") ||
-      !contains(vertices, "vulkan_position_text_bounds(") ||
+      !contains(vertices, "position_text_bounds(") ||
       !contains(frame, "vulkan_default_text_positioning_policy(")) {
     return 31;
   }

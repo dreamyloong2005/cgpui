@@ -262,7 +262,7 @@ int test_structure() {
   const std::string shaders = read_source(
       "src/renderer/vulkan/vulkan_image_shader_binaries.cpp");
   const std::string vertices = read_source(
-      "src/renderer/vulkan/vulkan_image_vertex_buffer.cpp");
+      "src/renderer/planning/image_geometry.cpp");
   const std::string recording = read_source(
       "src/renderer/vulkan/vulkan_image_draw_recording.cpp");
   const std::string ordered = read_source(
@@ -284,7 +284,7 @@ int test_structure() {
   }
   if (!contains(pipeline_resources, "vkCreateGraphicsPipelines") ||
       !contains(shaders, "vulkan_image_fragment_shader_spirv") ||
-      !contains(vertices, "vulkan_apply_composed_transform") ||
+      !contains(vertices, "apply_composed_transform") ||
       !contains(recording, "vkCmdBindDescriptorSets") ||
       !contains(recording, "vkCmdDraw") ||
       !contains(ordered, "VulkanFrameDrawResourceKind::image") ||

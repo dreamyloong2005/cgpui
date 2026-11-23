@@ -20,6 +20,7 @@ sources = []
 
 [test]
 discover = [
+    "dx12_text_structure_test.cpp",
     "dx12_backend_structure_test.cpp",
     "renderer_backend_selection_structure_test.cpp",
     "runtime_public_state_isolation_test.cpp",

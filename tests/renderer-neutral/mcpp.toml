@@ -12,6 +12,8 @@ sources = []
 
 [test]
 discover = [
+    "image_text_geometry_test.cpp",
+    "image_text_planning_ownership_test.cpp",
     "planning_compatibility_test.cpp",
     "planning_test.cpp",
     "renderer_frame_header_test.cpp",

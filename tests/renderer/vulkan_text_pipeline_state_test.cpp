@@ -122,7 +122,7 @@ int test_text_pipeline_state_module_structure() {
   if (internal.empty() || state.empty() || command_recording.empty()) {
     return 30;
   }
-  if (!contains(internal, "struct VulkanTextVertex") ||
+  if (!contains(internal, "using VulkanTextVertex = TextVertex;") ||
       !contains(state, "vulkan_text_vertex_binding_description(") ||
       !contains(state, "vulkan_text_pipeline_blend_attachment_state(") ||
       !contains(state, "VK_DYNAMIC_STATE_VIEWPORT") ||

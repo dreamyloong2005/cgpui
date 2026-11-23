@@ -6,7 +6,7 @@
 
 namespace cgpui {
 
-inline constexpr std::size_t vulkan_image_vertices_per_quad = 6;
+inline constexpr std::size_t vulkan_image_vertices_per_quad = image_vertices_per_quad;
 
 struct VulkanImageVertexBufferResources {
   VulkanFrameGeometryBufferResources vertices;

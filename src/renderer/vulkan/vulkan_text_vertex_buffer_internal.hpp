@@ -7,7 +7,7 @@
 
 namespace cgpui {
 
-inline constexpr std::size_t vulkan_text_vertices_per_quad = 6;
+inline constexpr std::size_t vulkan_text_vertices_per_quad = text_vertices_per_quad;
 
 struct VulkanTextVertexBufferResources {
   VulkanFrameGeometryBufferResources vertices;

@@ -3,11 +3,16 @@
 #include "dx12_native_internal.hpp"
 #include <array>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <vector>
 
 namespace cgpui {
+class Dx12ImageCache;
+struct Dx12TextCache;
+struct Dx12TextureRenderer;
 struct Dx12State {
+  Dx12State();
   ~Dx12State();
   Dx12Ptr<IDXGIFactory4> factory;
   Dx12Ptr<IDXGIAdapter1> adapter;
@@ -24,6 +29,9 @@ struct Dx12State {
   Dx12Ptr<ID3D12GraphicsCommandList> commands;
   Dx12Ptr<ID3D12RootSignature> root_signature;
   Dx12Ptr<ID3D12PipelineState> pipeline;
+  std::unique_ptr<Dx12ImageCache> image_cache;
+  std::unique_ptr<Dx12TextCache> text_cache;
+  std::unique_ptr<Dx12TextureRenderer> texture_renderer;
   std::vector<Dx12Ptr<ID3D12Resource>> uploads;
   Dx12Ptr<ID3D12Resource> readback;
   D3D12_PLACED_SUBRESOURCE_FOOTPRINT capture_layout{};

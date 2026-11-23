@@ -1,10 +1,12 @@
 #include "dx12_frame_internal.hpp"
+#include "dx12_texture_renderer_internal.hpp"
 
 namespace cgpui {
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
-                              std::span<const RectGeometry> draws, bool capture) {
+                              std::span<const Dx12DrawCommand> draws, bool capture) {
   if (auto idle = dx12_wait_idle(state); !idle) return idle;
   state.uploads.clear();
+  dx12_begin_texture_frame(state);
   state.readback.Reset();
   if (capture) {
     if (auto prepared = dx12_prepare_capture(state); !prepared) return prepared;
@@ -25,12 +27,12 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   const D3D12_VIEWPORT viewport{0, 0, static_cast<float>(state.width),
                                static_cast<float>(state.height), 0, 1};
   state.commands->RSSetViewports(1, &viewport);
-  state.commands->SetGraphicsRootSignature(state.root_signature.Get());
-  const float extent[] = {static_cast<float>(state.width), static_cast<float>(state.height)};
-  state.commands->SetGraphicsRoot32BitConstants(0, 2, extent, 0);
   state.commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  for (const auto& geometry : draws) {
-    if (auto recorded = dx12_record_geometry(state, geometry); !recorded) {
+  for (const auto& draw : draws) {
+    const auto recorded = std::holds_alternative<RectGeometry>(draw) ?
+        dx12_record_geometry(state, std::get<RectGeometry>(draw)) :
+        dx12_record_textured_draw(state, std::get<Dx12TexturedDraw>(draw));
+    if (!recorded) {
       (void)state.commands->Close();
       return recorded;
     }
@@ -52,6 +54,7 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   // The fence follows presentation as well as drawing; resize/destruction
   // cannot retire resources while DXGI is still using this queue's frame.
   if (auto idle = dx12_wait_idle(state); !idle) return idle;
+  dx12_commit_texture_uploads(state);
   if (FAILED(presented)) return std::unexpected(dx12_error(presented, "present"));
   if (capture) {
     if (auto read = dx12_read_capture(state); !read) return read;

@@ -38,6 +38,10 @@ Result<void> dx12_record_geometry(Dx12State& state, const RectGeometry& geometry
       (*vertices)->GetGPUVirtualAddress(), static_cast<UINT>(vertex_bytes), sizeof(RectVertex)};
   const D3D12_INDEX_BUFFER_VIEW index_view{
       (*indices)->GetGPUVirtualAddress(), static_cast<UINT>(index_bytes), DXGI_FORMAT_R32_UINT};
+  state.commands->SetPipelineState(state.pipeline.Get());
+  state.commands->SetGraphicsRootSignature(state.root_signature.Get());
+  const float extent[] = {static_cast<float>(state.width), static_cast<float>(state.height)};
+  state.commands->SetGraphicsRoot32BitConstants(0, 2, extent, 0);
   state.commands->IASetVertexBuffers(0, 1, &vertex_view);
   state.commands->IASetIndexBuffer(&index_view);
   for (const auto& draw : geometry.draws) {

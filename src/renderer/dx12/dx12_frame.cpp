@@ -1,4 +1,5 @@
 #include "dx12_frame_internal.hpp"
+#include "dx12_image_cache_internal.hpp"
 #include "renderer_device_pixels_internal.hpp"
 #include <cmath>
 
@@ -25,6 +26,15 @@ void Dx12Frame::append(RectGeometry geometry) {
   }
   draws_.push_back(std::move(geometry));
 }
+void Dx12Frame::append(Dx12TexturedDraw draw) {
+  if (released_ || error_) return;
+  if (!dx12_finite_textured_draw(draw)) {
+    error_ = Error{.code = ErrorCode::invalid_argument,
+        .message = "DX12 textured draw must have a valid texture and finite vertices"};
+    return;
+  }
+  draws_.push_back(std::move(draw));
+}
 void Dx12Frame::draw_rect(const SolidRect& rect) {
   if (released_ || error_) return;
   const auto device = renderer_to_device_pixels(rect, state_->scale);
@@ -40,7 +50,6 @@ void Dx12Frame::unsupported(const char* feature) {
 }
 void Dx12Frame::draw_box_shadow(const BoxShadowDraw&) { unsupported("box shadows"); }
 void Dx12Frame::draw_backdrop_blur(const BackdropBlurDraw&) { unsupported("backdrop blur"); }
-void Dx12Frame::draw_text(const TextDraw&) { unsupported("text"); }
 void Dx12Frame::draw_text_selection(const TextSelectionDraw& selection) {
   draw_rect(SolidRect{.rect = selection.rect, .color = selection.color,
       .clip_rect = selection.clip_rect, .clip_stack = selection.clip_stack,
@@ -51,9 +60,6 @@ void Dx12Frame::draw_text_caret(const TextCaretDraw& caret) {
       .clip_rect = caret.clip_rect, .clip_stack = caret.clip_stack,
       .composition_stack = caret.composition_stack, .metadata = caret.metadata});
 }
-void Dx12Frame::upload_image(const ImageAsset&) { unsupported("image uploads"); }
-void Dx12Frame::invalidate_image(ImageAssetId) { unsupported("image invalidation"); }
-void Dx12Frame::draw_image(const ImageDraw&) { unsupported("images"); }
 Result<void> Dx12Frame::request_pixel_capture() {
   if (released_ || !state_->owner_alive) return std::unexpected(Error{
       .code = ErrorCode::invalid_argument, .message = "DX12 frame is no longer active"});
@@ -69,6 +75,7 @@ Result<void> Dx12Frame::present() {
   state_->pixels.reset();
   if (error_) return std::unexpected(*error_);
   auto result = dx12_submit_frame(*state_, clear_, draws_, capture_);
+  if (result) state_->image_cache->finish_frame();
   if (!result && result.error().code != ErrorCode::frame_retry_required) state_->failed = true;
   return result;
 }

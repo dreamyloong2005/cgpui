@@ -113,11 +113,11 @@ int test_vertex_and_shader_color_contract() {
 
 int test_structure() {
   const std::string color_header = read_source(
-      "src/renderer/vulkan/vulkan_image_color_internal.hpp");
+      "include/cgpui/renderer/planning/image_color.hpp");
   const std::string color_source =
-      read_source("src/renderer/vulkan/vulkan_image_color.cpp");
+      read_source("src/renderer/planning/image_color.cpp");
   const std::string vertex_source =
-      read_source("src/renderer/vulkan/vulkan_image_vertex_buffer.cpp");
+      read_source("src/renderer/planning/image_geometry.cpp");
   const std::string vertex_shader =
       read_source("src/renderer/vulkan/shaders/image.slang");
   const std::string fragment_shader =
@@ -128,12 +128,12 @@ int test_structure() {
       vertex_shader.empty() || fragment_shader.empty() || structure.empty()) {
     return 40;
   }
-  if (!contains(color_header, "vulkan_resolve_image_tint(") ||
-      !contains(color_source, "vulkan_apply_composed_opacity(") ||
-      !contains(vertex_source, "vulkan_resolve_image_tint(") ||
+  if (!contains(color_header, "resolve_image_tint(") ||
+      !contains(color_source, "apply_composed_opacity(") ||
+      !contains(vertex_source, "resolve_image_tint(") ||
       !contains(vertex_shader, "output.color") ||
       !contains(fragment_shader, "image_texture.Sample(input.image_uv) *") ||
-      !contains(structure, "vulkan_image_color.cpp")) {
+      !contains(structure, "planning/image_color.cpp")) {
     return 41;
   }
 

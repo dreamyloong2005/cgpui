@@ -168,7 +168,7 @@ int test_structure() {
   const std::string rounded =
       read_source("src/renderer/planning/rounded_rect_geometry.cpp");
   const std::string text =
-      read_source("src/renderer/vulkan/vulkan_text_vertex_buffer.cpp");
+      read_source("src/renderer/planning/text_geometry.cpp");
   if (transform_header.empty() || transform_source.empty() || solid.empty() ||
       rounded.empty() || text.empty()) {
     return 50;

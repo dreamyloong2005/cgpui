@@ -1,16 +1,13 @@
 #pragma once
 
 #include "vulkan_platform_internal.hpp"
+#include "cgpui/renderer/planning/text_vertex.hpp"
 
 #include <array>
 
 namespace cgpui {
 
-struct VulkanTextVertex {
-  std::array<float, 2> position{};
-  std::array<float, 2> atlas_uv{};
-  std::array<float, 4> color{};
-};
+using VulkanTextVertex = TextVertex;
 
 struct VulkanTextShaderModules {
   VkShaderModule vertex = VK_NULL_HANDLE;

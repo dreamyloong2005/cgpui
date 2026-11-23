@@ -233,8 +233,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_texture_samplers.cpp",
       "src/renderer/vulkan/vulkan_image_texture_descriptors.cpp",
       "src/renderer/vulkan/vulkan_image_texture_resource_binding.cpp",
-      "src/renderer/vulkan/vulkan_image_color_internal.hpp",
-      "src/renderer/vulkan/vulkan_image_color.cpp",
+      "include/cgpui/renderer/planning/image_color.hpp",
+      "src/renderer/planning/image_color.cpp",
       "src/renderer/vulkan/shaders/image.slang",
       "src/renderer/vulkan/generated/image_spirv.inc",
       "src/renderer/vulkan/vulkan_image_pipeline_internal.hpp",
@@ -311,8 +311,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_draw_recording.cpp",
       "src/renderer/vulkan/vulkan_text_coverage_internal.hpp",
       "src/renderer/vulkan/vulkan_text_coverage.cpp",
-      "src/renderer/vulkan/vulkan_text_positioning_internal.hpp",
-      "src/renderer/vulkan/vulkan_text_positioning.cpp",
+      "include/cgpui/renderer/planning/text_positioning.hpp",
+      "src/renderer/planning/text_positioning.cpp",
       "include/cgpui/renderer/planning/rect_geometry_types.hpp",
       "src/renderer/planning/rounded_rect_geometry.cpp",
       "include/cgpui/renderer/planning/rect_antialiasing.hpp",
@@ -1707,7 +1707,7 @@ int main(int argc, char** argv) {
       read_source("src/renderer/vulkan/vulkan_text_pipeline_state.cpp");
   if (line_count(text_pipeline_internal) > 70 ||
       line_count(text_pipeline_state) > 150 ||
-      !contains(text_pipeline_internal, "struct VulkanTextVertex") ||
+      !contains(text_pipeline_internal, "using VulkanTextVertex = TextVertex;") ||
       !contains(text_pipeline_state,
                 "vulkan_text_vertex_binding_description(") ||
       !contains(text_pipeline_state,
@@ -1763,6 +1763,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_vertex_buffer_internal.hpp");
   const std::string text_vertex_buffer =
       read_source("src/renderer/vulkan/vulkan_text_vertex_buffer.cpp");
+  const std::string text_geometry =
+      read_source("src/renderer/planning/text_geometry.cpp");
   const std::string frame_geometry_buffer_header = read_source(
       "src/renderer/vulkan/vulkan_frame_geometry_buffer_internal.hpp");
   const std::string frame_geometry_buffer = read_source(
@@ -1781,6 +1783,7 @@ int main(int argc, char** argv) {
   }
   if (line_count(text_vertex_buffer_header) > 60 ||
       line_count(text_vertex_buffer) > 190 ||
+      line_count(text_geometry) > 150 ||
       !contains(text_vertex_buffer_header,
                 "struct VulkanTextVertexBufferResources") ||
       !contains(text_vertex_buffer_header,
@@ -1789,7 +1792,7 @@ int main(int argc, char** argv) {
       !contains(text_vertex_buffer, "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT") ||
       !contains(text_vertex_buffer,
                 "vulkan_upload_frame_geometry_buffer(") ||
-      !contains(text_vertex_buffer, "apply_composed_transform(") ||
+      !contains(text_geometry, "apply_composed_transform(") ||
       contains(command_recording, "vulkan_build_text_vertices(")) {
     return 65;
   }
@@ -1810,13 +1813,13 @@ int main(int argc, char** argv) {
   }
 
   const std::string text_positioning_header = read_source(
-      "src/renderer/vulkan/vulkan_text_positioning_internal.hpp");
+      "include/cgpui/renderer/planning/text_positioning.hpp");
   const std::string text_positioning =
-      read_source("src/renderer/vulkan/vulkan_text_positioning.cpp");
+      read_source("src/renderer/planning/text_positioning.cpp");
   if (line_count(text_positioning_header) > 40 ||
       line_count(text_positioning) > 60 ||
       !contains(text_positioning_header,
-                "enum class VulkanTextPositioningPolicy") ||
+                "enum class TextPositioningPolicy") ||
       !contains(text_positioning, "preserve_subpixel") ||
       !contains(text_positioning, "std::round") ||
       contains(command_recording, "VulkanTextPositioningPolicy")) {
@@ -2111,9 +2114,9 @@ int main(int argc, char** argv) {
   const std::string image_fragment_shader =
       read_source("src/renderer/vulkan/shaders/image.slang");
   const std::string image_color_header = read_source(
-      "src/renderer/vulkan/vulkan_image_color_internal.hpp");
+      "include/cgpui/renderer/planning/image_color.hpp");
   const std::string image_color =
-      read_source("src/renderer/vulkan/vulkan_image_color.cpp");
+      read_source("src/renderer/planning/image_color.cpp");
   const std::string image_pipeline_header = read_source(
       "src/renderer/vulkan/vulkan_image_pipeline_internal.hpp");
   const std::string image_pipeline_resources_header = read_source(
@@ -2130,6 +2133,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_image_vertex_buffer_internal.hpp");
   const std::string image_vertex_buffer = read_source(
       "src/renderer/vulkan/vulkan_image_vertex_buffer.cpp");
+  const std::string image_geometry =
+      read_source("src/renderer/planning/image_geometry.cpp");
   const std::string image_draw_recording_header = read_source(
       "src/renderer/vulkan/vulkan_image_draw_recording_internal.hpp");
   const std::string image_draw_recording = read_source(
@@ -2154,22 +2159,23 @@ int main(int argc, char** argv) {
       line_count(image_shader_modules) > 120 ||
       line_count(image_vertex_buffer_header) > 80 ||
       line_count(image_vertex_buffer) > 210 ||
+      line_count(image_geometry) > 150 ||
       line_count(image_draw_recording_header) > 100 ||
       line_count(image_draw_recording) > 180 ||
-      !contains(image_color_header, "vulkan_resolve_image_tint(") ||
+      !contains(image_color_header, "resolve_image_tint(") ||
       !contains(image_color, "apply_composed_opacity(") ||
       !contains(image_vertex_shader, "output.color") ||
       !contains(image_fragment_shader,
                 "image_texture.Sample(input.image_uv) *") ||
-      !contains(image_pipeline_header, "struct VulkanImageVertex") ||
+      !contains(image_pipeline_header, "using VulkanImageVertex = ImageVertex;") ||
       !contains(image_pipeline_resources,
                 "vkCreateGraphicsPipelines") ||
       !contains(image_shader_binaries,
                 "vulkan_image_fragment_shader_spirv") ||
       !contains(image_shader_modules, "vkCreateShaderModule") ||
-      !contains(image_vertex_buffer,
-                "vulkan_apply_composed_transform") ||
-      !contains(image_vertex_buffer, "vulkan_resolve_image_tint(") ||
+      !contains(image_geometry,
+                "apply_composed_transform") ||
+      !contains(image_geometry, "resolve_image_tint(") ||
       !contains(image_vertex_buffer, "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT") ||
       !contains(image_vertex_buffer,
                 "vulkan_upload_frame_geometry_buffer(") ||
