@@ -16,7 +16,7 @@ sources = []
 
 [target.'cfg(os = "windows")'.build]
 sources = ["../../src/renderer/dx12/*.cpp"]
-ldflags = ["d3d12.lib", "dxgi.lib", "dxguid.lib"]
+ldflags = ["d3d12.lib", "dxgi.lib", "dxguid.lib", "dcomp.lib"]
 
 [target.'cfg(not(os = "windows"))'.build]
 sources = ["../../tools/mcpp/empty_library.cpp"]

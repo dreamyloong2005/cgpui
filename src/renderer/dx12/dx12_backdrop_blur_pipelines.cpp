@@ -7,7 +7,8 @@
 namespace cgpui {
 Result<void> dx12_create_backdrop_blur_pipelines(Dx12State& state) {
   auto& renderer = *state.backdrop_blur;
-  if (renderer.downsample_pipeline && renderer.blur_pipeline && renderer.composite_pipeline) return {};
+  if (renderer.downsample_pipeline && renderer.blur_pipeline && renderer.composite_pipeline &&
+      (!state.composition_surface || renderer.alpha_composite_pipeline)) return {};
   if (auto root = dx12_create_backdrop_blur_root(state); !root) return root;
   auto pipeline = dx12_pipeline_defaults(renderer.root_signature.Get());
   pipeline.BlendState.RenderTarget[0].BlendEnable = FALSE;
@@ -32,6 +33,15 @@ Result<void> dx12_create_backdrop_blur_pipelines(Dx12State& state) {
   pipeline.InputLayout = {inputs, 6};
   result = state.device->CreateGraphicsPipelineState(&pipeline, IID_PPV_ARGS(&renderer.composite_pipeline));
   if (FAILED(result)) return std::unexpected(dx12_error(result, "backdrop composite pipeline"));
+  if (state.composition_surface) {
+    // The shader supplies the complete premultiplied replacement RGBA, including
+    // original-scene interpolation at rounded edges and partial effect opacity.
+    pipeline.BlendState.RenderTarget[0].BlendEnable = FALSE;
+    pipeline.PS = dx12_backdrop_composite_alpha_fragment_shader();
+    result = state.device->CreateGraphicsPipelineState(&pipeline,
+        IID_PPV_ARGS(&renderer.alpha_composite_pipeline));
+    if (FAILED(result)) return std::unexpected(dx12_error(result, "backdrop alpha replacement pipeline"));
+  }
   return dx12_check_debug_errors(state);
 }
 } // namespace cgpui

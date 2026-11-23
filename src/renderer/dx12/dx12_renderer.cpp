@@ -3,6 +3,7 @@
 #include "dx12_frame_recovery_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
 #include "dx12_device_cohort_internal.hpp"
+#include "dx12_surface_internal.hpp"
 #include "cgpui/renderer/renderer_backend.hpp"
 
 namespace cgpui {
@@ -34,17 +35,17 @@ class Dx12Renderer final : public Renderer {
     return state_->info;
   }
   RendererSurfaceComposition surface_composition() const override {
-    return {.supported = true, .transparent_requested = false,
-            .composite_alpha = RendererCompositeAlpha::opaque};
+    Dx12OperationGuard operation(*state_);
+    return dx12_surface_composition(*state_);
   }
-  bool popup_windows_supported() const override { return false; }
+  bool popup_windows_supported() const override { return true; }
   RendererEffectSupport backdrop_blur_support() const override {
     Dx12OperationGuard operation(*state_);
     return state_->backdrop_blur->support;
   }
   Result<RendererSurfaceComposition> set_transparent_surface(bool transparent) override {
-    if (transparent) return std::unexpected(dx12_unsupported("transparent surfaces"));
-    return surface_composition();
+    Dx12OperationGuard operation(*state_);
+    return dx12_set_transparent_surface(*state_, transparent);
   }
  private:
   std::shared_ptr<Dx12State> state_;
@@ -52,23 +53,10 @@ class Dx12Renderer final : public Renderer {
 }
 
 Result<std::unique_ptr<Renderer>> create_dx12_renderer(const RenderSurfaceDescriptor& descriptor) {
-  const auto* native = std::get_if<Win32SurfaceHandle>(&descriptor.native_surface);
-  if (!native || !native->hwnd || !IsWindow(static_cast<HWND>(native->hwnd))) {
-    return std::unexpected(Error{.code = ErrorCode::invalid_argument,
-        .message = "DX12 requires a live Win32 HWND"});
-  }
-  if (native->composition || descriptor.transparent_background) {
-    return std::unexpected(dx12_unsupported("transparent/composition presentation"));
-  }
-  if (auto valid = dx12_validate_extent(descriptor.framebuffer_size, descriptor.scale); !valid) {
-    return std::unexpected(valid.error());
-  }
   auto state = std::make_shared<Dx12State>();
   Dx12OperationGuard operation(*state);
-  state->hwnd = static_cast<HWND>(native->hwnd);
-  state->width = static_cast<UINT>(descriptor.framebuffer_size.width);
-  state->height = static_cast<UINT>(descriptor.framebuffer_size.height);
-  state->scale = descriptor.scale;
+  if (auto surface = dx12_configure_surface(*state, descriptor); !surface)
+    return std::unexpected(surface.error());
   if (auto device = dx12_create_device(*state); !device) return std::unexpected(device.error());
   state->backdrop_blur->support = dx12_backdrop_blur_support(*state->device.Get());
   if (auto pipeline = dx12_create_pipeline(*state); !pipeline) return std::unexpected(pipeline.error());

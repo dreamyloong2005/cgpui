@@ -18,8 +18,13 @@ def output(pipeline: str) -> str:
     compiler = shared.tool("SLANGC", "slangc")
     validator = shared.tool("DXC", "dxc")
     body = []
+    entries = list(shared.VULKAN[pipeline])
+    if pipeline == "backdrop_blur":
+        # Replacement of premultiplied RGBA is private to DX12 alpha surfaces;
+        # do not add this entry to Vulkan's unchanged presentation pipelines.
+        entries.append(("", "backdrop", "composite_alpha_fragment", "fragment"))
     with tempfile.TemporaryDirectory() as directory:
-        for _, source_name, entry, stage in shared.VULKAN[pipeline]:
+        for _, source_name, entry, stage in entries:
             # DX12 snapshots the current swapchain instead of presenting an
             # offscreen scene; it needs the filter/composite entries only.
             if pipeline == "backdrop_blur" and entry == "present_fragment":

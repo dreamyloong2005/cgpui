@@ -11,7 +11,8 @@ Result<std::unique_ptr<Renderer>> create_vulkan_renderer(
 #endif
 
 #if defined(_WIN32)
-// Experimental opaque-HWND backend; unsupported features fail explicitly.
+// Experimental backend for opaque HWNDs and native alpha-composited Popups;
+// unsupported features (including transparent ordinary HWNDs) fail explicitly.
 Result<std::unique_ptr<Renderer>> create_dx12_renderer(
     const RenderSurfaceDescriptor& descriptor);
 #endif

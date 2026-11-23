@@ -2,6 +2,7 @@
 #include "dx12_state_internal.hpp"
 #include "dx12_texture_renderer_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
+#include "dx12_composition_internal.hpp"
 
 namespace cgpui {
 void dx12_release_native_objects(Dx12State& state) noexcept {
@@ -13,6 +14,7 @@ void dx12_release_native_objects(Dx12State& state) noexcept {
   auto& backdrop = *state.backdrop_blur;
   backdrop.frame_targets.clear();
   backdrop.composite_pipeline.Reset();
+  backdrop.alpha_composite_pipeline.Reset();
   backdrop.blur_pipeline.Reset();
   backdrop.downsample_pipeline.Reset();
   backdrop.root_signature.Reset();
@@ -25,6 +27,7 @@ void dx12_release_native_objects(Dx12State& state) noexcept {
   for (auto& target : state.targets) target.Reset();
   state.rtv_heap.Reset();
   state.rtv_stride = 0;
+  dx12_release_composition(state);
   state.swapchain.Reset();
   state.queue.Reset();
   state.fence.Reset();

@@ -15,4 +15,5 @@ D3D12_SHADER_BYTECODE dx12_backdrop_downsample_fragment_shader();
 D3D12_SHADER_BYTECODE dx12_backdrop_blur_fragment_shader();
 D3D12_SHADER_BYTECODE dx12_backdrop_composite_vertex_shader();
 D3D12_SHADER_BYTECODE dx12_backdrop_composite_fragment_shader();
+D3D12_SHADER_BYTECODE dx12_backdrop_composite_alpha_fragment_shader();
 }

@@ -38,6 +38,7 @@ struct Dx12BackdropBlurRenderer {
   Dx12Ptr<ID3D12PipelineState> downsample_pipeline;
   Dx12Ptr<ID3D12PipelineState> blur_pipeline;
   Dx12Ptr<ID3D12PipelineState> composite_pipeline;
+  Dx12Ptr<ID3D12PipelineState> alpha_composite_pipeline;
   std::vector<std::unique_ptr<Dx12BackdropBlurTargets>> frame_targets;
 };
 

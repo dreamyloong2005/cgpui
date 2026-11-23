@@ -14,14 +14,25 @@ sources = []
 discover = []
 
 [target.'cfg(os = "windows")'.build]
-ldflags = ["user32.lib"]
+ldflags = ["user32.lib", "gdi32.lib"]
 
 [target.'cfg(os = "windows")'.dependencies]
+cgpui.platform = { path = "../../packages/platform" }
+cgpui.platform-win32 = { path = "../../packages/platform-win32" }
 cgpui.renderer-dx12 = { path = "../../packages/renderer-dx12" }
 cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_popup_pixels_test.cpp",
+    "dx12_popup_backdrop_alpha_test.cpp",
+    "dx12_popup_surface_test.cpp",
+    "dx12_popup_platform_test.cpp",
+    "dx12_popup_recovery_test.cpp",
+    "dx12_popup_lifetime_test.cpp",
+    "dx12_popup_primitives_test.cpp",
+    "dx12_popup_backdrop_edges_test.cpp",
+    "dx12_popup_backdrop_layers_test.cpp",
     "dx12_coordinated_recovery_test.cpp",
     "dx12_coordinated_orphan_test.cpp",
     "dx12_coordinated_lazy_test.cpp",

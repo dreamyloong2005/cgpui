@@ -13,6 +13,7 @@ class Dx12ImageCache;
 struct Dx12TextCache;
 struct Dx12TextureRenderer;
 struct Dx12BackdropBlurRenderer;
+struct Dx12CompositionHost;
 class Dx12SynchronizationApi;
 struct Dx12State {
   Dx12State();
@@ -30,6 +31,7 @@ struct Dx12State {
   std::uint64_t pending_fence_value = 0;
   HRESULT removal_reason = S_OK;
   Dx12Ptr<IDXGISwapChain3> swapchain;
+  std::unique_ptr<Dx12CompositionHost> composition_host;
   Dx12Ptr<ID3D12DescriptorHeap> rtv_heap;
   std::array<Dx12Ptr<ID3D12Resource>, 2> targets;
   UINT rtv_stride = 0;
@@ -55,6 +57,8 @@ struct Dx12State {
   bool submitted = false;
   bool failed = false;
   bool recovery_pending = false;
+  bool composition_surface = false;
+  bool transparent_background = false;
   // Optional private test boundary; its owner must outlive this state.
   Dx12SynchronizationApi* synchronization_api = nullptr;
 };

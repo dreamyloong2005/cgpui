@@ -1,15 +1,22 @@
 # Experimental Direct3D 12 backend
 
-DX12 is implemented as an **opt-in opaque-window bootstrap**, not a complete
-replacement for Vulkan. Vulkan remains the Windows default; Linux stays Vulkan
-and macOS stays Metal. The previous Popup policy is unchanged for Vulkan.
+DX12 is an **opt-in experimental backend** for opaque ordinary windows and
+alpha-composited native Popups, not a complete replacement for Vulkan. Vulkan
+remains the Windows default; Linux stays Vulkan and macOS stays Metal. The
+previous Popup policy is unchanged for Vulkan.
 
 ## Implemented slice
 
 - Native D3D12 hardware device (feature level 11.0 and shader model 6.0), direct
-  command queue, root signature/PSO, two-buffer HWND swapchain and fence-based
+  command queue, root signature/PSO, two-buffer swapchain and fence-based
   resource retirement. The first suitable hardware adapter is selected; software
   fallback is not automatic.
+- Ordinary windows retain an opaque HWND flip-discard swapchain. Native Popups
+  use a premultiplied flip-sequential composition swapchain on the same DX12
+  command queue, hosted privately by DirectComposition. There is no D3D11 device,
+  shared texture/keyed mutex or extra presentation copy on this DX12 path, and
+  no new application-facing window mode. The first successful presented and
+  validated frame commits the visual; creation does not expose an unpainted frame.
 - Clear, solid and rounded rectangles, selection/caret rectangles, clipping,
   composed transforms/opacity, DPI scaling and original draw order.
 - Text uses the shared shaping/rasterization path and persistent R8 glyph atlas
@@ -58,6 +65,21 @@ target pooling or a bounded peak-memory/performance guarantee. Full renderer
 diagnostic snapshots/timings remain unimplemented; effect capability reporting
 does not imply diagnostic parity.
 
+Popup clears are premultiplied before ClearRenderTargetView; ordinary HWND clear
+behavior is unchanged. Existing draw blending produces premultiplied target
+pixels. On a composition surface, a dedicated backdrop shader replaces RGBA by
+interpolating the original scene and filtered/tinted scene through the rounded
+mask and effect opacity. It does not source-over the same scene alpha a second
+time. This is still in-app backdrop blur, not sampling or blurring other desktop
+windows behind the Popup. The existing opaque and Vulkan shader entries are
+unchanged.
+
+Native Popup swapchains remain premultiplied even when transparent intent is
+false, as on the existing Vulkan composition path. `set_transparent_surface`
+updates that intent/report without changing the HWND topology or actual alpha
+mode. Ordinary HWND transparent creation and enabling transparency are still
+rejected; they must not silently become composition windows or lose native menus.
+
 Synchronization retains each successfully queued fence ticket across event or
 wait failures. An event wake alone is not completion: the completed fence value
 must reach that ticket. Destruction retains GPU ownership and retries with
@@ -90,6 +112,13 @@ only after device, pipeline, swapchain and native validation succeed. A recovere
 frame, not claim the lost frame was presented. Failed frames do not advance image
 cache idle ages. Resize instead completes the requested extent/DPI after recovery
 and returns success, or returns an error; it never returns a frame retry.
+
+Popup native retirement also detaches and releases the composition visual,
+target and device before releasing the swapchain. Detachment/commit is best
+effort during teardown; local references are released even on native errors.
+There is no unbounded wait for compositor commits. If an external/compositor
+owner still blocks reconstruction, the bounded attempt returns its actual error.
+Successful reconstruction creates a new host with a fresh first-frame commit.
 
 Recovery now coordinates renderers on the **same adapter and HWND-owning UI
 thread**. Confirmed native loss first retires eligible peers' old GPU resources;
@@ -173,19 +202,24 @@ support returns an error instead of silently claiming validation. Debug
 configuration is fixed before the process's first DX12 device and cannot be
 changed by later renderer creations. These environment variables are diagnostic
 controls, not cross-platform window options. Use a separate process per debug
-configuration. The hello-window and backdrop-blur examples can use this opaque
-subset. Use the dedicated native tests for pixel acceptance; one first-frame
+configuration. The hello-window and backdrop-blur examples can use the opaque
+ordinary-window subset. Use dedicated native tests for pixel acceptance; one first-frame
 smoke does not establish full workbench interaction or desktop appearance.
 
 ## Not implemented yet
 
-Transparent ordinary windows,
-native Popup presentation and coordinated cross-thread device-loss
-recovery are future work.
+Transparent ordinary windows/native-menu coexistence and coordinated
+cross-thread device-loss recovery are future work.
 Unsupported capabilities reject their commands rather than silently dropping
-content. Transparent/composition descriptors fail during creation;
-`popup_windows_supported()` is false. This genuine missing capability permits
-the existing overlay fallback; Vulkan is not preemptively disabled.
+content. `popup_windows_supported()` is true for the implemented native Popup
+path, including on an opaque parent renderer. The runtime still checks platform
+support and actual Popup renderer initialization/placement. Genuine failures
+permit the existing Overlay fallback; neither backend is preemptively disabled.
+
+Popup native acceptance checks both captured RGBA and actual desktop pixels over
+a controlled background, plus pointer-transparent/nonactivating platform windows,
+resize/DPI updates, destruction and idle-device removal. This does not certify
+every desktop configuration, physical monitor migration or arbitrary driver TDR.
 
 The original DX12 plan's shared extraction and shader phases are only partially
 complete: rectangle/text/image/shadow/backdrop algorithms and DXIL are implemented,
@@ -198,5 +232,6 @@ See `.planning/2026-11-23-dx12-bootstrap/`,
 `.planning/2026-11-23-dx12-shadows/`,
 `.planning/2026-11-23-dx12-backdrop/`,
 `.planning/2026-11-23-dx12-retirement/`,
-`.planning/2026-11-23-dx12-recovery/` and
-`.planning/2026-11-23-dx12-cohort/` for dated validation evidence.
+`.planning/2026-11-23-dx12-recovery/`,
+`.planning/2026-11-23-dx12-cohort/` and
+`.planning/2026-11-23-dx12-popup/` for dated validation evidence.

@@ -6,6 +6,7 @@
 #include "dx12_backdrop_blur_internal.hpp"
 #include "dx12_retirement_internal.hpp"
 #include "dx12_native_retirement_internal.hpp"
+#include "dx12_composition_internal.hpp"
 
 namespace cgpui {
 Dx12State::Dx12State()

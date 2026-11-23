@@ -20,6 +20,8 @@ struct PushConstants {
 // with a sampler argument. Keep DX12's native texture/sampler binding explicit.
 Texture2D<float4> source_image : register(t0);
 SamplerState source_sampler : register(s0);
+// Only the DX12 alpha-preserving composite reads the unfiltered scene.
+Texture2D<float4> scene_snapshot : register(t1);
 #else
 [[vk::binding(0, 0)]] Sampler2D source_image;
 #endif
@@ -131,3 +133,26 @@ float4 composite_fragment(CompositeVaryings input) : SV_Target0 {
   float3 color = lerp(blurred.rgb, input.tint.rgb, input.tint.a);
   return float4(color, mask * input.region.w);
 }
+
+#if CGPUI_DX12
+// A premultiplied surface needs replacement, not another source-over layer:
+// interpolate the original scene with its filtered/tinted value through the
+// effect mask. Reusing the opaque composite would turn transparent black opaque.
+[shader("fragment")]
+float4 composite_alpha_fragment(CompositeVaryings input) : SV_Target0 {
+  float mask = clamp(
+      0.5 - rounded_rect_distance(input.local, input.rect, input.radii) /
+                local_pixel_width(input.local),
+      0.0, 1.0);
+  float width;
+  float height;
+  source_image.GetDimensions(width, height);
+  float2 texel = clamp((input.position.xy - input.region.xy) / input.region.z,
+                       float2(0.5), float2(push_constants.source_max) + 0.5);
+  float4 blurred = source_image.Sample(source_sampler, texel / float2(width, height));
+  float4 scene = scene_snapshot.Load(int3(int2(input.position.xy), 0));
+  // Tint is a straight-alpha color over the filtered premultiplied backdrop.
+  float4 tinted = lerp(blurred, float4(input.tint.rgb, 1.0), input.tint.a);
+  return lerp(scene, tinted, mask * input.region.w);
+}
+#endif

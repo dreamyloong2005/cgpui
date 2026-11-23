@@ -21,4 +21,7 @@ D3D12_SHADER_BYTECODE dx12_backdrop_composite_vertex_shader() {
 D3D12_SHADER_BYTECODE dx12_backdrop_composite_fragment_shader() {
   return {backdrop_composite_fragment_dxil.data(), backdrop_composite_fragment_dxil.size()};
 }
+D3D12_SHADER_BYTECODE dx12_backdrop_composite_alpha_fragment_shader() {
+  return {backdrop_composite_alpha_fragment_dxil.data(), backdrop_composite_alpha_fragment_dxil.size()};
+}
 } // namespace cgpui

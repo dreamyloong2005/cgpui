@@ -42,7 +42,7 @@ int main() {
   const auto info = (*renderer)->backend_info();
   std::cout << "DX12 adapter: " << info.adapter_name << ", vendor=" << info.vendor_id
             << ", software=" << info.software_adapter << '\n';
-  if ((*renderer)->popup_windows_supported()) return fail(3, "premature popup support");
+  if (!(*renderer)->popup_windows_supported()) return fail(3, "parent renderer must allow native popup attempts");
   auto frame = (*renderer)->begin_frame();
   if (!frame) return fail(4, frame.error().message.c_str());
   (*frame)->clear({0, 0, 1, 1});
@@ -92,6 +92,6 @@ int main() {
   if (cgpui::create_dx12_renderer(descriptor)) return fail(14, "transparent surface accepted");
   descriptor.transparent_background = false;
   std::get<cgpui::Win32SurfaceHandle>(descriptor.native_surface).composition = true;
-  if (cgpui::create_dx12_renderer(descriptor)) return fail(15, "composition surface accepted");
+  if (cgpui::create_dx12_renderer(descriptor)) return fail(15, "mismatched HWND composition style accepted");
   return 0;
 }

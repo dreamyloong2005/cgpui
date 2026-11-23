@@ -26,7 +26,12 @@ Result<void> dx12_record_backdrop_blur_composite(Dx12State& state,
   const Dx12BackdropBlurConstants constants{
       .framebuffer_size = {float(state.width), float(state.height)},
       .source_max = {std::int32_t(pass.texels.width) - 1, std::int32_t(pass.texels.height) - 1}};
-  dx12_bind_backdrop_blur(state, targets, *state.backdrop_blur->composite_pipeline.Get(), 1, constants);
+  auto& renderer = *state.backdrop_blur;
+  auto* pipeline = state.composition_surface ? renderer.alpha_composite_pipeline.Get()
+                                            : renderer.composite_pipeline.Get();
+  dx12_bind_backdrop_blur(state, targets, *pipeline, 1, constants);
+  if (state.composition_surface)
+    state.commands->SetGraphicsRootDescriptorTable(2, targets.targets[0].srv);
   state.commands->IASetVertexBuffers(0, 1, &vertex_view);
   state.commands->DrawInstanced(kBackdropBlurVerticesPerPass, 1, pass.first_vertex, 0);
   state.uploads.push_back(std::move(*upload));
