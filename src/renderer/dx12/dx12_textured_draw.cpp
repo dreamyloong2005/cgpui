@@ -1,7 +1,7 @@
 #include "dx12_draw_commands_internal.hpp"
 #include "dx12_texture_renderer_internal.hpp"
 #include "dx12_state_internal.hpp"
-#include "dx12_buffers_internal.hpp"
+#include "dx12_geometry_upload_frame_internal.hpp"
 #include "dx12_frame_diagnostics_internal.hpp"
 #include "cgpui/renderer/planning/clip_scissor.hpp"
 #include <cmath>
@@ -35,7 +35,7 @@ Result<void> dx12_record_textured_draw(Dx12State& state, const Dx12TexturedDraw&
   if (!prepared) return std::unexpected(prepared.error());
   const auto& texture = **prepared;
   const auto byte_size = draw.vertices.size() * sizeof(Dx12TextureVertex);
-  auto vertices = dx12_upload_buffer(*state.device.Get(), draw.vertices.data(), byte_size);
+  auto vertices = dx12_upload_geometry(state, draw.vertices.data(), byte_size);
   if (!vertices) return std::unexpected(vertices.error());
   auto& renderer = *state.texture_renderer;
   state.commands->SetPipelineState(draw.glyph ? renderer.text_pipeline.Get() : renderer.image_pipeline.Get());
@@ -49,8 +49,7 @@ Result<void> dx12_record_textured_draw(Dx12State& state, const Dx12TexturedDraw&
   auto sampler = renderer.samplers->GetGPUDescriptorHandleForHeapStart();
   if (draw.sampling == ImageSamplingMode::linear) sampler.ptr += renderer.sampler_stride;
   state.commands->SetGraphicsRootDescriptorTable(2, sampler);
-  const D3D12_VERTEX_BUFFER_VIEW view{(*vertices)->GetGPUVirtualAddress(),
-      static_cast<UINT>(byte_size), sizeof(Dx12TextureVertex)};
+  const D3D12_VERTEX_BUFFER_VIEW view{vertices->address, vertices->size, sizeof(Dx12TextureVertex)};
   state.commands->IASetVertexBuffers(0, 1, &view);
   const auto clip = clipped.scissor;
   const D3D12_RECT scissor{clip.x, clip.y, static_cast<LONG>(clip.x + clip.width),
@@ -58,7 +57,6 @@ Result<void> dx12_record_textured_draw(Dx12State& state, const Dx12TexturedDraw&
   state.commands->RSSetScissorRects(1, &scissor);
   state.commands->DrawInstanced(static_cast<UINT>(draw.vertices.size()), 1, 0, 0);
   if (state.active_diagnostics) state.active_diagnostics->submitted();
-  state.uploads.push_back(std::move(*vertices));
   return {};
 }
 } // namespace cgpui

@@ -3,6 +3,7 @@
 #include "dx12_texture_renderer_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
 #include "dx12_composition_internal.hpp"
+#include "dx12_geometry_upload_internal.hpp"
 
 namespace cgpui {
 void dx12_release_native_objects(Dx12State& state) noexcept {
@@ -19,6 +20,7 @@ void dx12_release_native_objects(Dx12State& state) noexcept {
   backdrop.downsample_pipeline.Reset();
   backdrop.root_signature.Reset();
   state.uploads.clear();
+  state.geometry_uploads->clear();
   state.readback.Reset();
   state.capture_layout = {};
   state.shadow_pipeline.Reset();

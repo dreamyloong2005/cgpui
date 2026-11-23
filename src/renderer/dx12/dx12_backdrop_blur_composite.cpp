@@ -1,6 +1,6 @@
 #include "dx12_backdrop_blur_internal.hpp"
 #include "dx12_state_internal.hpp"
-#include "dx12_buffers_internal.hpp"
+#include "dx12_geometry_upload_frame_internal.hpp"
 #include "cgpui/renderer/planning/clip_scissor.hpp"
 #include "cgpui/renderer/planning/backdrop_blur_parameters.hpp"
 
@@ -8,10 +8,9 @@ namespace cgpui {
 Result<void> dx12_record_backdrop_blur_composite(Dx12State& state,
     const Dx12BackdropBlurTargets& targets, const BackdropBlurPass& pass,
     std::span<const BackdropBlurVertex> vertices) {
-  auto upload = dx12_upload_buffer(*state.device.Get(), vertices.data(), vertices.size_bytes());
+  auto upload = dx12_upload_geometry(state, vertices.data(), vertices.size_bytes());
   if (!upload) return std::unexpected(upload.error());
-  const D3D12_VERTEX_BUFFER_VIEW vertex_view{(*upload)->GetGPUVirtualAddress(),
-      UINT(vertices.size_bytes()), sizeof(BackdropBlurVertex)};
+  const D3D12_VERTEX_BUFFER_VIEW vertex_view{upload->address, upload->size, sizeof(BackdropBlurVertex)};
   const UINT index = state.swapchain->GetCurrentBackBufferIndex();
   auto rtv = state.rtv_heap->GetCPUDescriptorHandleForHeapStart();
   rtv.ptr += std::size_t(index) * state.rtv_stride;
@@ -34,7 +33,6 @@ Result<void> dx12_record_backdrop_blur_composite(Dx12State& state,
     state.commands->SetGraphicsRootDescriptorTable(2, targets.targets[0].srv);
   state.commands->IASetVertexBuffers(0, 1, &vertex_view);
   state.commands->DrawInstanced(kBackdropBlurVerticesPerPass, 1, pass.first_vertex, 0);
-  state.uploads.push_back(std::move(*upload));
   return {};
 }
 } // namespace cgpui

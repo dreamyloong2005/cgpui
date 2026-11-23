@@ -45,8 +45,9 @@ previous Popup policy is unchanged for Vulkan.
   backend, use the base `unknown` report until they opt in.
 
 This is a synchronous baseline: GPU completion is awaited for each submitted
-frame. Upload allocation pooling and deeper frame overlap remain optimization
-work; the bootstrap is not a performance-parity claim.
+frame. Geometry uploads use the bounded private arena below; texture staging,
+readback pooling and deeper frame overlap remain optimization work. This is not
+a frame-rate or performance-parity claim.
 
 Image uploads and invalidations update the CPU cache while commands are recorded;
 abandoning or rejecting a frame does not roll back those cache operations. Each
@@ -80,6 +81,35 @@ intent becomes false, as on the existing Vulkan Popup composition path.
 `set_transparent_surface` updates that intent/report without changing the HWND
 topology or actual alpha mode. An opaque ordinary renderer still rejects an
 attempt to enable transparency; it never silently changes presentation routes.
+
+## Bounded geometry upload reuse
+
+Vertex and index data for rectangles/shadows, textured draws and backdrop
+composites use private, persistently mapped 256 KiB upload pages. Each draw gets
+its own 16-byte-aligned slice; the native buffer view uses that slice's GPU
+address and actual byte length. Sharing storage does not merge draw commands,
+change clipping/order or alter original diagnostic resource identities.
+
+At most four ordinary pages (1 MiB of payload capacity) are retained for reuse
+after the next safe frame begin. Additional pages and oversized allocations are
+transient and are retired at that boundary. This caps retained arena capacity,
+not a frame's peak allocation or the renderer's total memory. A large frame can
+still require more upload storage until its commands are safe to retire.
+
+The frame-start fence must prove completion before page cursors reset or
+transient allocations retire. A signal/event/wait error or a wake without fence
+completion does not authorize reuse. Native teardown clears arena resources
+before releasing the device, including removed-device and cohort-peer cleanup;
+old-device pages never enter a reconstructed device's arena. Persistent mapping
+does not change these ownership or GPU-completion requirements.
+
+The change does not pool or partially update image/glyph textures, their staging
+copies, descriptors, capture/readback buffers or backdrop render targets. It does
+not add asynchronous frame overlap, draw batching or a new public configuration
+API. Public upload-byte diagnostics still describe texture payload only, so
+geometry-page reuse does not reduce or inflate that counter. Fewer committed
+geometry allocations and safe reuse are the bounded optimization claim, not an
+FPS gain or equivalence to Vulkan.
 
 ## Frame diagnostics
 

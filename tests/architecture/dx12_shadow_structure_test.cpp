@@ -74,13 +74,15 @@ int main() {
                              "src/renderer/dx12/dx12_shadow_recording.cpp"}) {
       const auto source = read(path);
       require(has(source, "dx12_record_indexed_draw(") &&
-                  !has(source, "dx12_upload_buffer(") && !has(source, "DrawIndexedInstanced("),
+                  !has(source, "dx12_upload_buffer(") && !has(source, "dx12_upload_geometry(") &&
+                  !has(source, "DrawIndexedInstanced("),
               "rectangles and shadows must share indexed upload/recording ownership");
     }
     const auto indexed = read("src/renderer/dx12/dx12_indexed_draw.cpp");
-    require(has(indexed, "dx12_upload_buffer(") && has(indexed, "DrawIndexedInstanced(") &&
+    require(has(indexed, "dx12_upload_geometry(") && has(indexed, "vertices->address") &&
+                has(indexed, "indices->address") && has(indexed, "DrawIndexedInstanced(") &&
                 has(indexed, "resolve_clip_stack_scissor("),
-            "the focused indexed helper must own uploads, range clipping and native draws");
+            "the focused indexed helper must consume upload slices and own range clipping/native draws");
     require(!has(read("src/renderer/dx12/dx12_textured_draw.cpp"), "dx12_record_indexed_draw("),
             "nonindexed texture recording must stay outside the indexed helper");
     return 0;

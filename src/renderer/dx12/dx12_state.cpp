@@ -8,13 +8,15 @@
 #include "dx12_native_retirement_internal.hpp"
 #include "dx12_composition_internal.hpp"
 #include "dx12_window_alpha_internal.hpp"
+#include "dx12_geometry_upload_internal.hpp"
 
 namespace cgpui {
 Dx12State::Dx12State()
     : image_cache(std::make_unique<Dx12ImageCache>()),
       text_cache(std::make_unique<Dx12TextCache>()),
       texture_renderer(std::make_unique<Dx12TextureRenderer>()),
-      backdrop_blur(std::make_unique<Dx12BackdropBlurRenderer>()) {}
+      backdrop_blur(std::make_unique<Dx12BackdropBlurRenderer>()),
+      geometry_uploads(std::make_unique<Dx12GeometryUploads>()) {}
 
 Dx12State::~Dx12State() {
   Dx12OperationGuard operation(*this);

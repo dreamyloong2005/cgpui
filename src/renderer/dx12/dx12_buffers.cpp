@@ -1,5 +1,4 @@
 #include "dx12_buffers_internal.hpp"
-#include <cstring>
 
 namespace cgpui {
 Result<Dx12Ptr<ID3D12Resource>> dx12_create_buffer(
@@ -23,17 +22,4 @@ Result<Dx12Ptr<ID3D12Resource>> dx12_create_buffer(
   return resource;
 }
 
-Result<Dx12Ptr<ID3D12Resource>> dx12_upload_buffer(
-    ID3D12Device& device, const void* data, std::size_t size) {
-  auto resource = dx12_create_buffer(device, size, D3D12_HEAP_TYPE_UPLOAD);
-  if (!resource) return resource;
-  void* mapped = nullptr;
-  const D3D12_RANGE read{0, 0};
-  const HRESULT result = (*resource)->Map(0, &read, &mapped);
-  if (FAILED(result)) return std::unexpected(dx12_error(result, "upload mapping"));
-  std::memcpy(mapped, data, size);
-  const D3D12_RANGE written{0, size};
-  (*resource)->Unmap(0, &written);
-  return resource;
-}
 } // namespace cgpui

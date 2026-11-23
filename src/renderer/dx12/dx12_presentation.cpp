@@ -4,6 +4,7 @@
 #include "dx12_composition_internal.hpp"
 #include "dx12_surface_internal.hpp"
 #include "dx12_frame_diagnostics_internal.hpp"
+#include "dx12_geometry_upload_frame_internal.hpp"
 
 namespace cgpui {
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
@@ -12,6 +13,7 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   Dx12FrameDiagnostics diagnostics(state, draws, command_count);
   if (auto idle = dx12_wait_idle(state); !idle) return idle;
   diagnostics.finish_stage(RendererFrameTimingStage::pacing_wait);
+  if (auto prepared = dx12_begin_geometry_upload_frame(state); !prepared) return prepared;
   state.uploads.clear();
   dx12_begin_texture_frame(state);
   dx12_begin_backdrop_blur_frame(state);
