@@ -18,6 +18,7 @@ class Win32WindowSurfaceAlpha {
   void detach();
   void set_chrome(WindowChromeOptions options);
   [[nodiscard]] bool accepts_chrome(WindowChromeOptions options) const;
+  [[nodiscard]] bool accepts_native_menu() const;
   [[nodiscard]] bool active() const;
   [[nodiscard]] UINT_PTR instance() const;
   HRESULT request(UINT message, UINT_PTR owner_cookie, UINT_PTR instance);
@@ -31,6 +32,7 @@ class Win32WindowSurfaceAlpha {
   UINT_PTR instance_ = 0;
   UINT_PTR owner_cookie_ = 0;
   HRESULT repair_result_ = S_OK;
+  WindowTitleBarMode title_bar_ = WindowTitleBarMode::system;
   bool compatible_chrome_ = true;
   bool opaque_history_ = false;
   bool active_ = false;

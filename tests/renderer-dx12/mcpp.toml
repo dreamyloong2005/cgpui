@@ -24,6 +24,12 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_client_initial_alpha_test.cpp",
+    "dx12_client_menu_refusal_test.cpp",
+    "dx12_client_menu_reentrancy_test.cpp",
+    "dx12_client_controls_test.cpp",
+    "dx12_client_alpha_lifetime_test.cpp",
+    "dx12_client_alpha_recovery_test.cpp",
     "dx12_ordinary_initial_alpha_test.cpp",
     "dx12_ordinary_native_menu_test.cpp",
     "dx12_ordinary_opaque_history_test.cpp",

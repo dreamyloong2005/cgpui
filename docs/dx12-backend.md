@@ -84,22 +84,40 @@ attempt to enable transparency; it never silently changes presentation routes.
 
 ## Bounded ordinary-window transparency
 
-Initial `transparent_background=true` is supported only for a CGPUI-owned,
-decorated ordinary window with its visible **system title bar**, on Windows
+Initial `transparent_background=true` is supported for a CGPUI-owned, decorated
+ordinary window with a visible **system or client-drawn title bar**, on Windows
 build **26100 or newer**, and only if the real DWM alpha attribute succeeds.
-Use the normal cross-platform descriptor intent, not a DComp/native window mode.
-Raw HWNDs, client-drawn/hidden title bars, undecorated windows and older Windows
-remain unsupported for this ordinary-alpha route. Native Popup behavior is
-separate and unchanged. Fullscreen or incompatible chrome changes are rejected
-while the ordinary alpha lease is active.
+System-title-bar windows support native application HMENU bars; client-title-bar
+windows support this route **only without an attached application HMENU bar**.
+The native system/window menu is separate and remains available. Use the normal
+cross-platform descriptor intent, not a DComp/native window mode. Raw HWNDs,
+hidden title bars, undecorated windows and older Windows remain unsupported.
+Native Popup behavior is separate and unchanged. An active ordinary-alpha lease
+fixes its initial title-bar mode: system/client switches, hiding the title bar,
+removing decorations and fullscreen are rejected without changing the window.
 
 The platform owns `DWMWA_REDIRECTIONBITMAP_ALPHA` and native-menu alpha repair;
 DX12 owns its private composition host. A token-only, per-window-instance lease
 connects them without linking DX12 to concrete platform-window objects. Native
-HMENU rendering remains Windows-owned: after relevant native nonclient/menu
+HMENU rendering on the supported system-title-bar route remains Windows-owned:
+after relevant native nonclient/menu
 events, the platform copies the existing menu RGB through a nonclient buffered
 paint and makes its alpha opaque. It does not redraw text, replace/hide the menu,
 use undocumented UAH drawing hooks, or repair pixels in every render frame.
+
+Client-title-bar alpha preserves `WS_CAPTION`, `WS_SYSMENU`, the existing
+minimize/maximize styles and native controls; it does not use a captionless style
+workaround. Initial alpha creation with an existing application menu returns
+`unsupported_platform` without hiding or replacing the menu. While any window
+in the application holds a client-alpha lease, a nonempty
+`install_native_menu` request is rejected by a whole-registry preflight before
+detaching menus or changing the model/accelerators. Empty clearing remains
+allowed. During both install and clear transactions, a thread-local reservation
+rejects nested installation and new client-alpha acquisition, including windows
+temporarily without an HMENU. Raw out-of-band `SetMenu` is not supported: lease
+status/repair detects it rather than claiming compatibility. The pre-existing
+opaque client-title-bar/HMENU layout defect is not fixed by this slice, and no
+framework-drawn replacement menu is installed.
 
 This is **initial-only**, not an opaque-to-transparent upgrade. Opaque windows
 keep their existing flip-discard and clear semantics. A recorded HWND-flip
@@ -115,7 +133,8 @@ require the HWND-owning thread. Destruction on another thread queues only checke
 identity tokens to the window thread. This restriction does not redefine the
 existing opaque renderer's threading contract.
 
-Initial native acceptance on 2026-11-23 exercised public platform/renderer APIs:
+Initial **system-title-bar** native acceptance on 2026-11-23 exercised public
+platform/renderer APIs:
 changing red/blue GPU RGBA and real desktop alpha over a green backing window;
 same-window opaque native menu references with exact whole-bar RGB/focus matches
 before, while highlighted in a real menu loop, and after; genuine command and
@@ -126,6 +145,25 @@ menu pixels, then restored desktop alpha with a new blue frame. These are bounde
 native tests, not physical mouse-hover, monitor-migration, all-driver or full
 workbench acceptance. Older builds assert `unsupported_platform` and explicitly
 skip only unsupported positive cases; that path has not been run on an old OS.
+
+The client-title-bar acceptance uses the public factory without a preceding
+chrome setter or a native-menu workaround. `dx12_client_initial_alpha_test`
+checks initial frame geometry/styles and caption/control/resize hit tests,
+premultiplied alpha 0/0.5/1 and desktop blending in both the title row and body.
+`dx12_client_alpha_lifetime_test` covers fixed-mode rejection, resize and explicit
+renderer scale 1/2, Mica/none, retained frames and window/renderer destruction;
+`dx12_client_alpha_recovery_test` covers two explicit idle-device removals with
+an opaque peer, capture lifetime, continued lease ownership and fresh pixels.
+`dx12_client_menu_refusal_test` checks menu/factory refusal, unchanged commands
+and application model, release/reacquire and the system-title-bar positive
+control. `dx12_client_menu_reentrancy_test` checks actual resize callbacks during
+install and clear with a menu-free target, plus nested installer refusal.
+`dx12_client_controls_test` drives native maximize-button messages, minimize and
+restore, close-request cancellation and initially nonresizable windows; it checks
+GPU alpha while maximized and fresh desktop alpha after restore. These bounded
+tests passed with WARP and the DX12 debug layer; renderer scale is not
+physical monitor-DPI migration. See the scope decision and rejected menu-layout
+probes in `.planning/2026-11-23-dx12-client-alpha/`.
 
 Synchronization retains each successfully queued fence ticket across event or
 wait failures. An event wake alone is not completion: the completed fence value
@@ -256,8 +294,9 @@ smoke does not establish full workbench interaction or desktop appearance.
 
 ## Not implemented yet
 
-Dynamic opaque-to-transparent upgrades, ordinary alpha on custom/undecorated
-chrome or older Windows, and coordinated cross-thread device-loss recovery are
+Dynamic opaque-to-transparent upgrades, client-title-bar ordinary alpha with an
+application HMENU, ordinary alpha on hidden/undecorated chrome or older Windows,
+and coordinated cross-thread device-loss recovery are
 future work. The [ordinary transparency probe](dx12-ordinary-transparency-probe.md)
 retains the earlier 11 uncorrected DWM/hosting recipes and the later alpha-only
 menu repair evidence; the negative recipes are not a claim that all DComp/native

@@ -24,6 +24,8 @@ HRESULT Win32WindowSurfaceAlpha::request(UINT message, UINT_PTR owner_cookie, UI
     case win32_surface_alpha_status_message:
       if (active_ && owner_cookie_ == owner_cookie) {
         result = message == win32_surface_alpha_release_message ? release_owner() : repair_result_;
+        if (message == win32_surface_alpha_status_message && !accepts_native_menu() && GetMenu(hwnd_))
+          result = E_NOTIMPL;
       }
       break;
     default:

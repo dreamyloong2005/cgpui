@@ -21,6 +21,7 @@ sources = []
 [test]
 discover = [
     "win32_surface_alpha_structure_test.cpp",
+    "dx12_client_alpha_structure_test.cpp",
     "dx12_popup_structure_test.cpp",
     "dx12_cohort_structure_test.cpp",
     "dx12_recovery_structure_test.cpp",

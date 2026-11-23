@@ -157,9 +157,10 @@ Decision order:
    to `DWMSBT_NONE`, `applied = none`, reason "transparency effects are
    turned off in Windows settings".
 3. The renderer surface is not alpha-composited (opaque or inherit): the
-   type is set, so DWM draws the material on the title bar
+   type is set, so DWM draws the material on the system title bar
    (`title_bar = <material>`), the frame is not extended, `applied = none`,
-   and the reason says the material is on the title bar only.
+   and the reason says the material is on the title bar only. In client-title-bar
+   mode there is no visible system title bar, so `title_bar = none` instead.
 4. Otherwise the type is set and `DwmExtendFrameIntoClientArea` gets margins
    of -1, so the material extends behind the whole client area;
    `applied = title_bar = <material>`. A failing DWM call turns `applied`
@@ -203,13 +204,16 @@ independent DX12 ordinary-alpha lease below.
 ### Experimental DX12 ordinary windows
 
 Windows build **26100+** can use DX12 initial ordinary transparency on a
-CGPUI-owned, decorated window with a visible system title bar. The real DWM
-alpha attribute must succeed. A creation-time backdrop already makes the runtime
+CGPUI-owned, decorated window with a visible system or client-drawn title bar.
+System-title-bar windows can retain their native application HMENU; client-title-bar
+windows require **no attached application HMENU bar**. The real DWM alpha
+attribute must succeed. A creation-time backdrop already makes the runtime
 request initial renderer transparency; explicit `chrome.transparent_background`
 does likewise. There is no application-facing DComp/native window-mode choice.
-Raw HWNDs, custom/client title bars, undecorated windows and older OS versions
-remain unsupported for this route; Vulkan/default selection and Popups are not
-changed by it. See [DX12 backend scope](dx12-backend.md#bounded-ordinary-window-transparency).
+Raw HWNDs, hidden title bars, undecorated windows and older OS versions remain
+unsupported; Vulkan/default selection and Popups are unchanged. An active alpha
+lease fixes its initial title-bar mode and rejects fullscreen, hidden or
+undecorated transitions. See [DX12 backend scope](dx12-backend.md#bounded-ordinary-window-transparency).
 
 The alpha lease owns `DWMWA_REDIRECTIONBITMAP_ALPHA` independently of this
 material module's backdrop type and frame margins. Its redirected client remains
@@ -219,12 +223,14 @@ not topology. The runtime still chooses an opaque clear when neither explicit
 transparency nor an applied material requires a transparent clear.
 
 An ordinary renderer created opaque keeps its old HWND flip swapchain.
-`set_backdrop(mica)` cannot upgrade that renderer to alpha; its report can expose
-only a title-bar material, not an applied client material. Destroying that opaque
-renderer does not erase the HWND's flip history or permit later alpha creation.
+`set_backdrop(mica)` cannot upgrade that renderer to alpha; a system title bar can
+show a title-bar-only material, not an applied client material. An opaque client
+title bar reports no visible title-bar material. Destroying the opaque renderer
+does not erase the HWND's flip history or permit later alpha creation.
 Request a needed material/transparent surface at window creation instead.
 
-Native menus remain actual Windows HMENUs. The platform preserves the native
+On the supported **system-title-bar** route, menus remain actual Windows HMENUs.
+The platform preserves the native
 menu RGB and repairs only its alpha through nonclient buffered painting after
 native events; it does not replace the menu with framework drawing. On
 2026-11-23, `dx12_ordinary_backdrop_menu_test` observed `mica` actually applied,
@@ -233,6 +239,17 @@ before/during/after a real command loop against the same window's opaque
 reference. Removing Mica restored green-backdrop desktop alpha with a newly
 rendered blue frame and again exact menu pixels. This is one-host Mica/none
 coexistence evidence, not a Mica Alt/Acrylic or physical mouse-hover claim.
+
+For client-title-bar alpha, initial creation with an application HMENU is refused
+without hiding/replacing it. Nonempty application menu installation is rejected
+transactionally while any client-alpha lease is active; install/clear callbacks
+cannot acquire a new client-alpha lease or reenter menu installation. The native
+system/window menu is unaffected. The pre-existing opaque client/HMENU layout
+defect remains unresolved; this is not native application-menu support for client
+title bars. `dx12_client_alpha_lifetime_test` checks no-menu client alpha through
+Mica and `none`: it accepts an explicit OS/policy material refusal with a reason,
+but always requires premultiplied GPU pixels and restored desktop alpha after
+`none`. The test does not claim Mica is applied on every system.
 
 ## Wayland
 
@@ -385,11 +402,16 @@ hovered), although `DWMWA_CAPTION_BUTTON_BOUNDS` reports a button area.
   masks above.
 - `win32_vulkan_backdrop_test`: real window and Vulkan renderer; the chosen
   device's composition and the applied backdrop must agree.
-- `dx12_ordinary_backdrop_menu_test`: bounded initial ordinary DX12 alpha,
+- `dx12_ordinary_backdrop_menu_test`: bounded initial system-title-bar DX12 alpha,
   actual Mica when OS/policy permits, exact native HMENU command-loop pixels,
   and `none` restoration with new GPU/desktop pixels. On builds below 26100,
   transparent creation must return `unsupported_platform` before positive cases
   are explicitly skipped; newer builds never skip a failed alpha initialization.
+- `dx12_client_alpha_lifetime_test`: no-menu client-title-bar initial alpha,
+  Mica application or explicit policy refusal, unchanged native topology, and
+  `none` restoration with new title-row/body GPU and desktop pixels. Initial
+  geometry/pixels and two idle-device removals are covered separately by
+  `dx12_client_initial_alpha_test` and `dx12_client_alpha_recovery_test`.
 - `window_runtime_backdrop_test`: the runtime helper with a fake window and
   renderer (switch to transparent once, inherit treated as opaque,
   unsupported backend leaves the surface alone, clear color).

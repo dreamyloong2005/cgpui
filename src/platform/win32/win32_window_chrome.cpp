@@ -7,7 +7,7 @@ PlatformWindowChromeState Win32Window::apply_window_chrome(
   if (!surface_alpha_.accepts_chrome(options)) {
     auto rejected = chrome_state_.platform;
     rejected.requested = options;
-    rejected.reason = "transparent DX12 ordinary windows require decorated system title bars";
+    rejected.reason = "transparent DX12 ordinary windows retain their initial decorated title bar mode";
     return rejected;
   }
   surface_alpha_.set_chrome(options);

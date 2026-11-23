@@ -1,6 +1,7 @@
 #include "win32_window_surface_alpha_internal.hpp"
 
 #include "win32_native_menu_alpha_internal.hpp"
+#include "win32_native_menu_policy_internal.hpp"
 #include "win32_window_backdrop_internal.hpp"
 #include <dwmapi.h>
 #include <uxtheme.h>
@@ -16,7 +17,7 @@ std::atomic<UINT_PTR> next_instance{1};
 
 bool compatible_chrome(WindowChromeOptions options) {
   return options.decorations && options.titlebar_visible &&
-      options.title_bar == WindowTitleBarMode::system;
+      (options.title_bar == WindowTitleBarMode::system || options.title_bar == WindowTitleBarMode::client);
 }
 
 HRESULT set_alpha(HWND hwnd, BOOL enabled) {
@@ -53,18 +54,24 @@ void Win32WindowSurfaceAlpha::detach() {
 
 void Win32WindowSurfaceAlpha::set_chrome(WindowChromeOptions options) {
   compatible_chrome_ = compatible_chrome(options);
+  title_bar_ = options.title_bar;
 }
 
 bool Win32WindowSurfaceAlpha::accepts_chrome(WindowChromeOptions options) const {
-  return !active_ || compatible_chrome(options);
+  return !active_ || (compatible_chrome(options) && options.title_bar == title_bar_);
 }
 
 bool Win32WindowSurfaceAlpha::active() const { return active_; }
 UINT_PTR Win32WindowSurfaceAlpha::instance() const { return instance_; }
+bool Win32WindowSurfaceAlpha::accepts_native_menu() const {
+  return !active_ || title_bar_ != WindowTitleBarMode::client;
+}
 
 bool Win32WindowSurfaceAlpha::supported() const {
   if (!hwnd_ || !compatible_chrome_ || opaque_history_ ||
       win32_os_build_number() < minimum_build) return false;
+  if (title_bar_ == WindowTitleBarMode::client &&
+      (GetMenu(hwnd_) || win32_native_menu_installation_active())) return false;
   const auto style = GetWindowLongPtrW(hwnd_, GWL_STYLE);
   const auto extended = GetWindowLongPtrW(hwnd_, GWL_EXSTYLE);
   return (style & WS_CAPTION) == WS_CAPTION && !(style & (WS_CHILD | WS_POPUP)) &&
@@ -115,6 +122,10 @@ HRESULT Win32WindowSurfaceAlpha::release_owner() {
 
 void Win32WindowSurfaceAlpha::repair_menu() {
   if (!active_ || repairing_) return;
+  if (!accepts_native_menu()) {
+    if (GetMenu(hwnd_)) repair_result_ = E_NOTIMPL;
+    return;
+  }
   repairing_ = true;
   const HRESULT repaired = win32_repair_native_menu_alpha(hwnd_);
   if (FAILED(repaired)) repair_result_ = repaired;

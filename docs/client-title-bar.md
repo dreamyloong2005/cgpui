@@ -25,7 +25,8 @@ caption row (a command box) that must not drag.
 
 `WindowChromeOptions::title_bar` (default `system`) selects the mode;
 `WindowOptions::title_bar(WindowTitleBarMode)` sets it from the builder.
-`apply_window_chrome` switches it at runtime.
+`apply_window_chrome` switches it at runtime, except while a Windows ordinary
+DX12 alpha lease fixes the initial mode (see below).
 
 `include/cgpui/platform/platform_window_title_bar.hpp`:
 
@@ -171,6 +172,58 @@ win32_window_proc_title_bar.cpp (window procedure hook).
   surface in client mode it reports `title_bar = none`, because the system
   title bar the material would be drawn on is gone. Changing the title bar
   mode re-applies a requested backdrop.
+
+### Initial DX12 alpha (bounded)
+
+On Windows build **26100+**, a CGPUI-owned ordinary window created with a visible,
+decorated client title bar can request initial DX12 transparency. Use
+`chrome.title_bar = WindowTitleBarMode::client` and initial
+`chrome.transparent_background = true` (or a creation-time backdrop); the real
+DWM alpha attribute must succeed. No chrome setter before renderer creation or
+public composition/window-mode option is needed. This route requires **no native
+application HMENU bar**. The system/window menu obtained through `GetSystemMenu`
+is not that application menu and remains part of the native contract.
+
+The existing `WS_CAPTION`, `WS_SYSMENU` and minimize/maximize styles, initial
+client geometry and native caption/resize actions are preserved. While the alpha
+lease is active, switching to a system title bar, hiding the title bar, removing
+decorations or entering fullscreen is rejected without changing the window.
+Opaque client renderers still use HWND flip and cannot be upgraded to alpha;
+destroying an opaque renderer does not erase that HWND instance's flip history.
+
+Alpha creation with an already attached application HMENU returns
+`unsupported_platform`, retaining that menu and its commands. A nonempty
+application `install_native_menu` is rejected before any menu/model/accelerator
+mutation if any registered window holds a client-alpha lease. Empty clearing is
+allowed; nested installation and new client-alpha acquisition are refused during
+both install and clear callbacks. Releasing the last alpha owner lifts this menu
+restriction. Direct external `SetMenu` is outside the supported route and is
+detected by alpha status/repair, not repaired into a supported client menu.
+
+The pre-existing opaque client-title-bar/HMENU layout is also not fixed here:
+the custom client rectangle does not correctly reserve the native menu band.
+This implementation neither hides/replaces the HMENU nor forces a framework
+menu. System-title-bar DX12 alpha with native application menus remains supported.
+See [DX12 backend scope](dx12-backend.md#bounded-ordinary-window-transparency) and
+`.planning/2026-11-23-dx12-client-alpha/native-menu-findings.md` for the rejected
+geometry/style candidates and the retained native-style contract.
+
+The public `dx12_client_initial_alpha_test`, `dx12_client_alpha_lifetime_test`
+and `dx12_client_alpha_recovery_test` cover initial geometry and hit tests,
+title-row/body GPU and desktop alpha, fixed-mode rejection, resize, explicit
+renderer scale 1/2, Mica/none, retained frames, destruction and two idle-device
+removals. `dx12_client_menu_refusal_test` and
+`dx12_client_menu_reentrancy_test` cover the refusal/transaction boundaries and a
+system-title-bar positive control. These passed with WARP and DX12 debug
+validation; they do not establish physical dragging, Snap Layouts interaction,
+monitor-DPI migration or support for client-title-bar application menus.
+
+`dx12_client_controls_test` additionally sends native maximize-button down/up
+messages, observes real maximize/restore and minimize/restore state changes,
+checks close-request cancellation, and creates an initially nonresizable client
+window. It preserves alpha in GPU pixels while maximized and restores title-row
+and body desktop blending afterward. This WARP/debug test is not physical mouse
+or Snap Layouts acceptance.
 
 ## Linux (Wayland)
 

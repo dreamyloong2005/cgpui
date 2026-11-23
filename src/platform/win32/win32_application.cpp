@@ -5,6 +5,7 @@
 #include "win32_open_url_internal.hpp"
 #include "win32_timer_wakeup_internal.hpp"
 #include "win32_window_registry_internal.hpp"
+#include "win32_native_menu_policy_internal.hpp"
 
 #include <memory>
 #include <utility>
@@ -58,6 +59,8 @@ class Win32Application final : public Win32SystemApplication {
 
   PlatformMenuInstallationResult install_native_menu(
       NativeMenuModel menu) override {
+    Win32NativeMenuInstallationGuard installation(windows_, !menu.items.empty());
+    if (!installation.allowed()) return {.supported = false, .backend = "win32"};
     windows_.visit([&](Win32Window* window) {
       (void)win32_apply_native_menu(window_handle(window), nullptr);
     });

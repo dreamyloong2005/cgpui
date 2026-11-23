@@ -104,8 +104,8 @@ int main() {
   auto client = descriptor.chrome;
   client.title_bar = WindowTitleBarMode::client;
   (*first)->apply_window_chrome(client);
-  if (send(hwnd, win32_surface_alpha_query_message).result != E_NOTIMPL) {
-    return fail(6, "client caption must not advertise ordinary alpha");
+  if (send(hwnd, win32_surface_alpha_query_message).result != query.result) {
+    return fail(6, "decorated client and system captions must share initial alpha capability");
   }
   (*first)->apply_window_chrome(descriptor.chrome);
   if (query.result == E_NOTIMPL) {
