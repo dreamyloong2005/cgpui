@@ -51,7 +51,8 @@ partial-upload, pooled-descriptor or bounded-glyph-cache performance guarantee.
 Backdrop PSOs are lazy and cached. Each visible effect owns a full-frame scene
 snapshot and two region-sized downsample targets with immutable descriptors.
 They are retained until the next successful frame-start idle wait or renderer
-destruction, including across resize; frames without effects allocate none.
+destruction (or confirmed removed-device retirement), including across resize;
+frames without effects allocate none.
 This avoids reusing resource states from unsubmitted command lists, but is not
 target pooling or a bounded peak-memory/performance guarantee. Full renderer
 diagnostic snapshots/timings remain unimplemented; effect capability reporting
@@ -61,17 +62,48 @@ Synchronization retains each successfully queued fence ticket across event or
 wait failures. An event wake alone is not completion: the completed fence value
 must reach that ticket. Destruction retains GPU ownership and retries with
 backoff until completion or actual device removal is observed. Device removal
-is a terminal error, not successful presentation or a usable frame retry.
+is never successful presentation; only a completed reconstruction can produce
+a usable frame retry, as described below.
 
 Private fault-injection tests cover repeated Signal failure, event/wait failure,
 and premature event wake at the actual state-destructor/synchronization boundary.
 A separate public-renderer test removes a real native idle device. These do not
-certify arbitrary driver failure, TDR recovery, or automatic device recreation.
+certify arbitrary driver failure or TDR recovery.
 If Signal permanently fails while the driver reports a live device and no
 completion can be proven, destruction can block indefinitely. A timeout cannot
 make releasing in-use GPU resources safe. The backend does not force device
 removal (the native device may be shared by other renderers), leak the state as
 normal recovery, or silently switch backends.
+
+## Bounded device recovery
+
+On confirmed native device removal, the renderer can rebuild once per public
+operation on its original adapter LUID. HWND, framebuffer size/DPI and CPU image
+and glyph caches survive. Native textures/descriptors/upload status now belong
+to a private per-renderer realization cache, not immutable CPU draw snapshots;
+native realizations can be retired during recovery even while finished frames or
+invalidated image snapshots remain alive. Expired realizations are pruned after idle.
+
+All old GPU owners are retired before replacement. `device_generation` advances
+only after device, pipeline, swapchain and native validation succeed. A recovered
+`begin_frame` or failed `present` returns `frame_retry_required` to request a new
+frame, not claim the lost frame was presented. Failed frames do not advance image
+cache idle ages. Resize instead completes the requested extent/DPI after recovery
+and returns success, or returns an error; it never returns a frame retry.
+
+This is **single-owner recovery**, not coordinated multi-window recovery.
+D3D12 devices are shared within a process/adapter. Another renderer or an external
+native device reference may keep the removed device alive and prevent its
+replacement. Such an attempt returns the actual terminal initialization error,
+does not increment generation, and does not schedule an unbounded retry loop.
+After blockers are released, a caller may explicitly make a later operation on
+the same renderer to attempt reconstruction again. The normal UI runtime exits
+on terminal frame errors; it does not coordinate peer retirement or recreate
+the renderer factory automatically. Invalid input and live-device synchronization
+errors are not treated as device removal, and no backend/adapter fallback occurs.
+
+Native acceptance uses explicit idle-device `RemoveDevice` and independently
+checked post-recovery pixels. It does not certify hardware reset/TDR behavior.
 
 ## Selection and testing
 
@@ -124,7 +156,8 @@ smoke does not establish full workbench interaction or desktop appearance.
 ## Not implemented yet
 
 Transparent ordinary windows,
-DirectComposition Popup presentation and device-loss recovery are future work.
+DirectComposition Popup presentation and coordinated multi-window device-loss
+recovery are future work.
 Unsupported capabilities reject their commands rather than silently dropping
 content. Transparent/composition descriptors fail during creation;
 `popup_windows_supported()` is false. This genuine missing capability permits
@@ -140,4 +173,5 @@ See `.planning/2026-11-23-dx12-bootstrap/`,
 `.planning/2026-11-23-dx12-textures/`,
 `.planning/2026-11-23-dx12-shadows/`,
 `.planning/2026-11-23-dx12-backdrop/` and
-`.planning/2026-11-23-dx12-retirement/` for dated validation evidence.
+`.planning/2026-11-23-dx12-retirement/` and
+`.planning/2026-11-23-dx12-recovery/` for dated validation evidence.

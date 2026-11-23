@@ -30,7 +30,9 @@ Result<void> dx12_record_textured_draw(Dx12State& state, const Dx12TexturedDraw&
       PixelExtent{state.width, state.height}, draw.clip_rect, {});
   if (!clipped.visible) return {};
   if (auto pipeline = dx12_create_texture_pipeline(state); !pipeline) return pipeline;
-  if (auto prepared = dx12_prepare_texture(state, draw.texture); !prepared) return prepared;
+  const auto prepared = dx12_prepare_texture(state, draw.texture);
+  if (!prepared) return std::unexpected(prepared.error());
+  const auto& texture = **prepared;
   const auto byte_size = draw.vertices.size() * sizeof(Dx12TextureVertex);
   auto vertices = dx12_upload_buffer(*state.device.Get(), draw.vertices.data(), byte_size);
   if (!vertices) return std::unexpected(vertices.error());
@@ -39,10 +41,10 @@ Result<void> dx12_record_textured_draw(Dx12State& state, const Dx12TexturedDraw&
   state.commands->SetGraphicsRootSignature(renderer.root_signature.Get());
   const float extent[] = {static_cast<float>(state.width), static_cast<float>(state.height)};
   state.commands->SetGraphicsRoot32BitConstants(0, 2, extent, 0);
-  ID3D12DescriptorHeap* heaps[] = {draw.texture->descriptors.Get(), renderer.samplers.Get()};
+  ID3D12DescriptorHeap* heaps[] = {texture.descriptors.Get(), renderer.samplers.Get()};
   state.commands->SetDescriptorHeaps(2, heaps);
   state.commands->SetGraphicsRootDescriptorTable(1,
-      draw.texture->descriptors->GetGPUDescriptorHandleForHeapStart());
+      texture.descriptors->GetGPUDescriptorHandleForHeapStart());
   auto sampler = renderer.samplers->GetGPUDescriptorHandleForHeapStart();
   if (draw.sampling == ImageSamplingMode::linear) sampler.ptr += renderer.sampler_stride;
   state.commands->SetGraphicsRootDescriptorTable(2, sampler);

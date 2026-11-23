@@ -22,6 +22,11 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_device_recovery_test.cpp",
+    "dx12_present_recovery_test.cpp",
+    "dx12_resize_recovery_test.cpp",
+    "dx12_recovery_blockers_test.cpp",
+    "dx12_recovery_epochs_test.cpp",
     "dx12_device_removed_test.cpp",
     "dx12_sync_retirement_test.cpp",
     "dx12_sync_ticket_test.cpp",

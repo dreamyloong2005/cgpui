@@ -50,6 +50,7 @@ struct Dx12State {
   bool frame_active = false;
   bool submitted = false;
   bool failed = false;
+  bool recovery_pending = false;
   // Optional private test boundary; its owner must outlive this state.
   Dx12SynchronizationApi* synchronization_api = nullptr;
 };

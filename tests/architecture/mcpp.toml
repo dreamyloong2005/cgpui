@@ -20,6 +20,7 @@ sources = []
 
 [test]
 discover = [
+    "dx12_recovery_structure_test.cpp",
     "dx12_synchronization_structure_test.cpp",
     "dx12_backdrop_blur_structure_test.cpp",
     "dx12_shadow_structure_test.cpp",

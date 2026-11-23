@@ -70,57 +70,71 @@ class View final : public cgpui::View {
  public:
   void paint(cgpui::PaintList&, cgpui::Size) override {}
 };
-class Frame final : public cgpui::RenderFrame {
- public:
-  Frame(int& attempts, cgpui::ErrorCode code) : attempts_(attempts), code_(code) {}
-  void clear(cgpui::Color) override {}
-  void draw_rect(const cgpui::SolidRect&) override {}
-  cgpui::Result<void> present() override {
-    if (++attempts_ != 1) return {};
+enum class FailurePhase { begin, present };
+struct Failure {
+  FailurePhase phase;
+  cgpui::ErrorCode code;
+  int begins = 0, presents = 0;
+  cgpui::Result<void> attempt(FailurePhase current) {
+    const int count = current == FailurePhase::begin ? ++begins : ++presents;
+    if (current != phase || count != 1) return {};
     return std::unexpected(cgpui::Error{
-        .code = code_,
-        .message = code_ == cgpui::ErrorCode::frame_retry_required
+        .code = code,
+        .message = code == cgpui::ErrorCode::frame_retry_required
             ? "opaque diagnostic: the typed result alone controls retry"
             : "swapchain was recreated before frame acquisition; retry the frame"});
   }
+};
+class Frame final : public cgpui::RenderFrame {
+ public:
+  explicit Frame(Failure& failure) : failure_(failure) {}
+  void clear(cgpui::Color) override {}
+  void draw_rect(const cgpui::SolidRect&) override {}
+  cgpui::Result<void> present() override { return failure_.attempt(FailurePhase::present); }
  private:
-  int& attempts_;
-  cgpui::ErrorCode code_;
+  Failure& failure_;
 };
 class Renderer final : public cgpui::Renderer {
  public:
-  explicit Renderer(cgpui::ErrorCode code) : code_(code) {}
+  Renderer(FailurePhase phase, cgpui::ErrorCode code) : failure{phase, code} {}
   cgpui::Result<void> resize(cgpui::Size, cgpui::DpiScale) override { return {}; }
   cgpui::Result<std::unique_ptr<cgpui::RenderFrame>> begin_frame() override {
-    return std::make_unique<Frame>(attempts, code_);
+    if (auto result = failure.attempt(FailurePhase::begin); !result)
+      return std::unexpected(result.error());
+    return std::make_unique<Frame>(failure);
   }
-  int attempts = 0;
- private:
-  cgpui::ErrorCode code_;
+  Failure failure;
 };
 
-int retry_case(bool child, cgpui::ErrorCode code) {
+int retry_case(bool child, FailurePhase phase, cgpui::ErrorCode code) {
   const bool fatal = code != cgpui::ErrorCode::frame_retry_required;
   Application app;
   View view;
   std::vector<std::unique_ptr<Renderer>> renderers;
   cgpui::WindowRuntime runtime(app, view,
       [&](const cgpui::RenderSurfaceDescriptor&) -> cgpui::Result<cgpui::Renderer*> {
-        renderers.push_back(std::make_unique<Renderer>(code));
+        renderers.push_back(std::make_unique<Renderer>(phase, code));
         return renderers.back().get();
       });
-  int failure = 0;
+  int failure = 0, after_frames = 0;
+  runtime.set_after_frame_callback([&](const cgpui::WindowRuntimeContext&) { ++after_frames; });
   app.on_run = [&] {
     if (child && !runtime.try_open_window(cgpui::WindowOptions{}, std::make_unique<View>())) {
       failure = 1; return;
     }
+    const std::size_t factories = child ? 2 : 1;
+    if (renderers.size() != factories) { failure = 5; return; }
+    const auto& attempts = renderers.back()->failure;
     Native& target = child ? app.child : app.root;
     const int redraws = target.redraws;
     const int other_redraws = child ? app.root.redraws : app.child.redraws;
     target.redraw_pending = true; // The initial OS paint, not a retry request.
     if (!app.paint_if_requested(target)) { failure = 1; return; }
+    if (after_frames != 0 || attempts.begins != 1 ||
+        attempts.presents != (phase == FailurePhase::present ? 1 : 0) ||
+        renderers.size() != factories) { failure = 6; return; }
     if (fatal) {
-      if (app.quits != 1 || renderers.back()->attempts != 1) failure = 2;
+      if (app.quits != 1) failure = 2;
       return;
     }
     // Native requests made inside the child callback are deferred to the
@@ -130,13 +144,16 @@ int retry_case(bool child, cgpui::ErrorCode code) {
         (child ? app.root.redraws : app.child.redraws) != other_redraws) {
       failure = 3; return;
     }
-    if (!app.paint_if_requested(target) || renderers.back()->attempts != 2 ||
+    if (!app.paint_if_requested(target) || attempts.begins != 2 || after_frames != 1 ||
+        attempts.presents != (phase == FailurePhase::present ? 2 : 1) ||
+        renderers.size() != factories ||
         target.redraw_pending || app.quits != 0 ||
         (child ? app.root.redraws : app.child.redraws) != other_redraws) failure = 4;
   };
   const int result = runtime.run({}, {.request_initial_redraw = false});
   if (failure != 0 || result != (fatal ? 1 : 0)) {
-    std::cerr << "frame retry child=" << child << " fatal=" << fatal
+    std::cerr << "frame retry child=" << child << " begin=" << (phase == FailurePhase::begin)
+              << " fatal=" << fatal
               << " failure=" << failure << " exit=" << result << '\n';
     return 10 + failure;
   }
@@ -147,10 +164,12 @@ int retry_case(bool child, cgpui::ErrorCode code) {
 
 int main() {
   for (bool child : {false, true}) {
-    for (auto code : {cgpui::ErrorCode::frame_retry_required,
-                      cgpui::ErrorCode::frame_acquisition_failed,
-                      cgpui::ErrorCode::renderer_initialization_failed}) {
-      if (int result = retry_case(child, code)) return result;
+    for (auto phase : {FailurePhase::begin, FailurePhase::present}) {
+      for (auto code : {cgpui::ErrorCode::frame_retry_required,
+                        cgpui::ErrorCode::frame_acquisition_failed,
+                        cgpui::ErrorCode::renderer_initialization_failed}) {
+        if (int result = retry_case(child, phase, code)) return result;
+      }
     }
   }
   return 0;

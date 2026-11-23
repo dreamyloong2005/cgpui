@@ -6,8 +6,9 @@
 
 namespace cgpui {
 namespace {
-Result<void> realize_texture(Dx12State& state, const Dx12Texture& texture) {
-  if (texture.resource) return {};
+Result<void> realize_texture(
+    Dx12State& state, const Dx12Texture& texture, Dx12NativeTexture& native) {
+  if (native.resource) return {};
   D3D12_HEAP_PROPERTIES heap{};
   heap.Type = D3D12_HEAP_TYPE_DEFAULT;
   D3D12_RESOURCE_DESC descriptor{};
@@ -36,13 +37,14 @@ Result<void> realize_texture(Dx12State& state, const Dx12Texture& texture) {
   view.Texture2D.MipLevels = 1;
   state.device->CreateShaderResourceView(resource.Get(), &view,
       descriptors->GetCPUDescriptorHandleForHeapStart());
-  texture.resource = std::move(resource);
-  texture.descriptors = std::move(descriptors);
+  native.resource = std::move(resource);
+  native.descriptors = std::move(descriptors);
   return {};
 }
 
-Result<void> record_upload(Dx12State& state, const Dx12Texture& texture) {
-  const auto descriptor = texture.resource->GetDesc();
+Result<void> record_upload(
+    Dx12State& state, const Dx12Texture& texture, Dx12NativeTexture& native) {
+  const auto descriptor = native.resource->GetDesc();
   D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint{};
   UINT rows = 0;
   UINT64 row_bytes = 0, size = 0;
@@ -68,35 +70,47 @@ Result<void> record_upload(Dx12State& state, const Dx12Texture& texture) {
   source.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
   source.PlacedFootprint = footprint;
   D3D12_TEXTURE_COPY_LOCATION target{};
-  target.pResource = texture.resource.Get();
+  target.pResource = native.resource.Get();
   target.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
   state.commands->CopyTextureRegion(&target, 0, 0, 0, &source, nullptr);
-  dx12_transition(*state.commands.Get(), *texture.resource.Get(),
+  dx12_transition(*state.commands.Get(), *native.resource.Get(),
       D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
   state.uploads.push_back(std::move(*upload));
   return {};
 }
 } // namespace
 
-Result<void> dx12_prepare_texture(Dx12State& state, const Dx12TextureHandle& texture) {
+Result<Dx12NativeTexture*> dx12_prepare_texture(
+    Dx12State& state, const Dx12TextureHandle& texture) {
   auto& renderer = *state.texture_renderer;
   if (std::ranges::find(renderer.retained, texture) == renderer.retained.end()) {
     renderer.retained.push_back(texture);
   }
-  if (texture->uploaded || std::ranges::find(renderer.pending_uploads, texture) !=
-      renderer.pending_uploads.end()) return {};
-  if (auto realized = realize_texture(state, *texture); !realized) return realized;
-  if (auto uploaded = record_upload(state, *texture); !uploaded) return uploaded;
-  renderer.pending_uploads.push_back(texture);
-  return {};
+  auto [entry, inserted] = renderer.native_textures.try_emplace(texture.get());
+  auto& native = entry->second;
+  if (inserted) native.source = texture;
+  if (native.uploaded || std::ranges::find(renderer.pending_uploads, &native) !=
+      renderer.pending_uploads.end()) return &native;
+  if (auto realized = realize_texture(state, *texture, native); !realized) {
+    return std::unexpected(realized.error());
+  }
+  if (auto uploaded = record_upload(state, *texture, native); !uploaded) {
+    return std::unexpected(uploaded.error());
+  }
+  renderer.pending_uploads.push_back(&native);
+  return &native;
 }
 
 void dx12_begin_texture_frame(Dx12State& state) {
-  state.texture_renderer->retained.clear();
-  state.texture_renderer->pending_uploads.clear();
+  auto& renderer = *state.texture_renderer;
+  renderer.pending_uploads.clear();
+  renderer.retained.clear();
+  std::erase_if(renderer.native_textures, [](const auto& entry) {
+    return entry.second.source.expired();
+  });
 }
 void dx12_commit_texture_uploads(Dx12State& state) {
-  for (const auto& texture : state.texture_renderer->pending_uploads) texture->uploaded = true;
+  for (auto* native : state.texture_renderer->pending_uploads) native->uploaded = true;
   state.texture_renderer->pending_uploads.clear();
 }
 } // namespace cgpui

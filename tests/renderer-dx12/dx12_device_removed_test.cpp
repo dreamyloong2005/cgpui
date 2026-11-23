@@ -1,65 +1,10 @@
-#define NOMINMAX
-#include "dx12_test_support.hpp"
-
-#include <d3d12.h>
-#include <d3d12sdklayers.h>
-#include <dxgi1_6.h>
-#include <wrl/client.h>
-#include <cstdlib>
-#include <string_view>
-#include <thread>
-#include <vector>
+#include "dx12_recovery_test_support.hpp"
 
 using namespace cgpui;
 using namespace cgpui_test;
 using Microsoft::WRL::ComPtr;
 
 namespace {
-class Deadline {
- public:
-  HANDLE done = CreateEventW(nullptr, TRUE, FALSE, nullptr);
-  Deadline() {
-    if (done) worker_ = std::thread([this] {
-      if (WaitForSingleObject(done, 15000) == WAIT_TIMEOUT) {
-        const char message[] = "DX12 device-removal test timed out\n";
-        DWORD written = 0;
-        WriteFile(GetStdHandle(STD_ERROR_HANDLE), message, sizeof(message) - 1, &written, nullptr);
-        TerminateProcess(GetCurrentProcess(), 90); // Only this standalone test process.
-      }
-    });
-  }
-  ~Deadline() {
-    if (done) SetEvent(done);
-    if (worker_.joinable()) worker_.join();
-    if (done) CloseHandle(done);
-  }
- private:
-  std::thread worker_;
-};
-
-bool no_unsafe_debug_errors(ID3D12InfoQueue* messages) {
-  if (!messages) return true; // Non-debug matrices cannot supply debug-layer evidence.
-  for (UINT64 index = 0; index < messages->GetNumStoredMessagesAllowedByRetrievalFilter(); ++index) {
-    SIZE_T length = 0;
-    if (FAILED(messages->GetMessage(index, nullptr, &length))) return false;
-    std::vector<unsigned char> storage(length);
-    auto* message = reinterpret_cast<D3D12_MESSAGE*>(storage.data());
-    if (FAILED(messages->GetMessage(index, message, &length))) return false;
-    // Explicit RemoveDevice legitimately reports device removal. Do not hide
-    // lifetime/descriptor/deleted-while-in-use errors under a generic filter.
-    if (message->ID == D3D12_MESSAGE_ID_DEVICE_REMOVAL_PROCESS_AT_FAULT ||
-        message->ID == D3D12_MESSAGE_ID_DEVICE_REMOVAL_PROCESS_POSSIBLY_AT_FAULT ||
-        message->ID == D3D12_MESSAGE_ID_DEVICE_REMOVAL_PROCESS_NOT_AT_FAULT) continue;
-    if (message->Severity == D3D12_MESSAGE_SEVERITY_ERROR ||
-        message->Severity == D3D12_MESSAGE_SEVERITY_CORRUPTION) {
-      std::cerr << "unexpected removal debug message " << message->ID << ": "
-                << message->pDescription << '\n';
-      return false;
-    }
-  }
-  return true;
-}
-
 void paint_resources(RenderFrame& frame, const ImageAsset& image) {
   frame.clear({0, 0, 1, 1});
   frame.draw_image({.bounds = {{4, 4}, {32, 32}}, .asset = describe_image_asset(image)});
@@ -70,7 +15,7 @@ void paint_resources(RenderFrame& frame, const ImageAsset& image) {
 } // namespace
 
 int main() {
-  Deadline deadline;
+  Dx12RecoveryDeadline deadline;
   if (!deadline.done) return dx12_fail(1, "device-removal watchdog unavailable");
   Dx12Window window;
   if (!window.hwnd) return dx12_fail(2, "device-removal window unavailable");
@@ -78,23 +23,12 @@ int main() {
   if (!renderer) return dx12_fail(3, renderer.error().message.c_str());
   const auto info = (*renderer)->backend_info();
   if (!info.adapter_luid) return dx12_fail(4, "device-removal adapter LUID unavailable");
-  ComPtr<IDXGIFactory4> factory;
-  ComPtr<IDXGIAdapter1> adapter;
-  ComPtr<ID3D12Device5> native;
-  const LUID luid{DWORD(*info.adapter_luid), LONG(*info.adapter_luid >> 32)};
-  // D3D12 devices are process/adapter singletons. This public native API gets
-  // the renderer's actual device without exposing a production test hook.
-  if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory))) ||
-      FAILED(factory->EnumAdapterByLuid(luid, IID_PPV_ARGS(&adapter))) ||
-      FAILED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&native))))
+  auto native = dx12_acquire_native_device(info);
+  if (!native)
     return dx12_fail(5, "same-adapter ID3D12Device5 unavailable; removal was not tested");
   ComPtr<ID3D12InfoQueue> messages;
   (void)native.As(&messages);
-  const auto enabled = [](const char* name) {
-    const char* value = std::getenv(name);
-    return value && std::string_view(value) == "1";
-  };
-  if ((enabled("CGPUI_DX12_DEBUG") || enabled("CGPUI_DX12_GPU_VALIDATION")) && !messages)
+  if (dx12_recovery_debug_requested() && !messages)
     return dx12_fail(14, "requested device-removal debug validation has no InfoQueue");
   const ImageAsset image{.id = {8301}, .logical_size = {1, 1},
       .bitmap = {.width = 1, .height = 1, .stride = 4, .pixels = {255, 0, 0, 255}}};
@@ -111,6 +45,8 @@ int main() {
   paint_resources(**frame, image); // Reuses the previously realized image snapshot.
   if (!(*frame)->request_pixel_capture()) return dx12_fail(9, "removal capture request failed");
   if (messages) messages->ClearStoredMessages();
+  // Unlike recovery tests, keep Device5 AND InfoQueue alive through failed
+  // operations and renderer destruction: replacement must remain blocked.
   native->RemoveDevice();
   if (SUCCEEDED(native->GetDeviceRemovedReason()))
     return dx12_fail(10, "native device was not actually removed");
@@ -123,5 +59,6 @@ int main() {
   renderer->reset();
   // This removes an idle native device, not a simulated live-queue wait failure.
   // The independent synchronization fault tests must prove that separate case.
-  return no_unsafe_debug_errors(messages.Get()) ? 0 : dx12_fail(13, "unsafe removal cleanup");
+  return dx12_recovery_debug_messages_safe(messages.Get(), true)
+      ? 0 : dx12_fail(13, "unsafe removal cleanup");
 }

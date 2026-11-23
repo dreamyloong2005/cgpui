@@ -1,4 +1,5 @@
 #include "dx12_frame_internal.hpp"
+#include "dx12_frame_recovery_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
 #include "cgpui/renderer/renderer_backend.hpp"
 
@@ -8,11 +9,11 @@ class Dx12Renderer final : public Renderer {
  public:
   explicit Dx12Renderer(std::shared_ptr<Dx12State> state) : state_(std::move(state)) {}
   ~Dx12Renderer() override { state_->owner_alive = false; }
-  Result<void> resize(Size size, DpiScale scale) override { return dx12_resize(*state_, size, scale); }
+  Result<void> resize(Size size, DpiScale scale) override {
+    return dx12_resize_recovering(*state_, size, scale);
+  }
   Result<std::unique_ptr<RenderFrame>> begin_frame() override {
-    if (state_->frame_active) return std::unexpected(Error{.code = ErrorCode::invalid_argument,
-        .message = "DX12 already has an outstanding frame"});
-    if (state_->failed) return std::unexpected(dx12_unsupported("recovery of a failed device"));
+    if (auto ready = dx12_prepare_frame(*state_); !ready) return std::unexpected(ready.error());
     auto frame = std::make_unique<Dx12Frame>(state_);
     state_->frame_active = true;
     return frame;
