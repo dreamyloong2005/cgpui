@@ -33,7 +33,8 @@ previous Popup policy is unchanged for Vulkan.
   shared downsample/separable Gaussian/rounded-mask shader, mixes tint and
   composed opacity, then resumes the original draw stream. `blur_radius` is
   Gaussian sigma (unlike outer-shadow CSS radius/2). The actual RGBA8
-  render/load/filter-sample capability is queried from the device.
+  render/load/filter-sample capability is queried from the device. When it is
+  reported unavailable, the shared fallback draws only the requested tint.
 - Pixel readback with row-pitch handling, resize, and explicit rejection of
   overlapping frames or resize while a frame is outstanding. Destroying a
   renderer before its outstanding frame is safe; that frame cannot present.
@@ -66,6 +67,24 @@ frames without effects allocate none.
 This avoids reusing resource states from unsubmitted command lists, but is not
 target pooling or a bounded peak-memory/performance guarantee. The bounded frame
 diagnostics below do not imply performance or diagnostic parity with Vulkan.
+
+If `backdrop_blur_support().supported` is false, the frame first validates the
+device-scaled bounds, tint and clips, then delegates the original logical draw to
+`RenderFrame::draw_backdrop_blur`. A present tint becomes an ordinary rounded
+rectangle, retaining radius, clips, composition/metadata and draw order with one
+DPI conversion; no tint is a no-op. This fallback does not perform blur or allocate
+offscreen targets. It does not suppress invalid input, native API/presentation
+errors or device-loss retry; supported blur still follows its normal effect path.
+
+Fallback diagnostics describe the rounded work actually recorded, not a blur:
+visible tint, including alpha/opacity zero, adds one rounded command/draw; no tint
+adds none. Empty or fully clipped tint retains one planned, zero submitted
+commands and zero draws. All fallback blur/effect/offscreen counts remain zero.
+The focused `dx12_backdrop_blur_fallback_*` tests force only private capability
+state after real native initialization; their captures and RemoveDevice checks
+are not evidence from an incapable physical adapter. The existing capability
+probe also reports failed `CheckFeatureSupport` queries as support=false with a
+reason; this change does not distinguish that from missing format support.
 
 Composition-surface clears are premultiplied before ClearRenderTargetView;
 opaque ordinary HWND clear behavior is unchanged. Existing draw blending produces premultiplied target
@@ -494,8 +513,9 @@ future work. The [ordinary transparency probe](dx12-ordinary-transparency-probe.
 retains the earlier 11 uncorrected DWM/hosting recipes and the later alpha-only
 menu repair evidence; the negative recipes are not a claim that all DComp/native
 menu combinations are impossible.
-Unsupported capabilities reject their commands rather than silently dropping
-content. `popup_windows_supported()` is true for the implemented native Popup
+Unsupported window routes remain explicit errors; backdrop blur instead follows
+the documented tint-only fallback above. `popup_windows_supported()` is true for
+the implemented native Popup
 path, including on an opaque parent renderer. The runtime still checks platform
 support and actual Popup renderer initialization/placement. Genuine failures
 permit the existing Overlay fallback; neither backend is preemptively disabled.

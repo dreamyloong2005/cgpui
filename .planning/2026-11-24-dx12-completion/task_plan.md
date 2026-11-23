@@ -75,3 +75,6 @@ redefined as complete solely to close the checklist.
   This closes those bounded test gaps, not the remaining public-operation audit,
   cross-thread recovery or full window compatibility. Unsupported-blur fallback
   has reviewed external A/B candidates; pacing/CI proposals remain unimplemented.
+- Unsupported backdrop contract now matches public tint-only semantics; accepted
+  `.planning/2026-11-24-dx12-blur-fallback/acceptance.md`. Native injected-capability
+  RED/GREEN, full783/648 and102-per-adapter matrix passed. No default/Popup changes.

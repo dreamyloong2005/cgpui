@@ -18,6 +18,8 @@ discover = []
 
 [target.'cfg(os = "windows")'.build]
 sources = [
+    "dx12_backdrop_fallback_test_support.cpp",
+    "dx12_backdrop_fallback_diagnostics_test_support.cpp",
     "dx12_runtime_capture_test_support.cpp",
     "dx12_runtime_recovery_scene_test_support.cpp",
     "dx12_runtime_recovery_loop_test_support.cpp",
@@ -36,6 +38,11 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_backdrop_blur_fallback_pixels_test.cpp",
+    "dx12_backdrop_blur_fallback_composition_test.cpp",
+    "dx12_backdrop_blur_fallback_validation_test.cpp",
+    "dx12_backdrop_blur_fallback_lifetime_test.cpp",
+    "dx12_backdrop_blur_fallback_recovery_test.cpp",
     "dx12_runtime_root_recovery_test.cpp",
     "dx12_runtime_child_recovery_test.cpp",
     "dx12_texture_upload_budget_test.cpp",

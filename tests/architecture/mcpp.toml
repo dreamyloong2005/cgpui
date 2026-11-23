@@ -20,6 +20,7 @@ sources = []
 
 [test]
 discover = [
+    "dx12_backdrop_fallback_structure_test.cpp",
     "dx12_runtime_recovery_structure_test.cpp",
     "renderer_common_pixel_structure_test.cpp",
     "dx12_texture_upload_structure_test.cpp",

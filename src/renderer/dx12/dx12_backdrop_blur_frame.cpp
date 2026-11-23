@@ -7,15 +7,15 @@ namespace cgpui {
 void Dx12Frame::draw_backdrop_blur(const BackdropBlurDraw& backdrop) {
   Dx12OperationGuard operation(*state_);
   if (released_ || error_) return;
-  if (!state_->backdrop_blur->support.supported) {
-    error_ = Error{.code = ErrorCode::unsupported_platform,
-        .message = state_->backdrop_blur->support.reason};
-    return;
-  }
   const auto device = renderer_to_device_pixels(backdrop, state_->scale);
   if (!dx12_valid_backdrop_blur_input(device)) {
     error_ = Error{.code = ErrorCode::invalid_argument,
         .message = "DX12 backdrop bounds, tint and clips must be finite"};
+    return;
+  }
+  if (!state_->backdrop_blur->support.supported) {
+    // Delegate logical input: the rounded-rect path performs its own DPI conversion.
+    RenderFrame::draw_backdrop_blur(backdrop);
     return;
   }
   const PixelExtent extent{state_->width, state_->height};
