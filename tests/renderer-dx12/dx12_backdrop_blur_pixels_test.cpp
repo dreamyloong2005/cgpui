@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 using namespace cgpui;
@@ -8,7 +9,7 @@ int main() {
   if (!window.hwnd) return dx12_fail(1, "backdrop window unavailable");
   auto renderer = create_dx12_renderer(window.descriptor());
   if (!renderer) return dx12_fail(2, renderer.error().message.c_str());
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(3, "backdrop begin failed");
   (*frame)->clear({1, 1, 1, 1});
   (*frame)->draw_rect({.rect = {{0, 0}, {32, 64}}, .color = {0, 0, 0, 1}});

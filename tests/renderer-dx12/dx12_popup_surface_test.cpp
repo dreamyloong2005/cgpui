@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_popup_test_support.hpp"
 
 using namespace cgpui;
@@ -11,7 +12,7 @@ bool composition_matches(const RendererSurfaceComposition& composition, bool tra
 
 bool clear_and_check(Renderer& renderer, const CompositionTestWindows& windows, Color clear,
                      std::array<int, 4> pixel, ScreenColor screen) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear(clear);
   if (!(*frame)->request_pixel_capture() || !(*frame)->present()) return false;
@@ -118,7 +119,7 @@ int main() {
   for (const bool doubled : {true, false}) {
     if (!(*renderer)->resize({80, 48}, {doubled ? 2.0F : 1.0F}))
       return dx12_fail(11, "popup resize/DPI update failed");
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(12, "resized popup begin failed");
     (*frame)->clear({1, 1, 1, 0});
     (*frame)->draw_rect({.rect = {{4, 4}, {8, 8}}, .color = {1, 0, 0, 0.5F}});

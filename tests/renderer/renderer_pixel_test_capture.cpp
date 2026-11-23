@@ -1,8 +1,9 @@
 #include "renderer_pixel_test_support.hpp"
+#include "../support/frame_wait_test_support.hpp"
 
 namespace cgpui_test {
 cgpui::Result<std::unique_ptr<cgpui::RenderFrame>> begin_pixel_capture(cgpui::Renderer& renderer) {
-  auto frame = renderer.begin_frame();
+  auto frame = wait_for_test_frame(renderer);
   if (!frame) {
     report_pixel_test_error("begin frame", frame.error());
     return std::unexpected(frame.error());

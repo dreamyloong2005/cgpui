@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 
 using namespace cgpui;
@@ -9,7 +10,7 @@ int main() {
   if (!deadline.done || !window.hwnd) return dx12_fail(1, "resize recovery fixture unavailable");
   auto renderer = create_dx12_renderer(window.descriptor());
   if (!renderer) return dx12_fail(2, renderer.error().message.c_str());
-  auto warmup = (*renderer)->begin_frame();
+  auto warmup = cgpui_test::wait_for_test_frame(**renderer);
   if (!warmup) return dx12_fail(3, "resize recovery warmup begin failed");
   (*warmup)->clear({0, 1, 0, 1});
   if (!(*warmup)->request_pixel_capture() || !(*warmup)->present())
@@ -24,7 +25,7 @@ int main() {
   if (after.adapter_luid != before.adapter_luid ||
       after.device_generation != before.device_generation + 1 || (*renderer)->last_frame_pixels())
     return dx12_fail(7, "resize recovery generation or capture differs");
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(8, "resize-recovered renderer did not become ready");
   (*frame)->clear({0, 0, 1, 1});
   (*frame)->draw_rect({.rect = {{4, 4}, {8, 8}}, .color = {1, 0, 0, 1}});

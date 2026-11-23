@@ -18,6 +18,18 @@ discover = []
 
 [target.'cfg(os = "windows")'.build]
 sources = [
+    "dx12_runtime_pacing_capture_test_support.cpp",
+    "dx12_runtime_pacing_scene_test_support.cpp",
+    "dx12_runtime_pacing_loop_test_support.cpp",
+    "dx12_pacing_control_test_support.cpp",
+    "../support/frame_wait_test_support.cpp",
+    "../support/frame_wait_win32_test_support.cpp",
+    "dx12_pacing_begin_wait_test_support.cpp",
+    "dx12_pacing_begin_case_test_support.cpp",
+    "dx12_pacing_script_test_support.cpp",
+    "dx12_pacing_native_api_test_support.cpp",
+    "dx12_pacing_native_setup_test_support.cpp",
+    "dx12_pacing_native_frame_test_support.cpp",
     "dx12_backdrop_fallback_test_support.cpp",
     "dx12_backdrop_fallback_diagnostics_test_support.cpp",
     "dx12_runtime_capture_test_support.cpp",
@@ -38,6 +50,20 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_diagnostic_timing_test.cpp",
+    "dx12_runtime_pacing_fairness_test.cpp",
+    "dx12_runtime_pacing_backoff_test.cpp",
+    "dx12_runtime_pacing_close_test.cpp",
+    "dx12_frame_pacing_pending_test.cpp",
+    "dx12_frame_pacing_poll_failure_test.cpp",
+    "dx12_frame_pacing_poll_recovery_test.cpp",
+    "dx12_frame_pacing_begin_hidden_test.cpp",
+    "dx12_frame_pacing_begin_visible_test.cpp",
+    "dx12_frame_pacing_creation_lifetime_test.cpp",
+    "dx12_frame_pacing_core_test.cpp",
+    "dx12_frame_pacing_error_test.cpp",
+    "dx12_frame_pacing_native_test.cpp",
+    "dx12_frame_pacing_native_lifetime_test.cpp",
     "dx12_backdrop_blur_fallback_pixels_test.cpp",
     "dx12_backdrop_blur_fallback_composition_test.cpp",
     "dx12_backdrop_blur_fallback_validation_test.cpp",

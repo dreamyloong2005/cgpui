@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 #include <numbers>
@@ -12,7 +13,7 @@ struct AffineCase {
 };
 
 int transformed_edge(Renderer& renderer, const AffineCase& test, float scale) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(10, "affine backdrop begin failed");
   (*frame)->clear({1, 1, 1, 1});
   (*frame)->draw_rect({.rect = {{0, 0}, {64, 64}}, .color = {0, 0, 0, 1}});

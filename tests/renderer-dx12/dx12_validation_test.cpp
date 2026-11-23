@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 #include <limits>
@@ -35,7 +36,7 @@ int main() {
   if ((*renderer)->set_transparent_surface(true)) return dx12_fail(8, "unimplemented alpha accepted");
   const auto composition = (*renderer)->set_transparent_surface(false);
   if (!composition || composition->alpha_composited()) return dx12_fail(9, "opaque surface misreported");
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(10, "invalid request poisoned valid renderer");
   (*frame)->clear({0, 0, 1, 1});
   if (!(*frame)->request_pixel_capture() || !(*frame)->present() ||

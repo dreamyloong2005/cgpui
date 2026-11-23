@@ -39,6 +39,9 @@ class Renderer {
   virtual ~Renderer() = default;
 
   virtual Result<void> resize(Size framebuffer_size, DpiScale scale) = 0;
+  // frame_not_ready means no frame was acquired and no work submitted; callers
+  // should arrange a future attempt without a busy loop. It is begin-only:
+  // present/resize must not use it. frame_retry_required retains recovery semantics.
   virtual Result<std::unique_ptr<RenderFrame>> begin_frame() = 0;
   [[nodiscard]] virtual RendererBackendInfo backend_info() const;
   [[nodiscard]] virtual const RendererFrameDiagnosticSnapshot*

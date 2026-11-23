@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_diagnostics_support.hpp"
 
 using namespace cgpui;
@@ -7,7 +8,7 @@ int main() {
   Dx12Window window;
   auto renderer = create_dx12_renderer(window.descriptor());
   if (!renderer) return dx12_fail(1, "mixed diagnostics renderer unavailable");
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(2, "mixed diagnostics frame unavailable");
   const auto image = diagnostic_image();
   (*frame)->clear({0, 0, 0, 1});

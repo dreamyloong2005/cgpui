@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_ordinary_test_support.hpp"
 #include "dx12_ordinary_menu_pixels_support.hpp"
 
@@ -6,7 +7,7 @@ using namespace cgpui_test;
 
 namespace {
 bool opaque_frame(Renderer& renderer, const PlatformWindow& window) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear({0, 1, 1, 1});
   if (!(*frame)->request_pixel_capture() || !(*frame)->present() ||

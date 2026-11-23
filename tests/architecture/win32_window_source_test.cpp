@@ -74,6 +74,8 @@ std::string read_win32_source() {
       "src/platform/win32/win32_file_dialog.cpp",
       "src/platform/win32/win32_file_dialog_save.cpp",
       "src/platform/win32/win32_application.cpp",
+      "src/platform/win32/win32_application_initialization_internal.hpp",
+      "src/platform/win32/win32_application_initialization.cpp",
       "src/platform/win32/win32_native_menu_accelerator.cpp",
       "src/platform/win32/win32_native_menu_accelerator_table.cpp",
       "src/platform/win32/win32_native_menu_command.cpp",

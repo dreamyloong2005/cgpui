@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 #include "cgpui/renderer/planning/glyph_geometry.hpp"
 
@@ -71,7 +72,7 @@ int finish(Renderer& renderer, RenderFrame& frame, const Reference& reference) {
 
 int same_frame(Renderer& renderer) {
   Reference reference(64, 64);
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(40, "begin failed");
   (*frame)->clear({0, 0, 0, 1});
   const auto first = text("M", 24, {4, 4}, {1, 0, 0, 1});
@@ -105,7 +106,7 @@ int multiple_pages(Renderer& renderer) {
     return dx12_fail(52, "reference did not exercise multiple atlas pages");
   // The fourth glyph returns to the first page; page binding must not be sticky.
   for (int iteration = 0; iteration != 2; ++iteration) {
-    auto frame = renderer.begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(renderer);
     if (!frame) return dx12_fail(53, "multipage begin failed");
     (*frame)->clear({0, 0, 0, 1});
     (*frame)->draw_text(draw);
@@ -121,7 +122,7 @@ int invalid_then_valid(Renderer& renderer) {
     if (draw.glyphs.size() != 2) return dx12_fail(61, "invalid fixture shape differs");
     if (invalid_position) draw.glyphs[0].device_origin.x = std::numeric_limits<float>::quiet_NaN();
     else draw.glyphs[1].key.device_font_size = -1; // A was cached before Z fails.
-    auto frame = renderer.begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(renderer);
     if (!frame) return dx12_fail(62, "invalid begin failed");
     (*frame)->draw_text(draw);
     const auto result = (*frame)->present();
@@ -131,7 +132,7 @@ int invalid_then_valid(Renderer& renderer) {
   const auto valid = text("A", 16, {4, 4}, {1, 1, 1, 1});
   Reference reference(64, 64);
   if (!reference.paint(valid)) return dx12_fail(64, "recovery reference failed");
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(65, "rejected glyph poisoned renderer");
   (*frame)->clear({0, 0, 0, 1});
   (*frame)->draw_text(valid);

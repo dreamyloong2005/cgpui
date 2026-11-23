@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_diagnostics_text_support.hpp"
 
 using namespace cgpui;
@@ -10,7 +11,7 @@ int main() {
   const auto image = diagnostic_image();
   const auto asset = describe_image_asset(image);
   for (unsigned pass = 0; pass != 2; ++pass) {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(2, "upload diagnostics image frame unavailable");
     (*frame)->clear({0, 0, 0, 1});
     if (pass == 0) (*frame)->upload_image(image);
@@ -34,7 +35,7 @@ int main() {
   if (quads.size() != 2 || lower_quads.size() != 2 || reference.upload_records().size() != 1 ||
       diagnostic_atlas_runs(quads) != 1) return dx12_fail(5, "text run/upload oracle unavailable");
   for (unsigned pass = 0; pass != 2; ++pass) {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(6, "upload diagnostics text frame unavailable");
     (*frame)->clear({0, 0, 0, 1});
     (*frame)->draw_text(text);

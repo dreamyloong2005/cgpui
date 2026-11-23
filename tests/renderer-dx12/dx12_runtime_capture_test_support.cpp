@@ -27,6 +27,8 @@ class CaptureRenderer final : public cgpui::Renderer {
     if (!frame) {
       if (frame.error().code == cgpui::ErrorCode::frame_retry_required)
         ++counts_.begin_retries;
+      else if (frame.error().code == cgpui::ErrorCode::frame_not_ready)
+        ++counts_.begin_pending;
       else
         ++counts_.begin_errors;
       return std::unexpected(frame.error());

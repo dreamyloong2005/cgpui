@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 #include <numbers>
@@ -12,7 +13,7 @@ int gaussian_edges(Renderer& renderer) {
   // is the continuous Gaussian CDF of a step, independent of tap construction,
   // texture layout, resampling implementation and the neutral planner.
   for (const float sigma : {4.0F, 12.0F, 32.0F, 64.0F}) {
-    auto frame = renderer.begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(renderer);
     if (!frame) return dx12_fail(11, "edge begin failed");
     (*frame)->clear({1, 1, 1, 1});
     (*frame)->draw_rect({.rect = {{0, 0}, {512, 128}}, .color = {0, 0, 0, 1}});
@@ -43,7 +44,7 @@ int gaussian_edges(Renderer& renderer) {
 
 int rounded_tint_clip(Renderer& renderer, float scale) {
   if (!renderer.resize({128, 128}, {scale})) return dx12_fail(20, "mask DPI resize failed");
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(21, "mask begin failed");
   (*frame)->clear({0, 0, 1, 1});
   BackdropBlurDraw blur{.rect = {{8, 8}, {24, 24}}, .radius = BorderRadii::all(8),

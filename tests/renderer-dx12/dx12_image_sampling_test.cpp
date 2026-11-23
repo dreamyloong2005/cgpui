@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 using namespace cgpui;
@@ -10,7 +11,7 @@ int sample_filters(Renderer& renderer) {
       .bitmap = {.width = 2, .height = 2, .stride = 12,
           .pixels = {255, 0, 0, 255, 0, 255, 0, 255, 13, 14, 15, 16,
                      0, 0, 255, 255, 255, 255, 255, 255, 23, 24, 25, 26}}};
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(10, "sampling begin failed");
   (*frame)->clear({0, 0, 0, 1});
   (*frame)->upload_image(colors);
@@ -38,7 +39,7 @@ int crop_transform_clip(Renderer& renderer, float scale) {
   const PaintMetadata ancestry[] = {{.opacity = 0.75F},
       {.opacity = 0.5F, .transform = AffineTransform::translation(2, 3)}};
   const Rect clips[] = {{{6, 7}, {6, 6}}, {{7, 8}, {6, 6}}};
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(20, "crop begin failed");
   (*frame)->clear({0, 0, 1, 1});
   (*frame)->upload_image(colors);

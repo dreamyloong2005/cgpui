@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 #include <limits>
@@ -12,7 +13,7 @@ BoxShadowDraw valid_shadow() {
 }
 
 int check_valid(Renderer& renderer, const BoxShadowDraw& draw) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(10, "invalid shadow poisoned renderer");
   (*frame)->clear({1, 1, 1, 1});
   (*frame)->draw_box_shadow(draw);
@@ -51,7 +52,7 @@ int main() {
       case 4: invalid.shadow.color.a = infinity; break;
       case 5: invalid.clip_rect = Rect{{nan, 0}, {64, 64}}; break;
     }
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(3, "invalid shadow begin failed");
     (*frame)->draw_box_shadow(invalid);
     const auto result = (*frame)->present();
@@ -60,7 +61,7 @@ int main() {
     if (const int recovered = check_valid(**renderer, valid_shadow())) return recovered;
   }
   // An empty original box and a shape collapsed by negative spread draw nothing.
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(5, "empty shadow begin failed");
   (*frame)->clear({1, 1, 1, 1});
   auto empty = valid_shadow();

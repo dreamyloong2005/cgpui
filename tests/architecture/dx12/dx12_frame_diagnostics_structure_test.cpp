@@ -86,7 +86,7 @@ int main() {
     }
     require(has(read("tests/renderer-dx12/mcpp.toml"), "dx12_frame_diagnostics_test.cpp") &&
                 has(read("tests/renderer-dx12/mcpp.toml"), "dx12_diagnostic_ledger_test.cpp") &&
-                has(read("tests/architecture/mcpp.toml"), "dx12_frame_diagnostics_structure_test.cpp"),
+                has(read("tests/architecture/mcpp.toml"), "\"dx12/*_structure_test.cpp\""),
             "diagnostic behavior and module-boundary checks require explicit mcpp registration");
     return 0;
   } catch (const std::exception& error) {

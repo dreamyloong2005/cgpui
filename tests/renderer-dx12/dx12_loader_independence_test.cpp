@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 #include <cstdlib>
@@ -35,7 +36,7 @@ int main() {
         !composition.supported || composition.transparent_requested ||
         composition.composite_alpha != RendererCompositeAlpha::opaque)
       return dx12_fail(6, "dispatcher did not report real opaque DX12/WARP selection");
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(7, frame.error().message.c_str());
     (*frame)->clear({0, 0, 1, 1});
     (*frame)->draw_rect({.rect = {{8, 8}, {16, 16}}, .color = {1, 0, 0, 1}});

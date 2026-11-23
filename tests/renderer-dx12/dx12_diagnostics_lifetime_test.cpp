@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 #include "dx12_diagnostics_support.hpp"
 
@@ -8,7 +9,7 @@ using namespace cgpui_test;
 
 namespace {
 bool paint(Renderer& renderer, unsigned rectangles) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear({0, 0, 1, 1});
   for (unsigned index = 0; index != rectangles; ++index)
@@ -30,7 +31,7 @@ int main() {
   if (!origin_info.adapter_luid || origin_info.adapter_luid != peer_info.adapter_luid)
     return dx12_fail(2, "diagnostic recovery peers do not share the native adapter");
   {
-    auto abandoned = (*renderer)->begin_frame();
+    auto abandoned = cgpui_test::wait_for_test_frame(**renderer);
     if (!abandoned) return dx12_fail(3, "initial diagnostic frame unavailable");
     (*abandoned)->draw_rect({.rect = {{4, 4}, {8, 8}}, .color = {1, 0, 0, 1}});
   }
@@ -44,12 +45,12 @@ int main() {
         (*peer)->last_frame_diagnostic_snapshot() == peer_borrowed && diagnostic_same(peer_borrowed, peer_saved);
   };
   {
-    auto abandoned = (*renderer)->begin_frame();
+    auto abandoned = cgpui_test::wait_for_test_frame(**renderer);
     if (!abandoned) return dx12_fail(5, "post-success diagnostic frame unavailable");
     (*abandoned)->draw_rect({.rect = {{4, 4}, {8, 8}}, .color = {0, 1, 0, 1}});
     if ((*renderer)->begin_frame() || !retained()) return dx12_fail(6, "active/failed begin changed last successful diagnostics");
   }
-  auto invalid = (*renderer)->begin_frame();
+  auto invalid = cgpui_test::wait_for_test_frame(**renderer);
   if (!invalid) return dx12_fail(7, "invalid diagnostic frame unavailable");
   (*invalid)->draw_rect({.rect = {{4, 4}, {8, 8}}, .color = {1, 0, 0, 1}});
   (*invalid)->clear({std::numeric_limits<float>::quiet_NaN(), 0, 0, 1});

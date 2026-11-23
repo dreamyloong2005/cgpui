@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 
 using namespace cgpui;
@@ -16,14 +17,14 @@ int main() {
     return dx12_fail(3, "orphan cohort adapters differ");
   const ImageAsset image{.id = {8502}, .logical_size = {1, 1},
       .bitmap = {.width = 1, .height = 1, .stride = 4, .pixels = {255, 0, 0, 255}}};
-  auto finished = (*dead)->begin_frame();
+  auto finished = cgpui_test::wait_for_test_frame(**dead);
   if (!finished) return dx12_fail(4, "orphan warmup begin failed");
   (*finished)->upload_image(image);
   (*finished)->draw_image({.bounds = {{4, 4}, {24, 24}}, .asset = describe_image_asset(image)});
   if (!(*finished)->request_pixel_capture() || !(*finished)->present() ||
       !dx12_pixel((*dead)->last_frame_pixels(), 8, 8, {255, 0, 0, 255}))
     return dx12_fail(5, "orphan warmup failed");
-  auto orphan = (*dead)->begin_frame();
+  auto orphan = cgpui_test::wait_for_test_frame(**dead);
   if (!orphan) return dx12_fail(6, "orphan CPU frame begin failed");
   (*orphan)->draw_image({.bounds = {{4, 4}, {24, 24}}, .asset = describe_image_asset(image)});
   dead->reset(); // Both retained frames now outlive the public owner.
@@ -40,7 +41,7 @@ int main() {
   const auto presented = (*orphan)->present();
   if (presented || presented.error().code != ErrorCode::invalid_argument)
     return dx12_fail(11, "orphan frame was recovered or presented without its owner");
-  auto frame = (*live)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**live);
   if (!frame) return dx12_fail(12, "live cohort cannot begin after orphan rejection");
   finished->reset();
   orphan->reset();

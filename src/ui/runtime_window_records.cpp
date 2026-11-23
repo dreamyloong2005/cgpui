@@ -46,6 +46,7 @@ void WindowRuntime::cleanup_closed_additional_window(
   const RuntimeWindowCallbackScope cleanup_scope(*this);
   const ViewId root_view_id = record.root_view_id;
   record.active = false;
+  state_->scheduling.frame_readiness_.clear(*this, record.runtime_id);
   cancel_window_timers(record.runtime_id);
   if (auto host = state_->elements.window_element_hosts_.extract(record.runtime_id.value); !host.empty()) {
     state_->windows.window_lifetime_->retire_tree(std::move(host.mapped().tree));

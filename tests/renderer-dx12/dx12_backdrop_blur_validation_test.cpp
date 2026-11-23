@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 #include <limits>
@@ -12,7 +13,7 @@ BackdropBlurDraw tinted_panel(float sigma) {
 }
 
 int check_zero_sigma(Renderer& renderer, float sigma) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(10, "invalid backdrop poisoned the next frame");
   (*frame)->clear({1, 1, 1, 1});
   (*frame)->draw_rect({.rect = {{0, 0}, {32, 64}}, .color = {0, 0, 0, 1}});
@@ -31,7 +32,7 @@ int check_zero_sigma(Renderer& renderer, float sigma) {
 }
 
 int check_extreme_sigma(Renderer& renderer) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(20, "extreme sigma begin failed");
   (*frame)->clear({0.25F, 0.5F, 0.75F, 1});
   (*frame)->draw_backdrop_blur({.rect = {{8, 8}, {48, 48}},
@@ -76,7 +77,7 @@ int main() {
       case 8: invalid.clip_stack.current_clip_rect = Rect{{0, -infinity}, {64, 64}}; break;
       case 9: invalid.clip_stack.clips = {Rect{{0, 0}, {nan, 64}}}; break;
     }
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(3, "invalid backdrop begin failed");
     (*frame)->draw_backdrop_blur(invalid);
     const auto result = (*frame)->present();

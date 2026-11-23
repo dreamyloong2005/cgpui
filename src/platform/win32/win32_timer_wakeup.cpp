@@ -4,8 +4,17 @@
 
 namespace cgpui {
 
-Win32TimerWakeup::Win32TimerWakeup()
-    : timer_(CreateThreadpoolTimer(&timer_callback, this, nullptr)) {}
+Win32TimerWakeup::Win32TimerWakeup() : Win32TimerWakeup(&CreateThreadpoolTimer) {}
+
+Win32TimerWakeup::Win32TimerWakeup(CreateTimer create_timer)
+    : timer_(create_timer(&timer_callback, this, nullptr)),
+      creation_error_(timer_ ? ERROR_SUCCESS : GetLastError()) {}
+
+Result<void> Win32TimerWakeup::initialization_result() const {
+  if (timer_) return {};
+  return std::unexpected(Error{.code = ErrorCode::platform_initialization_failed,
+      .message = "CreateThreadpoolTimer failed (Win32 error " + std::to_string(creation_error_) + ")"});
+}
 
 Win32TimerWakeup::~Win32TimerWakeup() {
   if (timer_ == nullptr) return;
@@ -24,10 +33,7 @@ void Win32TimerWakeup::set_thread_id(DWORD thread_id) {
 void Win32TimerWakeup::request_now() { post_wakeup(); }
 
 void Win32TimerWakeup::request(std::uint64_t delay_ms) {
-  if (timer_ == nullptr) {
-    post_wakeup();
-    return;
-  }
+  if (timer_ == nullptr) return; // Failed owners are rejected before application exposure.
   const std::uint64_t maximum_delay =
       (std::numeric_limits<std::uint64_t>::max)() / 10'000;
   std::uint64_t bounded_delay = delay_ms == 0 ? 1 : delay_ms;

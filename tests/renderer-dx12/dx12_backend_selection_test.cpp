@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 #include <cstdlib>
@@ -52,7 +53,7 @@ int main() {
       info.adapter_name.empty() || !info.adapter_luid || info.device_generation == 0) {
     return dx12_fail(7, "explicit WARP backend metadata differs");
   }
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(8, frame.error().message.c_str());
   (*frame)->clear({1, 0, 0, 1});
   if (!(*frame)->request_pixel_capture() || !(*frame)->present() ||

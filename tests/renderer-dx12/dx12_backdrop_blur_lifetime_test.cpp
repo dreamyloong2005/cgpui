@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 using namespace cgpui;
@@ -5,7 +6,7 @@ using namespace cgpui_test;
 
 namespace {
 int effects_frame(Renderer& renderer, Size size) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(10, "lifecycle effects begin failed");
   (*frame)->clear({0, 0, 1, 1});
   // Three differently sized regions and sigmas exercise independent transient
@@ -29,7 +30,7 @@ int effects_frame(Renderer& renderer, Size size) {
 }
 
 int plain_frame(Renderer& renderer, Size size) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(20, "plain frame after blur unavailable");
   (*frame)->clear({0, 1, 1, 1});
   (*frame)->draw_rect({.rect = {{4, 4}, {17, 19}}, .color = {1, 0, 1, 1}});
@@ -51,7 +52,7 @@ int main() {
   if (!window.hwnd) return dx12_fail(1, "lifecycle window unavailable");
   auto renderer = create_dx12_renderer(window.descriptor());
   if (!renderer) return dx12_fail(2, renderer.error().message.c_str());
-  auto abandoned = (*renderer)->begin_frame();
+  auto abandoned = cgpui_test::wait_for_test_frame(**renderer);
   if (!abandoned) return dx12_fail(3, "abandoned blur begin failed");
   (*abandoned)->clear({1, 0, 0, 1});
   (*abandoned)->draw_backdrop_blur({.rect = {{0, 0}, {64, 64}}, .blur_radius = 12});
@@ -73,7 +74,7 @@ int main() {
     return dx12_fail(32, "second renderer changed first capture");
   other->reset();
   if (const int result = effects_frame(**renderer, {67, 51})) return result;
-  auto orphan = (*renderer)->begin_frame();
+  auto orphan = cgpui_test::wait_for_test_frame(**renderer);
   if (!orphan) return dx12_fail(33, "orphan backdrop begin failed");
   (*orphan)->draw_backdrop_blur({.rect = {{4, 4}, {48, 40}}, .blur_radius = 16});
   renderer->reset();

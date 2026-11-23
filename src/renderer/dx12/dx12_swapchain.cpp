@@ -1,6 +1,7 @@
 #include "dx12_state_internal.hpp"
 #include "dx12_composition_internal.hpp"
 #include "dx12_window_alpha_internal.hpp"
+#include "dx12_frame_pacing_internal.hpp"
 
 namespace cgpui {
 namespace {
@@ -47,9 +48,9 @@ Result<void> dx12_create_swapchain(Dx12State& state) {
   if (!state.composition_surface) {
     result = state.factory->MakeWindowAssociation(state.hwnd, DXGI_MWA_NO_ALT_ENTER);
     if (FAILED(result)) return std::unexpected(dx12_error(result, "window association"));
-    result = state.swapchain->SetMaximumFrameLatency(1);
-    if (FAILED(result)) return std::unexpected(dx12_error(result, "maximum frame latency"));
   }
+  if (auto pacing = state.frame_pacing->configure(state.swapchain.Get(), !state.composition_surface); !pacing)
+    return pacing;
   D3D12_DESCRIPTOR_HEAP_DESC heap{};
   heap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
   heap.NumDescriptors = static_cast<UINT>(state.targets.size());

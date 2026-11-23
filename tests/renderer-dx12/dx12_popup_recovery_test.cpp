@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_popup_test_support.hpp"
 
 using namespace cgpui;
@@ -29,7 +30,7 @@ bool desktop(const CompositionTestWindows& windows, bool blue) {
           windows.popup_point(52, 32));
 }
 bool paint_parent(Renderer& renderer) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear({0, 1, 0, 1});
   return (*frame)->request_pixel_capture() && (*frame)->present() &&
@@ -49,7 +50,7 @@ int main() {
   const ImageAsset image{.id = {8601}, .logical_size = {1, 1},
       .bitmap = {.width = 1, .height = 1, .stride = 4, .pixels = {255, 0, 0, 128}}};
   std::vector<std::unique_ptr<RenderFrame>> retained;
-  auto warmup = (*popup)->begin_frame();
+  auto warmup = cgpui_test::wait_for_test_frame(**popup);
   if (!warmup) return dx12_fail(4, "popup recovery warmup begin failed");
   (*warmup)->upload_image(image); // The only upload, across both loss epochs.
   paint(**warmup, image, false);
@@ -73,7 +74,7 @@ int main() {
     const auto parent_before = parent ? parent->backend_info() : RendererBackendInfo{};
     if (parent && parent_before.adapter_luid != before.adapter_luid)
       return dx12_fail(8, "popup and opaque owner did not use the same adapter");
-    auto pending = (*popup)->begin_frame();
+    auto pending = cgpui_test::wait_for_test_frame(**popup);
     if (!pending) return dx12_fail(9, "pre-loss popup CPU frame begin failed");
     paint(**pending, image, false);
     if (!(*pending)->request_pixel_capture()) return dx12_fail(10, "pre-loss capture request failed");
@@ -110,7 +111,7 @@ int main() {
       return dx12_fail(17, "pre-loss popup CPU frame was presentable twice");
     retained.push_back(std::move(*pending));
     if (parent && !paint_parent(*parent)) return dx12_fail(18, "recovered opaque owner pixels differ");
-    auto frame = (*popup)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**popup);
     if (!frame) return dx12_fail(19, "recovered popup is not immediately usable");
     if (epoch == 1) {
       retained.clear();

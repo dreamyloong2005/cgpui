@@ -67,10 +67,10 @@ scripts/dev/test.sh -p tests/ui         # one suite
 scripts/dev/test.sh -p tests/api_parity gpui_parity_ledger_test
 ```
 
-On Windows use `scripts/dev/test.ps1`. A test program is a file listed in
-its suite's `[test] discover` (`tests/<suite>/mcpp.toml`) and is named after
-the file. Tests that read repository files get the repository root from the
-`CGPUI_SOURCE_ROOT` define of their suite's `build.mcpp`.
+On Windows use `scripts/dev/test.ps1`. Each suite's `mcpp.toml` registers files or
+owner groups (e.g. `dx12/*_structure_test.cpp`) in `[test] discover`; names are file stems.
+The architecture/header CI matrix lists every program and must equal discovery.
+Repository-reading tests use `CGPUI_SOURCE_ROOT` from their suite's `build.mcpp`.
 
 ### Windows renderer pixel contracts
 

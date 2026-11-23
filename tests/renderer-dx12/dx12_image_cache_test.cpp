@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 using namespace cgpui;
@@ -12,7 +13,7 @@ ImageAsset image(std::array<std::uint8_t, 4> color) {
 
 int expect_cached(Renderer& renderer, const ImageAssetDescriptor& asset,
                    std::array<std::uint8_t, 4> expected) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(10, frame.error().message.c_str());
   (*frame)->clear({0, 0, 0, 1});
   (*frame)->draw_image({.bounds = {{0, 0}, {32, 32}}, .asset = asset});
@@ -38,7 +39,7 @@ int main() {
   const auto blue = image({0, 0, 255, 255});
   const auto asset = describe_image_asset(red);
   {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(2, "snapshot begin failed");
     (*frame)->clear({0, 0, 0, 1});
     (*frame)->upload_image(red);
@@ -58,13 +59,13 @@ int main() {
       return dx12_fail(5, "same-frame image replacement/invalidation or primitive order differs");
   }
   {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(6, "invalidation begin failed");
     (*frame)->draw_image({.bounds = {{0, 0}, {32, 32}}, .asset = asset});
     if (const int result = reject_frame(**frame)) return result;
   }
   {
-    auto abandoned = (*renderer)->begin_frame();
+    auto abandoned = cgpui_test::wait_for_test_frame(**renderer);
     if (!abandoned) return dx12_fail(7, "abandoned begin failed");
     // CPU snapshots are record-time cache updates, not a public transaction.
     // Abandoning must not mark an unsubmitted GPU texture as uploaded.
@@ -73,7 +74,7 @@ int main() {
   }
   if (const int result = expect_cached(**renderer, asset, {0, 0, 255, 255})) return result;
   {
-    auto failed = (*renderer)->begin_frame();
+    auto failed = cgpui_test::wait_for_test_frame(**renderer);
     if (!failed) return dx12_fail(8, "failed-frame begin failed");
     (*failed)->upload_image(green);
     auto missing = asset;
@@ -83,7 +84,7 @@ int main() {
   }
   if (const int result = expect_cached(**renderer, asset, {0, 255, 0, 255})) return result;
   {
-    auto failed = (*renderer)->begin_frame();
+    auto failed = cgpui_test::wait_for_test_frame(**renderer);
     if (!failed) return dx12_fail(9, "invalid upload begin failed");
     auto invalid = blue;
     invalid.bitmap.stride = 0;
@@ -92,7 +93,7 @@ int main() {
   }
   if (const int result = expect_cached(**renderer, asset, {0, 255, 0, 255})) return result;
   {
-    auto failed = (*renderer)->begin_frame();
+    auto failed = cgpui_test::wait_for_test_frame(**renderer);
     if (!failed) return dx12_fail(15, "descriptor mismatch begin failed");
     auto invalid = asset;
     invalid.pixel_width = 2;

@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_ordinary_pixels_support.hpp"
 #include "dx12_ordinary_menu_loop_support.hpp"
 
@@ -6,7 +7,7 @@ using namespace cgpui_test;
 
 namespace {
 bool paint_peer(Renderer& renderer) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear({0, 1, 0, 1});
   return (*frame)->request_pixel_capture() && (*frame)->present() &&
@@ -52,7 +53,7 @@ int main() {
     const auto before = (*renderer)->backend_info(), peer_before = (*peer)->backend_info();
     if (!before.adapter_luid || before.adapter_luid != peer_before.adapter_luid)
       return dx12_fail(6, "ordinary alpha and opaque peer selected different adapters");
-    auto pending = (*renderer)->begin_frame();
+    auto pending = cgpui_test::wait_for_test_frame(**renderer);
     if (!pending) return dx12_fail(7, "ordinary pending pre-removal frame unavailable");
     (*pending)->clear({1, 0, 1, 0.5F});
     const auto* borrowed = (*renderer)->last_frame_pixels();
@@ -87,7 +88,7 @@ int main() {
       return dx12_fail(15, "recovered native menu differs from the same opaque reference");
     if (!dx12_recovered_native_device_clean(after)) return dx12_fail(16, "recovered native debug errors");
   }
-  auto active = (*renderer)->begin_frame();
+  auto active = cgpui_test::wait_for_test_frame(**renderer);
   if (!active) return dx12_fail(17, "post-recovery active frame unavailable");
   retained.clear();
   const auto overlap = (*renderer)->begin_frame();

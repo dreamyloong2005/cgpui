@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 using namespace cgpui;
@@ -8,19 +9,19 @@ int main() {
   if (!window.hwnd) return dx12_fail(1, "native window failed");
   auto renderer = create_dx12_renderer(window.descriptor());
   if (!renderer) return dx12_fail(2, renderer.error().message.c_str());
-  auto first = (*renderer)->begin_frame();
+  auto first = cgpui_test::wait_for_test_frame(**renderer);
   if (!first) return dx12_fail(3, first.error().message.c_str());
   if ((*renderer)->begin_frame()) return dx12_fail(4, "overlapping frame accepted");
   if ((*renderer)->resize({80, 40}, {1})) return dx12_fail(5, "resize during frame accepted");
   first->reset();
   if (!(*renderer)->resize({64, 64}, {1})) return dx12_fail(6, "abandoned frame retained ownership");
 
-  first = (*renderer)->begin_frame();
+  first = cgpui_test::wait_for_test_frame(**renderer);
   if (!first) return dx12_fail(7, "frame after abandonment failed");
   (*first)->clear({0, 0, 0, 1});
   if (!(*first)->present()) return dx12_fail(8, "initial present failed");
   if ((*first)->present()) return dx12_fail(9, "frame presented twice");
-  auto second = (*renderer)->begin_frame();
+  auto second = cgpui_test::wait_for_test_frame(**renderer);
   if (!second) return dx12_fail(10, "finished frame blocks next frame");
   first->reset();
   if ((*renderer)->begin_frame()) return dx12_fail(11, "old frame destructor released new frame");
@@ -33,7 +34,7 @@ int main() {
   }
   second->reset();
 
-  auto orphan = (*renderer)->begin_frame();
+  auto orphan = cgpui_test::wait_for_test_frame(**renderer);
   if (!orphan) return dx12_fail(14, "orphan frame creation failed");
   renderer->reset();
   (*orphan)->clear({1, 0, 0, 1});

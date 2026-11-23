@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../support/frame_wait_test_support.hpp"
+
 #include "dx12_ordinary_pixels_support.hpp"
 #include <cmath>
 
@@ -81,7 +83,7 @@ inline bool client_alpha_scale_pixels(cgpui::Renderer& renderer, const cgpui::Pl
                                        bool doubled) {
   const auto size = window.state().framebuffer_size;
   if (!renderer.resize(size, {doubled ? 2.0F : 1.0F})) return false;
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear({1, 1, 1, 0});
   (*frame)->draw_rect({.rect = {{4, 4}, {8, 8}}, .color = {1, 0, 0, 0.5F}});

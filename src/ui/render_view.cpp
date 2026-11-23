@@ -57,6 +57,10 @@ Result<void> render_view(
   }
 
   auto result = (*frame)->present();
+  if (!result && result.error().code == ErrorCode::frame_not_ready) {
+    return std::unexpected(Error{ErrorCode::frame_acquisition_failed,
+        "present violated begin-only frame_not_ready contract: " + result.error().message});
+  }
   if (result && statistics != nullptr) {
     statistics->present_count += 1;
     apply_runtime_renderer_frame_diagnostics(

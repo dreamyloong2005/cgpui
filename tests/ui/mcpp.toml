@@ -23,6 +23,7 @@ cgpui.build-support = { path = "../../tools/mcpp" }
 [build]
 sources = [
     "native_text_shaping_reference.cpp",
+    "runtime_frame_readiness_test_support.cpp",
 ]
 include_dirs = [
     "../../src/ui",
@@ -36,6 +37,12 @@ defines = [
 
 [test]
 discover = [
+    "window_runtime_frame_readiness_delay_test.cpp",
+    "window_runtime_frame_readiness_cancellation_test.cpp",
+    "window_runtime_frame_readiness_lifetime_test.cpp",
+    "window_runtime_frame_readiness_fairness_test.cpp",
+    "window_runtime_frame_readiness_backoff_test.cpp",
+    "window_runtime_frame_readiness_present_test.cpp",
     "window_runtime_transparent_clear_test.cpp",
     "window_runtime_dynamic_backdrop_clear_test.cpp",
     "window_backend_info_test.cpp",

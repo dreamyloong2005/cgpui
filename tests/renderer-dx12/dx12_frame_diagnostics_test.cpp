@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 using namespace cgpui;
@@ -11,7 +12,7 @@ int main() {
   if ((*renderer)->backend_info().backend != RendererBackend::dx12 ||
       (*renderer)->last_frame_diagnostic_snapshot() != nullptr)
     return dx12_fail(3, "new DX12 renderer must not expose a completed-frame diagnostic snapshot");
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(4, frame.error().message.c_str());
   (*frame)->clear({0, 0, 1, 1});
   (*frame)->draw_rect({.rect = {{8, 8}, {16, 16}}, .color = {1, 0, 0, 1}});

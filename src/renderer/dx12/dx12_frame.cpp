@@ -6,7 +6,8 @@
 #include <cmath>
 
 namespace cgpui {
-Dx12Frame::Dx12Frame(std::shared_ptr<Dx12State> state) : state_(std::move(state)) {
+Dx12Frame::Dx12Frame(std::shared_ptr<Dx12State> state, std::uint64_t admission_call_ns)
+    : state_(std::move(state)), admission_call_ns_(admission_call_ns) {
   Dx12OperationGuard operation(*state_);
   generation_ = state_->info.device_generation;
 }
@@ -91,7 +92,7 @@ Result<void> Dx12Frame::present() {
   state_->pixels.reset();
   if (error_) return std::unexpected(*error_);
   if (auto ready = dx12_prepare_present(*state_, generation_); !ready) return ready;
-  auto result = dx12_submit_frame(*state_, clear_, draws_, capture_, command_count_);
+  auto result = dx12_submit_frame(*state_, clear_, draws_, capture_, command_count_, admission_call_ns_);
   if (result) state_->image_cache->finish_frame();
   if (!result) return dx12_handle_frame_failure(*state_, std::move(result.error()));
   return result;

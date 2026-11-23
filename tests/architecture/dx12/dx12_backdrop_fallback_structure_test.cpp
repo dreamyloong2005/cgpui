@@ -74,10 +74,10 @@ int main() {
             "explicit native support member must compile both focused implementation files");
     const auto registry = read("tests/architecture/mcpp.toml");
     const auto ci = read("scripts/ci/architecture-header-targets.txt");
-    require(has(registry, "\"dx12_backdrop_fallback_structure_test.cpp\"") &&
-                has(ci, "dx12_backdrop_fallback_structure_test|tests/architecture/dx12_backdrop_fallback_structure_test.cpp") &&
+    require(has(registry, "\"dx12/*_structure_test.cpp\"") &&
+                has(ci, "dx12_backdrop_fallback_structure_test|tests/architecture/dx12/dx12_backdrop_fallback_structure_test.cpp") &&
                 has(registry, "\"renderer_common_pixel_structure_test.cpp\"") &&
-                has(registry, "\"dx12_runtime_recovery_structure_test.cpp\""),
+                has(ci, "dx12_runtime_recovery_structure_test|tests/architecture/dx12/dx12_runtime_recovery_structure_test.cpp"),
             "register fallback ownership without dropping common/runtime guard registrations");
     return 0;
   } catch (const std::exception& error) {

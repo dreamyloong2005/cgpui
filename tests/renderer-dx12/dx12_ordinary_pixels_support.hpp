@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../support/frame_wait_test_support.hpp"
+
 #include "dx12_ordinary_test_support.hpp"
 
 namespace cgpui_test {
@@ -11,7 +13,7 @@ inline bool ordinary_draw_bands(cgpui::Renderer& renderer,
   const auto state = window.state();
   const float width = state.framebuffer_size.width / state.scale.value;
   const float height = state.framebuffer_size.height / state.scale.value;
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear({0, 0, 0, 0});
   (*frame)->draw_rect({.rect = {{0, 0}, {width / 3, height}},

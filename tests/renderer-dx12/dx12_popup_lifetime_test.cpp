@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_popup_test_support.hpp"
 
 #include <string>
@@ -21,7 +22,7 @@ int main() {
   const ImageAsset image{.id = {8602}, .logical_size = {1, 1},
       .bitmap = {.width = 1, .height = 1, .stride = 4, .pixels = {255, 0, 0, 128}}};
   for (const bool destroy_hwnd : {false, true}) {
-    auto background = (*live)->begin_frame();
+    auto background = cgpui_test::wait_for_test_frame(**live);
     if (!background) return dx12_fail(18, "live opaque owner warmup begin failed");
     (*background)->clear({0, 1, 0, 1});
     if (!(*background)->present()) return dx12_fail(19, "live opaque owner warmup present failed");
@@ -31,7 +32,7 @@ int main() {
     const auto before = (*live)->backend_info();
     if (before.adapter_luid != (*popup)->backend_info().adapter_luid)
       return dx12_fail(5, "orphan popup and live owner selected different adapters");
-    auto finished = (*popup)->begin_frame();
+    auto finished = cgpui_test::wait_for_test_frame(**popup);
     if (!finished) return dx12_fail(6, "orphan popup warmup begin failed");
     (*finished)->clear({0, 0, 0, 0});
     (*finished)->upload_image(image);
@@ -46,7 +47,7 @@ int main() {
       const auto duplicate = create_dx12_renderer(dx12_popup_descriptor(windows.popup()));
       if (duplicate || duplicate.error().message.find("composition HWND target") == std::string::npos)
         return dx12_fail(20, "duplicate popup factory did not reject the occupied DComp layer");
-      auto updated = (*popup)->begin_frame();
+      auto updated = cgpui_test::wait_for_test_frame(**popup);
       if (!updated) return dx12_fail(21, "original popup unusable after duplicate factory failure");
       (*updated)->clear({0, 0, 1, 0.5F});
       if (!(*updated)->request_pixel_capture() || !(*updated)->present() ||
@@ -54,7 +55,7 @@ int main() {
           !windows.expect({0, 127, 128}, windows.popup_point(32, 32)))
         return dx12_fail(22, "failed duplicate factory corrupted original popup presentation");
     }
-    auto orphan = (*popup)->begin_frame();
+    auto orphan = cgpui_test::wait_for_test_frame(**popup);
     if (!orphan) return dx12_fail(8, "orphan popup CPU frame begin failed");
     (*orphan)->draw_image({.bounds = {{0, 0}, {64, 64}}, .asset = describe_image_asset(image)});
     popup->reset(); // A finished and an active CPU frame both outlive their owner.
@@ -71,7 +72,7 @@ int main() {
     const auto rejected = (*orphan)->present();
     if (rejected || rejected.error().code != ErrorCode::invalid_argument || (*finished)->present())
       return dx12_fail(13, "ownerless popup frame rebuilt or presented");
-    auto frame = (*live)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**live);
     if (!frame) return dx12_fail(14, "live owner unavailable after orphan rejection");
     finished->reset();
     orphan->reset(); // Final state destruction must not hang, even without the HWND.

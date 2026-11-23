@@ -38,6 +38,9 @@ previous Popup policy is unchanged for Vulkan.
 - Pixel readback with row-pitch handling, resize, and explicit rejection of
   overlapping frames or resize while a frame is outstanding. Destroying a
   renderer before its outstanding frame is safe; that frame cannot present.
+- Nonblocking DXGI frame admission for opaque HWND chains, including the first
+  frame. A pending begin returns `frame_not_ready`; WindowRuntime defers redraw
+  through its window-bound timer rather than publishing success or hot-looping.
 - Shared CPU geometry in `renderer/planning` and shared Slang primitive shaders;
   no DX12-to-Vulkan package dependency or runtime shader compiler.
 - Vulkan and DX12 populate `Renderer::backend_info()` and
@@ -49,6 +52,13 @@ This is a synchronous baseline: GPU completion is awaited for each submitted
 frame. Geometry and texture staging use the separate bounded private upload
 pools below; readback pooling and deeper frame overlap remain optimization work.
 This is not a frame-rate or performance-parity claim.
+
+Admission is separate from GPU retirement: it does not replace a fence wait or
+make Present/readback asynchronous. Direct clients must schedule their own
+bounded pending retry; fatal and recovery results keep their original meaning.
+Composition chains still have admission explicitly disabled, not assumed paced.
+See [frame readiness](frame-readiness.md) for grant lifetime, runtime cancellation
+and the native/controlled-test evidence boundaries.
 
 Image uploads and invalidations update the CPU cache while commands are recorded;
 abandoning or rejecting a frame does not roll back those cache operations. Each
@@ -199,14 +209,26 @@ Counts describe logical backend work, not GPU draw-call or pixel counts:
   CPU cache writes alone, row-pitch padding, vertex/index buffers, scene copies
   and capture/readback are excluded. Counts use saturating arithmetic.
 
-Timings are CPU wall-clock stage durations inside presentation, including its
-synchronous GPU wait and optional readback. They exclude application time spent
-recording the frame and do not measure GPU timestamps, scanout or end-to-end
-input latency. Resource preparation includes the diagnostic planning pass.
-Resource realization may occur during command recording, so stage
-names do not promise identical work distribution across backends. Vulkan and
-DX12 have different batching and upload policies; their raw counts are not a
-cross-backend performance-equivalence claim.
+Timings sum selected, nonoverlapping CPU wall-clock scopes: the successful
+`begin_frame` admission call and presentation stages, including synchronous GPU
+waiting and optional readback. They are not one begin-to-Present stopwatch.
+`pacing_wait_nanoseconds` adds that one admission-call interval to the existing
+pre-record synchronization interval; it is not an exclusive DXGI wait duration
+or a measure of all synchronization. The post-Present fence wait remains in the
+presentation stage. Admission timing includes owner/API overhead; cached grants
+receive a fresh call sample, and explicitly disabled composition admission
+contributes zero. Zero is also valid on a coarse clock and does not prove readiness.
+
+Earlier pending probes, runtime timer/event-loop delays, time holding an abandoned
+or active frame, recovery handling and application frame recording are excluded.
+Each frame owns its own admission sample; failed/unpublished candidates never
+replace the last successful diagnostic. Resource preparation includes diagnostic
+planning. All stage contributions use the shared saturating category/total sum.
+These values do not measure GPU timestamps, scanout or end-to-end input latency.
+Resource realization may occur during command recording, so stage names do not
+promise identical work distribution across backends. Vulkan and DX12 have
+different batching and upload policies; their raw counts are not a cross-backend
+performance-equivalence claim.
 
 ## Bounded ordinary-window transparency
 

@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 using namespace cgpui;
@@ -12,7 +13,7 @@ int main() {
   auto warm = cold;
   warm.id = {71};
   {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(2, "cache seed begin failed");
     (*frame)->upload_image(cold);
     (*frame)->upload_image(warm);
@@ -21,14 +22,14 @@ int main() {
     if (auto result = (*frame)->present(); !result) return dx12_fail(3, result.error().message.c_str());
   }
   for (unsigned idle = 0; idle < 120; ++idle) {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(4, "idle cache frame failed");
     if (auto result = (*frame)->present(); !result) return dx12_fail(5, result.error().message.c_str());
   }
   {
     // Exactly 120 completed idle frames retain the upload. Touching warm now
     // refreshes it while cold exceeds the idle limit on this presentation.
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(6, "boundary frame failed");
     (*frame)->draw_image({.bounds = {{0, 0}, {16, 16}}, .asset = describe_image_asset(warm)});
     if (!(*frame)->request_pixel_capture()) return dx12_fail(7, "boundary capture failed");
@@ -37,14 +38,14 @@ int main() {
       return dx12_fail(9, "cache evicted at or before 120 idle frames");
   }
   {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(10, "evicted frame failed");
     (*frame)->draw_image({.bounds = {{0, 0}, {16, 16}}, .asset = describe_image_asset(cold)});
     const auto result = (*frame)->present();
     if (result || result.error().code != ErrorCode::invalid_argument)
       return dx12_fail(11, "image cache retained an upload beyond 120 idle frames");
   }
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(12, "eviction error poisoned renderer");
   (*frame)->upload_image(cold);
   (*frame)->draw_image({.bounds = {{0, 0}, {16, 16}}, .asset = describe_image_asset(cold)});

@@ -1,4 +1,5 @@
 #include "renderer_pixel_test_support.hpp"
+#include "../support/frame_wait_test_support.hpp"
 
 namespace {
 
@@ -18,7 +19,7 @@ int test_captures_presented_clear_color() {
   if (!renderer) {
     return 2;
   }
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) {
     cgpui_test::report_pixel_test_error("begin frame", frame.error());
     return 3;

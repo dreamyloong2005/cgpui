@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 
 using namespace cgpui;
@@ -5,7 +6,7 @@ using namespace cgpui_test;
 
 namespace {
 bool captured_clear(Renderer& renderer, Color color, std::array<std::uint8_t, 4> expected) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear(color);
   return (*frame)->request_pixel_capture() && (*frame)->present() &&
@@ -32,7 +33,7 @@ int main() {
       !captured_clear(**resize_peer, {0, 0, 1, 1}, {0, 0, 255, 255}))
     return dx12_fail(4, "lazy cohort warmup failed");
   const auto support_before = (*resize_peer)->backdrop_blur_support();
-  auto abandoned = (*resize_peer)->begin_frame();
+  auto abandoned = cgpui_test::wait_for_test_frame(**resize_peer);
   if (!abandoned) return dx12_fail(5, "lazy peer active frame unavailable");
   if (!dx12_remove_native_device(first_before)) return dx12_fail(6, "lazy cohort native removal failed");
   const auto retry = (*first)->begin_frame();
@@ -50,7 +51,7 @@ int main() {
   (*abandoned)->draw_rect({.rect = {{4, 4}, {16, 16}}, .color = {1, 0, 0, 1}});
   (*abandoned)->draw_backdrop_blur({.rect = {{4, 4}, {32, 32}}, .blur_radius = 4});
   abandoned->reset(); // Abandonment must release local ownership, not rebuild.
-  auto first_active = (*first)->begin_frame();
+  auto first_active = cgpui_test::wait_for_test_frame(**first);
   if (!first_active) return dx12_fail(10, "initiator not ready before lazy peer calls");
   const auto begin_retry = (*begin_peer)->begin_frame();
   if (begin_retry || begin_retry.error().code != ErrorCode::frame_retry_required ||
@@ -67,7 +68,7 @@ int main() {
     return dx12_fail(13, "lazy peer rebuild invalidated the initiator's new frame");
   if (!captured_clear(**begin_peer, {0, 1, 0, 1}, {0, 255, 0, 255}))
     return dx12_fail(14, "begin peer cannot render after lazy recovery");
-  auto resized = (*resize_peer)->begin_frame();
+  auto resized = cgpui_test::wait_for_test_frame(**resize_peer);
   if (!resized) return dx12_fail(15, "resize peer not ready");
   (*resized)->clear({0, 0, 1, 1});
   (*resized)->draw_rect({.rect = {{4, 4}, {8, 8}}, .color = {1, 0, 0, 1}});

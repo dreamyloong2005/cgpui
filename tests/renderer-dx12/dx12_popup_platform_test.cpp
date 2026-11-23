@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_popup_test_support.hpp"
 #include "cgpui/platform/platform.hpp"
 
@@ -59,7 +60,7 @@ int check_popup(PlatformApplication& app, PlatformWindow& parent, bool pointer_t
   const float width = state.framebuffer_size.width / state.scale.value;
   const float height = state.framebuffer_size.height / state.scale.value;
   for (const bool blue : {false, true}) {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(26, "platform popup begin failed");
     (*frame)->clear({0, 0, 0, 0});
     (*frame)->draw_rect({.rect = {{0, 0}, {width / 3, height}},
@@ -116,7 +117,7 @@ int main() {
   if (!renderer) return dx12_fail(7, renderer.error().message.c_str());
   if (!(*renderer)->popup_windows_supported() || (*renderer)->surface_composition().alpha_composited())
     return dx12_fail(8, "opaque DX12 parent did not advertise popup support");
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(9, "parent begin failed");
   (*frame)->clear({0, 1, 0, 1});
   if (!(*frame)->request_pixel_capture() || !(*frame)->present() ||

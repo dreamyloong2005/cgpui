@@ -6,12 +6,13 @@
 #include "dx12_frame_diagnostics_internal.hpp"
 #include "dx12_geometry_upload_frame_internal.hpp"
 #include "dx12_texture_upload_frame_internal.hpp"
+#include "dx12_frame_pacing_internal.hpp"
 
 namespace cgpui {
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
                               std::span<const Dx12DrawCommand> draws, bool capture,
-                              std::size_t command_count) {
-  Dx12FrameDiagnostics diagnostics(state, draws, command_count);
+                              std::size_t command_count, std::uint64_t admission_call_ns) {
+  Dx12FrameDiagnostics diagnostics(state, draws, command_count, admission_call_ns);
   if (auto idle = dx12_wait_idle(state); !idle) return idle;
   diagnostics.finish_stage(RendererFrameTimingStage::pacing_wait);
   if (auto prepared = dx12_begin_geometry_upload_frame(state); !prepared) return prepared;
@@ -67,6 +68,7 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   state.submitted = true;
   diagnostics.finish_stage(RendererFrameTimingStage::queue_submission);
   const HRESULT presented = state.swapchain->Present(1, 0);
+  state.frame_pacing->presentation_attempted();
   // The fence follows presentation as well as drawing; resize/destruction
   // cannot retire resources while DXGI is still using this queue's frame.
   if (auto idle = dx12_wait_idle(state); !idle) return idle;

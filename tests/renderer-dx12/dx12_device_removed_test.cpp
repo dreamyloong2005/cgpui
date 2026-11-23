@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 
 using namespace cgpui;
@@ -32,7 +33,7 @@ int main() {
     return dx12_fail(14, "requested device-removal debug validation has no InfoQueue");
   const ImageAsset image{.id = {8301}, .logical_size = {1, 1},
       .bitmap = {.width = 1, .height = 1, .stride = 4, .pixels = {255, 0, 0, 255}}};
-  auto warmup = (*renderer)->begin_frame();
+  auto warmup = cgpui_test::wait_for_test_frame(**renderer);
   if (!warmup) return dx12_fail(6, "device-removal warmup begin failed");
   (*warmup)->upload_image(image);
   paint_resources(**warmup, image);
@@ -40,7 +41,7 @@ int main() {
       !dx12_pixel((*renderer)->last_frame_pixels(), 60, 60, {0, 0, 255, 255}))
     return dx12_fail(7, "device-removal resource warmup failed");
   warmup->reset();
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(8, "device-removal frame begin failed");
   paint_resources(**frame, image); // Reuses the previously realized image snapshot.
   if (!(*frame)->request_pixel_capture()) return dx12_fail(9, "removal capture request failed");

@@ -6,13 +6,13 @@
 namespace cgpui {
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
                               std::span<const Dx12DrawCommand> draws, bool capture,
-                              std::size_t command_count);
+                              std::size_t command_count, std::uint64_t admission_call_ns = 0);
 Result<void> dx12_record_geometry(Dx12State& state, const RectGeometry& geometry);
 bool dx12_finite_geometry(const RectGeometry& geometry);
 
 class Dx12Frame final : public RenderFrame {
  public:
-  explicit Dx12Frame(std::shared_ptr<Dx12State> state);
+  explicit Dx12Frame(std::shared_ptr<Dx12State> state, std::uint64_t admission_call_ns = 0);
   ~Dx12Frame() override;
   void clear(Color color) override;
   void draw_rect(const SolidRect& rect) override;
@@ -36,6 +36,7 @@ class Dx12Frame final : public RenderFrame {
   void release();
   std::shared_ptr<Dx12State> state_;
   std::uint64_t generation_ = 0;
+  const std::uint64_t admission_call_ns_;
   Color clear_{0, 0, 0, 1};
   std::vector<Dx12DrawCommand> draws_;
   std::size_t command_count_ = 0;

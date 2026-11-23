@@ -1,10 +1,13 @@
 #include "dx12_operation_internal.hpp"
 #include "dx12_frame_internal.hpp"
 #include "dx12_frame_recovery_internal.hpp"
+#include "dx12_frame_admission_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
 #include "dx12_device_cohort_internal.hpp"
 #include "dx12_surface_internal.hpp"
 #include "dx12_window_alpha_internal.hpp"
+#include "dx12_renderer_creation_internal.hpp"
+#include "dx12_frame_pacing_native_internal.hpp"
 #include "cgpui/renderer/renderer_backend.hpp"
 
 namespace cgpui {
@@ -24,7 +27,9 @@ class Dx12Renderer final : public Renderer {
   Result<std::unique_ptr<RenderFrame>> begin_frame() override {
     Dx12OperationGuard operation(*state_);
     if (auto ready = dx12_prepare_frame(*state_); !ready) return std::unexpected(ready.error());
-    auto frame = std::make_unique<Dx12Frame>(state_);
+    auto admitted = dx12_admit_frame(*state_);
+    if (!admitted) return std::unexpected(admitted.error());
+    auto frame = std::make_unique<Dx12Frame>(state_, admitted->admission_call_ns);
     state_->frame_active = true;
     return frame;
   }
@@ -59,7 +64,12 @@ class Dx12Renderer final : public Renderer {
 }
 
 Result<std::unique_ptr<Renderer>> create_dx12_renderer(const RenderSurfaceDescriptor& descriptor) {
-  auto state = std::make_shared<Dx12State>();
+  return dx12_create_renderer(descriptor, dx12_native_frame_pacing_api());
+}
+
+Result<std::unique_ptr<Renderer>> dx12_create_renderer(
+    const RenderSurfaceDescriptor& descriptor, Dx12FramePacingApi& pacing_api) {
+  auto state = std::make_shared<Dx12State>(&pacing_api);
   Dx12OperationGuard operation(*state);
   if (auto surface = dx12_configure_surface(*state, descriptor); !surface)
     return std::unexpected(surface.error());

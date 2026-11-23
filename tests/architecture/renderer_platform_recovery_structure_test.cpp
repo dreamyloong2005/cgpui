@@ -29,10 +29,12 @@ int main() {
       !bounded(read("src/platform/win32/win32_window_dispatch_lifetime_internal.hpp"), 40) ||
       !has(read("src/platform/win32/win32_window.cpp"), "invalidate_window_registration()")) return 7;
   const auto retry = read("src/ui/runtime_frame_retry.cpp");
+  const auto readiness = read("src/ui/runtime_frame_readiness.cpp");
   if (!bounded(retry, 30) || !has(retry, "ErrorCode::frame_retry_required") ||
-      has(retry, "error.message") || has(retry, "Vulkan") ||
-      !has(read("src/ui/runtime_rendering.cpp"), "runtime_retry_frame(") ||
-      !has(read("src/ui/runtime_window_rendering.cpp"), "runtime_retry_frame(")) return 2;
+      has(retry, "error.message") || has(retry, "Vulkan") || has(retry, "frame_not_ready") ||
+      !bounded(readiness, 280) || !has(readiness, "return runtime_retry_frame(runtime, window, error)") ||
+      !has(read("src/ui/runtime_rendering.cpp"), "frame_readiness_.handle(") ||
+      !has(read("src/ui/runtime_window_rendering.cpp"), "frame_readiness_.handle(")) return 2;
   const auto presentation = read("src/renderer/vulkan/vulkan_presentation.cpp");
   const auto first_retry = presentation.find("ErrorCode::frame_retry_required");
   if (first_retry == std::string::npos ||

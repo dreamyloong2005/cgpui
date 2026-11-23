@@ -78,6 +78,10 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
     return std::unexpected(result.error());
   }
   if (!record.active) return {};
+  state_->scheduling.frame_readiness_.clear(*this, record.runtime_id);
+  // Lifetime scope retains the record, not its renderer/window after reentrant close.
+  if (!record.active || record.window == nullptr || record.renderer == nullptr ||
+      state_->core.should_quit_ || state_->core.shutting_down_) return {};
   runtime_publish_window_control_regions(
       record.window, std::move(window_control_regions));
   state_->diagnostics.last_renderer_frame_diagnostics_ =

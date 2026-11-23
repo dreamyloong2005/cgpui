@@ -54,6 +54,8 @@ int main() {
     require(has(capture, "cgpui::create_dx12_renderer(descriptor)") &&
                 has(capture, "renderer_->begin_frame()") &&
                 has(capture, "ErrorCode::frame_retry_required") &&
+                has(capture, "ErrorCode::frame_not_ready") && has(capture, "++counts_.begin_pending") &&
+                !has(capture, "wait_for_test_frame") && !has(capture, "Sleep(") &&
                 has(capture, "(*frame)->request_pixel_capture()") &&
                 has(capture, "return std::move(*frame)") && !has(capture, "public cgpui::RenderFrame") &&
                 !has(capture, "present()") && !has(capture, "ID3D12Device"),
@@ -87,9 +89,9 @@ int main() {
                 has(manifest, "dx12_runtime_root_recovery_test.cpp") &&
                 has(manifest, "dx12_runtime_child_recovery_test.cpp") &&
                 has(manifest, "../../tools/mcpp/empty_library.cpp") &&
-                has(read("tests/architecture/mcpp.toml"), "dx12_runtime_recovery_structure_test.cpp") &&
+                has(read("tests/architecture/mcpp.toml"), "\"dx12/*_structure_test.cpp\"") &&
                 has(read("scripts/ci/architecture-header-targets.txt"),
-                    "dx12_runtime_recovery_structure_test|tests/architecture/dx12_runtime_recovery_structure_test.cpp"),
+                    "dx12_runtime_recovery_structure_test|tests/architecture/dx12/dx12_runtime_recovery_structure_test.cpp"),
             "runtime recovery behavior/support leaves and structure checks require explicit mcpp/CI registration");
     return 0;
   } catch (const std::exception& error) {

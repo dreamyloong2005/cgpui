@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 
 using namespace cgpui;
@@ -26,7 +27,7 @@ int blocked_generation(Renderer& renderer, const ImageAssetDescriptor& image) {
   const auto after = renderer.backend_info();
   if (after.device_generation != before.device_generation + 1 || after.adapter_luid != before.adapter_luid)
     return dx12_fail(18, "blocked attempts consumed generations or changed adapter");
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(19, "unblocked renderer is not ready");
   (*frame)->clear({0, 0, 1, 1});
   (*frame)->draw_image({.bounds = {{4, 4}, {24, 24}}, .asset = image});
@@ -46,7 +47,7 @@ int main() {
   if (!renderer) return dx12_fail(2, renderer.error().message.c_str());
   const ImageAsset image{.id = {8403}, .logical_size = {1, 1},
       .bitmap = {.width = 1, .height = 1, .stride = 4, .pixels = {0, 255, 0, 255}}};
-  auto warmup = (*renderer)->begin_frame();
+  auto warmup = cgpui_test::wait_for_test_frame(**renderer);
   if (!warmup) return dx12_fail(3, "blocker warmup begin failed");
   (*warmup)->upload_image(image);
   (*warmup)->draw_image({.bounds = {{4, 4}, {24, 24}}, .asset = describe_image_asset(image)});

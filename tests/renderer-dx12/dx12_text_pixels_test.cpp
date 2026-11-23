@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 #include "cgpui/renderer/planning/glyph_geometry.hpp"
 
@@ -40,7 +41,7 @@ int deterministic_pixels(Renderer& renderer, DpiScale scale, const std::string& 
   draw.composition_stack = renderer_composition_stack_record(ancestry);
   draw.clip_rect = clip;
   draw.clip_stack = renderer_clip_stack_record(std::span{&clip, 1});
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(11, frame.error().message.c_str());
   (*frame)->clear({0, 0, 1, 1});
   (*frame)->draw_text(draw);
@@ -78,7 +79,7 @@ int native_smoke(Renderer& renderer) {
     draw.color = {1, 1, 1, 1};
     if (draw.glyphs.empty() || draw.glyphs[0].key.shaping_backend != TextShapingBackend::directwrite)
       return dx12_fail(20, "native DirectWrite shaping was not exercised");
-    auto frame = renderer.begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(renderer);
     if (!frame) return dx12_fail(21, "native text begin failed");
     (*frame)->clear({0, 0, 0, 1});
     (*frame)->draw_text(draw);

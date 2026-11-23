@@ -10,15 +10,18 @@
 #include "dx12_window_alpha_internal.hpp"
 #include "dx12_geometry_upload_internal.hpp"
 #include "dx12_texture_upload_internal.hpp"
+#include "dx12_frame_pacing_internal.hpp"
 
 namespace cgpui {
-Dx12State::Dx12State()
+Dx12State::Dx12State(Dx12FramePacingApi* pacing_api)
     : image_cache(std::make_unique<Dx12ImageCache>()),
       text_cache(std::make_unique<Dx12TextCache>()),
       texture_renderer(std::make_unique<Dx12TextureRenderer>()),
       backdrop_blur(std::make_unique<Dx12BackdropBlurRenderer>()),
       geometry_uploads(std::make_unique<Dx12GeometryUploads>()),
-      texture_uploads(std::make_unique<Dx12TextureUploads>()) {}
+      texture_uploads(std::make_unique<Dx12TextureUploads>()),
+      frame_pacing(std::make_unique<Dx12FramePacing>(
+          pacing_api ? *pacing_api : dx12_native_frame_pacing_api())) {}
 
 Dx12State::~Dx12State() {
   Dx12OperationGuard operation(*this);

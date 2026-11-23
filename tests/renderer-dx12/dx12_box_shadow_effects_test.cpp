@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 using namespace cgpui;
@@ -20,7 +21,7 @@ int hard_effects(Renderer& renderer, float scale) {
   const PaintMetadata stack[] = {{.opacity = 0.8F},
       {.opacity = 0.5F, .transform = AffineTransform::translation(3, 5)}};
   const Rect clips[] = {{{0, 0}, {60, 64}}};
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(11, "hard effects begin failed");
   (*frame)->clear({1, 1, 1, 1});
   (*frame)->draw_box_shadow({.rect = {{8, 8}, {16, 16}}, .radius = BorderRadii::all(4),
@@ -37,7 +38,7 @@ int hard_effects(Renderer& renderer, float scale) {
       !logical_pixel(renderer, scale, 62, 21, {255, 255, 255, 255}) ||
       !logical_pixel(renderer, scale, 19, 21, {255, 255, 255, 255}))
     return dx12_fail(13, "radius/spread/opacity/clip/DPI differs");
-  frame = renderer.begin_frame();
+  frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(14, "negative spread begin failed");
   (*frame)->clear({1, 1, 1, 1});
   (*frame)->draw_box_shadow({.rect = {{8, 8}, {16, 16}},
@@ -59,7 +60,7 @@ double interval_mass(double point, double low, double high, double sigma) {
 
 int blurred_falloff(Renderer& renderer, float scale) {
   if (!renderer.resize({128, 128}, {scale})) return dx12_fail(20, "blur resize failed");
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(21, "blur begin failed");
   (*frame)->clear({1, 1, 1, 1});
   (*frame)->draw_box_shadow({.rect = {{24, 24}, {32, 32}},
@@ -88,7 +89,7 @@ int blurred_falloff(Renderer& renderer, float scale) {
 
 int rounded_clipout(Renderer& renderer) {
   if (!renderer.resize({64, 64}, {1})) return dx12_fail(30, "rounded resize failed");
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(31, "rounded begin failed");
   (*frame)->clear({1, 1, 1, 1});
   (*frame)->draw_box_shadow({.rect = {{16, 16}, {24, 24}}, .radius = BorderRadii::all(8),

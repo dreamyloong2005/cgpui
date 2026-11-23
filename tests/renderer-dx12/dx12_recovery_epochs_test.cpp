@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 
 #include <string>
@@ -36,7 +37,7 @@ int main() {
     if (info.device_generation != initial.device_generation + epoch ||
         info.adapter_luid != initial.adapter_luid || info.software_adapter != initial.software_adapter)
       return dx12_fail(5, "repeated recovery lost generation or pinned adapter");
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(6, "epoch renderer is not ready");
     if (epoch == 0) (*frame)->upload_image(image); // Only one public upload across all generations.
     (*frame)->clear({0, 0, 1, 1});
@@ -53,7 +54,7 @@ int main() {
       return dx12_fail(9, "adapter preference mutation failed");
   }
   finished.clear();
-  auto final_frame = (*renderer)->begin_frame();
+  auto final_frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!final_frame) return dx12_fail(10, "old epoch frame destruction poisoned renderer");
   (*final_frame)->clear({0, 1, 0, 1});
   if (!(*final_frame)->request_pixel_capture() || !(*final_frame)->present() ||

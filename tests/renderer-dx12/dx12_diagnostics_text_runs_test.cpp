@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_diagnostics_text_support.hpp"
 
 using namespace cgpui;
@@ -18,7 +19,7 @@ int main() {
       quads.front().page_index != quads.back().page_index)
     return dx12_fail(3, "text diagnostics did not exercise multiple pages and return to an earlier page");
   for (unsigned pass = 0; pass != 2; ++pass) {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(4, "atlas run diagnostics frame unavailable");
     (*frame)->clear({0, 0, 0, 1});
     (*frame)->draw_text(text);

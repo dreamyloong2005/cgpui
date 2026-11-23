@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 #include <algorithm>
@@ -22,7 +23,7 @@ int affine_cases(Renderer& renderer, float scale) {
        {35, 12}, {24, 12}},
   };
   for (const auto& test : cases) {
-    auto frame = renderer.begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(renderer);
     if (!frame) return dx12_fail(10, "affine shadow begin failed");
     (*frame)->clear({1, 1, 1, 1});
     (*frame)->draw_box_shadow({.rect = {{4, 4}, {12, 12}},
@@ -55,7 +56,7 @@ double rounded_gaussian(double px, double py, double step) {
 }
 
 int rounded_soft(Renderer& renderer, float scale) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(20, "rounded soft begin failed");
   (*frame)->clear({1, 1, 1, 1});
   (*frame)->draw_box_shadow({.rect = {{24, 24}, {32, 32}}, .radius = BorderRadii::all(8),

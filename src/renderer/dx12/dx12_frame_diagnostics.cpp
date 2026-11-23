@@ -19,8 +19,10 @@ void saturating_add(std::size_t& count, std::size_t amount, bool& saturated) {
 } // namespace
 
 Dx12FrameDiagnostics::Dx12FrameDiagnostics(Dx12State& state,
-    std::span<const Dx12DrawCommand> draws, std::size_t command_count)
+    std::span<const Dx12DrawCommand> draws, std::size_t command_count,
+    std::uint64_t admission_call_ns)
     : state_(state), draws_(draws), submitted_commands_(command_count) {
+  renderer_add_frame_timing(snapshot_.timings, RendererFrameTimingStage::pacing_wait, admission_call_ns);
   planned_work_.command_count = command_count;
   plan();
   current_group_ = groups_.size();

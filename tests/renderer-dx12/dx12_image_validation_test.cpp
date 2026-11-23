@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 #include <limits>
 
@@ -12,7 +13,7 @@ int rejected(RenderFrame& frame) {
 }
 
 int healthy(Renderer& renderer, const ImageAsset& image) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(11, "invalid image command poisoned renderer");
   (*frame)->upload_image(image);
   (*frame)->draw_image({.bounds = {{0, 0}, {16, 16}}, .asset = describe_image_asset(image)});
@@ -41,7 +42,7 @@ int main() {
       case 6: invalid.bitmap.width = (std::numeric_limits<std::uint32_t>::max)(); break;
       case 7: invalid.bitmap.height = (std::numeric_limits<std::uint32_t>::max)(); break;
     }
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(2, "invalid upload begin failed");
     (*frame)->upload_image(invalid);
     if (const int result = rejected(**frame)) return result;
@@ -57,7 +58,7 @@ int main() {
       case 3: invalid.clip_rect = Rect{{nan, 0}, {1, 1}}; break;
       case 4: invalid.sampling = static_cast<ImageSamplingMode>(99); break;
     }
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(3, "invalid draw begin failed");
     (*frame)->draw_image(invalid);
     if (const int result = rejected(**frame)) return result;

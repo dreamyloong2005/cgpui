@@ -263,6 +263,8 @@ int main(int argc, char** argv) {
       "src/platform/win32/win32_timer_wakeup.cpp",
       "src/platform/win32/win32_font_discovery.cpp",
       "src/platform/win32/win32_application.cpp",
+      "src/platform/win32/win32_application_initialization_internal.hpp",
+      "src/platform/win32/win32_application_initialization.cpp",
       "src/platform/win32/win32_native_menu_accelerator_internal.hpp",
       "src/platform/win32/win32_native_menu_accelerator.cpp",
       "src/platform/win32/win32_native_menu_accelerator_table_internal.hpp",

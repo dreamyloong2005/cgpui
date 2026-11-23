@@ -1,3 +1,6 @@
+#include "support/architecture_test_discovery_test_support.hpp"
+#include <iostream>
+#include <stdexcept>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -50,7 +53,9 @@ int main() {
       &ledger_json};
   for (const auto* source : required) if (source->empty()) return 1;
 
-  const std::string& registered_targets = manifests;
+  std::unordered_set<std::string> registered_sources;
+  try { registered_sources = cgpui_test::architecture_registered_sources(root); }
+  catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
 
   std::unordered_set<std::string> targets;
   std::unordered_set<std::string> sources;
@@ -71,20 +76,12 @@ int main() {
         !source.starts_with("tests/header_cleanliness/")) return 2;
     const std::string file = source.substr(source.rfind('/') + 1);
     if (!fs::is_regular_file(root / source) || file != target + ".cpp" ||
-        !contains(registered_targets, "\"" + file + "\"")) {
+        !registered_sources.contains(source)) {
       return 3;
     }
   }
 
-  std::size_t repository_sources = 0;
-  for (const char* directory : {"tests/architecture", "tests/header_cleanliness"}) {
-    for (const auto& entry : fs::directory_iterator(root / directory)) {
-      if (entry.is_regular_file() && entry.path().extension() == ".cpp") {
-        ++repository_sources;
-      }
-    }
-  }
-  if (targets.size() < 142 || sources.size() != repository_sources) return 4;
+  if (targets.size() < 142 || sources != registered_sources) return 4;
 
   if (!contains(windows, "windows-package.ps1") ||
       !contains(windows, "ReusePreparedRoot") ||
@@ -105,7 +102,11 @@ int main() {
                 "\"phase_g_architecture_header_matrix_structure_test.cpp\"")) return 8;
   if (line_count(windows) > 105 ||
       line_count(linux) > 95 || line_count(workflow) > 170 ||
-      line_count(read_source("mcpp.toml")) > 100) return 9;
+      line_count(read_source("mcpp.toml")) > 100 ||
+      line_count(read_source("tests/architecture/mcpp.toml")) > 240 ||
+      line_count(read_source("tests/architecture/support/architecture_test_discovery_test_support.hpp")) > 40 ||
+      line_count(read_source("tests/architecture/support/architecture_test_discovery_test_support.cpp")) > 180 ||
+      line_count(read_source("tests/architecture/architecture_test_discovery_test.cpp")) > 120) return 9;
 
   if (!contains(ledger_json, "\"phase_g_step_671_sources\"")) {
     return 11;

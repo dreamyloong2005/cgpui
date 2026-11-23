@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 
 using namespace cgpui;
@@ -32,8 +33,8 @@ int main() {
   if (!first_before.adapter_luid || first_before.adapter_luid != second_before.adapter_luid)
     return dx12_fail(3, "coordinated fixture did not select the same adapter");
   const auto red = image({255, 0, 0, 255}), green = image({0, 255, 0, 255});
-  auto first_finished = (*first)->begin_frame();
-  auto second_finished = (*second)->begin_frame();
+  auto first_finished = cgpui_test::wait_for_test_frame(**first);
+  auto second_finished = cgpui_test::wait_for_test_frame(**second);
   if (!first_finished || !second_finished) return dx12_fail(4, "coordinated warmup begin failed");
   (*first_finished)->upload_image(red);
   (*second_finished)->upload_image(green); // Same public ID, distinct per-renderer CPU caches.
@@ -42,7 +43,7 @@ int main() {
   if (!finish(**first, **first_finished, {255, 0, 0, 255}) ||
       !finish(**second, **second_finished, {0, 255, 0, 255}))
     return dx12_fail(5, "coordinated warmup pixels differ");
-  auto pending_second = (*second)->begin_frame();
+  auto pending_second = cgpui_test::wait_for_test_frame(**second);
   if (!pending_second) return dx12_fail(6, "peer CPU frame begin failed");
   paint(**pending_second, green);
   if (!(*pending_second)->request_pixel_capture()) return dx12_fail(7, "peer capture request failed");
@@ -79,7 +80,7 @@ int main() {
   const auto repeated = (*pending_second)->present();
   if (repeated || repeated.error().code != ErrorCode::invalid_argument)
     return dx12_fail(14, "lost peer frame was presentable twice");
-  auto first_new = (*first)->begin_frame(), second_new = (*second)->begin_frame();
+  auto first_new = cgpui_test::wait_for_test_frame(**first), second_new = cgpui_test::wait_for_test_frame(**second);
   if (!first_new || !second_new) return dx12_fail(15, "recovered cohort is not ready");
   first_finished->reset();
   second_finished->reset();

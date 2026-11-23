@@ -4,6 +4,7 @@
 namespace cgpui {
 
 void WindowRuntime::reset_root_window_resources() {
+  state_->scheduling.frame_readiness_.clear(*this, state_->windows.root_window_runtime_id_);
   Renderer* renderer = state_->windows.renderer_;
   state_->windows.window_ = nullptr;
   state_->windows.renderer_ = nullptr;

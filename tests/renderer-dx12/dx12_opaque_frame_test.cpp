@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "cgpui/renderer/renderer_backend.hpp"
 #include "cgpui/renderer/renderer.hpp"
 
@@ -43,7 +44,7 @@ int main() {
   std::cout << "DX12 adapter: " << info.adapter_name << ", vendor=" << info.vendor_id
             << ", software=" << info.software_adapter << '\n';
   if (!(*renderer)->popup_windows_supported()) return fail(3, "parent renderer must allow native popup attempts");
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return fail(4, frame.error().message.c_str());
   (*frame)->clear({0, 0, 1, 1});
   (*frame)->draw_rect({.rect = {{8, 8}, {16, 16}}, .color = {1, 0, 0, 1}});
@@ -68,7 +69,7 @@ int main() {
   }
   auto resized = (*renderer)->resize({80, 48}, {1});
   if (!resized) return fail(8, resized.error().message.c_str());
-  frame = (*renderer)->begin_frame();
+  frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return fail(9, frame.error().message.c_str());
   (*frame)->clear({0, 1, 0, 1});
   auto capture_requested = (*frame)->request_pixel_capture();
@@ -80,7 +81,7 @@ int main() {
       !pixel(pixels, 40, 20, {0, 255, 0, 255})) return fail(11, "resize pixels differ");
   frame->reset();
   ShowWindow(window.hwnd, SW_HIDE);
-  frame = (*renderer)->begin_frame();
+  frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return fail(12, frame.error().message.c_str());
   (*frame)->draw_backdrop_blur({});
   const auto empty_backdrop = (*frame)->present();

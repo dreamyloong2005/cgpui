@@ -89,7 +89,11 @@ int main() {
                 has(policy, "info.backend != expected") && has(policy, "info.selection != selection") &&
                 has(policy, "!info.fallback_reason.empty()") && has(policy, "require_software && !info.software_adapter"),
             "selector defaults, invalid inputs and strict actual-identity policy cannot become silent skips");
-    require(has(capture, "renderer.begin_frame()") && has(capture, "request_pixel_capture()") &&
+    const auto frame_wait = read("tests/support/frame_wait_test_support.cpp");
+    require(has(capture, "wait_for_test_frame(renderer)") &&
+                has(frame_wait, "auto frame = renderer.begin_frame()") &&
+                has(frame_wait, "frame.error().code != cgpui::ErrorCode::frame_not_ready) return frame") &&
+                has(capture, "request_pixel_capture()") &&
                 has(capture, "!pixels || !pixels->valid()") && has(capture, "report_pixel_test_error(") &&
                 has(probes, "bool pixel_near(") && has(probes, "encoded_channel("),
             "non-template capture/error and pixel-probe implementations must remain in focused cpp leaves");

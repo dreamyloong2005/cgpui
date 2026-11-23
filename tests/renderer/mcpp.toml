@@ -34,6 +34,7 @@ cgpui.build-support = { path = "../../tools/mcpp" }
 
 [build]
 sources = [
+    "../support/frame_wait_test_support.cpp",
     "renderer_box_shadow_pixel_support.cpp",
     "renderer_text_pixel_shape_support.cpp",
     "renderer_pixel_test_probes.cpp",
@@ -48,6 +49,7 @@ include_dirs = [
 # Native shared pixel harness; no Win32/DX12 source enters Linux or Metal builds.
 [target.'cfg(os = "windows")'.build]
 sources = [
+    "../support/frame_wait_win32_test_support.cpp",
     "renderer_pixel_test_backend_policy.cpp",
     "renderer_pixel_test_backend.cpp",
     "renderer_pixel_test_window.cpp",
@@ -61,6 +63,7 @@ include_dirs = ["../../src/renderer/metal", "metal"]
 
 [test]
 discover = [
+    "renderer_frame_wait_contract_test.cpp",
     "renderer_popup_support_test.cpp",
     "renderer_draw_count_diagnostics_test.cpp",
     "renderer_dropped_resource_diagnostics_test.cpp",
@@ -135,6 +138,7 @@ discover = [
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "renderer_frame_wait_win32_test.cpp",
     "native_text_rasterization_test.cpp",
     "renderer_pixel_backend_identity_test.cpp",
     "vulkan_backdrop_pass_diagnostics_test.cpp",

@@ -23,6 +23,7 @@ bool WindowRuntime::handle_window_control_event(const PlatformEvent& event) {
       }
     }
     state_->core.should_quit_ = true;
+    state_->scheduling.frame_readiness_.clear_all(*this);
     state_->core.application_.quit();
     return true;
   }

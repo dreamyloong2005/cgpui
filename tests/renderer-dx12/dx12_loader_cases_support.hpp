@@ -1,12 +1,14 @@
 #pragma once
 
+#include "../support/frame_wait_test_support.hpp"
+
 #include "dx12_test_support.hpp"
 #include <cstdlib>
 #include <string_view>
 
 namespace cgpui_test {
 inline bool loader_case_pixels(cgpui::Renderer& renderer) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear({0, 0, 1, 1});
   (*frame)->draw_rect({.rect = {{8, 8}, {16, 16}}, .color = {1, 0, 0, 1}});

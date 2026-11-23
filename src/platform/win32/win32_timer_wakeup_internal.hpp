@@ -9,7 +9,10 @@ namespace cgpui {
 
 class Win32TimerWakeup {
  public:
+  using CreateTimer = decltype(&CreateThreadpoolTimer);
   Win32TimerWakeup();
+  explicit Win32TimerWakeup(CreateTimer create_timer);
+  [[nodiscard]] Result<void> initialization_result() const;
   ~Win32TimerWakeup();
 
   Win32TimerWakeup(const Win32TimerWakeup&) = delete;
@@ -28,6 +31,7 @@ class Win32TimerWakeup {
   void post_wakeup();
 
   PTP_TIMER timer_ = nullptr;
+  DWORD creation_error_ = ERROR_SUCCESS;
   std::atomic<DWORD> thread_id_ = 0;
   std::atomic_bool pending_ = false;
 };

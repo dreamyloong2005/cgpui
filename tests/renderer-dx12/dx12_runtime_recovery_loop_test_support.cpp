@@ -51,6 +51,8 @@ struct RecoveryLoop {
         std::cerr << "  window=" << i << " success=" << windows[i].successes
                   << " begin=" << captures[i].begin_attempts
                   << " begin-retry=" << captures[i].begin_retries
+                  << " begin-pending=" << captures[i].begin_pending
+                  << " begin-errors=" << captures[i].begin_errors
                   << " resize=" << captures[i].resize_attempts
                   << " pre-loss-resize=" << windows[i].resizes_before_loss
                   << " resize-retry=" << captures[i].resize_retries << '\n';
@@ -204,6 +206,9 @@ struct RecoveryLoop {
           captures[i].resize_retries || scenes[i].upload_intents != 1 ||
           !windows[i].recovered || !windows[i].warm_control)
         return dx12_fail(4, "post-run externally owned retry/cache/factory invariants differ");
+      std::cout << "PACING_RUNTIME window=" << i << " attempts=" << captures[i].begin_attempts
+                << " pending=" << captures[i].begin_pending << " successes=" << windows[i].successes
+                << " recovery-retry=" << captures[i].begin_retries << '\n';
     }
     return 0;
   }

@@ -11,6 +11,7 @@ namespace cgpui {
 WindowRuntime::~WindowRuntime() {
   state_->core.shutting_down_ = true;
   state_->core.should_quit_ = true;
+  state_->scheduling.frame_readiness_.clear_all(*this);
   if (state_->platform.system_appearance_bridge_installed_) {
     state_->core.application_.set_system_appearance_callback({});
   }

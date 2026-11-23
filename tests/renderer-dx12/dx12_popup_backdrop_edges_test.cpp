@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_popup_backdrop_test_support.hpp"
 
 #include <numbers>
@@ -8,7 +9,7 @@ using namespace cgpui_test;
 namespace {
 int check_step(Renderer& renderer, float sigma, float opacity) {
   std::cout << "popup alpha step: sigma " << sigma << ", opacity " << opacity << '\n';
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(10, frame.error().message.c_str());
   (*frame)->clear({0, 0, 0, 0});
   (*frame)->draw_rect({.rect = {{512, 0}, {512, 128}}, .color = {1, 0, 0, 1}});

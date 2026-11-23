@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_ordinary_pixels_support.hpp"
 #include "dx12_ordinary_menu_pixels_support.hpp"
 
@@ -39,13 +40,13 @@ int main() {
     if (!stable_menu(hwnd, observed, observed_focus) || reference.different(observed) ||
         reference_focus != observed_focus || GetMenu(hwnd) != menu)
       return dx12_fail(9, "duplicate factory damaged native menu or focus");
-    auto finished = (*renderer)->begin_frame();
+    auto finished = cgpui_test::wait_for_test_frame(**renderer);
     if (!finished) return dx12_fail(10, "retained finished ordinary frame unavailable");
     (*finished)->clear({0, 0, 1, 0.5F});
     if (!(*finished)->request_pixel_capture() || !(*finished)->present() ||
         !dx12_pixel((*renderer)->last_frame_pixels(), 8, 8, {0, 0, 128, 128}))
       return dx12_fail(11, "retained finished ordinary frame failed");
-    auto orphan = (*renderer)->begin_frame();
+    auto orphan = cgpui_test::wait_for_test_frame(**renderer);
     if (!orphan) return dx12_fail(12, "retained active ordinary frame unavailable");
     (*orphan)->clear({1, 0, 0, 0.5F});
     const auto before = (*peer)->backend_info();
@@ -64,7 +65,7 @@ int main() {
     const auto rejected = (*orphan)->present();
     if (rejected || rejected.error().code != ErrorCode::invalid_argument || (*finished)->present())
       return dx12_fail(17, "ownerless or destroyed-HWND ordinary frame presented/rebuilt");
-    auto active = (*peer)->begin_frame();
+    auto active = cgpui_test::wait_for_test_frame(**peer);
     if (!active) return dx12_fail(18, "live peer frame unavailable after ordinary orphan purge");
     orphan->reset();
     finished->reset();

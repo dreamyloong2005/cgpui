@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 
 using namespace cgpui;
@@ -59,7 +60,7 @@ int main() {
   current_image.bitmap.pixels = {0, 255, 0, 255};
   const auto asset = describe_image_asset(old_image);
   const auto text = recovery_text();
-  auto old_frame = (*renderer)->begin_frame();
+  auto old_frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!old_frame) return dx12_fail(4, "old snapshot warmup begin failed");
   (*old_frame)->upload_image(old_image);
   paint(**old_frame, asset, text);
@@ -71,7 +72,7 @@ int main() {
       !initial_diagnostics->upload_bytes.glyph_atlas_byte_count)
     return dx12_fail(15, "initial diagnostic texture uploads absent");
   const auto glyph_bytes = initial_diagnostics->upload_bytes.glyph_atlas_byte_count;
-  auto current_frame = (*renderer)->begin_frame();
+  auto current_frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!current_frame) return dx12_fail(6, "replacement snapshot warmup begin failed");
   (*current_frame)->invalidate_image(asset.id);
   (*current_frame)->upload_image(current_image);
@@ -94,7 +95,7 @@ int main() {
   if (after.adapter_luid != before.adapter_luid ||
       after.device_generation != before.device_generation + 1 || (*renderer)->last_frame_pixels())
     return dx12_fail(10, "recovery adapter, generation or stale capture differs");
-  auto recovered_frame = (*renderer)->begin_frame();
+  auto recovered_frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!recovered_frame) return dx12_fail(11, "recovered renderer is not immediately usable");
   paint(**recovered_frame, asset, text); // No image reupload after loss.
   if (!(*recovered_frame)->request_pixel_capture() || !(*recovered_frame)->present() ||

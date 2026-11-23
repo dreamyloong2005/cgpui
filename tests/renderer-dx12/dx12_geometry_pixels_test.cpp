@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 using namespace cgpui;
@@ -10,7 +11,7 @@ int main() {
   descriptor.scale = {1.5F};
   auto renderer = create_dx12_renderer(descriptor);
   if (!renderer) return dx12_fail(2, renderer.error().message.c_str());
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(3, frame.error().message.c_str());
   (*frame)->clear({0, 0, 0, 1});
   (*frame)->draw_rect({.rect = {{0, 0}, {20, 10}}, .color = {1, 0, 0, 1}});
@@ -29,7 +30,7 @@ int main() {
   }
   frame->reset();
   if (!(*renderer)->resize({64, 64}, {1})) return dx12_fail(6, "scale reset failed");
-  frame = (*renderer)->begin_frame();
+  frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(7, "second begin failed");
   (*frame)->clear({0, 0, 0, 1});
   const PaintMetadata composed{
@@ -50,7 +51,7 @@ int main() {
     return dx12_fail(9, "composition opacity/translation applied incorrectly");
   }
   frame->reset();
-  frame = (*renderer)->begin_frame();
+  frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(10, "third begin failed");
   (*frame)->clear({0, 0, 0, 1});
   (*frame)->draw_rounded_rect({.rect = {{8, 4}, {40, 24}},

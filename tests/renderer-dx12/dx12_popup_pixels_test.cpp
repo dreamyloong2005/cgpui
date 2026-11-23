@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_popup_test_support.hpp"
 
 using namespace cgpui;
@@ -19,7 +20,7 @@ int main() {
       composition.composite_alpha != RendererCompositeAlpha::pre_multiplied)
     return dx12_fail(5, "popup did not report actual premultiplied presentation");
   for (const bool blue : {false, true}) {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(6, frame.error().message.c_str());
     (*frame)->clear({0, 0, 0, 0});
     const Color translucent = blue ? Color{0, 0, 1, 0.5F} : Color{1, 0, 0, 0.5F};

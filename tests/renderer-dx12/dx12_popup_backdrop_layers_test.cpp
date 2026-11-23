@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_popup_backdrop_test_support.hpp"
 
 using namespace cgpui;
@@ -5,7 +6,7 @@ using namespace cgpui_test;
 
 namespace {
 int rounded_mask(Renderer& renderer) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(10, frame.error().message.c_str());
   (*frame)->clear({0, 0, 0, 0});
   (*frame)->draw_rect({.rect = {{0, 0}, {64, 64}}, .color = {1, 0, 0, 0.5F}});
@@ -32,7 +33,7 @@ int rounded_mask(Renderer& renderer) {
 }
 
 int overlapping_layers(Renderer& renderer) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(20, frame.error().message.c_str());
   (*frame)->clear({0, 0, 0, 0});
   (*frame)->draw_rect({.rect = {{0, 0}, {64, 64}}, .color = {1, 0, 0, 0.5F}});

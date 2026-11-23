@@ -6,6 +6,7 @@ namespace cgpui {
 int WindowRuntime::run(
     const WindowDescriptor& descriptor,
     WindowRuntimeOptions options) {
+  state_->scheduling.frame_readiness_.clear_all(*this);
   state_->core.should_quit_ = false;
   state_->core.failed_ = false;
   state_->windows.window_ = nullptr;
@@ -127,6 +128,7 @@ int WindowRuntime::run(
 void WindowRuntime::fail_and_quit(Error error) {
   state_->core.failed_ = true;
   state_->core.should_quit_ = true;
+  state_->scheduling.frame_readiness_.clear_all(*this);
   if (state_->core.error_callback_) {
     state_->core.error_callback_(error);
   }

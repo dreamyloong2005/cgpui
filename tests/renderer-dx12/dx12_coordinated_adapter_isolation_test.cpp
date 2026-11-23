@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 
 #include <optional>
@@ -58,7 +59,7 @@ Result<std::unique_ptr<Renderer>> create_independent(Dx12Window& window, const s
   return create_dx12_renderer(window.descriptor());
 }
 bool paint(Renderer& renderer, Color color, std::array<std::uint8_t, 4> expected) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear(color);
   return (*frame)->request_pixel_capture() && (*frame)->present() &&

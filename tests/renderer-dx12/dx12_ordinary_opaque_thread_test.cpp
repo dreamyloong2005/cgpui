@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_ordinary_test_support.hpp"
 
 #include <atomic>
@@ -8,7 +9,7 @@ using namespace cgpui_test;
 
 namespace {
 bool opaque_frame(Renderer& renderer, DpiScale scale) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear({0, 1, 1, 1});
   (*frame)->draw_rect({.rect = {{16 / scale.value, 16 / scale.value},

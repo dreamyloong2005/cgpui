@@ -15,7 +15,7 @@ struct Dx12State;
 class Dx12FrameDiagnostics {
  public:
   Dx12FrameDiagnostics(Dx12State& state, std::span<const Dx12DrawCommand> draws,
-      std::size_t command_count);
+      std::size_t command_count, std::uint64_t admission_call_ns = 0);
   ~Dx12FrameDiagnostics();
   Dx12FrameDiagnostics(const Dx12FrameDiagnostics&) = delete;
   Dx12FrameDiagnostics& operator=(const Dx12FrameDiagnostics&) = delete;

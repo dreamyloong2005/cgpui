@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_test_support.hpp"
 #include "cgpui/renderer/planning/glyph_geometry.hpp"
 
@@ -32,7 +33,7 @@ int main() {
       .bitmap = {.width = 1, .height = 1, .stride = 4, .pixels = {255, 0, 0, 255}}};
   const ImageAsset yellow{.id = {8102}, .logical_size = {1, 1},
       .bitmap = {.width = 1, .height = 1, .stride = 4, .pixels = {255, 255, 0, 255}}};
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(5, "mixed shadow begin failed");
   (*frame)->clear({1, 1, 1, 1});
   (*frame)->upload_image(red);

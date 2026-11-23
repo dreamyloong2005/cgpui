@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_client_alpha_test_support.hpp"
 
 using namespace cgpui;
@@ -67,11 +68,11 @@ int main() {
       !client_alpha_paint(**renderer, **window, true) || !client_alpha_hits(**window) ||
       (*renderer)->backend_info().device_generation != generation)
     return dx12_fail(12, "Mica removal did not restore client desktop alpha");
-  auto finished = (*renderer)->begin_frame();
+  auto finished = cgpui_test::wait_for_test_frame(**renderer);
   if (!finished) return dx12_fail(13, "retained finished frame unavailable");
   (*finished)->clear({0, 0, 1, 0.5F});
   if (!(*finished)->present()) return dx12_fail(14, "retained finished frame failed");
-  auto orphan = (*renderer)->begin_frame();
+  auto orphan = cgpui_test::wait_for_test_frame(**renderer);
   if (!orphan) return dx12_fail(15, "retained active frame unavailable");
   (*orphan)->clear({1, 0, 0, 0.5F});
   renderer->reset();
@@ -82,7 +83,7 @@ int main() {
   auto replacement = ordinary_renderer(**window, true);
   if (!replacement || !client_alpha_paint(**replacement, **window, false) || !client_alpha_hits(**window))
     return dx12_fail(17, "last retained frame did not release client HWND lease");
-  auto pending = (*replacement)->begin_frame();
+  auto pending = cgpui_test::wait_for_test_frame(**replacement);
   if (!pending) return dx12_fail(18, "pre-window-destruction frame unavailable");
   window->reset();
   const auto dead_frame = (*pending)->present();

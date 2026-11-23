@@ -72,6 +72,13 @@ Result<void> WindowRuntime::try_draw_frame() {
     abort_frame_scheduling();
     return std::unexpected(result.error());
   }
+  state_->scheduling.frame_readiness_.clear(*this, state_->windows.root_window_runtime_id_);
+  // Timer cancellation can synchronously reenter platform lifecycle callbacks.
+  if (state_->core.should_quit_ || state_->core.shutting_down_ ||
+      state_->windows.window_ == nullptr || state_->windows.renderer_ == nullptr) {
+    abort_frame_scheduling();
+    return {};
+  }
   runtime_publish_window_control_regions(
       state_->windows.window_, std::move(window_control_regions));
   state_->diagnostics.last_renderer_frame_diagnostics_ =

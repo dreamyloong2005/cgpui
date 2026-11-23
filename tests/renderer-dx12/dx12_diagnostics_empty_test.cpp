@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_diagnostics_support.hpp"
 
 using namespace cgpui;
@@ -7,7 +8,7 @@ int main() {
   Dx12Window window;
   auto renderer = create_dx12_renderer(window.descriptor());
   if (!renderer) return dx12_fail(1, "empty diagnostics renderer unavailable");
-  auto frame = (*renderer)->begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(2, "empty diagnostics frame unavailable");
   const auto image = diagnostic_image();
   (*frame)->upload_image(image);
@@ -39,7 +40,7 @@ int main() {
       snapshot->backdrop_blur.blurred_backdrop_count || snapshot->backdrop_blur.offscreen_pass_count ||
       snapshot->backdrop_blur.offscreen_targets_allocated)
     return dx12_fail(6, "empty/clipped commands must not become submitted resources, uploads or dropped errors");
-  auto degenerate = (*renderer)->begin_frame();
+  auto degenerate = cgpui_test::wait_for_test_frame(**renderer);
   if (!degenerate) return dx12_fail(7, "degenerate image frame unavailable");
   (*degenerate)->clear({0, 0, 0, 1});
   (*degenerate)->draw_image({.bounds = {}, .asset = describe_image_asset(image)});

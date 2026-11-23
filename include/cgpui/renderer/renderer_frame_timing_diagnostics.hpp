@@ -13,7 +13,13 @@ enum class RendererFrameTimingStage {
   presentation,
 };
 
+// Sum of selected nonoverlapping CPU scopes; not GPU, scanout, or end-to-end
+// latency. Backends may distribute different work among the same stage names.
 struct RendererFrameTimings {
+  // Backend-specific frame admission/reuse synchronization, not an exclusive
+  // native wait. DX12 includes only the successful begin admission call plus
+  // pre-record sync; prior pending probes, event-loop delays and frame holding
+  // are excluded. Post-Present synchronization remains in presentation.
   std::uint64_t pacing_wait_nanoseconds = 0;
   std::uint64_t resource_preparation_nanoseconds = 0;
   std::uint64_t image_acquisition_nanoseconds = 0;

@@ -5,6 +5,7 @@
 #include "dx12_composition_internal.hpp"
 #include "dx12_geometry_upload_internal.hpp"
 #include "dx12_texture_upload_internal.hpp"
+#include "dx12_frame_pacing_internal.hpp"
 
 namespace cgpui {
 void dx12_release_native_objects(Dx12State& state) noexcept {
@@ -31,6 +32,7 @@ void dx12_release_native_objects(Dx12State& state) noexcept {
   state.rtv_heap.Reset();
   state.rtv_stride = 0;
   dx12_release_composition(state);
+  state.frame_pacing->reset();
   state.swapchain.Reset();
   state.queue.Reset();
   state.fence.Reset();

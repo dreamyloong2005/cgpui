@@ -3,7 +3,7 @@
 #include "win32_system_application_internal.hpp"
 #include "win32_message_dialog_internal.hpp"
 #include "win32_open_url_internal.hpp"
-#include "win32_timer_wakeup_internal.hpp"
+#include "win32_application_initialization_internal.hpp"
 #include "win32_window_registry_internal.hpp"
 #include "win32_native_menu_policy_internal.hpp"
 
@@ -16,7 +16,9 @@ namespace {
 
 class Win32Application final : public Win32SystemApplication {
  public:
-  Win32Application() : instance_(GetModuleHandleW(nullptr)) {}
+  explicit Win32Application(Win32TimerWakeup::CreateTimer create_timer)
+      : instance_(GetModuleHandleW(nullptr)), timer_wakeup_(create_timer) {}
+  Result<void> initialization_result() const { return timer_wakeup_.initialization_result(); }
 
   ~Win32Application() override { if (ole_initialized_) OleUninitialize(); }
 
@@ -157,8 +159,12 @@ class Win32Application final : public Win32SystemApplication {
 
 } // namespace
 
-Result<std::unique_ptr<PlatformApplication>> create_platform_application() {
-  return std::make_unique<Win32Application>();
+Result<std::unique_ptr<PlatformApplication>> create_win32_application(
+    Win32TimerWakeup::CreateTimer create_timer) {
+  auto application = std::make_unique<Win32Application>(create_timer);
+  if (auto ready = application->initialization_result(); !ready)
+    return std::unexpected(ready.error());
+  return application;
 }
 
 } // namespace cgpui

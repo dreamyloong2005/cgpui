@@ -97,9 +97,9 @@ int main() {
       require(!has(source, "dx12_geometry_upload_internal.hpp") && !has(source, "Dx12GeometryUploads"),
               "geometry arena allocation policy must not leak into public headers");
     }
-    require(has(read("tests/architecture/mcpp.toml"), "dx12_geometry_upload_structure_test.cpp") &&
+    require(has(read("tests/architecture/mcpp.toml"), "\"dx12/*_structure_test.cpp\"") &&
                 has(read("scripts/ci/architecture-header-targets.txt"),
-                    "dx12_geometry_upload_structure_test|tests/architecture/dx12_geometry_upload_structure_test.cpp") &&
+                    "dx12_geometry_upload_structure_test|tests/architecture/dx12/dx12_geometry_upload_structure_test.cpp") &&
                 has(read("tests/renderer-dx12/mcpp.toml"), "dx12_geometry_upload_budget_test.cpp"),
             "geometry upload native and structural checks need both mcpp and CI matrix registration");
     return 0;

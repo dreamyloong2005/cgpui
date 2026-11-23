@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_client_alpha_test_support.hpp"
 
 using namespace cgpui;
@@ -5,7 +6,7 @@ using namespace cgpui_test;
 
 namespace {
 bool client_recovery_peer(Renderer& renderer) {
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
   (*frame)->clear({0, 1, 0, 1});
   return (*frame)->request_pixel_capture() && (*frame)->present() &&
@@ -28,7 +29,7 @@ int main() {
   auto peer = create_dx12_renderer(peer_window.descriptor());
   if (!renderer || !peer || !initial.capture(**window) || !client_recovery_peer(**peer))
     return dx12_fail(3, "client recovery cohort unavailable");
-  auto finished = (*renderer)->begin_frame();
+  auto finished = cgpui_test::wait_for_test_frame(**renderer);
   if (!finished) return dx12_fail(4, "retained client frame unavailable");
   (*finished)->clear({1, 1, 0, 0.5F});
   if (!(*finished)->present() || !client_alpha_paint(**renderer, **window, false))
@@ -39,7 +40,7 @@ int main() {
     const auto before = (*renderer)->backend_info(), peer_before = (*peer)->backend_info();
     if (!before.adapter_luid || before.adapter_luid != peer_before.adapter_luid)
       return dx12_fail(6, "client and opaque peer chose different adapters");
-    auto pending = (*renderer)->begin_frame();
+    auto pending = cgpui_test::wait_for_test_frame(**renderer);
     if (!pending) return dx12_fail(7, "pending pre-removal client frame unavailable");
     (*pending)->clear({1, 0, 1, 0.5F});
     const auto* borrowed = (*renderer)->last_frame_pixels();
@@ -71,7 +72,7 @@ int main() {
         !ordinary_composition((*renderer)->surface_composition(), true) ||
         !dx12_recovered_native_device_clean(after)) return dx12_fail(15, "recovered client pixels/chrome/debug differ");
   }
-  auto active = (*renderer)->begin_frame();
+  auto active = cgpui_test::wait_for_test_frame(**renderer);
   if (!active) return dx12_fail(16, "new active client frame unavailable");
   retained.clear();
   const auto overlap = (*renderer)->begin_frame();

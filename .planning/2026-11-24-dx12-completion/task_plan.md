@@ -78,3 +78,10 @@ redefined as complete solely to close the checklist.
 - Unsupported backdrop contract now matches public tint-only semantics; accepted
   `.planning/2026-11-24-dx12-blur-fallback/acceptance.md`. Native injected-capability
   RED/GREEN, full783/648 and102-per-adapter matrix passed. No default/Popup changes.
+- Opaque HWND admission/runtime readiness accepted in
+  `.planning/2026-11-24-dx12-frame-pacing/acceptance.md`: real first-frame RED/GREEN,
+  native scheduling/lifetime controls, honest frame-owned CPU samples and bounded
+  direct-client test migration. Frozen2940path matrix818Windows/664WSL,
+  116native per adapter and ASan, common94-per-backend plus installed SDK passed.
+  Composition pacing is still disabled pending external native-capability probe;
+  this is not full pacing/performance, whole-backend or default-switch completion.

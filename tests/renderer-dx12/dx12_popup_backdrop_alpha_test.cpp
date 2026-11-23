@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_popup_test_support.hpp"
 
 using namespace cgpui;
@@ -16,7 +17,7 @@ struct AlphaCase {
 int check_case(Renderer& renderer, const CompositionTestWindows& windows,
                const AlphaCase& test) {
   std::cout << "popup backdrop: " << test.name << '\n';
-  auto frame = renderer.begin_frame();
+  auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return dx12_fail(10, frame.error().message.c_str());
   (*frame)->clear({0, 0, 0, 0});
   // Use drawing rather than nonzero-RGB clear, whose premultiplication has a

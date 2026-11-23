@@ -2,10 +2,12 @@
 
 #include "cgpui/ui/window_runtime.hpp"
 #include "runtime_state_scheduling_types_internal.hpp"
+#include "runtime_frame_readiness_internal.hpp"
 
 namespace cgpui {
 
 struct WindowRuntime::RuntimeScheduleState {
+  RuntimeFrameReadiness frame_readiness_;
   std::vector<DeferredCallback> deferred_callbacks_;
   std::vector<RuntimeTimer> timers_;
   std::uint64_t next_timer_id_ = 1;

@@ -1,3 +1,4 @@
+#include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
 #include "dx12_diagnostics_support.hpp"
 
@@ -12,7 +13,7 @@ int main() {
   if (!renderer) return dx12_fail(2, renderer.error().message.c_str());
   const ImageAsset image{.id = {8402}, .logical_size = {1, 1},
       .bitmap = {.width = 1, .height = 1, .stride = 4, .pixels = {255, 0, 0, 255}}};
-  auto warmup = (*renderer)->begin_frame();
+  auto warmup = cgpui_test::wait_for_test_frame(**renderer);
   if (!warmup) return dx12_fail(3, "present recovery warmup begin failed");
   (*warmup)->upload_image(image);
   (*warmup)->draw_image({.bounds = {{4, 4}, {24, 24}}, .asset = describe_image_asset(image)});
@@ -23,7 +24,7 @@ int main() {
   if (!borrowed) return dx12_fail(14, "present recovery diagnostic warmup absent");
   const auto saved_diagnostics = *borrowed;
   const auto before = (*renderer)->backend_info();
-  auto interrupted = (*renderer)->begin_frame();
+  auto interrupted = cgpui_test::wait_for_test_frame(**renderer);
   if (!interrupted) return dx12_fail(5, "interrupted frame begin failed");
   (*interrupted)->draw_image({.bounds = {{4, 4}, {24, 24}}, .asset = describe_image_asset(image)});
   if (!(*interrupted)->request_pixel_capture() || !dx12_remove_native_device(before))
@@ -42,7 +43,7 @@ int main() {
   if (repeated || repeated.error().code != ErrorCode::invalid_argument)
     return dx12_fail(9, "interrupted frame was accepted twice");
   for (unsigned pass = 0; pass < 2; ++pass) {
-    auto frame = (*renderer)->begin_frame();
+    auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(10, "present-recovered renderer cannot begin");
     if (pass == 1) {
       // Destruction of pre-loss frames must not release this new active frame.

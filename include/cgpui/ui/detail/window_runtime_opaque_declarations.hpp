@@ -18,6 +18,7 @@ struct RuntimeTask;
 struct RuntimeTaskCompletion;
 struct TextPointerSelectionDrag;
 friend struct RuntimePopups;
+class RuntimeFrameReadiness;
 class RuntimeWindowStore;
 class RuntimeWindowLifetime;
 struct RuntimeWindowCallbackScope;

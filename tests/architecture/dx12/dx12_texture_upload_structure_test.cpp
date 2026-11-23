@@ -102,9 +102,9 @@ int main() {
                   !has(source, "dx12_texture_upload_internal.hpp") && !has(source, "Dx12TextureUploads"),
               "private upload storage must not leak into the public renderer API");
     }
-    require(has(read("tests/architecture/mcpp.toml"), "dx12_texture_upload_structure_test.cpp") &&
+    require(has(read("tests/architecture/mcpp.toml"), "\"dx12/*_structure_test.cpp\"") &&
                 has(read("scripts/ci/architecture-header-targets.txt"),
-                    "dx12_texture_upload_structure_test|tests/architecture/dx12_texture_upload_structure_test.cpp") &&
+                    "dx12_texture_upload_structure_test|tests/architecture/dx12/dx12_texture_upload_structure_test.cpp") &&
                 has(read("tests/renderer-dx12/mcpp.toml"), "dx12_texture_upload_budget_test.cpp"),
             "texture upload behavior and module checks need mcpp and CI-matrix registration");
     return 0;

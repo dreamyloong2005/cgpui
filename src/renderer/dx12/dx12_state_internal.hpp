@@ -19,8 +19,10 @@ class Dx12SynchronizationApi;
 class Dx12FrameDiagnostics;
 class Dx12GeometryUploads;
 class Dx12TextureUploads;
+class Dx12FramePacing;
+class Dx12FramePacingApi;
 struct Dx12State {
-  Dx12State();
+  explicit Dx12State(Dx12FramePacingApi* pacing_api = nullptr);
   ~Dx12State();
   mutable std::recursive_mutex operation_mutex;
   std::size_t operation_depth = 0;
@@ -51,6 +53,7 @@ struct Dx12State {
   std::unique_ptr<Dx12BackdropBlurRenderer> backdrop_blur;
   std::unique_ptr<Dx12GeometryUploads> geometry_uploads;
   std::unique_ptr<Dx12TextureUploads> texture_uploads;
+  std::unique_ptr<Dx12FramePacing> frame_pacing;
   Dx12Ptr<ID3D12Resource> readback;
   D3D12_PLACED_SUBRESOURCE_FOOTPRINT capture_layout{};
   std::optional<RendererFramePixels> pixels;
