@@ -103,7 +103,7 @@ int main() {
     return 3;
   }
   const cgpui::WindowState state = (*window)->state();
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = (*window)->native_surface(),
       .framebuffer_size = state.framebuffer_size,
       .scale = state.scale});

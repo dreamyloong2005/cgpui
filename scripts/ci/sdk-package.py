@@ -358,7 +358,10 @@ def finalize(args) -> None:
         "executables": executables,
         "cmake_config": "lib/cmake/cgpui/cgpuiConfig.cmake",
         "consumer_sample": "share/cgpui/sdk_consumer",
-        "shaders": "embedded as SPIR-V in cgpui_renderer_vulkan",
+        "shaders": ("embedded as SPIR-V in cgpui_renderer_vulkan; "
+                    "experimental rectangle DXIL in cgpui_renderer_dx12"
+                    if args.platform == "windows" else
+                    "embedded as SPIR-V in cgpui_renderer_vulkan"),
         "documents": ["README.md"],
     }
     if args.platform == "windows":

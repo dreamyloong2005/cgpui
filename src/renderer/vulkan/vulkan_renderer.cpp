@@ -91,6 +91,10 @@ class VulkanRenderer final : public Renderer {
     return std::make_unique<VulkanFrame>(state_);
   }
 
+  RendererBackendInfo backend_info() const override {
+    return state_->backend_info();
+  }
+
   [[nodiscard]] const RendererFrameDiagnosticSnapshot*
   last_frame_diagnostic_snapshot() const override {
     return state_->last_frame_diagnostic_snapshot();
@@ -178,7 +182,7 @@ Result<void> VulkanFrame::present() {
       capture_requested_);
 }
 
-Result<std::unique_ptr<Renderer>> create_renderer(
+Result<std::unique_ptr<Renderer>> create_vulkan_renderer(
     const RenderSurfaceDescriptor& descriptor) {
   if (descriptor.framebuffer_size.width <= 0.0F ||
       descriptor.framebuffer_size.height <= 0.0F) {

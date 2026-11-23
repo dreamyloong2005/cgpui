@@ -1,0 +1,25 @@
+[package]
+namespace = "cgpui"
+name = "renderer-dx12"
+version = "0.1.0"
+
+[targets.cgpui_renderer_dx12]
+kind = "lib"
+
+[dependencies]
+cgpui.core = { path = "../core" }
+cgpui.renderer = { path = "../renderer" }
+
+[build]
+include_dirs = ["../../include", "../../src/renderer"]
+sources = []
+
+[target.'cfg(os = "windows")'.build]
+sources = ["../../src/renderer/dx12/*.cpp"]
+ldflags = ["d3d12.lib", "dxgi.lib", "dxguid.lib"]
+
+[target.'cfg(not(os = "windows"))'.build]
+sources = ["../../tools/mcpp/empty_library.cpp"]
+
+[build-dependencies]
+cgpui.build-support = { path = "../../tools/mcpp" }

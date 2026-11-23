@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cgpui/renderer/planning/rounded_rect_geometry.hpp"
+
 #include "cgpui/renderer/renderer_commands.hpp"
 #include "vulkan_rounded_rect_antialiasing_internal.hpp"
 #include "vulkan_rounded_rect_vertex_internal.hpp"
@@ -11,20 +13,9 @@
 
 namespace cgpui {
 
-struct VulkanRoundedRectDrawRange {
-  std::size_t source_index = 0;
-  std::size_t first_vertex = 0;
-  std::size_t vertex_count = 0;
-  std::size_t first_index = 0;
-  std::size_t index_count = 0;
-  std::optional<Rect> clip_rect;
-};
+using VulkanRoundedRectDrawRange = RectDrawRange;
 
-struct VulkanRoundedRectGeometry {
-  std::vector<VulkanRoundedRectVertex> vertices;
-  std::vector<std::uint32_t> indices;
-  std::vector<VulkanRoundedRectDrawRange> draws;
-};
+using VulkanRoundedRectGeometry = RectGeometry;
 
 [[nodiscard]] VulkanRoundedRectGeometry vulkan_build_rounded_rect_geometry(
     std::span<const RoundedRectDraw> rounded_rects,

@@ -1,0 +1,31 @@
+# Experimental native DX12 acceptance; never substitutes for Vulkan regression.
+[package]
+namespace = "cgpui"
+name = "tests-renderer-dx12"
+version = "0.1.0"
+
+[dependencies]
+cgpui.renderer = { path = "../../packages/renderer" }
+
+[build]
+sources = []
+
+[test]
+discover = []
+
+[target.'cfg(os = "windows")'.build]
+ldflags = ["user32.lib"]
+
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.renderer-dx12 = { path = "../../packages/renderer-dx12" }
+cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
+
+[target.'cfg(os = "windows")'.test]
+discover = [
+    "dx12_opaque_frame_test.cpp",
+    "dx12_frame_lifetime_test.cpp",
+    "dx12_geometry_pixels_test.cpp",
+    "dx12_validation_test.cpp",
+    "dx12_backend_selection_test.cpp",
+    "dx12_multiple_renderers_test.cpp",
+]

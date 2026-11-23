@@ -1,16 +1,13 @@
 #include "vulkan_rounded_rect_antialiasing_internal.hpp"
-
-#include <algorithm>
+#include "cgpui/renderer/planning/rect_antialiasing.hpp"
 
 namespace cgpui {
 
-VulkanRoundedRectAntialiasingPolicy
-vulkan_default_rounded_rect_antialiasing_policy() {
-  return {};
+VulkanRoundedRectAntialiasingPolicy vulkan_default_rounded_rect_antialiasing_policy() {
+  return default_rounded_rect_antialiasing_policy();
 }
-
 float vulkan_rounded_rect_coverage(float coverage) {
-  return std::clamp(coverage, 0.0F, 1.0F);
+  return rounded_rect_coverage(coverage);
 }
 
 } // namespace cgpui

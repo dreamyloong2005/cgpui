@@ -37,7 +37,7 @@ int main() {
   }
   observed = window->get();
   const cgpui::WindowState state = (*window)->state();
-  auto renderer = cgpui::create_renderer({
+  auto renderer = cgpui::create_vulkan_renderer({
       .native_surface = (*window)->native_surface(),
       .framebuffer_size = state.framebuffer_size,
       .scale = state.scale,
@@ -47,6 +47,10 @@ int main() {
     return 3;
   }
   if (!(*renderer)->popup_windows_supported()) return 7;
+  const auto backend = (*renderer)->backend_info();
+  if (backend.backend != cgpui::RendererBackend::vulkan ||
+      backend.selection != cgpui::RendererBackendSelection::vulkan ||
+      backend.adapter_name.empty() || backend.device_generation != 1) return 8;
   auto frame = (*renderer)->begin_frame();
   if (!frame) return 4;
   (*frame)->clear({.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F});

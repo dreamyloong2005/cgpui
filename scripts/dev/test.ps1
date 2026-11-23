@@ -14,6 +14,19 @@ param([switch]$Asan, [switch]$AsanSymbols)
 . (Join-Path $PSScriptRoot 'mcpp-env.ps1')
 $workDir = $RepoRoot
 $mcppArgs = @($args)
+# Parse the optional selector explicitly: a positional string parameter would
+# consume mcpp's existing package/test filters before they reach $args.
+$selector = [Array]::IndexOf($mcppArgs, '-Renderer')
+if ($selector -ge 0) {
+  if ($selector + 1 -ge $mcppArgs.Count -or
+      $mcppArgs[$selector + 1] -cnotin @('auto', 'vulkan', 'dx12')) {
+    throw '-Renderer must be auto, vulkan, or dx12'
+  }
+  $env:CGPUI_RENDERER = $mcppArgs[$selector + 1]
+  $mcppArgs = @(for ($i = 0; $i -lt $mcppArgs.Count; $i++) {
+    if ($i -ne $selector -and $i -ne $selector + 1) { $mcppArgs[$i] }
+  })
+}
 if ($Asan -or $AsanSymbols) {
   $workDir = Join-Path $RepoRoot $(if ($AsanSymbols) { 'build\asan-symbols' } else { 'build\asan' })
   $symbols = @(if ($AsanSymbols) { '--symbols' })

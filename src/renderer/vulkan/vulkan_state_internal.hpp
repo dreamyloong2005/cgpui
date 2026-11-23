@@ -6,6 +6,7 @@
 #include "vulkan_frame_command_reuse_internal.hpp"
 #include "vulkan_frame_diagnostic_snapshot_internal.hpp"
 #include "vulkan_frame_draw_order_internal.hpp"
+#include "vulkan_frame_effects_internal.hpp"
 #include "vulkan_frame_pixel_capture_internal.hpp"
 #include "vulkan_glyph_atlas_draw_bindings_internal.hpp"
 #include "vulkan_glyph_atlas_resources_internal.hpp"
@@ -30,6 +31,7 @@ class VulkanRendererState final {
   Result<void> resize(Size framebuffer_size, DpiScale scale);
   // Device pixels per logical pixel for the current surface.
   [[nodiscard]] DpiScale scale() const;
+  [[nodiscard]] RendererBackendInfo backend_info() const;
   [[nodiscard]] const RendererFrameDiagnosticSnapshot*
   last_frame_diagnostic_snapshot() const;
   Result<void> request_pixel_capture() const;

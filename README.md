@@ -12,6 +12,10 @@ without a Rust FFI layer.
 - Linux: X11/XCB + Vulkan
 - macOS: Cocoa + Metal on Apple Silicon (arm64) only
 
+Windows also has an opt-in [experimental DX12 bootstrap](docs/dx12-backend.md)
+for opaque-window rectangle rendering. It is not feature-complete; Vulkan stays
+the default.
+
 The [macOS SDK](docs/macos-sdk.md) targets arm64; no Intel (x86_64) or
 Universal SDK is provided. The minimum macOS is 26.0 and CI runs on
 `macos-26` runners. See [macOS validation](docs/macos-validation.md) for
@@ -56,12 +60,15 @@ The machine-readable authority files are
 
 ## Verification
 
-Build every member and run every test program (in parallel):
+Build every member and run every test program:
 
 ```bash
 scripts/dev/build.sh        # Windows: scripts/dev/build.ps1
 scripts/dev/test.sh         # Windows: scripts/dev/test.ps1
 ```
+
+On Windows, run native window tests serially (`$env:MCPP_JOBS = '1'` before
+`scripts/dev/test.ps1`); no-run builds may use multiple workers.
 
 Platform packaging, example smoke, performance, and stress entrypoints live in
 `scripts/ci/`. Generated packages and reports stay under repository-local

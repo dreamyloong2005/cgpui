@@ -28,6 +28,11 @@ bool contains(const std::string& text, const char* value) {
 } // namespace
 
 int main() {
+  static_assert(static_cast<int>(cgpui::RendererBackendTarget::vulkan) == 0);
+  static_assert(static_cast<int>(cgpui::RendererBackendTarget::metal) == 1);
+  static_assert(static_cast<int>(cgpui::RendererBackendTarget::dx12) == 2);
+  if (cgpui::renderer_backend_target_name(cgpui::RendererBackendTarget::dx12) !=
+      std::string_view{"DirectX 12"}) return 24;
   if (cgpui::default_renderer_backend_for(cgpui::DesktopPlatformTarget::windows) !=
       cgpui::RendererBackendTarget::vulkan) {
     return 1;

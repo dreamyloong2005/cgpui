@@ -1,16 +1,12 @@
 #pragma once
 
+#include "../planning/rounded_rect_stroke_internal.hpp"
+
 #include "cgpui/renderer/renderer_commands.hpp"
 
 namespace cgpui {
 
-struct VulkanRoundedRectStrokeResolution {
-  bool enabled = false;
-  Color color;
-  float width = 0.0F;
-  Rect inner_rect;
-  BorderRadii inner_radii;
-};
+using VulkanRoundedRectStrokeResolution = RoundedRectStrokeResolution;
 
 [[nodiscard]] VulkanRoundedRectStrokeResolution
 vulkan_resolve_rounded_rect_stroke(

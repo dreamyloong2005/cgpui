@@ -1,0 +1,25 @@
+# Windows backend dispatcher. The native backends never depend on this package.
+[package]
+namespace = "cgpui"
+name = "renderer-windows"
+version = "0.1.0"
+
+[targets.cgpui_renderer_windows]
+kind = "lib"
+
+[dependencies]
+cgpui.renderer = { path = "../renderer" }
+
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.renderer-vulkan = { path = "../renderer-vulkan" }
+cgpui.renderer-dx12 = { path = "../renderer-dx12" }
+
+[build]
+include_dirs = ["../../include"]
+sources = []
+
+[target.'cfg(os = "windows")'.build]
+sources = ["../../src/renderer/windows/*.cpp"]
+
+[target.'cfg(not(os = "windows"))'.build]
+sources = ["../../tools/mcpp/empty_library.cpp"]

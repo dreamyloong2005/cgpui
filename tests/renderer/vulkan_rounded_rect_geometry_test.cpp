@@ -109,20 +109,20 @@ int test_multiple_draws_preserve_offsets_and_skip_empty_rects() {
 
 int test_rounded_rect_geometry_structure() {
   const std::string header = read_source(
-      "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp");
+      "include/cgpui/renderer/planning/rect_geometry_types.hpp");
   const std::string source =
-      read_source("src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp");
+      read_source("src/renderer/planning/rounded_rect_geometry.cpp");
   const std::string contour =
-      read_source("src/renderer/vulkan/vulkan_rounded_rect_contour.cpp");
+      read_source("src/renderer/planning/rounded_rect_contour.cpp");
   const std::string command =
       read_source("src/renderer/vulkan/vulkan_command_recording.cpp");
   if (header.empty() || source.empty() || contour.empty() || command.empty()) {
     return 30;
   }
-  if (!contains(header, "struct VulkanRoundedRectGeometry") ||
-      !contains(header, "struct VulkanRoundedRectDrawRange") ||
-      !contains(source, "vulkan_build_rounded_rect_geometry(") ||
-      !contains(source, "vulkan_append_rounded_rect_contour(") ||
+  if (!contains(header, "struct RectGeometry") ||
+      !contains(header, "struct RectDrawRange") ||
+      !contains(source, "build_rounded_rect_geometry(") ||
+      !contains(source, "append_rounded_rect_contour(") ||
       !contains(contour, "append_corner_arc(") ||
       !contains(source, "geometry.vertices.reserve(total_vertex_count)") ||
       contains(source, "append_corner_arc(") ||

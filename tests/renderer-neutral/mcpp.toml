@@ -15,4 +15,8 @@ discover = [
     "planning_compatibility_test.cpp",
     "planning_test.cpp",
     "renderer_frame_header_test.cpp",
+    "rect_geometry_test.cpp",
+    "rect_planning_ownership_test.cpp",
+    "backend_selection_test.cpp",
+    "backend_info_test.cpp",
 ]

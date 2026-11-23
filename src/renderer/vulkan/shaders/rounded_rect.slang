@@ -25,6 +25,10 @@ Varyings vertex_main(VertexInput input) {
   // Vulkan clip space has y down, like the framebuffer: no flip.
   output.position = float4(normalized.x * 2.0 - 1.0,
                            normalized.y * 2.0 - 1.0, 0.0, 1.0);
+#if CGPUI_CLIP_Y_UP
+  // D3D clip space points up; the shared CPU geometry remains y-down.
+  output.position.y = -output.position.y;
+#endif
   output.color = input.color;
   output.coverage = input.coverage;
   return output;

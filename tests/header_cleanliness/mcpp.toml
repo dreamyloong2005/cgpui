@@ -22,6 +22,7 @@ sources = []
 
 [test]
 discover = [
+    "renderer_backend_header_test.cpp",
     "runtime_installed_include_consumer.cpp",
     "text_ownership_header_test.cpp",
     "action_macros_header_cleanliness.cpp",

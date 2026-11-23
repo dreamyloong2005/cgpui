@@ -1,16 +1,12 @@
 #pragma once
 
+#include "cgpui/renderer/planning/rect_antialiasing.hpp"
+
 namespace cgpui {
 
-enum class VulkanRoundedRectAntialiasingMode {
-  coverage_fringe,
-};
+using VulkanRoundedRectAntialiasingMode = RectAntialiasingMode;
 
-struct VulkanRoundedRectAntialiasingPolicy {
-  VulkanRoundedRectAntialiasingMode mode =
-      VulkanRoundedRectAntialiasingMode::coverage_fringe;
-  float fringe_width = 1.0F;
-};
+using VulkanRoundedRectAntialiasingPolicy = RectAntialiasingPolicy;
 
 [[nodiscard]] VulkanRoundedRectAntialiasingPolicy
 vulkan_default_rounded_rect_antialiasing_policy();

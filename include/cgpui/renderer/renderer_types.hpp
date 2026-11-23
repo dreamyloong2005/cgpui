@@ -16,6 +16,7 @@ namespace cgpui {
 enum class RendererBackendTarget {
   vulkan,
   metal,
+  dx12,
 };
 
 [[nodiscard]] constexpr std::string_view renderer_backend_target_name(
@@ -25,6 +26,8 @@ enum class RendererBackendTarget {
       return "Vulkan";
     case RendererBackendTarget::metal:
       return "Metal";
+    case RendererBackendTarget::dx12:
+      return "DirectX 12";
   }
 
   return "Unknown";

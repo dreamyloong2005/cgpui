@@ -215,12 +215,12 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_frame_geometry_buffer_internal.hpp",
       "src/renderer/vulkan/vulkan_frame_geometry_buffer.cpp",
       "tests/renderer/vulkan_frame_command_reuse_test.cpp",
-      "src/renderer/vulkan/vulkan_clip_scissor_internal.hpp",
-      "src/renderer/vulkan/vulkan_clip_scissor.cpp",
-      "src/renderer/vulkan/vulkan_composition_opacity_internal.hpp",
-      "src/renderer/vulkan/vulkan_composition_opacity.cpp",
-      "src/renderer/vulkan/vulkan_composition_transform_internal.hpp",
-      "src/renderer/vulkan/vulkan_composition_transform.cpp",
+      "include/cgpui/renderer/planning/clip_scissor.hpp",
+      "src/renderer/planning/clip_scissor.cpp",
+      "include/cgpui/renderer/planning/composition_opacity.hpp",
+      "src/renderer/planning/composition_opacity.cpp",
+      "include/cgpui/renderer/planning/composition_transform.hpp",
+      "src/renderer/planning/composition_transform.cpp",
       "src/renderer/vulkan/vulkan_image_texture_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_image_texture_images.cpp",
       "src/renderer/vulkan/vulkan_image_texture_resources.cpp",
@@ -256,8 +256,8 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_glyph_atlas_uploads_internal.hpp",
       "src/renderer/vulkan/vulkan_glyph_atlas_resources_internal.hpp",
       "src/renderer/vulkan/vulkan_command_recording.cpp",
-      "src/renderer/vulkan/vulkan_solid_rect_geometry_internal.hpp",
-      "src/renderer/vulkan/vulkan_solid_rect_geometry.cpp",
+      "include/cgpui/renderer/planning/solid_rect_geometry.hpp",
+      "src/renderer/planning/solid_rect_geometry.cpp",
       "src/renderer/vulkan/vulkan_solid_rect_frame.cpp",
       "src/renderer/vulkan/vulkan_device.cpp",
       "src/renderer/vulkan/vulkan_device_memory.cpp",
@@ -313,12 +313,12 @@ int main(int argc, char** argv) {
       "src/renderer/vulkan/vulkan_text_coverage.cpp",
       "src/renderer/vulkan/vulkan_text_positioning_internal.hpp",
       "src/renderer/vulkan/vulkan_text_positioning.cpp",
-      "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp",
-      "src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp",
-      "src/renderer/vulkan/vulkan_rounded_rect_antialiasing_internal.hpp",
-      "src/renderer/vulkan/vulkan_rounded_rect_antialiasing.cpp",
-      "src/renderer/vulkan/vulkan_rounded_rect_radii_internal.hpp",
-      "src/renderer/vulkan/vulkan_rounded_rect_radii.cpp",
+      "include/cgpui/renderer/planning/rect_geometry_types.hpp",
+      "src/renderer/planning/rounded_rect_geometry.cpp",
+      "include/cgpui/renderer/planning/rect_antialiasing.hpp",
+      "src/renderer/planning/rounded_rect_antialiasing.cpp",
+      "src/renderer/planning/rounded_rect_radii_internal.hpp",
+      "src/renderer/planning/rounded_rect_radii.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_buffers_internal.hpp",
       "src/renderer/vulkan/vulkan_rounded_rect_buffers.cpp",
       "src/renderer/vulkan/vulkan_rounded_rect_frame.cpp",
@@ -707,7 +707,7 @@ int main(int argc, char** argv) {
   }
   if (!contains(renderer, "class VulkanFrame") ||
       !contains(renderer, "class VulkanRenderer final") ||
-      !contains(renderer, "create_renderer(")) {
+      !contains(renderer, "create_vulkan_renderer(")) {
     return 3;
   }
   if (contains(renderer, "class VulkanRendererState") ||
@@ -1024,62 +1024,62 @@ int main(int argc, char** argv) {
     return 88;
   }
   const std::string solid_rect_geometry_header = read_source(
-      "src/renderer/vulkan/vulkan_solid_rect_geometry_internal.hpp");
+      "include/cgpui/renderer/planning/solid_rect_geometry.hpp");
   const std::string solid_rect_geometry = read_source(
-      "src/renderer/vulkan/vulkan_solid_rect_geometry.cpp");
+      "src/renderer/planning/solid_rect_geometry.cpp");
   const std::string solid_rect_frame =
       read_source("src/renderer/vulkan/vulkan_solid_rect_frame.cpp");
   if (line_count(solid_rect_geometry_header) > 30 ||
       line_count(solid_rect_geometry) > 110 ||
       line_count(solid_rect_frame) > 30 ||
-      !contains(solid_rect_geometry, "vulkan_build_solid_rect_geometry(") ||
-      !contains(solid_rect_geometry, "vulkan_resolve_effective_clip_rect(") ||
+      !contains(solid_rect_geometry, "build_solid_rect_geometry(") ||
+      !contains(solid_rect_geometry, "resolve_effective_clip_rect(") ||
       !contains(solid_rect_frame, "prepare_solid_rect_frame(")) {
     return 72;
   }
   const std::string clip_scissor_header = read_source(
-      "src/renderer/vulkan/vulkan_clip_scissor_internal.hpp");
+      "include/cgpui/renderer/planning/clip_scissor.hpp");
   const std::string clip_scissor =
-      read_source("src/renderer/vulkan/vulkan_clip_scissor.cpp");
+      read_source("src/renderer/planning/clip_scissor.cpp");
   if (line_count(clip_scissor_header) > 40 ||
       line_count(clip_scissor) > 130 ||
-      !contains(clip_scissor_header, "struct VulkanClipScissorResolution") ||
+      !contains(clip_scissor_header, "struct ClipScissorResolution") ||
       !contains(clip_scissor,
-                "vulkan_resolve_effective_clip_rect(") ||
+                "resolve_effective_clip_rect(") ||
       !contains(clip_scissor,
-                "vulkan_resolve_clip_stack_scissor(") ||
+                "resolve_clip_stack_scissor(") ||
       !contains(solid_rect_geometry,
-                "vulkan_resolve_effective_clip_rect(")) {
+                "resolve_effective_clip_rect(")) {
     return 73;
   }
   const std::string composition_opacity_header = read_source(
-      "src/renderer/vulkan/vulkan_composition_opacity_internal.hpp");
+      "include/cgpui/renderer/planning/composition_opacity.hpp");
   const std::string composition_opacity = read_source(
-      "src/renderer/vulkan/vulkan_composition_opacity.cpp");
+      "src/renderer/planning/composition_opacity.cpp");
   if (line_count(composition_opacity_header) > 30 ||
       line_count(composition_opacity) > 50 ||
       !contains(composition_opacity_header,
-                "vulkan_resolve_composed_opacity(") ||
+                "resolve_composed_opacity(") ||
       !contains(composition_opacity_header,
-                "vulkan_apply_composed_opacity(") ||
+                "apply_composed_opacity(") ||
       !contains(solid_rect_geometry,
-                "vulkan_apply_composed_opacity(") ||
-      contains(command_recording, "vulkan_apply_composed_opacity(")) {
+                "apply_composed_opacity(") ||
+      contains(command_recording, "apply_composed_opacity(")) {
     return 74;
   }
   const std::string composition_transform_header = read_source(
-      "src/renderer/vulkan/vulkan_composition_transform_internal.hpp");
+      "include/cgpui/renderer/planning/composition_transform.hpp");
   const std::string composition_transform = read_source(
-      "src/renderer/vulkan/vulkan_composition_transform.cpp");
+      "src/renderer/planning/composition_transform.cpp");
   if (line_count(composition_transform_header) > 30 ||
       line_count(composition_transform) > 70 ||
       !contains(composition_transform_header,
-                "vulkan_resolve_composed_transform(") ||
-      !contains(composition_transform_header, "vulkan_transform_point(") ||
+                "resolve_composed_transform(") ||
+      !contains(composition_transform_header, "transform_point(") ||
       !contains(composition_transform_header,
-                "vulkan_apply_composed_transform(") ||
-      !contains(solid_rect_geometry, "vulkan_apply_composed_transform(") ||
-      contains(command_recording, "vulkan_apply_composed_transform(")) {
+                "apply_composed_transform(") ||
+      !contains(solid_rect_geometry, "apply_composed_transform(") ||
+      contains(command_recording, "apply_composed_transform(")) {
     return 75;
   }
   const std::string frame_draw_order_header = read_source(
@@ -1789,7 +1789,7 @@ int main(int argc, char** argv) {
       !contains(text_vertex_buffer, "VK_BUFFER_USAGE_VERTEX_BUFFER_BIT") ||
       !contains(text_vertex_buffer,
                 "vulkan_upload_frame_geometry_buffer(") ||
-      !contains(text_vertex_buffer, "vulkan_apply_composed_transform(") ||
+      !contains(text_vertex_buffer, "apply_composed_transform(") ||
       contains(command_recording, "vulkan_build_text_vertices(")) {
     return 65;
   }
@@ -1837,31 +1837,31 @@ int main(int argc, char** argv) {
   }
 
   const std::string rounded_rect_geometry_header = read_source(
-      "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp");
+      "include/cgpui/renderer/planning/rect_geometry_types.hpp");
   const std::string rounded_rect_geometry =
-      read_source("src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp");
+      read_source("src/renderer/planning/rounded_rect_geometry.cpp");
   const std::string rounded_rect_vertex_header = read_source(
-      "src/renderer/vulkan/vulkan_rounded_rect_vertex_internal.hpp");
+      "include/cgpui/renderer/planning/rect_vertex.hpp");
   const std::string rounded_rect_contour_header = read_source(
-      "src/renderer/vulkan/vulkan_rounded_rect_contour_internal.hpp");
+      "src/renderer/planning/rounded_rect_contour_internal.hpp");
   const std::string rounded_rect_contour =
-      read_source("src/renderer/vulkan/vulkan_rounded_rect_contour.cpp");
+      read_source("src/renderer/planning/rounded_rect_contour.cpp");
   const std::string rounded_rect_indices_header = read_source(
-      "src/renderer/vulkan/vulkan_rounded_rect_indices_internal.hpp");
+      "src/renderer/planning/rounded_rect_indices_internal.hpp");
   const std::string rounded_rect_indices =
-      read_source("src/renderer/vulkan/vulkan_rounded_rect_indices.cpp");
+      read_source("src/renderer/planning/rounded_rect_indices.cpp");
   const std::string rounded_rect_antialiasing_header = read_source(
-      "src/renderer/vulkan/vulkan_rounded_rect_antialiasing_internal.hpp");
+      "include/cgpui/renderer/planning/rect_antialiasing.hpp");
   const std::string rounded_rect_antialiasing = read_source(
-      "src/renderer/vulkan/vulkan_rounded_rect_antialiasing.cpp");
+      "src/renderer/planning/rounded_rect_antialiasing.cpp");
   const std::string rounded_rect_radii_header = read_source(
-      "src/renderer/vulkan/vulkan_rounded_rect_radii_internal.hpp");
+      "src/renderer/planning/rounded_rect_radii_internal.hpp");
   const std::string rounded_rect_radii = read_source(
-      "src/renderer/vulkan/vulkan_rounded_rect_radii.cpp");
+      "src/renderer/planning/rounded_rect_radii.cpp");
   const std::string rounded_rect_stroke_header = read_source(
-      "src/renderer/vulkan/vulkan_rounded_rect_stroke_internal.hpp");
+      "src/renderer/planning/rounded_rect_stroke_internal.hpp");
   const std::string rounded_rect_stroke =
-      read_source("src/renderer/vulkan/vulkan_rounded_rect_stroke.cpp");
+      read_source("src/renderer/planning/rounded_rect_stroke.cpp");
   if (line_count(rounded_rect_geometry_header) > 80 ||
       line_count(rounded_rect_geometry) > 190 ||
       line_count(rounded_rect_vertex_header) > 30 ||
@@ -1876,45 +1876,45 @@ int main(int argc, char** argv) {
       line_count(rounded_rect_stroke_header) > 50 ||
       line_count(rounded_rect_stroke) > 80 ||
       !contains(rounded_rect_geometry_header,
-                "struct VulkanRoundedRectGeometry") ||
+                "struct RectGeometry") ||
       !contains(rounded_rect_vertex_header,
-                "struct VulkanRoundedRectVertex") ||
+                "struct RectVertex") ||
       !contains(rounded_rect_contour,
                 "append_corner_arc(") ||
       !contains(rounded_rect_contour,
-                "vulkan_append_rounded_rect_contour(") ||
+                "append_rounded_rect_contour(") ||
       !contains(rounded_rect_indices,
-                "vulkan_append_rounded_rect_fan_indices(") ||
+                "append_rounded_rect_fan_indices(") ||
       !contains(rounded_rect_indices,
-                "vulkan_append_rounded_rect_ring_indices(") ||
+                "append_rounded_rect_ring_indices(") ||
       !contains(rounded_rect_geometry,
-                "vulkan_build_rounded_rect_geometry(") ||
+                "build_rounded_rect_geometry(") ||
       !contains(rounded_rect_geometry,
-                "vulkan_append_rounded_rect_contour(") ||
+                "append_rounded_rect_contour(") ||
       !contains(rounded_rect_geometry,
-                "vulkan_append_rounded_rect_fan_indices(") ||
+                "append_rounded_rect_fan_indices(") ||
       !contains(rounded_rect_geometry,
-                "vulkan_append_rounded_rect_ring_indices(") ||
+                "append_rounded_rect_ring_indices(") ||
       !contains(rounded_rect_antialiasing_header,
-                "struct VulkanRoundedRectAntialiasingPolicy") ||
+                "struct RectAntialiasingPolicy") ||
       !contains(rounded_rect_antialiasing,
-                "vulkan_rounded_rect_coverage(") ||
+                "rounded_rect_coverage(") ||
       !contains(rounded_rect_radii_header,
-                "struct VulkanRoundedRectRadiiResolution") ||
+                "struct RoundedRectRadiiResolution") ||
       !contains(rounded_rect_radii,
-                "vulkan_resolve_rounded_rect_radii(") ||
+                "resolve_rounded_rect_radii(") ||
       !contains(rounded_rect_geometry,
-                "vulkan_resolve_rounded_rect_radii(") ||
+                "resolve_rounded_rect_radii(") ||
       !contains(rounded_rect_stroke_header,
-                "struct VulkanRoundedRectStrokeResolution") ||
+                "struct RoundedRectStrokeResolution") ||
       !contains(rounded_rect_stroke,
-                "vulkan_resolve_rounded_rect_stroke(") ||
+                "resolve_rounded_rect_stroke(") ||
       !contains(rounded_rect_stroke,
-                "vulkan_resolve_rounded_rect_radii(") ||
+                "resolve_rounded_rect_radii(") ||
       !contains(rounded_rect_geometry,
-                "vulkan_resolve_rounded_rect_stroke(") ||
+                "resolve_rounded_rect_stroke(") ||
       !contains(rounded_rect_geometry,
-                "vulkan_apply_composed_transform(") ||
+                "apply_composed_transform(") ||
       contains(rounded_rect_geometry, "indices.insert(") ||
       contains(rounded_rect_geometry, "append_corner_arc(") ||
       contains(command_recording, "append_corner_arc(")) {
@@ -2157,7 +2157,7 @@ int main(int argc, char** argv) {
       line_count(image_draw_recording_header) > 100 ||
       line_count(image_draw_recording) > 180 ||
       !contains(image_color_header, "vulkan_resolve_image_tint(") ||
-      !contains(image_color, "vulkan_apply_composed_opacity(") ||
+      !contains(image_color, "apply_composed_opacity(") ||
       !contains(image_vertex_shader, "output.color") ||
       !contains(image_fragment_shader,
                 "image_texture.Sample(input.image_uv) *") ||

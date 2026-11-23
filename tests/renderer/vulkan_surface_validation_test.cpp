@@ -4,7 +4,7 @@ namespace {
 
 int expect_renderer_initialization_failure(
     const cgpui::RenderSurfaceDescriptor& descriptor) {
-  const auto renderer = cgpui::create_renderer(descriptor);
+  const auto renderer = cgpui::create_vulkan_renderer(descriptor);
   if (renderer) {
     return 1;
   }

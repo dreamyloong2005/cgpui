@@ -36,6 +36,7 @@ defines = [
 
 [test]
 discover = [
+    "window_backend_info_test.cpp",
     "window_runtime_window_callback_context_test.cpp",
     "window_runtime_window_callback_ownership_test.cpp",
     "window_runtime_reentrant_retirement_test.cpp",

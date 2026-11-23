@@ -11,3 +11,4 @@
 #include "cgpui/renderer/renderer_reports.hpp"
 #include "cgpui/renderer/glyph_atlas.hpp"
 #include "cgpui/renderer/renderer_frame.hpp"
+#include "cgpui/renderer/renderer_backend.hpp"

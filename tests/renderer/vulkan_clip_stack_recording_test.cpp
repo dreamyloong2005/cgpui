@@ -158,11 +158,11 @@ int test_text_draw_commands_preserve_effective_clip() {
 
 int test_recording_structure() {
   const std::string clip_header = read_source(
-      "src/renderer/vulkan/vulkan_clip_scissor_internal.hpp");
+      "include/cgpui/renderer/planning/clip_scissor.hpp");
   const std::string clip_source =
-      read_source("src/renderer/vulkan/vulkan_clip_scissor.cpp");
+      read_source("src/renderer/planning/clip_scissor.cpp");
   const std::string solid_source =
-      read_source("src/renderer/vulkan/vulkan_solid_rect_geometry.cpp");
+      read_source("src/renderer/planning/solid_rect_geometry.cpp");
   const std::string rounded_source = read_source(
       "src/renderer/vulkan/vulkan_rounded_rect_draw_recording.cpp");
   const std::string text_source =
@@ -172,18 +172,18 @@ int test_recording_structure() {
     return 50;
   }
   const char* clip_required[] = {
-      "VulkanClipScissorResolution",
-      "vulkan_resolve_effective_clip_rect(",
-      "vulkan_resolve_clip_stack_scissor(",
+      "ClipScissorResolution",
+      "resolve_effective_clip_rect(",
+      "resolve_clip_stack_scissor(",
   };
   for (const char* value : clip_required) {
     if (!contains(clip_header, value) && !contains(clip_source, value)) {
       return 51;
     }
   }
-  if (!contains(solid_source, "vulkan_resolve_effective_clip_rect(") ||
-      !contains(rounded_source, "vulkan_resolve_clip_stack_scissor(") ||
-      !contains(text_source, "vulkan_resolve_clip_stack_scissor(") ||
+  if (!contains(solid_source, "resolve_effective_clip_rect(") ||
+      !contains(rounded_source, "resolve_clip_stack_scissor(") ||
+      !contains(text_source, "resolve_clip_stack_scissor(") ||
       !contains(rounded_source, "vkCmdSetScissor") ||
       !contains(text_source, "vkCmdSetScissor")) {
     return 52;

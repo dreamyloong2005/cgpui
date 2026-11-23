@@ -18,7 +18,7 @@ int run_on_vendor(std::uint32_t vendor) {
   cgpui_test::CompositionTestWindows windows(560, 200);
   if (!windows.valid()) return 3;
   const auto started = std::chrono::steady_clock::now();
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = cgpui::Win32SurfaceHandle{.hinstance = GetModuleHandleW(nullptr),
                                                   .hwnd = windows.popup(),
                                                   .composition = true},

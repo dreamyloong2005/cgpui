@@ -14,7 +14,7 @@ cgpui.ui = { path = "../../packages/ui" }
 
 [target.'cfg(os = "windows")'.dependencies]
 cgpui.platform-win32 = { path = "../../packages/platform-win32" }
-cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
+cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "linux")'.dependencies]
 cgpui.platform-linux-wayland = { path = "../../packages/platform-linux-wayland" }

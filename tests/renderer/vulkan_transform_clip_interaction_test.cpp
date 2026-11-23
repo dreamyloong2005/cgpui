@@ -165,7 +165,7 @@ int test_structure() {
   const std::string ui_structure =
       read_source("tests/architecture/ui_source_structure_test.cpp");
   const std::string vulkan_clip =
-      read_source("src/renderer/vulkan/vulkan_clip_scissor.cpp");
+      read_source("src/renderer/planning/clip_scissor.cpp");
   if (clip_transform_header.empty() || clip_transform_source.empty() ||
       clip_source.empty() || paint_source.empty() || ui_structure.empty() ||
       vulkan_clip.empty()) {
@@ -179,7 +179,7 @@ int test_structure() {
       !contains(ui_structure, "transform_clip_rect_to_framebuffer_aabb(") ||
       contains(clip_source, "transform_clip_rect_to_framebuffer_aabb(") ||
       contains(vulkan_clip, "transform_clip_rect_to_framebuffer_aabb(") ||
-      contains(vulkan_clip, "vulkan_apply_composed_transform(")) {
+      contains(vulkan_clip, "apply_composed_transform(")) {
     return 51;
   }
 

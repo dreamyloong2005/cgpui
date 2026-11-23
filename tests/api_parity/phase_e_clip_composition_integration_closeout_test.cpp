@@ -120,8 +120,8 @@ int main() {
 
   constexpr std::array module_evidence{
       SourceEvidence{
-          "src/renderer/vulkan/vulkan_rounded_rect_geometry_internal.hpp",
-          "struct VulkanRoundedRectGeometry"},
+          "include/cgpui/renderer/planning/rect_geometry_types.hpp",
+          "struct RectGeometry"},
       SourceEvidence{
           "src/renderer/vulkan/vulkan_rounded_rect_buffers_internal.hpp",
           "struct VulkanRoundedRectBufferResources"},
@@ -132,14 +132,14 @@ int main() {
           "src/renderer/vulkan/vulkan_rounded_rect_draw_recording.cpp",
           "vkCmdDrawIndexed"},
       SourceEvidence{
-          "src/renderer/vulkan/vulkan_rounded_rect_antialiasing_internal.hpp",
-          "struct VulkanRoundedRectAntialiasingPolicy"},
+          "include/cgpui/renderer/planning/rect_antialiasing.hpp",
+          "struct RectAntialiasingPolicy"},
       SourceEvidence{
-          "src/renderer/vulkan/vulkan_rounded_rect_radii_internal.hpp",
-          "struct VulkanRoundedRectRadiiResolution"},
+          "src/renderer/planning/rounded_rect_radii_internal.hpp",
+          "struct RoundedRectRadiiResolution"},
       SourceEvidence{
-          "src/renderer/vulkan/vulkan_rounded_rect_stroke_internal.hpp",
-          "struct VulkanRoundedRectStrokeResolution"},
+          "src/renderer/planning/rounded_rect_stroke_internal.hpp",
+          "struct RoundedRectStrokeResolution"},
       SourceEvidence{
           "src/ui/paint_rounded_rect.cpp",
           "PaintList::stroke_rounded_rect("},

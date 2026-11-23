@@ -19,7 +19,7 @@ std::optional<cgpui::RendererFramePixels> capture_pixels_at_scale(
     cgpui::DpiScale scale,
     cgpui::Color clear,
     Paint&& paint) {
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = window.framebuffer_size(),
       .scale = scale,

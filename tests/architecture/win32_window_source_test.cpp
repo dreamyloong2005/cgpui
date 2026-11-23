@@ -855,7 +855,7 @@ int main() {
   if (!contains(windows_branch, "cgpui.platform-win32")) {
     return 25;
   }
-  if (!contains(windows_branch, "cgpui.renderer-vulkan")) {
+  if (!contains(windows_branch, "cgpui.renderer-windows")) {
     return 26;
   }
   if (contains(hello_manifest, "platform-fallback") ||

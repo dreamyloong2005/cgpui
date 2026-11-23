@@ -5,6 +5,7 @@
   python scripts/dev/compile_shaders.py --check   exit 1 if an output differs
   --metal  only the Metal outputs (a Mac without the Vulkan SDK; spirv-val
            is not needed)
+  --dxil   only the experimental DX12 rectangle outputs (requires slangc/dxc)
 
 Vulkan: SPIR-V 1.3 (the renderer requests Vulkan 1.1), checked with
 spirv-val --target-env vulkan1.1, written as uint32 arrays to
@@ -192,7 +193,15 @@ def outputs(metal_only: bool) -> dict[str, str]:
 def main() -> int:
     check = "--check" in sys.argv[1:]
     stale = []
-    for path, text in outputs("--metal" in sys.argv[1:]).items():
+    metal_only = "--metal" in sys.argv[1:]
+    dxil_only = "--dxil" in sys.argv[1:]
+    if metal_only and dxil_only:
+        raise SystemExit("--metal and --dxil are mutually exclusive")
+    generated = {} if dxil_only else outputs(metal_only)
+    if not metal_only:
+        import compile_dx12_shaders as dx12
+        generated[dx12.OUTPUT] = dx12.output()
+    for path, text in generated.items():
         target = REPO / path
         current = target.read_text("utf-8").replace("\r\n", "\n") if target.exists() else None
         if current == text:

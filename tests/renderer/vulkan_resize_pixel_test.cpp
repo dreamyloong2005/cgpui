@@ -25,7 +25,7 @@ bool capture_clear(
 int main() {
   cgpui_test::VulkanPixelTestWindow window(
       L"CGPUIVulkanResizePixelTestWindow", L"CGPUI Vulkan Resize Pixel Test");
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = window.framebuffer_size(),
       .scale = cgpui::DpiScale{1.0F},

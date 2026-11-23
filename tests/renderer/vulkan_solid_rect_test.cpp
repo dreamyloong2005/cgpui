@@ -1482,7 +1482,7 @@ int main() {
   }
 
   const cgpui::Size framebuffer_size = window.framebuffer_size();
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = framebuffer_size,
       .scale = cgpui::DpiScale{1.0F}});

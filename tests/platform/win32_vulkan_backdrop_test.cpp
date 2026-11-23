@@ -30,7 +30,7 @@ int main() {
   auto window = (*app)->create_window(descriptor, [](const auto&) {});
   if (!window) return fail(2, "window was not created");
   const cgpui::WindowState state = (*window)->state();
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = (*window)->native_surface(),
       .framebuffer_size = state.framebuffer_size,
       .scale = state.scale,

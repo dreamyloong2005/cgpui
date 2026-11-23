@@ -2,6 +2,7 @@
 
 #include "cgpui/core/error.hpp"
 #include "cgpui/renderer/planning.hpp"
+#include "cgpui/renderer/renderer_backend_info.hpp"
 #include "cgpui/renderer/renderer_frame_diagnostic_snapshot.hpp"
 #include "cgpui/renderer/renderer_frame_pixels.hpp"
 #include "cgpui/renderer/renderer_surface_composition.hpp"
@@ -39,6 +40,7 @@ class Renderer {
 
   virtual Result<void> resize(Size framebuffer_size, DpiScale scale) = 0;
   virtual Result<std::unique_ptr<RenderFrame>> begin_frame() = 0;
+  [[nodiscard]] virtual RendererBackendInfo backend_info() const;
   [[nodiscard]] virtual const RendererFrameDiagnosticSnapshot*
   last_frame_diagnostic_snapshot() const;
   [[nodiscard]] virtual const RendererFramePixels* last_frame_pixels() const;

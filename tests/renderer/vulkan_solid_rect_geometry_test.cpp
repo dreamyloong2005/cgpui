@@ -83,9 +83,9 @@ int test_solid_rects_build_compact_blended_geometry() {
 
 int test_solid_geometry_owns_the_promoted_frame_path() {
   const std::string header = read_source(
-      "src/renderer/vulkan/vulkan_solid_rect_geometry_internal.hpp");
+      "include/cgpui/renderer/planning/solid_rect_geometry.hpp");
   const std::string geometry =
-      read_source("src/renderer/vulkan/vulkan_solid_rect_geometry.cpp");
+      read_source("src/renderer/planning/solid_rect_geometry.cpp");
   const std::string buffers =
       read_source("src/renderer/vulkan/vulkan_rounded_rect_buffers.cpp");
   const std::string frame =
@@ -102,9 +102,9 @@ int test_solid_geometry_owns_the_promoted_frame_path() {
       state.empty() || command.empty() || pipeline.empty()) {
     return 20;
   }
-  if (!contains(header, "vulkan_build_solid_rect_geometry(") ||
-      !contains(geometry, "vulkan_apply_composed_opacity(") ||
-      !contains(geometry, "vulkan_resolve_effective_clip_rect(") ||
+  if (!contains(header, "build_solid_rect_geometry(") ||
+      !contains(geometry, "apply_composed_opacity(") ||
+      !contains(geometry, "resolve_effective_clip_rect(") ||
       !contains(buffers, "vulkan_upload_solid_rect_buffers(") ||
       !contains(frame, "prepare_solid_rect_frame(") ||
       !contains(state, "solid_rect_buffers_") ||

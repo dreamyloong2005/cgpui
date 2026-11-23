@@ -41,7 +41,7 @@ cgpui::BackdropBlurDraw backdrop(cgpui::Rect rect, std::optional<cgpui::Color> t
 std::optional<Capture> capture(
     cgpui_test::VulkanPixelTestWindow& window, float scale, int frames,
     const std::function<void(cgpui::RenderFrame&)>& paint) {
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = window.framebuffer_size(),
       .scale = cgpui::DpiScale{scale},

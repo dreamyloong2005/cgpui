@@ -57,7 +57,7 @@ int main() {
     return 4;
   }
 
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = cgpui::Size{64.0F, 64.0F},
       .scale = cgpui::DpiScale{1.0F}});

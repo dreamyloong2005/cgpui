@@ -128,7 +128,7 @@ bool present_text_frame(cgpui::Renderer& renderer, std::string_view content) {
 int test_frame_outlives_renderer(const HiddenWindow& window) {
   std::unique_ptr<cgpui::RenderFrame> frame;
   {
-    auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+    auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
         .native_surface = window.surface(),
         .framebuffer_size = cgpui::Size{64.0F, 64.0F},
         .scale = cgpui::DpiScale{1.0F}});
@@ -149,7 +149,7 @@ int test_frame_outlives_renderer(const HiddenWindow& window) {
 }
 
 int test_incremental_glyph_atlas_frames(const HiddenWindow& window) {
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = cgpui::Size{64.0F, 64.0F},
       .scale = cgpui::DpiScale{1.0F}});
@@ -166,7 +166,7 @@ int test_incremental_glyph_atlas_frames(const HiddenWindow& window) {
 }
 
 int test_live_frame_diagnostic_snapshot(const HiddenWindow& window) {
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = cgpui::Size{64.0F, 64.0F},
       .scale = cgpui::DpiScale{1.0F}});
@@ -200,7 +200,7 @@ int test_live_frame_diagnostic_snapshot(const HiddenWindow& window) {
 }
 
 int test_image_texture_resource_frame(const HiddenWindow& window) {
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = cgpui::Size{64.0F, 64.0F},
       .scale = cgpui::DpiScale{1.0F}});
@@ -230,7 +230,7 @@ int test_image_texture_resource_frame(const HiddenWindow& window) {
 }
 
 int test_image_texture_cache_idle_frame(const HiddenWindow& window) {
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = cgpui::Size{64.0F, 64.0F},
       .scale = cgpui::DpiScale{1.0F}});
@@ -296,7 +296,7 @@ int test_image_texture_upload_frame(const HiddenWindow& window) {
 }
 
 int test_image_texture_invalidation_frame(const HiddenWindow& window) {
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = cgpui::Size{64.0F, 64.0F},
       .scale = cgpui::DpiScale{1.0F}});
@@ -359,7 +359,7 @@ int test_image_texture_invalidation_frame(const HiddenWindow& window) {
 }
 
 int test_multi_page_glyph_atlas_frame(const HiddenWindow& window) {
-  auto renderer = cgpui::create_renderer(cgpui::RenderSurfaceDescriptor{
+  auto renderer = cgpui::create_vulkan_renderer(cgpui::RenderSurfaceDescriptor{
       .native_surface = window.surface(),
       .framebuffer_size = cgpui::Size{64.0F, 64.0F},
       .scale = cgpui::DpiScale{1.0F}});

@@ -160,25 +160,25 @@ int test_text_quad_corners_transform_after_positioning() {
 
 int test_structure() {
   const std::string transform_header = read_source(
-      "src/renderer/vulkan/vulkan_composition_transform_internal.hpp");
+      "include/cgpui/renderer/planning/composition_transform.hpp");
   const std::string transform_source = read_source(
-      "src/renderer/vulkan/vulkan_composition_transform.cpp");
+      "src/renderer/planning/composition_transform.cpp");
   const std::string solid =
-      read_source("src/renderer/vulkan/vulkan_solid_rect_geometry.cpp");
+      read_source("src/renderer/planning/solid_rect_geometry.cpp");
   const std::string rounded =
-      read_source("src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp");
+      read_source("src/renderer/planning/rounded_rect_geometry.cpp");
   const std::string text =
       read_source("src/renderer/vulkan/vulkan_text_vertex_buffer.cpp");
   if (transform_header.empty() || transform_source.empty() || solid.empty() ||
       rounded.empty() || text.empty()) {
     return 50;
   }
-  if (!contains(transform_header, "vulkan_resolve_composed_transform(") ||
-      !contains(transform_header, "vulkan_transform_point(") ||
-      !contains(transform_header, "vulkan_apply_composed_transform(") ||
-      !contains(solid, "vulkan_apply_composed_transform(") ||
-      !contains(rounded, "vulkan_apply_composed_transform(") ||
-      !contains(text, "vulkan_apply_composed_transform(")) {
+  if (!contains(transform_header, "resolve_composed_transform(") ||
+      !contains(transform_header, "transform_point(") ||
+      !contains(transform_header, "apply_composed_transform(") ||
+      !contains(solid, "apply_composed_transform(") ||
+      !contains(rounded, "apply_composed_transform(") ||
+      !contains(text, "apply_composed_transform(")) {
     return 51;
   }
 

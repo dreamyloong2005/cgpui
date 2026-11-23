@@ -1230,7 +1230,7 @@ int main(int argc, char** argv) {
   if (!contains(windows_hello_dependencies, "cgpui.platform-win32")) {
     return 31;
   }
-  if (!contains(windows_hello_dependencies, "cgpui.renderer-vulkan")) {
+  if (!contains(windows_hello_dependencies, "cgpui.renderer-windows")) {
     return 32;
   }
   const std::string windows_smokes =

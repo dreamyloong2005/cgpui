@@ -138,24 +138,24 @@ int test_production_text_quads_apply_opacity() {
 
 int test_structure() {
   const std::string opacity_header = read_source(
-      "src/renderer/vulkan/vulkan_composition_opacity_internal.hpp");
+      "include/cgpui/renderer/planning/composition_opacity.hpp");
   const std::string opacity_source = read_source(
-      "src/renderer/vulkan/vulkan_composition_opacity.cpp");
+      "src/renderer/planning/composition_opacity.cpp");
   const std::string solid_source =
-      read_source("src/renderer/vulkan/vulkan_solid_rect_geometry.cpp");
+      read_source("src/renderer/planning/solid_rect_geometry.cpp");
   const std::string rounded_source =
-      read_source("src/renderer/vulkan/vulkan_rounded_rect_geometry.cpp");
+      read_source("src/renderer/planning/rounded_rect_geometry.cpp");
   const std::string text_source =
       read_source("src/renderer/vulkan/vulkan_glyph_atlas_draw_data.cpp");
   if (opacity_header.empty() || opacity_source.empty() || solid_source.empty() ||
       rounded_source.empty() || text_source.empty()) {
     return 50;
   }
-  if (!contains(opacity_header, "vulkan_resolve_composed_opacity(") ||
-      !contains(opacity_header, "vulkan_apply_composed_opacity(") ||
-      !contains(solid_source, "vulkan_apply_composed_opacity(") ||
-      !contains(rounded_source, "vulkan_apply_composed_opacity(") ||
-      !contains(text_source, "vulkan_apply_composed_opacity(")) {
+  if (!contains(opacity_header, "resolve_composed_opacity(") ||
+      !contains(opacity_header, "apply_composed_opacity(") ||
+      !contains(solid_source, "apply_composed_opacity(") ||
+      !contains(rounded_source, "apply_composed_opacity(") ||
+      !contains(text_source, "apply_composed_opacity(")) {
     return 51;
   }
 
