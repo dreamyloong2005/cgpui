@@ -22,6 +22,11 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_box_shadow_pixels_test.cpp",
+    "dx12_box_shadow_effects_test.cpp",
+    "dx12_box_shadow_mixed_test.cpp",
+    "dx12_box_shadow_validation_test.cpp",
+    "dx12_box_shadow_transform_test.cpp",
     "dx12_opaque_frame_test.cpp",
     "dx12_frame_lifetime_test.cpp",
     "dx12_geometry_pixels_test.cpp",

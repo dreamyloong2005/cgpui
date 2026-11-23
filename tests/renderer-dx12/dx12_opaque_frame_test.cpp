@@ -82,10 +82,10 @@ int main() {
   ShowWindow(window.hwnd, SW_HIDE);
   frame = (*renderer)->begin_frame();
   if (!frame) return fail(12, frame.error().message.c_str());
-  (*frame)->draw_box_shadow({});
+  (*frame)->draw_backdrop_blur({});
   const auto unsupported = (*frame)->present();
   if (unsupported || unsupported.error().code != cgpui::ErrorCode::unsupported_platform) {
-    return fail(13, "unsupported shadow must reject the frame");
+    return fail(13, "unsupported backdrop blur must reject the frame");
   }
   renderer->reset();
   descriptor.transparent_background = true;

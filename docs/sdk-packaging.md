@@ -116,7 +116,7 @@ Shaders are written in Slang and compiled to SPIR-V at development time
 renderer requires Vulkan 1.1 (SPIR-V 1.3).
 
 Windows packages also include the backend dispatcher and experimental DX12
-library, whose rectangle/text/image DXIL is embedded (no runtime shader compiler). Vulkan
+library, whose rectangle/text/image/shadow DXIL is embedded (no runtime shader compiler). Vulkan
 remains the default; the [DX12 bootstrap](dx12-backend.md) is not feature-complete.
 `python -B tests/ci/dx12_package_graph_test.py` checks both the SDK graph and the
 base Windows package's copied libraries so neither can omit the factory owner.

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import compile_shaders as shared
 
-PIPELINES = {"rounded_rect": "rect", "text": "text", "image": "image"}
+PIPELINES = {"rounded_rect": "rect", "text": "text", "image": "image", "box_shadow": "shadow"}
 FLAGS = ["-target", "dxil", "-profile", "sm_6_0", "-O2", "-DCGPUI_CLIP_Y_UP=1"]
 
 

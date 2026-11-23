@@ -48,7 +48,6 @@ void Dx12Frame::draw_rounded_rect(const RoundedRectDraw& rect) {
 void Dx12Frame::unsupported(const char* feature) {
   if (!released_ && !error_) error_ = dx12_unsupported(feature);
 }
-void Dx12Frame::draw_box_shadow(const BoxShadowDraw&) { unsupported("box shadows"); }
 void Dx12Frame::draw_backdrop_blur(const BackdropBlurDraw&) { unsupported("backdrop blur"); }
 void Dx12Frame::draw_text_selection(const TextSelectionDraw& selection) {
   draw_rect(SolidRect{.rect = selection.rect, .color = selection.color,

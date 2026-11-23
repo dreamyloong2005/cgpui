@@ -29,6 +29,7 @@ struct Dx12State {
   Dx12Ptr<ID3D12GraphicsCommandList> commands;
   Dx12Ptr<ID3D12RootSignature> root_signature;
   Dx12Ptr<ID3D12PipelineState> pipeline;
+  Dx12Ptr<ID3D12PipelineState> shadow_pipeline;
   std::unique_ptr<Dx12ImageCache> image_cache;
   std::unique_ptr<Dx12TextCache> text_cache;
   std::unique_ptr<Dx12TextureRenderer> texture_renderer;

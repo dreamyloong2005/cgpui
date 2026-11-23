@@ -39,6 +39,9 @@ Varyings vertex_main(VertexInput input) {
   // Vulkan clip space has y down, like the framebuffer: no flip.
   output.position = float4(normalized.x * 2.0 - 1.0,
                            normalized.y * 2.0 - 1.0, 0.0, 1.0);
+#if CGPUI_CLIP_Y_UP
+  output.position.y = -output.position.y;
+#endif
   output.local = input.local;
   output.color = input.color;
   output.shadow_rect = input.shadow_rect;

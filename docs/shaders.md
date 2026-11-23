@@ -22,7 +22,7 @@ sources:
 - `src/renderer/metal/generated/<function>.metal`: one Metal source per
   function (slangc gives every entry point of one compile all global
   parameters), embedded by `packages/renderer-metal/build.mcpp`.
-- `src/renderer/dx12/generated/{rounded_rect,text,image}_dxil.inc`: DXIL shader
+- `src/renderer/dx12/generated/{rounded_rect,text,image,box_shadow}_dxil.inc`: DXIL shader
   model 6.0, compiled from the same Slang sources with `CGPUI_CLIP_Y_UP=1` and
   checked with `dxc -dumpbin` (`DXC` or the Vulkan SDK). The focused
   `compile_dx12_shaders.py` helper is included by the default/`--check` command;

@@ -8,8 +8,8 @@
 #include <string>
 #include <string_view>
 
-// C5 box shadow: focused Vulkan modules with line limits, shaders kept next
-// to their embedded SPIR-V, and the UI submitting shadows to the renderer.
+// C5 box shadow: neutral CPU planning and focused Vulkan GPU modules, with
+// line limits and the UI submitting shadows to the renderer.
 namespace {
 std::string read(const char* path) {
   const auto root = CGPUI_SOURCE_ROOT;
@@ -38,6 +38,11 @@ int main() {
     limit("include/cgpui/renderer/renderer_effect_draws.hpp", 70);
     limit("src/renderer/vulkan/vulkan_box_shadow_geometry_internal.hpp", 50);
     limit("src/renderer/vulkan/vulkan_box_shadow_geometry.cpp", 140);
+    limit("include/cgpui/renderer/planning/box_shadow_vertex.hpp", 50);
+    limit("include/cgpui/renderer/planning/box_shadow_geometry.hpp", 50);
+    limit("include/cgpui/renderer/planning/box_shadow_parameters.hpp", 30);
+    limit("src/renderer/planning/box_shadow_geometry.cpp", 140);
+    limit("src/renderer/planning/box_shadow_parameters.cpp", 40);
     limit("src/renderer/vulkan/vulkan_box_shadow_pipeline_internal.hpp", 45);
     limit("src/renderer/vulkan/vulkan_box_shadow_pipeline.cpp", 140);
     limit("src/renderer/vulkan/vulkan_box_shadow_buffers.cpp", 90);
@@ -47,7 +52,8 @@ int main() {
     const auto fragment = read("src/renderer/vulkan/shaders/box_shadow.slang");
     const auto binaries =
         read("src/renderer/vulkan/vulkan_box_shadow_shader_binaries.cpp");
-    const auto geometry = read("src/renderer/vulkan/vulkan_box_shadow_geometry.cpp");
+    const auto geometry = read("src/renderer/planning/box_shadow_geometry.cpp");
+    const auto parameters = read("src/renderer/planning/box_shadow_parameters.cpp");
     const auto submit = read("src/ui/render_view_commands.cpp");
     const auto recording =
         read("src/renderer/vulkan/vulkan_frame_draw_recording.cpp");
@@ -62,9 +68,9 @@ int main() {
                 has(read("src/renderer/vulkan/generated/box_shadow_spirv.inc"),
                     "0x07230203U"),
             "embedded SPIR-V records how it was generated");
-    require(has(geometry, "blur_radius) * 0.5F") &&
-                has(geometry, "vulkan_apply_composed_transform(") &&
-                has(geometry, "vulkan_apply_composed_opacity("),
+    require(has(parameters, "blur_radius) * 0.5F") &&
+                has(geometry, "apply_composed_transform(") &&
+                has(geometry, "apply_composed_opacity("),
             "sigma = blur / 2, with transform and opacity metadata applied");
     require(has(submit, "frame.draw_box_shadow(") &&
                 has(recording, "VulkanFrameDrawResourceKind::box_shadow"),

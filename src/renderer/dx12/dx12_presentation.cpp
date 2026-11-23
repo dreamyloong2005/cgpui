@@ -29,9 +29,7 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   state.commands->RSSetViewports(1, &viewport);
   state.commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
   for (const auto& draw : draws) {
-    const auto recorded = std::holds_alternative<RectGeometry>(draw) ?
-        dx12_record_geometry(state, std::get<RectGeometry>(draw)) :
-        dx12_record_textured_draw(state, std::get<Dx12TexturedDraw>(draw));
+    const auto recorded = dx12_record_draw(state, draw);
     if (!recorded) {
       (void)state.commands->Close();
       return recorded;

@@ -16,10 +16,14 @@ and macOS stays Metal. The previous Popup policy is unchanged for Vulkan.
   pages, including native DirectWrite glyphs. Images support RGBA8 uploads,
   nearest/linear clamp sampling, source crops, tint and cached reuse. Both consume
   the neutral CPU geometry and preserve order when interleaved with rectangles.
+- Outer box shadows reuse the shared analytic shader and CPU geometry: CSS
+  blur radius/sigma and spread, rounded corners, original-box clip-out, affine
+  transforms, composed opacity, clips and DPI. Shadow commands retain their
+  position in the same rectangle/text/image draw stream.
 - Pixel readback with row-pitch handling, resize, and explicit rejection of
   overlapping frames or resize while a frame is outstanding. Destroying a
   renderer before its outstanding frame is safe; that frame cannot present.
-- Shared CPU geometry in `renderer/planning` and shared Slang rectangle/text/image shaders;
+- Shared CPU geometry in `renderer/planning` and shared Slang primitive shaders;
   no DX12-to-Vulkan package dependency or runtime shader compiler.
 - Vulkan and DX12 populate `Renderer::backend_info()` and
   `Window::backend_info()` with the actual backend/adapter, vendor/LUID,
@@ -88,13 +92,13 @@ support returns an error instead of silently claiming validation. Debug
 configuration is fixed before the process's first DX12 device and cannot be
 changed by later renderer creations. These environment variables are diagnostic
 controls, not cross-platform window options. Use a separate process per debug
-configuration. The hello-window demo smoke can now run with `-Renderer dx12`;
-examples requiring shadows or blur still exceed this subset. Use the dedicated
+configuration. The hello-window demo smoke can run with `-Renderer dx12`;
+examples requiring backdrop blur still exceed this subset. Use the dedicated
 native tests rather than expecting full workbench rendering.
 
 ## Not implemented yet
 
-Box shadows, backdrop blur, transparent ordinary windows,
+Backdrop blur, transparent ordinary windows,
 DirectComposition Popup presentation and device-loss recovery are future work.
 Unimplemented drawing methods reject the frame rather than silently dropping
 content. Transparent/composition descriptors fail during creation;
@@ -102,10 +106,11 @@ content. Transparent/composition descriptors fail during creation;
 the existing overlay fallback; Vulkan is not preemptively disabled.
 
 The original DX12 plan's shared extraction and shader phases are only partially
-complete: rectangle/text/image algorithms and DXIL are implemented, not every planned
+complete: rectangle/text/image/shadow algorithms and DXIL are implemented, not every planned
 primitive. Full parity, transparent-window/native-menu compatibility, recovery,
 performance gates and default-switch/release verification must precede automatic
 DX12 selection. No release was published by this milestone.
 
-See `.planning/2026-11-23-dx12-bootstrap/` and
-`.planning/2026-11-23-dx12-textures/` for dated validation evidence.
+See `.planning/2026-11-23-dx12-bootstrap/`,
+`.planning/2026-11-23-dx12-textures/` and
+`.planning/2026-11-23-dx12-shadows/` for dated validation evidence.

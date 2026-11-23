@@ -56,6 +56,7 @@ int main() {
       "src/renderer/dx12/generated/rounded_rect_dxil.inc",
       "src/renderer/dx12/generated/text_dxil.inc",
       "src/renderer/dx12/generated/image_dxil.inc",
+      "src/renderer/dx12/generated/box_shadow_dxil.inc",
       "src/renderer/vulkan/generated/rounded_rect_spirv.inc",
       "src/renderer/vulkan/generated/text_spirv.inc",
       "src/renderer/vulkan/generated/image_spirv.inc",
@@ -136,7 +137,8 @@ int main() {
       !has(dx12_script, "CGPUI_CLIP_Y_UP") || !has(dx12_script, "-dumpbin") ||
       !has(dx12_library, "generated/rounded_rect_dxil.inc") ||
       !has(dx12_library, "generated/text_dxil.inc") ||
-      !has(dx12_library, "generated/image_dxil.inc")) {
+      !has(dx12_library, "generated/image_dxil.inc") ||
+      !has(dx12_library, "generated/box_shadow_dxil.inc")) {
     return fail(7, "DX12 must validate and embed shaders from the shared Slang source");
   }
   return 0;
