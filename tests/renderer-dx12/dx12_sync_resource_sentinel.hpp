@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../src/renderer/dx12/dx12_buffers_internal.hpp"
+#include "../../src/renderer/dx12/dx12_texture_upload_internal.hpp"
 #include "../../src/renderer/dx12/dx12_state_internal.hpp"
 #include <atomic>
 #include <new>
@@ -34,26 +34,31 @@ class Dx12ResourceReleaseSentinel final : public IUnknown {
   std::atomic_bool& released_;
 };
 
-// The observer must outlive state destruction (including its destroyer thread).
-// On success, ONLY state.uploads owns the resource; the resource's private-data
-// strong reference is the sentinel's sole owner. No probe keeps the GPU owner
-// alive artificially. Its final release is therefore externally observable.
+// The observer must outlive resource destruction, including any destroyer thread.
 inline cgpui::Result<void> dx12_attach_resource_sentinel(
-    cgpui::Dx12State& state, std::atomic_bool& released) {
+    ID3D12Resource& resource, std::atomic_bool& released) {
   released.store(false, std::memory_order_relaxed);
-  if (!state.device) return std::unexpected(cgpui::Error{
-      .code = cgpui::ErrorCode::invalid_argument,
-      .message = "resource sentinel requires a live native device"});
-  auto buffer = cgpui::dx12_create_buffer(*state.device.Get(), 16, D3D12_HEAP_TYPE_UPLOAD);
-  if (!buffer) return std::unexpected(buffer.error());
   cgpui::Dx12Ptr<IUnknown> sentinel;
   sentinel.Attach(new (std::nothrow) Dx12ResourceReleaseSentinel(released));
   if (!sentinel) return std::unexpected(cgpui::dx12_error(E_OUTOFMEMORY, "resource sentinel allocation"));
   constexpr GUID key{0xb02470dd, 0x2a61, 0x46b1, {0xa8, 0x90, 0x17, 0x4b, 0x41, 0x96, 0x7e, 0x1d}};
-  const HRESULT attached = (*buffer)->SetPrivateDataInterface(key, sentinel.Get());
+  const HRESULT attached = resource.SetPrivateDataInterface(key, sentinel.Get());
   if (FAILED(attached)) return std::unexpected(cgpui::dx12_error(attached, "resource sentinel attachment"));
-  state.uploads.push_back(std::move(*buffer));
   sentinel.Reset(); // The resource now holds the sole sentinel reference.
   return {};
+}
+
+// Only the real texture-upload pool owns this page; no probe AddRefs it.
+// These sync fixtures mark synthetic pending work but never Execute native work.
+inline cgpui::Result<void> dx12_attach_resource_sentinel(
+    cgpui::Dx12State& state, std::atomic_bool& released) {
+  if (!state.device) return std::unexpected(cgpui::Error{
+      .code = cgpui::ErrorCode::invalid_argument,
+      .message = "resource sentinel requires a live native device"});
+  const cgpui::Dx12Texture texture{.width = 3, .height = 2, .stride = 12,
+      .format = DXGI_FORMAT_R8G8B8A8_UNORM, .pixels = std::vector<std::uint8_t>(24, 0x7f)};
+  auto uploaded = state.texture_uploads->upload(*state.device.Get(), texture);
+  if (!uploaded) return std::unexpected(uploaded.error());
+  return dx12_attach_resource_sentinel(*uploaded->resource, released);
 }
 } // namespace cgpui_test

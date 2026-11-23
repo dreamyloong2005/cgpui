@@ -7,7 +7,6 @@
 #include <memory>
 #include <mutex>
 #include <optional>
-#include <vector>
 
 namespace cgpui {
 class Dx12ImageCache;
@@ -19,6 +18,7 @@ struct Dx12WindowAlphaLease;
 class Dx12SynchronizationApi;
 class Dx12FrameDiagnostics;
 class Dx12GeometryUploads;
+class Dx12TextureUploads;
 struct Dx12State {
   Dx12State();
   ~Dx12State();
@@ -49,8 +49,8 @@ struct Dx12State {
   std::unique_ptr<Dx12TextCache> text_cache;
   std::unique_ptr<Dx12TextureRenderer> texture_renderer;
   std::unique_ptr<Dx12BackdropBlurRenderer> backdrop_blur;
-  std::vector<Dx12Ptr<ID3D12Resource>> uploads;
   std::unique_ptr<Dx12GeometryUploads> geometry_uploads;
+  std::unique_ptr<Dx12TextureUploads> texture_uploads;
   Dx12Ptr<ID3D12Resource> readback;
   D3D12_PLACED_SUBRESOURCE_FOOTPRINT capture_layout{};
   std::optional<RendererFramePixels> pixels;

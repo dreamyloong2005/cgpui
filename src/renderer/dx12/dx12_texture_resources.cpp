@@ -1,9 +1,8 @@
 #include "dx12_texture_renderer_internal.hpp"
 #include "dx12_state_internal.hpp"
-#include "dx12_buffers_internal.hpp"
+#include "dx12_texture_upload_frame_internal.hpp"
 #include "dx12_frame_diagnostics_internal.hpp"
 #include <algorithm>
-#include <cstring>
 
 namespace cgpui {
 namespace {
@@ -45,40 +44,20 @@ Result<void> realize_texture(
 
 Result<void> record_upload(
     Dx12State& state, const Dx12Texture& texture, Dx12NativeTexture& native) {
-  const auto descriptor = native.resource->GetDesc();
-  D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint{};
-  UINT rows = 0;
-  UINT64 row_bytes = 0, size = 0;
-  state.device->GetCopyableFootprints(&descriptor, 0, 1, 0,
-      &footprint, &rows, &row_bytes, &size);
-  auto upload = dx12_create_buffer(*state.device.Get(), size, D3D12_HEAP_TYPE_UPLOAD);
+  auto upload = dx12_upload_texture(state, texture);
   if (!upload) return std::unexpected(upload.error());
-  void* mapped = nullptr;
-  const D3D12_RANGE read{0, 0};
-  const HRESULT result = (*upload)->Map(0, &read, &mapped);
-  if (FAILED(result)) return std::unexpected(dx12_error(result, "texture upload mapping"));
-  auto* destination = static_cast<std::uint8_t*>(mapped) + footprint.Offset;
-  for (UINT row = 0; row < rows; ++row) {
-    std::memcpy(destination + std::size_t(row) * footprint.Footprint.RowPitch,
-        texture.pixels.data() + std::size_t(row) * texture.stride,
-        static_cast<std::size_t>(row_bytes));
-  }
-  const D3D12_RANGE written{static_cast<SIZE_T>(footprint.Offset),
-      static_cast<SIZE_T>(footprint.Offset + UINT64(rows - 1) * footprint.Footprint.RowPitch + row_bytes)};
-  (*upload)->Unmap(0, &written);
   D3D12_TEXTURE_COPY_LOCATION source{};
-  source.pResource = upload->Get();
+  source.pResource = upload->resource;
   source.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
-  source.PlacedFootprint = footprint;
+  source.PlacedFootprint = upload->footprint;
   D3D12_TEXTURE_COPY_LOCATION target{};
   target.pResource = native.resource.Get();
   target.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
   state.commands->CopyTextureRegion(&target, 0, 0, 0, &source, nullptr);
   if (state.active_diagnostics) state.active_diagnostics->uploaded(
-      texture.format == DXGI_FORMAT_R8_UNORM, static_cast<std::size_t>(row_bytes) * rows);
+      texture.format == DXGI_FORMAT_R8_UNORM, upload->payload_bytes);
   dx12_transition(*state.commands.Get(), *native.resource.Get(),
       D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-  state.uploads.push_back(std::move(*upload));
   return {};
 }
 } // namespace

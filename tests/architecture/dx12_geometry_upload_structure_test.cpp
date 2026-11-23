@@ -42,8 +42,14 @@ int main() {
     }
     const auto header = read("src/renderer/dx12/dx12_geometry_upload_internal.hpp");
     require(has(header, "class Dx12GeometryUploads") &&
+                has(header, "Dx12UploadPages pages_") &&
                 !has(header, "CreateCommittedResource(") && !has(header, "std::memcpy("),
             "the private geometry owner declares storage without inline native allocation/copy bodies");
+    const auto adapter = read("src/renderer/dx12/dx12_geometry_upload.cpp");
+    require(has(adapter, "pages_.allocate(device, size, 16)") &&
+                has(adapter, "std::numeric_limits<UINT>::max()") && !has(adapter, "dx12_create_buffer(") &&
+                !has(adapter, "->Map(") && !has(adapter, "->Unmap("),
+            "geometry keeps 16-byte/UINT view policy while delegating native page ownership");
     for (const auto* path : {"src/renderer/dx12/dx12_indexed_draw.cpp",
                              "src/renderer/dx12/dx12_textured_draw.cpp",
                              "src/renderer/dx12/dx12_backdrop_blur_composite.cpp"}) {

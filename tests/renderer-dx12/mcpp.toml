@@ -24,6 +24,15 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_texture_upload_budget_test.cpp",
+    "dx12_texture_upload_pages_test.cpp",
+    "dx12_texture_upload_allocator_test.cpp",
+    "dx12_texture_upload_layout_test.cpp",
+    "dx12_texture_upload_retention_test.cpp",
+    "dx12_texture_upload_snapshots_test.cpp",
+    "dx12_texture_upload_unsubmitted_test.cpp",
+    "dx12_texture_upload_failure_test.cpp",
+    "dx12_texture_upload_recovery_test.cpp",
     "dx12_geometry_upload_budget_test.cpp",
     "dx12_geometry_upload_pages_test.cpp",
     "dx12_geometry_upload_allocation_test.cpp",

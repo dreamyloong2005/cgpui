@@ -1,9 +1,6 @@
 #pragma once
 
-#include "dx12_native_internal.hpp"
-#include <cstddef>
-#include <memory>
-#include <vector>
+#include "dx12_upload_pages_internal.hpp"
 
 namespace cgpui {
 struct Dx12GeometryUploadSlice {
@@ -13,14 +10,7 @@ struct Dx12GeometryUploadSlice {
   UINT size = 0;
 };
 
-struct Dx12GeometryUploadStats {
-  std::size_t page_count = 0;
-  std::size_t capacity_bytes = 0;
-  // Includes alignment between slices, but not unused page tails.
-  std::size_t used_bytes = 0;
-  std::size_t allocations_this_frame = 0;
-  std::size_t total_allocations = 0;
-};
+using Dx12GeometryUploadStats = Dx12UploadPageStats;
 
 // Geometry only: texture footprints and readback retain their own owners.
 // Slices borrow pages until begin_frame/clear. The caller must prove completion
@@ -38,10 +28,6 @@ class Dx12GeometryUploads {
   [[nodiscard]] Dx12GeometryUploadStats stats() const noexcept;
 
  private:
-  struct Page;
-  Result<Page*> create_page(ID3D12Device& device, std::size_t capacity, bool transient);
-  std::vector<std::unique_ptr<Page>> pages_;
-  std::size_t page_cursor_ = 0;
-  Dx12GeometryUploadStats stats_;
+  Dx12UploadPages pages_;
 };
 } // namespace cgpui

@@ -2,6 +2,7 @@
 #include "../../src/renderer/dx12/dx12_frame_internal.hpp"
 #include "../../src/renderer/dx12/dx12_surface_internal.hpp"
 #include "../../src/renderer/dx12/dx12_geometry_upload_internal.hpp"
+#include "../../src/renderer/dx12/dx12_texture_upload_internal.hpp"
 #include <chrono>
 
 using namespace cgpui;
@@ -37,11 +38,11 @@ int main() {
         !state->diagnostics->work.exact_match() || state->diagnostics->upload_bytes.total_byte_count)
       return dx12_fail(4, "geometry budget must retain real pixels and original work counts");
     const auto stats = state->geometry_uploads->stats();
-    const auto resources = state->uploads.size() + stats.page_count;
+    const auto resources = stats.page_count;
     std::cout << "GEOMETRY_UPLOAD_BUDGET frame=" << pass << " draws=128 resources=" << resources
               << " new_pages=" << stats.allocations_this_frame << " capacity=" << stats.capacity_bytes
               << " present_cpu_us=" << elapsed << '\n';
-    if (resources == 0 || resources > 8 || !stats.used_bytes || !state->uploads.empty() ||
+    if (resources == 0 || resources > 8 || !stats.used_bytes || state->texture_uploads->stats().page_count ||
         (pass == 0 ? stats.allocations_this_frame != stats.page_count : stats.allocations_this_frame != 0))
       return dx12_fail(5, "geometry upload resources still scale with every draw or are not reused");
   }

@@ -71,7 +71,6 @@ Result<void> dx12_resize(Dx12State& state, Size size, DpiScale scale) {
   if (width == state.width && height == state.height) return {};
   state.pixels.reset();
   state.readback.Reset();
-  state.uploads.clear();
   for (auto& target : state.targets) target.Reset();
   const HRESULT result = state.swapchain->ResizeBuffers(
       static_cast<UINT>(state.targets.size()), width, height, DXGI_FORMAT_R8G8B8A8_UNORM,

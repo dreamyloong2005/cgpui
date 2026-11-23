@@ -45,9 +45,9 @@ previous Popup policy is unchanged for Vulkan.
   backend, use the base `unknown` report until they opt in.
 
 This is a synchronous baseline: GPU completion is awaited for each submitted
-frame. Geometry uploads use the bounded private arena below; texture staging,
-readback pooling and deeper frame overlap remain optimization work. This is not
-a frame-rate or performance-parity claim.
+frame. Geometry and texture staging use the separate bounded private upload
+pools below; readback pooling and deeper frame overlap remain optimization work.
+This is not a frame-rate or performance-parity claim.
 
 Image uploads and invalidations update the CPU cache while commands are recorded;
 abandoning or rejecting a frame does not roll back those cache operations. Each
@@ -103,13 +103,45 @@ before releasing the device, including removed-device and cohort-peer cleanup;
 old-device pages never enter a reconstructed device's arena. Persistent mapping
 does not change these ownership or GPU-completion requirements.
 
-The change does not pool or partially update image/glyph textures, their staging
-copies, descriptors, capture/readback buffers or backdrop render targets. It does
-not add asynchronous frame overlap, draw batching or a new public configuration
+The geometry adapter and the texture-staging adapter below share a private
+low-level page allocator, not their page storage or slice policies. Geometry
+still uses 16-byte-aligned slices with native UINT-sized views. Neither adapter
+adds asynchronous frame overlap, draw batching or a new public configuration
 API. Public upload-byte diagnostics still describe texture payload only, so
-geometry-page reuse does not reduce or inflate that counter. Fewer committed
-geometry allocations and safe reuse are the bounded optimization claim, not an
-FPS gain or equivalence to Vulkan.
+geometry-page reuse does not reduce or inflate that counter.
+
+## Bounded texture staging reuse
+
+Image and R8 glyph-atlas uploads use a separate pool of persistently mapped
+256 KiB staging pages. A focused texture adapter applies the device-provided
+copy footprint, 512-byte placement alignment and row pitch. Each native copy
+references its slice offset within the staging page. Source bitmap padding is
+not treated as image data, and successive slices must remain disjoint until the
+recorded copies have completed.
+
+This pool independently retains at most four ordinary pages after the next
+proven-safe reset. Geometry and texture staging together therefore retain at
+most 2 MiB of ordinary page payload capacity. Surplus and oversized allocations
+remain alive until safe retirement; neither the cap nor the counter describes
+peak frame memory, native texture allocations or all renderer memory.
+
+Both pools reset only after the existing frame-start completion proof, never on
+an unsuccessful wait or merely on public begin-frame. Native teardown clears
+both pools before releasing the old device. The prior unstructured staging
+resource list is replaced by the texture pool's owning lifetime boundary.
+
+Only staging storage is reused: native image/glyph texture resources, immutable
+CPU snapshots, lazy first use, duplicate-draw suppression, full dirty-glyph-page
+uploads and recovery reuploads retain their existing behavior. Cache hits still
+record no upload. Public upload-byte diagnostics count tightly packed texture
+payloads, not row-pitch padding, placement gaps or page capacity. The low-level
+allocator does not own texture formats, footprint calculations or GPU copy/draw
+recording.
+
+Readback buffers, descriptors and backdrop render targets are not pooled by this
+change, and glyph updates are not partial. Fewer committed staging/geometry
+allocations with unchanged pixels and lifetimes are the bounded claims, not an
+FPS improvement, asynchronous renderer or performance equivalence to Vulkan.
 
 ## Frame diagnostics
 

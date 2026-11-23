@@ -42,7 +42,7 @@ int main() {
     if (!state.diagnostics || state.diagnostics->work.planned_work.command_count != 3 ||
         state.diagnostics->submitted_draws.total_count != count + 2 ||
         !state.diagnostics->work.exact_match() || state.diagnostics->upload_bytes.total_byte_count ||
-        !state.uploads.empty()) return dx12_fail(4, "geometry pages changed logical diagnostic work");
+        state.texture_uploads->stats().page_count) return dx12_fail(4, "geometry pages changed logical diagnostic work");
     if (pass == 1 ? (stats.capacity_bytes > 4 * geometry_page_bytes || stats.allocations_this_frame != 0)
                   : (stats.page_count < 2 || stats.capacity_bytes <= geometry_page_bytes ||
                      stats.allocations_this_frame == 0))
