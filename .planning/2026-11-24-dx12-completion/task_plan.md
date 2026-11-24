@@ -178,3 +178,16 @@ redefined as complete solely to close the checklist.
  36run comparison supports heap topology reduction, not FPS/memory-byte gains.
   All original evidence/failed preparation attempts preserved. Glyph dirty upload
   and command reuse remain external candidates; full completion remains ACTIVE.
+
+- Glyph dirty transport accepted in `.planning/2026-11-24-dx12-glyph-dirty/`:
+  real held/released transport RED/GREEN, InfoQueue/readback and actual-copy
+  mutation controls; COW cloneP+dirtyD with separate G/P lifetime and checked
+  geometric CPU lineage metadata growth. Frozen3158source second matrix passes
+  Windows915/WSL688/native180 per adapter/common107 both per adapter/ASan/SDK.
+  First matrix stopped at a proved WSL path-marshalling script bug; second
+  pipeline passed but its initial SRV-only ASan identity audit was too narrow.
+  Independent actual-source review and18negative/positive controls validate the
+  separate audit-only correction using existing flushed native FIRST_BEGIN facts;
+  all original strict gates and failed evidence remain. No performance gain or
+  whole-DX12 completion claim. Command reuse native revision1 plus supplemental
+  lifetime controls are independently source-reviewed external candidates only.

@@ -21,12 +21,14 @@ bool finite_glyph_positions(const TextDraw& text) {
 
 Result<std::vector<Dx12TexturedDraw>> dx12_build_text_draws(
     Dx12State& state, const TextDraw& device_text) {
+  if (state.text_cache) state.text_cache->lineage.prune_expired();
   // Native glyph placement rounds positions before rasterization validates the
   // font metrics; reject nonfinite pens before that integer conversion.
   if (!finite_glyph_positions(device_text)) return std::unexpected(Error{
       .code = ErrorCode::invalid_argument, .message = "DX12 text glyph positions must be finite"});
   if (!state.text_cache) state.text_cache = std::make_unique<Dx12TextCache>();
   auto& cache = *state.text_cache;
+  Dx12GlyphLineageSweep sweep(cache.lineage);
   cache.glyphs.clear_rasterization_error();
   auto quads = build_textured_glyph_quads(device_text, cache.glyphs);
   if (cache.glyphs.rasterization_error())

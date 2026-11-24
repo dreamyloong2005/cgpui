@@ -5,8 +5,9 @@
 #include "dx12_surface_internal.hpp"
 #include "dx12_frame_diagnostics_internal.hpp"
 #include "dx12_geometry_upload_frame_internal.hpp"
-#include "dx12_texture_upload_frame_internal.hpp"
 #include "dx12_frame_pacing_internal.hpp"
+#include "dx12_glyph_native_internal.hpp"
+#include "dx12_glyph_recording_scope_internal.hpp"
 
 #include <optional>
 #include <type_traits>
@@ -16,12 +17,16 @@ static_assert(std::is_nothrow_move_assignable_v<std::optional<RendererFramePixel
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
                               std::span<const Dx12DrawCommand> draws, bool capture,
                               std::size_t command_count, std::uint64_t admission_call_ns) {
+  Dx12GlyphRecordingScope recording(state);
+  if (!recording.entered()) return std::unexpected(Error{.code = ErrorCode::invalid_argument,
+      .message = "DX12 nested native recording is not permitted"});
   if (auto resolved = dx12_require_resolved_images(draws); !resolved) return resolved;
   Dx12FrameDiagnostics diagnostics(state, draws, command_count, admission_call_ns);
   if (auto idle = dx12_wait_idle(state); !idle) return idle;
+  if (state.texture_renderer->glyph_native->stats().executed_unknown)
+    dx12_commit_texture_uploads(state); // Never promote an abandoned/unexecuted pending marker.
   diagnostics.finish_stage(RendererFrameTimingStage::pacing_wait);
   if (auto prepared = dx12_begin_geometry_upload_frame(state); !prepared) return prepared;
-  if (auto prepared = dx12_begin_texture_upload_frame(state); !prepared) return prepared;
   dx12_begin_texture_frame(state);
   dx12_begin_backdrop_blur_frame(state);
   state.readback.Reset();
@@ -31,10 +36,7 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   diagnostics.finish_stage(RendererFrameTimingStage::resource_preparation);
   const UINT index = state.swapchain->GetCurrentBackBufferIndex();
   diagnostics.finish_stage(RendererFrameTimingStage::image_acquisition);
-  HRESULT result = state.allocator->Reset();
-  if (FAILED(result)) return std::unexpected(dx12_error(result, "allocator reset"));
-  result = state.commands->Reset(state.allocator.Get(), state.pipeline.Get());
-  if (FAILED(result)) return std::unexpected(dx12_error(result, "command list reset"));
+  if (auto prepared = recording.reset_and_begin(); !prepared) return prepared;
   auto& target = *state.targets[index].Get();
   dx12_transition(*state.commands.Get(), target, D3D12_RESOURCE_STATE_PRESENT,
                    D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -53,7 +55,6 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
     const auto& draw = draws[group];
     const auto recorded = dx12_record_draw(state, draw);
     if (!recorded) {
-      (void)state.commands->Close();
       return recorded;
     }
   }
@@ -65,12 +66,12 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   dx12_transition(*state.commands.Get(), target,
       capture ? D3D12_RESOURCE_STATE_COPY_SOURCE : D3D12_RESOURCE_STATE_RENDER_TARGET,
       D3D12_RESOURCE_STATE_PRESENT);
-  result = state.commands->Close();
+  const HRESULT result = recording.close();
   if (FAILED(result)) return std::unexpected(dx12_error(result, "command list close"));
   diagnostics.finish_stage(RendererFrameTimingStage::command_recording);
   ID3D12CommandList* lists[] = {state.commands.Get()};
   state.queue->ExecuteCommandLists(1, lists);
-  state.submitted = true;
+  recording.executed(); // Immediate noexcept ownership marking after Execute.
   diagnostics.finish_stage(RendererFrameTimingStage::queue_submission);
   const HRESULT presented = state.swapchain->Present(1, 0);
   state.frame_pacing->presentation_attempted();

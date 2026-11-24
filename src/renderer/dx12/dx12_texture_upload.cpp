@@ -9,7 +9,7 @@ Error invalid_texture() {
       .message = "DX12 texture upload requires supported format, bounded extent, stride and pixel bytes"};
 }
 
-Result<std::size_t> texture_row_bytes(const Dx12Texture& texture) {
+Result<std::size_t> texture_row_bytes(const Dx12TextureSourceView& texture) {
   const UINT channels = texture.format == DXGI_FORMAT_R8_UNORM ? 1 :
       texture.format == DXGI_FORMAT_R8G8B8A8_UNORM ? 4 : 0;
   if (!channels || !texture.width || !texture.height ||
@@ -25,7 +25,7 @@ Result<std::size_t> texture_row_bytes(const Dx12Texture& texture) {
   return row_bytes;
 }
 
-D3D12_RESOURCE_DESC texture_descriptor(const Dx12Texture& texture) {
+D3D12_RESOURCE_DESC texture_descriptor(const Dx12TextureSourceView& texture) {
   D3D12_RESOURCE_DESC descriptor{};
   descriptor.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
   descriptor.Width = texture.width;
@@ -38,7 +38,7 @@ D3D12_RESOURCE_DESC texture_descriptor(const Dx12Texture& texture) {
 }
 
 bool valid_footprint(const D3D12_PLACED_SUBRESOURCE_FOOTPRINT& footprint,
-    UINT rows, UINT64 row_bytes, UINT64 size, const Dx12Texture& texture, std::size_t expected_row) {
+    UINT rows, UINT64 row_bytes, UINT64 size, const Dx12TextureSourceView& texture, std::size_t expected_row) {
   const auto& layout = footprint.Footprint;
   if (!rows || rows != texture.height || row_bytes != expected_row ||
       layout.Width != texture.width || layout.Height != texture.height || layout.Depth != 1 ||
@@ -58,8 +58,8 @@ bool valid_footprint(const D3D12_PLACED_SUBRESOURCE_FOOTPRINT& footprint,
 Dx12TextureUploads::Dx12TextureUploads() = default;
 Dx12TextureUploads::~Dx12TextureUploads() = default;
 
-Result<Dx12TextureUploadSlice> Dx12TextureUploads::upload(
-    ID3D12Device& device, const Dx12Texture& texture) {
+Result<Dx12TextureUploadSlice> Dx12TextureUploads::upload_view(
+    ID3D12Device& device, const Dx12TextureSourceView& texture) {
   const auto expected_row = texture_row_bytes(texture);
   if (!expected_row) return std::unexpected(expected_row.error());
   const auto descriptor = texture_descriptor(texture);
@@ -85,6 +85,15 @@ Result<Dx12TextureUploadSlice> Dx12TextureUploads::upload(
       .payload_bytes = *expected_row * rows};
 }
 
+Result<Dx12TextureUploadSlice> Dx12TextureUploads::upload(
+    ID3D12Device& device, const Dx12Texture& texture) {
+  return upload_view(device, {texture.width, texture.height, texture.stride, texture.format, texture.pixels});
+}
+Result<Dx12TextureUploadSlice> Dx12TextureUploads::upload_region(
+    ID3D12Device& device, const Dx12TextureSourceView& texture) {
+  if (texture.format != DXGI_FORMAT_R8_UNORM) return std::unexpected(invalid_texture());
+  return upload_view(device, texture);
+}
 void Dx12TextureUploads::begin_frame() { pages_.begin_frame(); }
 void Dx12TextureUploads::clear() noexcept { pages_.clear(); }
 Dx12TextureUploadStats Dx12TextureUploads::stats() const noexcept { return pages_.stats(); }

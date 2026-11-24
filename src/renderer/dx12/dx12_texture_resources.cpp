@@ -2,12 +2,14 @@
 #include "dx12_state_internal.hpp"
 #include "dx12_texture_upload_frame_internal.hpp"
 #include "dx12_frame_diagnostics_internal.hpp"
+#include "dx12_glyph_native_recording_internal.hpp"
+#include "dx12_glyph_work_observer_internal.hpp"
 #include <algorithm>
 
 namespace cgpui {
 namespace {
 Result<void> realize_texture(
-    Dx12State& state, const Dx12Texture& texture, Dx12NativeTexture& native) {
+    Dx12State& state, const Dx12Texture& texture, Dx12NativeTexture& native, bool glyph) {
   if (native.resource) return {};
   D3D12_HEAP_PROPERTIES heap{};
   heap.Type = D3D12_HEAP_TYPE_DEFAULT;
@@ -23,6 +25,9 @@ Result<void> realize_texture(
   HRESULT result = state.device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE,
       &descriptor, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&resource));
   if (FAILED(result)) return std::unexpected(dx12_error(result, "texture allocation"));
+  if (glyph && state.texture_renderer->glyph_native->observer)
+    state.texture_renderer->glyph_native->observer->record({.kind = Dx12TextureCopyKind::allocation,
+        .target = resource.Get(), .payload_bytes = std::size_t(texture.width) * texture.height});
   auto srv = state.srv_pool->allocate(*state.device.Get(), 1);
   if (!srv) return std::unexpected(srv.error());
   D3D12_SHADER_RESOURCE_VIEW_DESC view{};
@@ -30,10 +35,10 @@ Result<void> realize_texture(
   view.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
   view.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
   view.Texture2D.MipLevels = 1;
-  state.device->CreateShaderResourceView(resource.Get(), &view,
-      srv->cpu());
+  state.device->CreateShaderResourceView(resource.Get(), &view, srv->cpu());
   native.resource = std::move(resource);
   native.srv = std::move(*srv);
+  dx12_observe_glyph_lifetime(state);
   return {};
 }
 
@@ -58,36 +63,35 @@ Result<void> record_upload(
 } // namespace
 
 Result<Dx12NativeTexture*> dx12_prepare_texture(
-    Dx12State& state, const Dx12TextureHandle& texture) {
+    Dx12State& state, const Dx12TextureHandle& texture, bool glyph) {
   auto& renderer = *state.texture_renderer;
-  if (std::ranges::find(renderer.retained, texture) == renderer.retained.end()) {
+  if (std::ranges::find(renderer.retained, texture) == renderer.retained.end())
     renderer.retained.push_back(texture);
-  }
   auto [entry, inserted] = renderer.native_textures.try_emplace(texture.get());
   auto& native = entry->second;
   if (inserted) native.source = texture;
-  if (native.uploaded || std::ranges::find(renderer.pending_uploads, &native) !=
-      renderer.pending_uploads.end()) return &native;
-  if (auto realized = realize_texture(state, *texture, native); !realized) {
-    return std::unexpected(realized.error());
+  if (native.uploaded || std::ranges::find(renderer.pending_uploads, &native) != renderer.pending_uploads.end()) {
+    if (glyph) renderer.glyph_native->pin(native); // Exact hit still records a real SRV-slot dependency.
+    return &native;
   }
-  if (auto uploaded = record_upload(state, *texture, native); !uploaded) {
-    return std::unexpected(uploaded.error());
+  if (renderer.pending_uploads.size() == renderer.pending_uploads.max_size())
+    return std::unexpected(Error{.code = ErrorCode::invalid_argument, .message = "DX12 pending upload marker capacity overflow"});
+  renderer.pending_uploads.reserve(renderer.pending_uploads.size() + 1);
+  if (glyph) {
+    auto prepared = dx12_prepare_glyph_target(state, texture, native);
+    if (!prepared) return std::unexpected(prepared.error());
+    if (auto realized = realize_texture(state, *texture, native, true); !realized)
+      return std::unexpected(realized.error());
+    if (auto staged = dx12_stage_glyph_target(state, *texture, *prepared); !staged)
+      return std::unexpected(staged.error());
+    dx12_record_glyph_target(state, native, *prepared);
+  } else {
+    if (auto realized = realize_texture(state, *texture, native, false); !realized)
+      return std::unexpected(realized.error());
+    if (auto uploaded = record_upload(state, *texture, native); !uploaded)
+      return std::unexpected(uploaded.error());
   }
-  renderer.pending_uploads.push_back(&native);
+  renderer.pending_uploads.push_back(&native); // Capacity was reserved before target commands.
   return &native;
-}
-
-void dx12_begin_texture_frame(Dx12State& state) {
-  auto& renderer = *state.texture_renderer;
-  renderer.pending_uploads.clear();
-  renderer.retained.clear();
-  std::erase_if(renderer.native_textures, [](const auto& entry) {
-    return entry.second.source.expired();
-  });
-}
-void dx12_commit_texture_uploads(Dx12State& state) {
-  for (auto* native : state.texture_renderer->pending_uploads) native->uploaded = true;
-  state.texture_renderer->pending_uploads.clear();
 }
 } // namespace cgpui

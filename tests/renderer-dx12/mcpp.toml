@@ -22,6 +22,11 @@ discover = []
 
 [target.'cfg(os = "windows")'.build]
 sources = [
+    "dx12_glyph_defensive_history_test_support.cpp",
+    "dx12_glyph_fallback_history_test_support.cpp",
+    "dx12_glyph_fallback_submit_test_support.cpp",
+    "dx12_glyph_native_scene_test_support.cpp",
+    "dx12_glyph_readback_test_support.cpp",
     "dx12_srv_pool_test_support.cpp",
     "dx12_srv_alpha_scene_test_support.cpp",
     "dx12_srv_topology_test_support.cpp",
@@ -73,6 +78,30 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_glyph_exact_pin_failure_test.cpp",
+    "dx12_glyph_dense_fallback_test.cpp",
+    "dx12_glyph_forward_work_ledger_test.cpp",
+    "dx12_glyph_missing_lineage_test.cpp",
+    "dx12_glyph_family_fallback_test.cpp",
+    "dx12_glyph_invalid_seal_test.cpp",
+    "dx12_glyph_readback_debug_gate_test.cpp",
+    "dx12_glyph_dirty_transport_test.cpp",
+    "dx12_glyph_cold_order_test.cpp",
+    "dx12_glyph_node_lifetime_test.cpp",
+    "dx12_glyph_recording_scope_test.cpp",
+    "dx12_glyph_unknown_completion_test.cpp",
+    "dx12_glyph_native_recovery_test.cpp",
+    "dx12_glyph_region_staging_test.cpp",
+    "dx12_glyph_pending_failure_test.cpp",
+    "dx12_glyph_later_region_failure_test.cpp",
+    "dx12_glyph_fallback_sampling_test.cpp",
+    "dx12_glyph_observer_capacity_test.cpp",
+    "dx12_glyph_reset_close_failure_test.cpp",
+    "dx12_glyph_lineage_test.cpp",
+    "dx12_glyph_lineage_growth_test.cpp",
+    "dx12_glyph_suffix_test.cpp",
+    "dx12_glyph_publication_test.cpp",
+    "dx12_glyph_publication_failure_test.cpp",
     "dx12_srv_alpha_page_boundary_test.cpp",
     "dx12_srv_cohort_orphan_test.cpp",
     "dx12_srv_glyph_history_test.cpp",

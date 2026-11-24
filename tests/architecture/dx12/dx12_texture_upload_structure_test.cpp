@@ -32,7 +32,9 @@ int main() {
                              "src/renderer/dx12/dx12_texture_upload_internal.hpp",
                              "src/renderer/dx12/dx12_texture_upload.cpp",
                              "src/renderer/dx12/dx12_texture_upload_frame_internal.hpp",
-                             "src/renderer/dx12/dx12_texture_upload_frame.cpp"}) {
+                             "src/renderer/dx12/dx12_texture_upload_frame.cpp",
+                             "src/renderer/dx12/dx12_texture_region_upload_internal.hpp",
+                             "src/renderer/dx12/dx12_texture_region_upload.cpp"}) {
       const auto source = read(path);
       const auto limit = std::filesystem::path(path).extension() == ".cpp" ? 280 : 200;
       require(std::count(source.begin(), source.end(), '\n') <= limit,
@@ -68,17 +70,43 @@ int main() {
                 !has(recording, "std::memcpy("),
             "texture realization must record a prepared slice and actual payload accounting, not staging allocation");
     const auto lifecycle = read("src/renderer/dx12/dx12_texture_upload_frame.cpp");
-    require(has(lifecycle, "state.submitted") && has(lifecycle, "state.failed") &&
-                has(lifecycle, "state.recovery_pending") && has(lifecycle, "state.removal_reason") &&
-                has(lifecycle, "!state.device") &&
-                before(lifecycle, "if (auto valid = writable(state); !valid) return valid;",
-                       "state.texture_uploads->begin_frame()"),
-            "texture staging lifecycle must reject unknown completion or retired-device states before mutation");
+    const auto gate_at = lifecycle.find("Result<void> dx12_validate_texture_upload_state(");
+    const auto rewind_at = lifecycle.find("Result<void> dx12_begin_texture_upload_frame(");
+    const auto full_at = lifecycle.find("Result<Dx12TextureUploadSlice> dx12_upload_texture(");
+    require(gate_at != std::string::npos && rewind_at != std::string::npos && full_at != std::string::npos &&
+                gate_at < rewind_at && rewind_at < full_at, "shared upload gate and adapters require focused definitions");
+    const auto gate = lifecycle.substr(gate_at, rewind_at - gate_at);
+    const auto rewind = lifecycle.substr(rewind_at, full_at - rewind_at);
+    const auto full = lifecycle.substr(full_at);
+    require(has(gate, "if (!state.device || state.submitted || state.failed || state.recovery_pending ||") &&
+                has(gate, "FAILED(state.removal_reason)) return std::unexpected(Error{") &&
+                has(gate, "ErrorCode::invalid_argument") &&
+                before(gate, "FAILED(state.removal_reason))", "return {};"),
+            "shared gate must reject absent device, unknown submission, failure, recovery and removal");
+    const auto region = read("src/renderer/dx12/dx12_texture_region_upload.cpp");
+    require(before(rewind, "if (auto valid = dx12_validate_texture_upload_state(state); !valid) return valid;",
+                       "state.texture_uploads->begin_frame()") &&
+                before(full, "if (auto valid = dx12_validate_texture_upload_state(state); !valid) return std::unexpected(valid.error());",
+                       "state.texture_uploads->upload(") &&
+                before(region, "if (auto valid = dx12_validate_texture_upload_state(state); !valid) return std::unexpected(valid.error());",
+                       "state.texture_uploads->upload_region("),
+            "pool rewind and both full/region writes must return shared-gate failure before mutation");
     const auto presentation = read("src/renderer/dx12/dx12_presentation.cpp");
     const auto retirement = read("src/renderer/dx12/dx12_native_retirement.cpp");
-    for (const auto* begin : {"dx12_begin_geometry_upload_frame(state)", "dx12_begin_texture_upload_frame(state)"})
+    for (const auto* begin : {"dx12_begin_geometry_upload_frame(state)", "recording.reset_and_begin()"})
       require(before(presentation, "if (auto idle = dx12_wait_idle(state); !idle) return idle;", begin),
-              "both independent upload pools require completion proof before rewind");
+              "both independent upload pools require completion proof before rewind/preparation entry");
+    const auto scope = read("src/renderer/dx12/dx12_glyph_recording_scope.cpp");
+    const auto prepare_at = scope.find("Result<void> Dx12GlyphRecordingScope::reset_and_begin()");
+    const auto opened_at = scope.find("void Dx12GlyphRecordingScope::opened_after_reset()");
+    require(prepare_at != std::string::npos && opened_at != std::string::npos && prepare_at < opened_at,
+            "texture rewind must be owned by focused recording preparation");
+    const auto prepare = scope.substr(prepare_at, opened_at - prepare_at);
+    require(before(prepare, "commands.reset_list(", "opened_after_reset()") &&
+                before(prepare, "opened_after_reset()", "dx12_begin_texture_upload_frame(state_)") &&
+                has(prepare, "if (auto prepared = dx12_begin_texture_upload_frame(state_); !prepared) return prepared;") &&
+                has(presentation, "if (auto prepared = recording.reset_and_begin(); !prepared) return prepared;"),
+            "texture pool rewind additionally requires actual parent Reset P and propagates preparation failure");
     for (const auto* clear : {"state.geometry_uploads->clear()", "state.texture_uploads->clear()"})
       require(before(retirement, clear, "state.device.Reset()"),
               "both upload pools must release old-device pages before native device teardown");

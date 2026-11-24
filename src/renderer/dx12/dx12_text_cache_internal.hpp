@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dx12_texture_internal.hpp"
+#include "dx12_glyph_lineage_internal.hpp"
 #include "cgpui/renderer/glyph_cache.hpp"
 
 #include <cstddef>
@@ -21,6 +22,7 @@ struct Dx12GlyphPage {
 // adding glyphs never changes an earlier draw's recorded resource snapshot.
 struct Dx12TextCache {
   GlyphCache glyphs;
+  Dx12GlyphLineage lineage;
   std::vector<Dx12GlyphPage> pages;
   std::size_t processed_uploads = 0;
 };

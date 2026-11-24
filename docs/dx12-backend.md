@@ -85,14 +85,15 @@ image-draw resolution. Abandonment and rejection before image preparation do
 not apply that batch. A failure after preparation starts does not promise
 rollback; callers can resupply needed assets. Invalid intermediate same-ID
 uploads may be replaced before final validation, but an invalid final upload
-still rejects. DX12 continues to reject missing/incompatible image assets at
-resolution; Vulkan missing-image behavior/error codes remain a separate policy
-difference, not silently standardized here. Resolved draws retain immutable
+still rejects. Legal image draws whose pixels are unavailable are skipped, in
+both DX12 and Vulkan, without rejecting the remaining frame. Invalid parameters,
+identity mismatches and native failures still report errors. Resolved draws retain immutable
 CPU snapshots, including across later frames' replacements/invalidation.
 Uploads reach the GPU lazily when first drawn; images are evicted after more
 than 120 successfully presented idle frames. Glyph pages are cached for the renderer lifetime and
-republished as full-page snapshots when dirty. This is correctness-first, not a
-partial-upload or bounded-glyph-cache performance guarantee. Native SRV storage
+republished as full immutable CPU snapshots when dirty. Eligible native successors
+use the conditional dirty-region transport below; CPU history and snapshots are
+not bounded or eliminated by that optimization. Native SRV storage
 uses the separate private descriptor pool described below.
 
 Backdrop PSOs are lazy and cached. Each visible effect owns a full-frame scene
@@ -181,20 +182,22 @@ remain alive until safe retirement; neither the cap nor the counter describes
 peak frame memory, native texture allocations or all renderer memory.
 
 Both pools reset only after the existing frame-start completion proof, never on
-an unsuccessful wait or merely on public begin-frame. Native teardown clears
+an unsuccessful wait or merely on public begin-frame. Texture staging is also
+retained until its referring parent command list is successfully reset or released.
+Native teardown clears
 both pools before releasing the old device. The prior unstructured staging
 resource list is replaced by the texture pool's owning lifetime boundary.
 
-Only staging storage is reused: native image/glyph texture resources, immutable
-CPU snapshots, lazy first use, duplicate-draw suppression, full dirty-glyph-page
-uploads and recovery reuploads retain their existing behavior. Cache hits still
+Staging storage reuse is separate from native texture realization and the glyph
+transport policy below. Immutable CPU snapshots, lazy first use, duplicate-draw
+suppression, full image uploads and recovery initialization remain. Cache hits still
 record no upload. Public upload-byte diagnostics count tightly packed texture
 payloads, not row-pitch padding, placement gaps or page capacity. The low-level
 allocator does not own texture formats, footprint calculations or GPU copy/draw
 recording.
 
 Readback buffers and backdrop render targets are not pooled by this staging
-change, and glyph updates are not partial. Fewer committed staging/geometry
+change. Fewer committed staging/geometry
 allocations with unchanged pixels and lifetimes are the bounded claims, not an
 FPS improvement, asynchronous renderer or performance equivalence to Vulkan.
 
@@ -209,9 +212,11 @@ span heaps. Sampler and RTV storage and explicit per-draw table bindings are
 unchanged; sharing a heap does not merge draws or eliminate those bindings.
 
 Descriptors remain immutable while their native owner is retained. CPU image
-and glyph snapshots do not hold native leases. The existing successful idle
-boundary permits expired native realizations and prior backdrop groups to
-release their slots; an unsuccessful wait or Present alone does not. Lease
+and glyph snapshots do not hold native leases. Existing GPU-completion and
+command-reference retirement boundaries permit expired native realizations and
+prior backdrop groups to release their slots; glyph command dependencies retain
+their leases through successful parent Reset/release as described below.
+An unsuccessful wait or Present alone does not grant retirement. Lease
 return allocates no memory. Native retirement releases all consumers before
 clearing the pool and releasing the device. Recovery rebuilds native descriptors
 on the new epoch while retaining the existing CPU cache semantics.
@@ -224,6 +229,40 @@ changes descriptor allocation/storage, not glyph dirty-region upload policy,
 frame overlap, public window options, backend defaults or Popup fallback.
 Fewer live SRV heaps are not proof of better FPS, GPU time or lower peak memory;
 use the separately documented steady-state probe for comparable measurements.
+
+## Conditional glyph dirty-region transport
+
+Each full immutable R8 CPU snapshot has private weak-identity metadata sealing
+its page family and page-local upload prefix. Native state keeps at most one
+completed resource-only base per current family, within its device epoch. These
+sidecars do not pin CPU snapshot bytes. Unsubmitted or same-list candidates are
+never treated as completed bases.
+
+For a compatible prior-completed base and a validated nonempty suffix whose
+tightly packed dirty payload D is smaller than the full page P, DX12 allocates a
+distinct destination, clones P on the GPU, then uploads the exact dirty regions D
+using the existing staging pool. This always-copy-on-write path preserves both
+held and released predecessor snapshots. Exact native hits record no transport.
+Cold, recovery, missing optional lineage, incompatible/backward bases and valid
+D>=P use full initialization. Invalid source records or inconsistent sealed
+metadata are errors, not disguised full-upload fallbacks.
+
+Every one-record shared-planner invocation uses fresh production-resource state;
+page-local progress is not inferred from that temporary planner's upload count.
+Pending markers, node pins, candidates and target staging are prepared before
+the target's first recorded reference. GPU completion publishes the greatest
+completed prefix but does not release recorded dependencies. Successful parent
+command-list Reset/release is a separate retirement condition; failed waits or
+Reset retain ownership. Expired pinned map nodes move, with their sole SRV lease,
+into preallocated detached slots until safe release. No raw-address identity or
+strong CPU snapshot pin replaces the weak snapshot identity.
+
+The optimization reduces eligible host-to-GPU payload, not total work: full CPU
+snapshots and original glyph history remain, shared planning owns suffix payload
+copies, native row alignment remains, and GPU cloneP adds work and a distinct
+texture. The scoped work-observer tests are correctness/accounting probes, not
+whole-renderer memory measurements or benchmarks. No FPS, latency, all-path
+minimal-upload, cache bound or asynchronous-rendering claim follows from D<P.
 
 ## Frame diagnostics
 
@@ -303,6 +342,7 @@ Counts describe logical backend work, not GPU draw-call or pixel counts:
   copies, separated into R8 glyph-atlas and RGBA8 image bytes. Repeated draws of
   the same already prepared texture do not count another upload. Lazy first use,
   immutable replacement snapshots and post-recovery reuploads count when copied.
+  Eligible glyph successors count dirty host uploads D, not their GPU cloneP.
   CPU cache writes alone, row-pitch padding, vertex/index buffers, scene copies
   and capture/readback are excluded. Counts use saturating arithmetic.
 

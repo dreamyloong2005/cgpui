@@ -31,7 +31,7 @@ Result<void> dx12_record_textured_draw(Dx12State& state, const Dx12TexturedDraw&
       PixelExtent{state.width, state.height}, draw.clip_rect, {});
   if (!clipped.visible) return {};
   if (auto pipeline = dx12_create_texture_pipeline(state); !pipeline) return pipeline;
-  const auto prepared = dx12_prepare_texture(state, draw.texture);
+  const auto prepared = dx12_prepare_texture(state, draw.texture, draw.glyph);
   if (!prepared) return std::unexpected(prepared.error());
   const auto& texture = **prepared;
   const auto byte_size = draw.vertices.size() * sizeof(Dx12TextureVertex);

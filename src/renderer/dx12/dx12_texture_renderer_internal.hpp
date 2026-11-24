@@ -2,9 +2,14 @@
 
 #include "dx12_texture_realization_internal.hpp"
 #include <unordered_map>
+#include <memory>
 
 namespace cgpui {
+class Dx12GlyphNative;
 struct Dx12TextureRenderer {
+  Dx12TextureRenderer();
+  ~Dx12TextureRenderer();
+  std::unique_ptr<Dx12GlyphNative> glyph_native;
   Dx12Ptr<ID3D12RootSignature> root_signature;
   Dx12Ptr<ID3D12PipelineState> image_pipeline;
   Dx12Ptr<ID3D12PipelineState> text_pipeline;
@@ -20,7 +25,7 @@ struct Dx12TextureRenderer {
 Result<void> dx12_create_texture_pipeline(Dx12State& state);
 Result<void> dx12_create_textured_psos(Dx12State& state);
 Result<Dx12NativeTexture*> dx12_prepare_texture(
-    Dx12State& state, const Dx12TextureHandle& texture);
+    Dx12State& state, const Dx12TextureHandle& texture, bool glyph = false);
 void dx12_begin_texture_frame(Dx12State& state);
 void dx12_commit_texture_uploads(Dx12State& state);
 // Requires completed submission or confirmed removal; keeps CPU caches intact.
