@@ -7,7 +7,7 @@
 namespace cgpui {
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
                               std::span<const Dx12DrawCommand> draws, bool capture,
-                              std::size_t command_count, std::uint64_t admission_call_ns = 0);
+                              std::size_t command_count, std::uint64_t admission_call_ns = 0, bool image_mutations = false);
 Result<void> dx12_record_geometry(Dx12State& state, const RectGeometry& geometry);
 bool dx12_finite_geometry(const RectGeometry& geometry);
 

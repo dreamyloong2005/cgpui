@@ -6,6 +6,7 @@
 #include <utility>
 
 namespace cgpui {
+bool Dx12ImageBatch::has_mutations() const noexcept { return !uploads_.empty() || !invalidations_.empty(); }
 Result<void> Dx12ImageBatch::prepare(Dx12State& state, std::span<Dx12DrawCommand> draws) {
   // Local request ownership guarantees raw upload bytes are destroyed on every
   // return/exception, before native submission and retained-image publication.

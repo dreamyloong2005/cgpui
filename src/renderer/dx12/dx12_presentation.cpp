@@ -1,4 +1,8 @@
 #include "dx12_frame_internal.hpp"
+#include "dx12_frame_submission_internal.hpp"
+#include "dx12_frame_draw_body_internal.hpp"
+#include "dx12_frame_command_reuse_internal.hpp"
+#include "dx12_command_observation_internal.hpp"
 #include "dx12_texture_renderer_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
 #include "dx12_composition_internal.hpp"
@@ -16,7 +20,7 @@ namespace cgpui {
 static_assert(std::is_nothrow_move_assignable_v<std::optional<RendererFramePixels>>);
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
                               std::span<const Dx12DrawCommand> draws, bool capture,
-                              std::size_t command_count, std::uint64_t admission_call_ns) {
+                              std::size_t command_count, std::uint64_t admission_call_ns, bool image_mutations) {
   Dx12GlyphRecordingScope recording(state);
   if (!recording.entered()) return std::unexpected(Error{.code = ErrorCode::invalid_argument,
       .message = "DX12 nested native recording is not permitted"});
@@ -43,6 +47,8 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   auto handle = state.rtv_heap->GetCPUDescriptorHandleForHeapStart();
   handle.ptr += std::size_t(index) * state.rtv_stride;
   state.commands->OMSetRenderTargets(1, &handle, FALSE, nullptr);
+  dx12_observe_command(state, {.kind = Dx12CommandEventKind::parent_target,
+      .list = state.commands.Get(), .object = &target, .a = handle.ptr});
   const auto premultiplied = dx12_surface_clear(state, clear);
   const float color[] = {premultiplied.r, premultiplied.g, premultiplied.b, premultiplied.a};
   state.commands->ClearRenderTargetView(handle, color, 0, nullptr);
@@ -50,14 +56,7 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
                                static_cast<float>(state.height), 0, 1};
   state.commands->RSSetViewports(1, &viewport);
   state.commands->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  for (std::size_t group = 0; group < draws.size(); ++group) {
-    diagnostics.begin_draw(group);
-    const auto& draw = draws[group];
-    const auto recorded = dx12_record_draw(state, draw);
-    if (!recorded) {
-      return recorded;
-    }
-  }
+  if (auto body = dx12_record_frame_draws(state, clear, draws, capture, image_mutations); !body) return body;
   if (capture) {
     dx12_transition(*state.commands.Get(), target, D3D12_RESOURCE_STATE_RENDER_TARGET,
                      D3D12_RESOURCE_STATE_COPY_SOURCE);
@@ -69,9 +68,7 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   const HRESULT result = recording.close();
   if (FAILED(result)) return std::unexpected(dx12_error(result, "command list close"));
   diagnostics.finish_stage(RendererFrameTimingStage::command_recording);
-  ID3D12CommandList* lists[] = {state.commands.Get()};
-  state.queue->ExecuteCommandLists(1, lists);
-  recording.executed(); // Immediate noexcept ownership marking after Execute.
+  if (auto executed = dx12_execute_frame(state, recording, target); !executed) return executed;
   diagnostics.finish_stage(RendererFrameTimingStage::queue_submission);
   const HRESULT presented = state.swapchain->Present(1, 0);
   state.frame_pacing->presentation_attempted();
@@ -91,6 +88,7 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   diagnostics.finish_stage(RendererFrameTimingStage::presentation);
   diagnostics.complete_successful_frame();
   if (candidate_pixels) state.pixels = std::move(candidate_pixels);
+  state.command_reuse->publish_success(state); // Last, noexcept; every original public success gate already passed.
   // DXGI_STATUS_OCCLUDED is a valid hidden-window presentation. The render
   // and optional readback completed; avoid a tight retry loop for hidden HWNDs.
   return {};

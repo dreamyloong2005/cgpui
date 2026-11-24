@@ -1,4 +1,5 @@
 #include "dx12_draw_commands_internal.hpp"
+#include "dx12_prepared_draw_internal.hpp"
 #include "dx12_texture_renderer_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_geometry_upload_frame_internal.hpp"
@@ -31,31 +32,26 @@ Result<void> dx12_record_textured_draw(Dx12State& state, const Dx12TexturedDraw&
       PixelExtent{state.width, state.height}, draw.clip_rect, {});
   if (!clipped.visible) return {};
   if (auto pipeline = dx12_create_texture_pipeline(state); !pipeline) return pipeline;
-  const auto prepared = dx12_prepare_texture(state, draw.texture, draw.glyph);
-  if (!prepared) return std::unexpected(prepared.error());
-  const auto& texture = **prepared;
+  const auto realization = dx12_prepare_texture(state, draw.texture, draw.glyph);
+  if (!realization) return std::unexpected(realization.error());
+  const auto& texture = **realization;
   const auto byte_size = draw.vertices.size() * sizeof(Dx12TextureVertex);
   auto vertices = dx12_upload_geometry(state, draw.vertices.data(), byte_size);
   if (!vertices) return std::unexpected(vertices.error());
   auto& renderer = *state.texture_renderer;
-  state.commands->SetPipelineState(draw.glyph ? renderer.text_pipeline.Get() : renderer.image_pipeline.Get());
-  state.commands->SetGraphicsRootSignature(renderer.root_signature.Get());
-  const float extent[] = {static_cast<float>(state.width), static_cast<float>(state.height)};
-  state.commands->SetGraphicsRoot32BitConstants(0, 2, extent, 0);
-  ID3D12DescriptorHeap* heaps[] = {texture.srv.heap(), renderer.samplers.Get()};
-  state.commands->SetDescriptorHeaps(2, heaps);
-  state.commands->SetGraphicsRootDescriptorTable(1,
-      texture.srv.gpu());
   auto sampler = renderer.samplers->GetGPUDescriptorHandleForHeapStart();
   if (draw.sampling == ImageSamplingMode::linear) sampler.ptr += renderer.sampler_stride;
-  state.commands->SetGraphicsRootDescriptorTable(2, sampler);
-  const D3D12_VERTEX_BUFFER_VIEW view{vertices->address, vertices->size, sizeof(Dx12TextureVertex)};
-  state.commands->IASetVertexBuffers(0, 1, &view);
+  const Dx12PreparedDraw prepared{
+      .pipeline = draw.glyph ? renderer.text_pipeline.Get() : renderer.image_pipeline.Get(),
+      .root = renderer.root_signature.Get(), .extent = {float(state.width), float(state.height)},
+      .vertex = {vertices->address, vertices->size, sizeof(Dx12TextureVertex)},
+      .srv_heap = texture.srv.heap(), .sampler_heap = renderer.samplers.Get(),
+      .srv = texture.srv.gpu(), .sampler = sampler, .count = static_cast<UINT>(draw.vertices.size())};
   const auto clip = clipped.scissor;
   const D3D12_RECT scissor{clip.x, clip.y, static_cast<LONG>(clip.x + clip.width),
       static_cast<LONG>(clip.y + clip.height)};
   state.commands->RSSetScissorRects(1, &scissor);
-  state.commands->DrawInstanced(static_cast<UINT>(draw.vertices.size()), 1, 0, 0);
+  dx12_emit_prepared_draw(state, *state.commands.Get(), prepared);
   if (state.active_diagnostics) state.active_diagnostics->submitted();
   return {};
 }

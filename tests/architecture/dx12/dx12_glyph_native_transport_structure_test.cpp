@@ -50,13 +50,14 @@ int main() {
         before(prepare, "dx12_stage_glyph_target(", "dx12_record_glyph_target(") &&
         has(prepare, "if (glyph) renderer.glyph_native->pin(native)"), "pending marker/all staging and exact-hit pins precede target references");
     const auto presentation = owner("dx12_presentation.cpp");
+    const auto submission = owner("dx12_frame_submission.cpp");
     require(before(presentation, "Dx12GlyphRecordingScope recording(state)", "dx12_begin_texture_frame(state)") &&
         before(presentation, "dx12_begin_texture_frame(state)", "recording.reset_and_begin()") &&
         before(presentation, "image_acquisition)", "recording.reset_and_begin()") &&
         before(presentation, "recording.reset_and_begin()", "auto& target =") &&
         has(presentation, "if (auto prepared = recording.reset_and_begin(); !prepared) return prepared;") &&
-        before(presentation, "ExecuteCommandLists(", "recording.executed()") &&
-        before(presentation, "recording.executed()", "RendererFrameTimingStage::queue_submission") &&
+        before(submission, "ExecuteCommandLists(", "recording.executed()") &&
+        before(presentation, "dx12_execute_frame(state, recording, target)", "RendererFrameTimingStage::queue_submission") &&
         !has(presentation, "commands.reset_allocator(") && !has(presentation, "commands.reset_list("),
         "presentation keeps scope/Execute lifetime and calls focused preparation before target commands");
     const auto reset = owner("dx12_texture_reset.cpp");

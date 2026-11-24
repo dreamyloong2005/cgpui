@@ -54,7 +54,7 @@ int main() {
         "blur must allocate one three-slot group but keep its separate RTV heap");
     const auto draw = read("src/renderer/dx12/dx12_textured_draw.cpp");
     require(has(draw, "texture.srv.heap()") && has(draw, "texture.srv.gpu()") && has(draw, "renderer.samplers.Get()") &&
-        has(draw, "SetGraphicsRootDescriptorTable(2, sampler)"), "each texture draw must bind its SRV page AND sampler tables");
+        (has(draw, "dx12_emit_prepared_draw(") && has(read("src/renderer/dx12/dx12_native_draw_recording.cpp"), "SetGraphicsRootDescriptorTable(2, draw.sampler)")), "each texture draw must bind its SRV page AND sampler tables");
     require(has(read("src/renderer/dx12/dx12_backdrop_blur_passes.cpp"), "targets.srvs.heap()") &&
         has(read("src/renderer/dx12/dx12_backdrop_blur_composite.cpp"), "SetGraphicsRootDescriptorTable(2, targets.targets[0].srv)"),
         "alpha blur must keep original and filtered views on the bound group page");

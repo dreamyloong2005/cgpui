@@ -67,7 +67,7 @@ int main() {
     require(has(frame_header, "const std::uint64_t admission_call_ns_;") &&
                 has(frame_header, "std::uint64_t admission_call_ns = 0") &&
                 has(frame, "admission_call_ns_(admission_call_ns)") &&
-                has(frame, "command_count_, admission_call_ns_);") &&
+                has(frame, "command_count_, admission_call_ns_, mutations);") &&
                 !has(frame, "steady_clock") && !has(read("src/renderer/dx12/dx12_state_internal.hpp"), "admission_call") &&
                 !has(read("src/renderer/dx12/dx12_frame_pacing_internal.hpp"), "admission_call"),
             "the immutable sample travels by frame value, not a clock spanning the frame or shared grant/state");

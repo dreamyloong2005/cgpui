@@ -51,10 +51,15 @@ int main() {
     require(has(commands, "BoxShadowGeometry"),
             "shadows must participate in the ordered command variant");
     const auto presentation = read("src/renderer/dx12/dx12_presentation.cpp");
-    require(has(presentation, "dx12_record_draw(") &&
-                !has(presentation, "dx12_create_shadow_pipeline(") &&
-                !has(presentation, "CreateGraphicsPipelineState("),
-            "presentation must dispatch without owning shadow resources or PSOs");
+    const auto body = read("src/renderer/dx12/dx12_frame_draw_body.cpp");
+    require(has(presentation, "dx12_record_frame_draws(state, clear, draws, capture, image_mutations)") &&
+                has(body, "dx12_record_draw(state, draws[group])"),
+            "presentation must delegate ordered fallback draws through the focused frame body");
+    for (const auto* owner : {&presentation, &body}) {
+      require(!has(*owner, "dx12_create_shadow_pipeline(") &&
+                  !has(*owner, "CreateGraphicsPipelineState("),
+              "presentation and frame body must dispatch without owning shadow resources or PSOs");
+    }
     const auto shadow = read("src/renderer/dx12/dx12_shadow_pipeline.cpp");
     require(has(shadow, "dx12_shadow_vertex_shader(") &&
                 has(shadow, "dx12_shadow_fragment_shader(") &&
@@ -80,7 +85,7 @@ int main() {
     }
     const auto indexed = read("src/renderer/dx12/dx12_indexed_draw.cpp");
     require(has(indexed, "dx12_upload_geometry(") && has(indexed, "vertices->address") &&
-                has(indexed, "indices->address") && has(indexed, "DrawIndexedInstanced(") &&
+                has(indexed, "indices->address") && (has(indexed, "dx12_emit_prepared_draw(") && has(read("src/renderer/dx12/dx12_native_draw_recording.cpp"), "DrawIndexedInstanced(")) &&
                 has(indexed, "resolve_clip_stack_scissor("),
             "the focused indexed helper must consume upload slices and own range clipping/native draws");
     require(!has(read("src/renderer/dx12/dx12_textured_draw.cpp"), "dx12_record_indexed_draw("),

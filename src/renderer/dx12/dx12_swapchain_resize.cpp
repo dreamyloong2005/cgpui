@@ -1,4 +1,7 @@
 #include "dx12_state_internal.hpp"
+#include "dx12_command_observation_internal.hpp"
+#include "dx12_frame_command_reuse_internal.hpp"
+#include "dx12_command_reuse_surface_epoch_internal.hpp"
 #include "dx12_swapchain_flags_internal.hpp"
 
 namespace cgpui {
@@ -8,7 +11,9 @@ Result<void> dx12_resize(Dx12State& state, Size size, DpiScale scale) {
       .message = "DX12 cannot resize while a frame is outstanding"});
   if (state.failed) return std::unexpected(dx12_unsupported("recovery of a failed device"));
   if (auto idle = dx12_wait_idle(state); !idle) { state.failed = true; return idle; }
+  if (state.command_observation) state.command_observation->retire(false);
   const auto width = static_cast<UINT>(size.width), height = static_cast<UINT>(size.height);
+  state.command_reuse->accept_surface({width, height, scale.value, state.composition_surface, state.transparent_background});
   state.scale = scale;
   if (width == state.width && height == state.height) return {};
   state.pixels.reset();

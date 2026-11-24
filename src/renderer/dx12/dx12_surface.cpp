@@ -1,4 +1,6 @@
 #include "dx12_surface_internal.hpp"
+#include "dx12_frame_command_reuse_internal.hpp"
+#include "dx12_command_reuse_surface_epoch_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_window_alpha_internal.hpp"
 #include <algorithm>
@@ -43,6 +45,7 @@ Result<RendererSurfaceComposition> dx12_set_transparent_surface(Dx12State& state
   // An initially alpha-composited window stays on its fixed premultiplied route.
   // Changing intent does not change the HWND topology or recreate a swapchain.
   state.transparent_background = transparent;
+  state.command_reuse->accept_surface({state.width, state.height, state.scale.value, state.composition_surface, transparent});
   return dx12_surface_composition(state);
 }
 

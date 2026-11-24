@@ -1,4 +1,6 @@
 #include "dx12_state_internal.hpp"
+#include "dx12_command_observation_internal.hpp"
+#include "dx12_frame_command_reuse_internal.hpp"
 #include "dx12_synchronization_internal.hpp"
 #include <limits>
 
@@ -6,6 +8,8 @@ namespace cgpui {
 namespace {
 Dx12SynchronizationProbe removed(Dx12State& state, HRESULT reason) noexcept {
   state.removal_reason = FAILED(reason) ? reason : DXGI_ERROR_DEVICE_REMOVED;
+  state.command_reuse->removed(state);
+  dx12_observe_command(state, {.kind = Dx12CommandEventKind::removed, .result = state.removal_reason});
   state.pending_fence_value = 0;
   state.submitted = false;
   return {.progress = Dx12SynchronizationProgress::removed,
@@ -42,6 +46,8 @@ Dx12SynchronizationProbe dx12_poll_submission(
     return removed(state, api.removed(*state.device.Get()));
   }
   if (completed < state.pending_fence_value) return {};
+  state.command_reuse->completed(state); // Actual same-ticket proof, not event wake or !submitted.
+  if (state.command_observation) state.command_observation->completed(state, state.pending_fence_value);
   state.pending_fence_value = 0;
   state.submitted = false;
   return {.progress = Dx12SynchronizationProgress::complete};

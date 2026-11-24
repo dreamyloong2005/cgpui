@@ -1,4 +1,6 @@
 #include "dx12_operation_internal.hpp"
+#include "dx12_command_observation_internal.hpp"
+#include "dx12_frame_command_reuse_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_image_cache_internal.hpp"
 #include "dx12_text_cache_internal.hpp"
@@ -24,6 +26,7 @@ Dx12State::Dx12State(Dx12FramePacingApi* pacing_api, Dx12SynchronizationApi* syn
       texture_uploads(std::make_unique<Dx12TextureUploads>()),
       frame_pacing(std::make_unique<Dx12FramePacing>(
           pacing_api ? *pacing_api : dx12_native_frame_pacing_api())),
+      command_reuse(std::make_unique<Dx12FrameCommandReuse>()),
       synchronization_api(synchronization) {}
 
 Dx12State::~Dx12State() {

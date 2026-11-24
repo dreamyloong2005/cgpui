@@ -1,4 +1,5 @@
 #include "dx12_texture_renderer_internal.hpp"
+#include "dx12_command_observation_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_texture_upload_frame_internal.hpp"
 #include "dx12_frame_diagnostics_internal.hpp"
@@ -36,6 +37,8 @@ Result<void> realize_texture(
   view.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
   view.Texture2D.MipLevels = 1;
   state.device->CreateShaderResourceView(resource.Get(), &view, srv->cpu());
+  dx12_observe_command(state, {.kind = Dx12CommandEventKind::descriptor_write,
+      .object = resource.Get(), .object2 = srv->heap(), .a = srv->cpu().ptr, .b = srv->gpu().ptr});
   native.resource = std::move(resource);
   native.srv = std::move(*srv);
   dx12_observe_glyph_lifetime(state);

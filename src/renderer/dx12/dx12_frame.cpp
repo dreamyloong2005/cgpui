@@ -88,8 +88,9 @@ Result<void> Dx12Frame::present() {
   release();
   if (error_) return std::unexpected(*error_);
   if (auto ready = dx12_prepare_present(*state_, generation_); !ready) return ready;
+  const bool mutations = images_.has_mutations(); // Owned witness before successful prepare drains raw requests.
   if (auto prepared = images_.prepare(*state_, draws_); !prepared) return prepared;
-  auto result = dx12_submit_frame(*state_, clear_, draws_, capture_, command_count_, admission_call_ns_);
+  auto result = dx12_submit_frame(*state_, clear_, draws_, capture_, command_count_, admission_call_ns_, mutations);
   if (!result) return dx12_handle_frame_failure(*state_, std::move(result.error()));
   return result;
 }

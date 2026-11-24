@@ -18,6 +18,9 @@ struct Dx12TextureRenderer {
   std::unordered_map<const Dx12Texture*, Dx12NativeTexture> native_textures;
   // Retain CPU snapshots during submission. Native map nodes remain stable on
   // rehash and are pruned only after successful frame-start idle completion.
+  // Reuse entries strongly pin immutable image snapshots, hence these nodes AND
+  // sole SRV leases. Central native release drops reuse after actual parent P
+  // and native G, before this map/pool. Heap ComPtrs alone are not slot pins.
   std::vector<Dx12TextureHandle> retained;
   std::vector<Dx12NativeTexture*> pending_uploads;
 };

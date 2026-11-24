@@ -1,4 +1,6 @@
 #include "dx12_native_retirement_internal.hpp"
+#include "dx12_command_observation_internal.hpp"
+#include "dx12_frame_command_reuse_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_texture_renderer_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
@@ -11,9 +13,14 @@
 namespace cgpui {
 void dx12_release_native_objects(Dx12State& state) noexcept {
   // The caller proved completion/removal, or never submitted the partial build.
+  if (FAILED(state.removal_reason)) state.command_reuse->removed(state); // Covers actual removed cohort/orphan paths too.
   state.submitted = false;
+  auto* old_parent = state.commands.Get();
   state.commands.Reset();
+  dx12_observe_command(state, {.kind = Dx12CommandEventKind::parent_released, .object = old_parent});
   state.allocator.Reset();
+  state.command_reuse->parent_released(state); // Actual P; entry releases before texture map/glyph/SRV pool.
+  if (state.command_observation) state.command_observation->retire(FAILED(state.removal_reason));
   dx12_reset_texture_resources(state);
   auto& backdrop = *state.backdrop_blur;
   backdrop.frame_targets.clear();

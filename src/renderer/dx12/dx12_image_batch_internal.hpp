@@ -11,6 +11,7 @@ struct Dx12DrawCommand;
 // Pending public requests, not installed immutable snapshots or native resources.
 class Dx12ImageBatch {
  public:
+  [[nodiscard]] bool has_mutations() const noexcept;
   void upload(const ImageAsset& image);
   void invalidate(ImageAssetId id);
   Result<void> prepare(Dx12State& state, std::span<Dx12DrawCommand> draws);

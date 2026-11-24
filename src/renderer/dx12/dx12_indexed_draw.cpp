@@ -1,4 +1,5 @@
 #include "dx12_indexed_draw_internal.hpp"
+#include "dx12_prepared_draw_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_geometry_upload_frame_internal.hpp"
 #include "dx12_frame_diagnostics_internal.hpp"
@@ -18,12 +19,8 @@ Result<void> dx12_record_indexed_draw(
       vertices->address, vertices->size, vertex_stride};
   const D3D12_INDEX_BUFFER_VIEW index_view{
       indices->address, indices->size, DXGI_FORMAT_R32_UINT};
-  state.commands->SetPipelineState(&pipeline);
-  state.commands->SetGraphicsRootSignature(state.root_signature.Get());
-  const float extent[] = {static_cast<float>(state.width), static_cast<float>(state.height)};
-  state.commands->SetGraphicsRoot32BitConstants(0, 2, extent, 0);
-  state.commands->IASetVertexBuffers(0, 1, &vertex_view);
-  state.commands->IASetIndexBuffer(&index_view);
+  Dx12PreparedDraw prepared{.pipeline = &pipeline, .root = state.root_signature.Get(),
+      .extent = {float(state.width), float(state.height)}, .vertex = vertex_view, .index = index_view, .indexed = true};
   for (std::size_t index = 0; index < draws.size(); ++index) {
     const auto& draw = draws[index];
     const auto clipped = resolve_clip_stack_scissor(
@@ -33,8 +30,8 @@ Result<void> dx12_record_indexed_draw(
     const D3D12_RECT scissor{clip.x, clip.y,
         static_cast<LONG>(clip.x + clip.width), static_cast<LONG>(clip.y + clip.height)};
     state.commands->RSSetScissorRects(1, &scissor);
-    state.commands->DrawIndexedInstanced(static_cast<UINT>(draw.index_count), 1,
-        static_cast<UINT>(draw.first_index), 0, 0);
+    prepared.count = static_cast<UINT>(draw.index_count); prepared.first = static_cast<UINT>(draw.first_index);
+    dx12_emit_prepared_draw(state, *state.commands.Get(), prepared);
     if (state.active_diagnostics && draw.index_count) state.active_diagnostics->submitted(index);
   }
   return {};

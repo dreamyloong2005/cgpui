@@ -1,4 +1,6 @@
 #include "dx12_glyph_recording_scope_internal.hpp"
+#include "dx12_command_observation_internal.hpp"
+#include "dx12_frame_command_reuse_internal.hpp"
 #include "dx12_glyph_native_internal.hpp"
 #include "dx12_glyph_work_observer_internal.hpp"
 #include "dx12_glyph_command_api_internal.hpp"
@@ -33,6 +35,8 @@ Result<void> Dx12GlyphRecordingScope::reset_and_begin() {
 }
 void Dx12GlyphRecordingScope::opened_after_reset() noexcept {
   open_ = true; // Must precede all fallible post-Reset metadata preparation.
+  state_.command_reuse->parent_reset(state_); // Same actual successful DIRECT Reset establishes reuse P.
+  if (state_.command_observation) state_.command_observation->parent_reset(*state_.commands.Get(), *state_.allocator.Get());
   state_.texture_renderer->glyph_native->parent_reset();
   dx12_observe_glyph_lifetime(state_);
 }
@@ -43,6 +47,8 @@ HRESULT Dx12GlyphRecordingScope::close() noexcept {
   auto& api = injected ? *injected : dx12_native_glyph_command_api();
   cleanup_close_ = api.close(*state_.commands.Get());
   state_.texture_renderer->glyph_native->record_close(cleanup_close_);
+  dx12_observe_command(state_, {.kind = Dx12CommandEventKind::parent_closed,
+      .list = state_.commands.Get(), .result = cleanup_close_});
   return cleanup_close_;
 }
 void Dx12GlyphRecordingScope::executed() noexcept {

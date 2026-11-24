@@ -264,6 +264,60 @@ texture. The scoped work-observer tests are correctness/accounting probes, not
 whole-renderer memory measurements or benchmarks. No FPS, latency, all-path
 minimal-upload, cache bound or asynchronous-rendering claim follows from D<P.
 
+## Conditional native command recording reuse
+
+DX12 can reuse one immutable native BUNDLE for a restricted exact-static scene
+on an opaque ordinary HWND. The renderer selects this privately; applications
+choose neither a reuse mode nor another window type. Vulkan remains the Windows
+default, and transparent ordinary windows, native Popups and their existing
+composition/fallback policies are unchanged.
+
+Eligible frames contain only rectangle-family geometry and already-uploaded
+immutable RGBA images, with one common effective scissor and one SRV page.
+Selection/caret rectangle geometry is included; glyphs, shadows and backdrop
+blur are not. Ordinary paint opacity and image alpha on an opaque HWND do not
+by themselves exclude reuse. Transparent/composition surfaces do.
+
+Public capture requests, any image upload/invalidation request (including an
+undrawn ID), missing/cold images, empty or culled work, differing scissors/pages
+and other payloads use the ordinary DIRECT path. Private admission limits are
+256 draw groups, 512 native draws and four 256 KiB frozen geometry pages, with
+no oversized slice. Exceeding them is a cache miss, not a new rendering limit.
+Input validation and native errors retain their original errors; they are not
+converted into successful cache misses or dropped work.
+
+The first eligible frame records and closes a BUNDLE. Later matching frames
+execute that same native recording only after the previous submission completed,
+passed all publication gates, and its referring DIRECT parent was successfully
+reset. Equality includes device/surface generation, extent/scale, clear color,
+ordered geometry/ranges and resource metadata, immutable image identity and
+native SRV/sampler/pipeline bindings. Same-ID replacement is not the same image
+snapshot. Changed inputs produce fresh recording or ordinary DIRECT work.
+
+Every frame still records its DIRECT shell: the current backbuffer, clear,
+viewport/scissor, barriers, submission and Present remain per-frame work.
+BUNDLE geometry owns separate frozen storage rather than borrowing the rewound
+transient arena. Strong immutable-image pins protect existing native map nodes
+and their sole SRV leases; there is no second descriptor allocator. GPU completion
+alone does not release the recording's dependencies: successful parent Reset or
+actual parent release is also required. Unknown completion retains owners;
+confirmed removal retires old native owners before reconstruction. A failed
+attempt cannot reuse an earlier attempt's successful publication.
+
+Successful hits retain current diagnostic receipts, image-cache aging and
+capture-history semantics. Public capture deliberately records DIRECT work;
+retained public pixels are not proof of a later uncaptured hit. The focused
+correctness fixture instead observes the selected production target with a
+separate same-queue readback submission before the covering fence. That fixture
+uses two queue submissions and is not the normal rendering path or a timing
+benchmark.
+
+This reduces repeated native draw recording only for the stated subset. It does
+not reuse the whole frame, add asynchronous overlap, establish total-memory
+bounds, demonstrate an FPS/latency improvement, or qualify DX12 for automatic
+selection or release. Frozen geometry is additional cache storage; its private
+page cap does not bound native command allocators, descriptors or the renderer.
+
 ## Frame diagnostics
 
 DX12 retains the last successful requested capture on an unchanged valid surface

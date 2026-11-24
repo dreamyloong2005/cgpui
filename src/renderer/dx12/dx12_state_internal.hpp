@@ -20,6 +20,8 @@ class Dx12FrameDiagnostics;
 class Dx12GeometryUploads;
 class Dx12TextureUploads;
 class Dx12SrvDescriptorPool;
+class Dx12FrameCommandReuse;
+class Dx12CommandObservation;
 class Dx12FramePacing;
 class Dx12FramePacingApi;
 struct Dx12State {
@@ -57,6 +59,8 @@ struct Dx12State {
   std::unique_ptr<Dx12GeometryUploads> geometry_uploads;
   std::unique_ptr<Dx12TextureUploads> texture_uploads;
   std::unique_ptr<Dx12FramePacing> frame_pacing;
+  std::unique_ptr<Dx12FrameCommandReuse> command_reuse;
+  std::unique_ptr<Dx12CommandObservation> command_observation; // Optional state-owned native test attachment.
   Dx12Ptr<ID3D12Resource> readback;
   D3D12_PLACED_SUBRESOURCE_FOOTPRINT capture_layout{};
   std::optional<RendererFramePixels> pixels;

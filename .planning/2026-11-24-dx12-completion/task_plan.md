@@ -191,3 +191,16 @@ redefined as complete solely to close the checklist.
   all original strict gates and failed evidence remain. No performance gain or
   whole-DX12 completion claim. Command reuse native revision1 plus supplemental
   lifetime controls are independently source-reviewed external candidates only.
+
+- Conditional native command recording reuse accepted in
+  `.planning/2026-11-24-dx12-command-reuse/`: actual native RED/GREEN on three
+  adapters, real ExecuteBundle-omission pixel RED,20focused lifetime/signature/
+  mutation/parent/facade controls and247structure. Independent final actual-source
+  Standards0/Spec0 with author exclusions separately covered. First3231file
+  frozen matrix and strict audit pass Windows944/WSL697/native200 each adapter/
+  common107both each adapter/ASan200+107+107/real-TEMP drivers/SDK104DX12object
+  closure. No FPS/latency/total-memory/default selection claim. Unused proof
+  authorities removed after actual structure RED/GREEN. P0 foreign-thread
+  tests-only integration and DRED scalar no-traversal candidates remain external,
+  unexecuted; window/background/chrome/HMENU, CI/native-platform and release
+  completion gates remain OPEN. Overall complete-DX12 goal remains ACTIVE.
