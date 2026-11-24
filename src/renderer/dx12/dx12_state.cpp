@@ -11,11 +11,13 @@
 #include "dx12_geometry_upload_internal.hpp"
 #include "dx12_texture_upload_internal.hpp"
 #include "dx12_frame_pacing_internal.hpp"
+#include "dx12_srv_descriptor_pool_internal.hpp"
 
 namespace cgpui {
 Dx12State::Dx12State(Dx12FramePacingApi* pacing_api, Dx12SynchronizationApi* synchronization)
     : image_cache(std::make_unique<Dx12ImageCache>()),
       text_cache(std::make_unique<Dx12TextCache>()),
+      srv_pool(std::make_unique<Dx12SrvDescriptorPool>()),
       texture_renderer(std::make_unique<Dx12TextureRenderer>()),
       backdrop_blur(std::make_unique<Dx12BackdropBlurRenderer>()),
       geometry_uploads(std::make_unique<Dx12GeometryUploads>()),

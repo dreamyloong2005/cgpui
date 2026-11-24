@@ -19,6 +19,7 @@ class Dx12SynchronizationApi;
 class Dx12FrameDiagnostics;
 class Dx12GeometryUploads;
 class Dx12TextureUploads;
+class Dx12SrvDescriptorPool;
 class Dx12FramePacing;
 class Dx12FramePacingApi;
 struct Dx12State {
@@ -50,6 +51,7 @@ struct Dx12State {
   Dx12Ptr<ID3D12PipelineState> shadow_pipeline;
   std::unique_ptr<Dx12ImageCache> image_cache;
   std::unique_ptr<Dx12TextCache> text_cache;
+  std::unique_ptr<Dx12SrvDescriptorPool> srv_pool;
   std::unique_ptr<Dx12TextureRenderer> texture_renderer;
   std::unique_ptr<Dx12BackdropBlurRenderer> backdrop_blur;
   std::unique_ptr<Dx12GeometryUploads> geometry_uploads;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dx12_native_internal.hpp"
+#include "dx12_srv_descriptor_pool_internal.hpp"
 #include "cgpui/renderer/planning/backdrop_blur_plan.hpp"
 #include <array>
 #include <memory>
@@ -29,7 +30,7 @@ struct Dx12BackdropBlurTargets {
   // Snapshot, ping, pong. A new set per effect keeps already-recorded
   // resources and their descriptor contents immutable until GPU completion.
   std::array<Dx12BackdropBlurTarget, 3> targets;
-  Dx12Ptr<ID3D12DescriptorHeap> srvs;
+  Dx12SrvAllocation srvs; // All three slots share one page, including alpha composite.
   Dx12Ptr<ID3D12DescriptorHeap> rtvs;
 };
 struct Dx12BackdropBlurRenderer {

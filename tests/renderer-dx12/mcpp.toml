@@ -22,6 +22,10 @@ discover = []
 
 [target.'cfg(os = "windows")'.build]
 sources = [
+    "dx12_srv_pool_test_support.cpp",
+    "dx12_srv_alpha_scene_test_support.cpp",
+    "dx12_srv_topology_test_support.cpp",
+    "dx12_srv_sharing_scene_test_support.cpp",
     "dx12_orphan_native_removal_test_support.cpp",
     "dx12_image_retention_test_support.cpp",
     "dx12_composition_pacing_pixels_test_support.cpp",
@@ -69,6 +73,22 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_srv_alpha_page_boundary_test.cpp",
+    "dx12_srv_cohort_orphan_test.cpp",
+    "dx12_srv_glyph_history_test.cpp",
+    "dx12_srv_history_test.cpp",
+    "dx12_srv_mixed_alpha_test.cpp",
+    "dx12_srv_orphan_lifetime_test.cpp",
+    "dx12_srv_pending_retirement_test.cpp",
+    "dx12_srv_pool_allocation_test.cpp",
+    "dx12_srv_pool_failure_test.cpp",
+    "dx12_srv_pool_growth_test.cpp",
+    "dx12_srv_pool_warm_test.cpp",
+    "dx12_srv_present_failure_test.cpp",
+    "dx12_srv_realization_failure_test.cpp",
+    "dx12_srv_recovery_test.cpp",
+    "dx12_srv_heap_sharing_test.cpp",
+    "dx12_srv_blur_sharing_test.cpp",
     "dx12_missing_image_test.cpp",
     "dx12_image_batch_test.cpp",
     "dx12_image_batch_validation_test.cpp",

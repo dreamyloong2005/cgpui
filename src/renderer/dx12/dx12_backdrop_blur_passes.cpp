@@ -7,7 +7,7 @@ void dx12_bind_backdrop_blur(Dx12State& state, const Dx12BackdropBlurTargets& ta
   state.commands->SetPipelineState(&pipeline);
   state.commands->SetGraphicsRootSignature(state.backdrop_blur->root_signature.Get());
   state.commands->SetGraphicsRoot32BitConstants(0, sizeof(constants) / sizeof(UINT), &constants, 0);
-  ID3D12DescriptorHeap* heaps[] = {targets.srvs.Get()};
+  ID3D12DescriptorHeap* heaps[] = {targets.srvs.heap()};
   state.commands->SetDescriptorHeaps(1, heaps);
   state.commands->SetGraphicsRootDescriptorTable(1, targets.targets[source].srv);
 }

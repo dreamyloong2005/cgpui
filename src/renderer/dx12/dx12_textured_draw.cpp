@@ -42,10 +42,10 @@ Result<void> dx12_record_textured_draw(Dx12State& state, const Dx12TexturedDraw&
   state.commands->SetGraphicsRootSignature(renderer.root_signature.Get());
   const float extent[] = {static_cast<float>(state.width), static_cast<float>(state.height)};
   state.commands->SetGraphicsRoot32BitConstants(0, 2, extent, 0);
-  ID3D12DescriptorHeap* heaps[] = {texture.descriptors.Get(), renderer.samplers.Get()};
+  ID3D12DescriptorHeap* heaps[] = {texture.srv.heap(), renderer.samplers.Get()};
   state.commands->SetDescriptorHeaps(2, heaps);
   state.commands->SetGraphicsRootDescriptorTable(1,
-      texture.descriptors->GetGPUDescriptorHandleForHeapStart());
+      texture.srv.gpu());
   auto sampler = renderer.samplers->GetGPUDescriptorHandleForHeapStart();
   if (draw.sampling == ImageSamplingMode::linear) sampler.ptr += renderer.sampler_stride;
   state.commands->SetGraphicsRootDescriptorTable(2, sampler);

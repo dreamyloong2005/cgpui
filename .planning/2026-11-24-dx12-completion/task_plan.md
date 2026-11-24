@@ -166,3 +166,15 @@ redefined as complete solely to close the checklist.
   native140/common107+ASan+SDK/fixtures/sourcechecks pass. See steady-state
   acceptance for scope and lack of speedup claim. Next SRV baseline rebase is
   independently preserved/reviewed, still uncompiled/unexecuted.
+
+- SRV descriptor pool accepted in `.planning/2026-11-24-dx12-descriptor-pool/`:
+  real six native topology RED/GREEN; stable4096-slot pages and move-only leases,
+  exact16new tests, architecture233. Frozen3093source Windows886/WSL683,
+  native156 per adapter and ASan, common107 per selection and installed SDK pass.
+  Initial short-path fixture skips were NOT accepted: same-source full PS5/PS7
+  suites reran with real system TEMP and strict combined audit passed. Independent
+  Standards0/Spec0 after two coverage repairs. New optimized371TU Release plus
+  18fresh runs, six negative controls and two adapter smokes pass. Independent
+ 36run comparison supports heap topology reduction, not FPS/memory-byte gains.
+  All original evidence/failed preparation attempts preserved. Glyph dirty upload
+  and command reuse remain external candidates; full completion remains ACTIVE.

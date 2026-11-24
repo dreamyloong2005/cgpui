@@ -6,6 +6,7 @@
 #include "dx12_geometry_upload_internal.hpp"
 #include "dx12_texture_upload_internal.hpp"
 #include "dx12_frame_pacing_internal.hpp"
+#include "dx12_srv_descriptor_pool_internal.hpp"
 
 namespace cgpui {
 void dx12_release_native_objects(Dx12State& state) noexcept {
@@ -16,6 +17,7 @@ void dx12_release_native_objects(Dx12State& state) noexcept {
   dx12_reset_texture_resources(state);
   auto& backdrop = *state.backdrop_blur;
   backdrop.frame_targets.clear();
+  state.srv_pool->clear_after_retirement();
   backdrop.composite_pipeline.Reset();
   backdrop.alpha_composite_pipeline.Reset();
   backdrop.blur_pipeline.Reset();

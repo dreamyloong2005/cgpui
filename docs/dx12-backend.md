@@ -92,7 +92,8 @@ CPU snapshots, including across later frames' replacements/invalidation.
 Uploads reach the GPU lazily when first drawn; images are evicted after more
 than 120 successfully presented idle frames. Glyph pages are cached for the renderer lifetime and
 republished as full-page snapshots when dirty. This is correctness-first, not a
-partial-upload, pooled-descriptor or bounded-glyph-cache performance guarantee.
+partial-upload or bounded-glyph-cache performance guarantee. Native SRV storage
+uses the separate private descriptor pool described below.
 
 Backdrop PSOs are lazy and cached. Each visible effect owns a full-frame scene
 snapshot and two region-sized downsample targets with immutable descriptors.
@@ -192,10 +193,37 @@ payloads, not row-pitch padding, placement gaps or page capacity. The low-level
 allocator does not own texture formats, footprint calculations or GPU copy/draw
 recording.
 
-Readback buffers, descriptors and backdrop render targets are not pooled by this
+Readback buffers and backdrop render targets are not pooled by this staging
 change, and glyph updates are not partial. Fewer committed staging/geometry
 allocations with unchanged pixels and lifetimes are the bounded claims, not an
 FPS improvement, asynchronous renderer or performance equivalence to Vulkan.
+
+## Native SRV descriptor reuse
+
+Each renderer's native state owns a private pool of stable, shader-visible
+4096-slot SRV pages. Image and glyph native realizations hold move-only one-slot
+leases; each backdrop group acquires three slots atomically from one page.
+The latter matters for alpha composition, which consumes both original and
+filtered textures in the same draw. Groups may use nonadjacent slots, but never
+span heaps. Sampler and RTV storage and explicit per-draw table bindings are
+unchanged; sharing a heap does not merge draws or eliminate those bindings.
+
+Descriptors remain immutable while their native owner is retained. CPU image
+and glyph snapshots do not hold native leases. The existing successful idle
+boundary permits expired native realizations and prior backdrop groups to
+release their slots; an unsuccessful wait or Present alone does not. Lease
+return allocates no memory. Native retirement releases all consumers before
+clearing the pool and releasing the device. Recovery rebuilds native descriptors
+on the new epoch while retaining the existing CPU cache semantics.
+
+When pages lack enough free slots, allocation grows without moving existing
+handles or splitting a blur group. Allocation failure preserves unrelated live
+leases and propagates the error. Empty high-water pages remain until native
+retirement: 4096 is the page size, not a total-resource or memory limit. This
+changes descriptor allocation/storage, not glyph dirty-region upload policy,
+frame overlap, public window options, backend defaults or Popup fallback.
+Fewer live SRV heaps are not proof of better FPS, GPU time or lower peak memory;
+use the separately documented steady-state probe for comparable measurements.
 
 ## Frame diagnostics
 
