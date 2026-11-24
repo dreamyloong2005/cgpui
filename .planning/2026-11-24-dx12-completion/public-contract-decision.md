@@ -27,3 +27,25 @@ Source evidence and proposed common tests:
 Historical frame-outlives-facade compatibility is separately supported by original
 plan/ledger and has a reviewed external orphan-frame candidate. No candidate is
 accepted merely by this decision or static review.
+
+## Engineering recommendation explicitly accepted
+
+The human subsequently asked for engineering recommendations on this decision
+and missing-image behavior, then explicitly answered: "那就按照你的建议实现".
+The accepted recommendation retains the two rules above and adds:
+
+- A valid image draw whose pixel resource is not yet available is skipped while
+  the rest of the frame continues; the skip must remain visible in diagnostics.
+- Invalid dimensions/stride/buffer lengths, non-finite geometry, incompatible
+  resource descriptions and real native/GPU failures are not swallowed as a
+  missing resource. Validate the supported input boundary before classifying a
+  draw as not-ready. No new backend policy selector or placeholder is requested.
+- The image ID represents resource identity; use distinct IDs for simultaneous
+  versions. Capture remains last-successful-requested history, not a promise of
+  current-screen pixels or preservation across extent/device reset.
+
+Implement and test missing-resource behavior as a deliberate follow-up to the
+reviewed image-batching candidate. The old candidate intentionally preserves
+missing-image rejection and is not evidence that this newly accepted part is
+implemented. Cross-backend exact pixels, invalid-input controls and diagnostics
+must distinguish a skipped missing image from stale capture or silent failure.

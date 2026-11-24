@@ -1,5 +1,32 @@
 # Prepared follow-up work (not implemented)
 
+## Current status correction (2026-11-24 follow-up)
+
+The original candidate inventory below is historical, not the current status of
+every item. Capture publication (`140cde6b`), retained-image diagnostics
+(`d893fdee`) and healthy acquired orphan-frame completion (`58e16f71`) are now
+implemented and accepted in their dedicated planning directories. Capture
+history is applied and undergoing its second frozen full matrix; the first
+native-menu fixture timeout and unchanged successful replays are retained.
+Image batching has current reviewed rebased A/B candidates, not yet applied.
+
+DRED's original candidate is **not safe to integrate as-is**: the later
+`D:/Dev/shots/cgpui-dx12-dred-20261124/candidates/retirement-boundary-review.md`
+establishes device-wide borrowed-node release-ordering gaps. Per-state gates
+and moving one origin hook do not establish the required lifetime. This is an
+ordering finding, not a demonstrated UAF. A correct device-epoch capture-once
+transaction or bounded no-traversal initial scope is still needed.
+
+Performance work has a source-reviewed revised manual benchmark, still unrun:
+`D:/Dev/shots/cgpui-dx12-performance-20261124/candidates/revised/`.
+Recorded-command reuse, shared SRV pool and dirty glyph native-copy work remain
+missing; staging/pacing evidence does not measure FPS or input latency. Shared
+SRV candidates are being prepared outside the frozen repository, with atomic
+same-page blur tuple leases and idle/removal-safe recycling.
+
+The native/common counts below describe the old candidate baseline only; derive
+current inventory from manifests before executing CI or final matrix scripts.
+
 2026-11-24. Root continues the active complete-DX12 goal. These external candidates
 were prepared while the composition source was frozen; no build/GPU/application
 claim follows from their existence or static review. Do not overwrite current

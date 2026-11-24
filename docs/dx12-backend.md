@@ -192,11 +192,25 @@ FPS improvement, asynchronous renderer or performance equivalence to Vulkan.
 
 ## Frame diagnostics
 
-DX12 pixel capture is published only after readback, debug validation and any
-required composition Commit succeed. A late failure exposes no candidate pixels; it does
-not restore the previous capture, which Present already invalidated. This is a
-DX12-specific safety boundary, not a change to Vulkan's capture-history policy.
-Readback extraction owns an unpublished CPU value until that successful boundary.
+DX12 retains the last successful requested capture on an unchanged valid surface
+and device, matching Vulkan's capture history. Uncaptured successful frames,
+abandoned requests and failed frames do not discard or replace that history;
+before the first successful capture the getter returns null. A new successful
+requested capture replaces it. This does not make retained pixels evidence of
+the latest attempted or uncaptured frame.
+
+Publication still follows readback, debug validation, required composition Commit
+and successful diagnostic completion. Readback owns an unpublished CPU value until
+that boundary: a late failure exposes no candidate pixels and preserves previous
+successful pixels when the device/surface remains unchanged. Borrowed storage must
+be copied before later renderer/frame operations or destruction. This contract is
+for capture-capable built-in backends, not custom no-op implementations.
+
+Capture history is not promised across resize, surface replacement or device
+recovery. DX12's extent-changing ResizeBuffers path and recovery keep their
+explicit invalidation; a recovery-pending peer's getter remains null. Same-size
+resize does not newly clear pixels. These boundaries and native borrowed-buffer
+lifetime rules are unchanged by the history alignment.
 
 DX12 implements the existing `Renderer::last_frame_diagnostic_snapshot()` API;
 there is no DX12-specific public diagnostic type. It returns null until the first

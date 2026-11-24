@@ -133,3 +133,10 @@ redefined as complete solely to close the checklist.
   neither compiled/applied/accepted. Benchmark revised candidate closes three
   source-review gaps but is likewise unexecuted. Shared SRV-pool design exists
   with same-page blur tuple and safe retirement requirements, not implementation.
+- Capture history accepted after a second unchanged-source frozen matrix:
+  `.planning/2026-11-24-dx12-capture-history/acceptance.md`. Windows847/WSL671,
+  native136, common97, ASan/SDK and2998 source consistency pass. First-run native
+  opaque-menu timeout remains recorded/unlocated, not claimed repaired. Image
+  batching is next. Human also explicitly accepted engineering recommendation
+  to skip valid not-yet-uploaded images with honest diagnostics while rejecting
+  invalid requests/native errors; a separate follow-up candidate is underway.

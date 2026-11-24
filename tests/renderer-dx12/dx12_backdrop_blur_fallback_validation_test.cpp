@@ -53,15 +53,19 @@ int main() {
       if (variant == 4) draw.rect.size.height = 0;
       invalidate(draw, invalid_case);
       const auto saved = *fixture.state->diagnostics;
+      const auto saved_pixels = *fixture.state->pixels;
       auto frame = fixture.begin();
       if (!frame) return dx12_fail(3, "fallback invalid begin failed");
       frame->draw_backdrop_blur(draw);
       fallback_foreground(*frame);
       if (!frame->request_pixel_capture()) return dx12_fail(4, "invalid frame capture request refused");
       const auto result = frame->present();
-      if (result || result.error().code != ErrorCode::invalid_argument || fixture.state->pixels ||
+      const auto& pixels = fixture.state->pixels;
+      if (result || result.error().code != ErrorCode::invalid_argument || !pixels ||
+          pixels->width != saved_pixels.width || pixels->height != saved_pixels.height ||
+          pixels->encoding != saved_pixels.encoding || pixels->rgba8 != saved_pixels.rgba8 ||
           !diagnostic_same(fixture.state->diagnostics ? &*fixture.state->diagnostics : nullptr, saved))
-        return dx12_fail(5, "fallback hid invalid raw data or changed last success diagnostics");
+        return dx12_fail(5, "fallback hid invalid raw data or changed successful pixel/diagnostic history");
       if (!valid_frame(fixture)) return dx12_fail(6, "invalid fallback poisoned the next native frame");
     }
   }

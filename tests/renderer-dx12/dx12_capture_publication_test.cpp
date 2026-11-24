@@ -11,6 +11,10 @@ using namespace cgpui_test;
 
 namespace {
 constexpr const char marker[] = "CGPUI capture publication late-error 20261124";
+bool same_capture(const RendererFramePixels* actual, const RendererFramePixels& expected) {
+  return actual && actual->valid() && actual->width == expected.width && actual->height == expected.height &&
+      actual->encoding == expected.encoding && actual->rgba8 == expected.rgba8;
+}
 bool only_injected_error(ID3D12InfoQueue& messages) {
   unsigned injected = 0;
   for (UINT64 index = 0; index < messages.GetNumStoredMessagesAllowedByRetrievalFilter(); ++index) {
@@ -44,6 +48,7 @@ int run_case(bool warm) {
     return dx12_fail(4, "fresh renderer already published frame state");
 
   std::optional<RendererFrameDiagnosticSnapshot> saved_diagnostics;
+  std::optional<RendererFramePixels> saved_pixels;
   const RendererFrameDiagnosticSnapshot* borrowed_diagnostics = nullptr;
   if (warm) {
     auto frame = wait_for_test_frame(**renderer);
@@ -59,6 +64,7 @@ int run_case(bool warm) {
     borrowed_diagnostics = (*renderer)->last_frame_diagnostic_snapshot();
     if (!borrowed_diagnostics) return dx12_fail(9, "warm diagnostics absent");
     saved_diagnostics = *borrowed_diagnostics;
+    saved_pixels = *(*renderer)->last_frame_pixels();
     // Do not retain/dereference the old borrowed pixel pointer across Present.
   }
 
@@ -98,8 +104,9 @@ int run_case(bool warm) {
   if (warm ? diagnostics != borrowed_diagnostics || !diagnostic_same(diagnostics, *saved_diagnostics)
            : diagnostics != nullptr)
     return dx12_fail(17, "rejected frame replaced successful diagnostic history");
-  if ((*renderer)->last_frame_pixels() != nullptr)
-    return dx12_fail(18, "rejected late-error frame exposed candidate capture pixels");
+  if (warm ? !same_capture((*renderer)->last_frame_pixels(), *saved_pixels)
+           : (*renderer)->last_frame_pixels() != nullptr)
+    return dx12_fail(18, "rejected late-error frame exposed candidate pixels or lost successful history");
   return 0;
 }
 } // namespace

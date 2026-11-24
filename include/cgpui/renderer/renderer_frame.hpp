@@ -30,6 +30,8 @@ class RenderFrame {
   virtual void upload_image(const ImageAsset& image) { (void)image; }
   virtual void invalidate_image(ImageAssetId asset_id) { (void)asset_id; }
   virtual void draw_image(const ImageDraw& image) { (void)image; }
+  // Optional; the default implementation reports unsupported_platform.
+  // Only successful Present may publish a requested capture.
   virtual Result<void> request_pixel_capture();
   virtual Result<void> present() = 0;
 };
@@ -46,6 +48,11 @@ class Renderer {
   [[nodiscard]] virtual RendererBackendInfo backend_info() const;
   [[nodiscard]] virtual const RendererFrameDiagnosticSnapshot*
   last_frame_diagnostic_snapshot() const;
+  // Capture-capable built-in backends retain the last successful requested
+  // capture on an unchanged valid surface/device, including uncaptured or failed
+  // frames; null before the first success. Resize/surface reset/device recovery
+  // may invalidate it. Custom renderers opt in; the base returns null.
+  // Borrowed storage: copy before later renderer/frame operations or destruction.
   [[nodiscard]] virtual const RendererFramePixels* last_frame_pixels() const;
   [[nodiscard]] virtual RendererSurfaceComposition surface_composition() const;
   [[nodiscard]] virtual RendererEffectSupport backdrop_blur_support() const;

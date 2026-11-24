@@ -86,7 +86,6 @@ Result<void> Dx12Frame::present() {
   if (released_) return std::unexpected(Error{.code = ErrorCode::invalid_argument,
       .message = "DX12 frame has already finished"});
   release();
-  state_->pixels.reset();
   if (error_) return std::unexpected(*error_);
   if (auto ready = dx12_prepare_present(*state_, generation_); !ready) return ready;
   auto result = dx12_submit_frame(*state_, clear_, draws_, capture_, command_count_, admission_call_ns_);

@@ -152,6 +152,7 @@ discover = [
     "vulkan_composition_pixel_test.cpp",
     "vulkan_frame_lifetime_test.cpp",
     "renderer_frame_pixel_capture_test.cpp",
+    "renderer_capture_history_test.cpp",
     "renderer_image_pixel_test.cpp",
     "vulkan_loader_binding_test.cpp",
     "vulkan_loader_concurrency_test.cpp",
