@@ -1,0 +1,47 @@
+# Explicit opt-in native measurement bin. Never part of [test] discovery.
+[package]
+namespace = "cgpui"
+name = "renderer-steady-state-probe"
+version = "0.1.0"
+
+[targets.renderer_steady_state_probe]
+kind = "bin"
+main = "renderer_steady_state_probe.cpp"
+
+[targets.cgpui_renderer_probe_support]
+kind = "lib"
+
+[dependencies]
+cgpui.renderer = { path = "../../packages/renderer" }
+
+[build]
+sources = [
+    "probe_options.cpp",
+    "probe_statistics.cpp",
+    "probe_report_format.cpp",
+    "probe_report.cpp",
+    "probe_report_io.cpp",
+]
+
+[test]
+discover = [
+    "probe_statistics_test.cpp",
+    "probe_creation_schema_test.cpp",
+    "probe_report_schema_test.cpp",
+    "probe_display_facts_test.cpp",
+]
+
+[target.'cfg(os = "windows")'.dependencies]
+cgpui.renderer-vulkan = { path = "../../packages/renderer-vulkan" }
+cgpui.renderer-dx12 = { path = "../../packages/renderer-dx12" }
+
+[target.'cfg(os = "windows")'.build]
+sources = [
+    "probe_window.cpp",
+    "probe_display.cpp",
+    "probe_acquisition.cpp",
+    "probe_scene.cpp",
+    "probe_verification.cpp",
+    "probe_run.cpp",
+]
+ldflags = ["user32.lib"]

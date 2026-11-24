@@ -42,6 +42,7 @@ members = [
     "tests/animation",
     "tests/assets",
     "tests/performance",
+    "tests/renderer-steady-state",
     "tests/stress",
 ]
 

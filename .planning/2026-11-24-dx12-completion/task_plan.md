@@ -157,3 +157,12 @@ redefined as complete solely to close the checklist.
   reset race fixed independently6b2de264; ASan stdout tail fixed explicitly in
   the test, not by weakening oracle. See missing-image acceptance. Baseline
   benchmark is next, SRV pool afterwards; overall completion gates remain open.
+
+- Dedicated steady-state baseline accepted: manual bin/four portable pure tests,
+  structure232, checked-in bounded runner and docs, verified optimized368-unit
+  Release build.18 Intel/Vulkan+DX12 series/10800 steady samples plus real native
+  negative controls pass; source-backed exactbatch auditor correction preserves
+  original failure and source semantics. First frozen3063 full Windows869/WSL682,
+  native140/common107+ASan+SDK/fixtures/sourcechecks pass. See steady-state
+  acceptance for scope and lack of speedup claim. Next SRV baseline rebase is
+  independently preserved/reviewed, still uncompiled/unexecuted.
