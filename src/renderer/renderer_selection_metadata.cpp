@@ -10,8 +10,8 @@ namespace {
 class SelectedRenderer final : public Renderer {
  public:
   SelectedRenderer(std::unique_ptr<Renderer> renderer,
-                   RendererBackendSelection selection)
-      : renderer_(std::move(renderer)), selection_(selection) {}
+                   RendererBackendSelection selection, std::string fallback_reason)
+      : renderer_(std::move(renderer)), selection_(selection), fallback_reason_(std::move(fallback_reason)) {}
   Result<void> resize(Size size, DpiScale scale) override {
     return renderer_->resize(size, scale);
   }
@@ -21,6 +21,7 @@ class SelectedRenderer final : public Renderer {
   RendererBackendInfo backend_info() const override {
     auto info = renderer_->backend_info();
     info.selection = selection_;
+    if (!fallback_reason_.empty()) info.fallback_reason = fallback_reason_;
     return info;
   }
   const RendererFrameDiagnosticSnapshot*
@@ -45,13 +46,14 @@ class SelectedRenderer final : public Renderer {
  private:
   std::unique_ptr<Renderer> renderer_;
   RendererBackendSelection selection_;
+  std::string fallback_reason_;
 };
 
 } // namespace
 
 std::unique_ptr<Renderer> renderer_with_selection_metadata(
-    std::unique_ptr<Renderer> renderer, RendererBackendSelection selection) {
-  return std::make_unique<SelectedRenderer>(std::move(renderer), selection);
+    std::unique_ptr<Renderer> renderer, RendererBackendSelection selection, std::string fallback_reason) {
+  return std::make_unique<SelectedRenderer>(std::move(renderer), selection, std::move(fallback_reason));
 }
 
 } // namespace cgpui::detail

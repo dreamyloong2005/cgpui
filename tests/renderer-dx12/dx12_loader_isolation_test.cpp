@@ -1,21 +1,29 @@
 #include "dx12_loader_process_support.hpp"
 #include "dx12_loader_cases_support.hpp"
 #include "dx12_loader_retry_support.hpp"
+#include "dx12_initialization_fallback_test_support.hpp"
 
 #include <string_view>
 
 using namespace cgpui_test;
 
 int main(int argc, char** argv) {
-  if (argc == 3 && std::string_view(argv[1]) == "--loader-case")
+  if (argc == 3 && std::string_view(argv[1]) == "--loader-case") {
+    if (std::string_view(argv[2]) == "checked-fallback") {
+      if (GetModuleHandleW(L"vulkan-1.dll")) return dx12_fail(7, "fallback child imported Vulkan before main");
+      const int result = initialization_fallback_case(false, false, true);
+      if (GetModuleHandleW(L"vulkan-1.dll")) return dx12_fail(8, "failed fallback child teardown left Vulkan loaded");
+      return result;
+    }
     return std::string_view(argv[2]) == "retry-vulkan" ? loader_retry_case() : loader_child_case(argv[2]);
+  }
   if (argc != 1) return dx12_fail(1, "invalid loader launcher arguments");
   if (GetModuleHandleW(L"vulkan-1.dll")) return dx12_fail(2, "launcher imported Vulkan before any factory call");
   const auto original = loader_self_executable();
   LoaderIsolationDirectory isolated(original);
   if (!isolated.valid()) return dx12_fail(3, "cannot create owned invalid-loader fixture");
   bool passed = true;
-  for (const auto* mode : {L"dx12", L"vulkan", L"default", L"auto", L"dx12-invalid"}) {
+  for (const auto* mode : {L"dx12", L"vulkan", L"default", L"auto", L"dx12-invalid", L"auto-invalid", L"checked-fallback"}) {
     const auto log = isolated.owned_file((std::wstring(mode) + L".log").c_str());
     passed = loader_run_child(isolated.executable(), mode, log, isolated.directory()) && passed;
   }

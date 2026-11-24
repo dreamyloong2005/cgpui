@@ -18,7 +18,8 @@ void WindowRuntime::handle_redraw() {
 
 Result<void> WindowRuntime::resize_surface(Size size, DpiScale scale) {
   auto result = try_resize_surface(size, scale);
-  if (!result) {
+  if (!result && !state_->scheduling.frame_readiness_.handle(
+          *this, state_->windows.root_window_runtime_id_, result.error())) {
     fail_and_quit(result.error());
   }
   return result;

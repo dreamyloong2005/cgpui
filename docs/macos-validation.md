@@ -12,6 +12,33 @@ Use the current [dependencies](platform-dependencies.md),
 Test registration belongs to `tests/*/mcpp.toml`, not a retired build-system
 inventory.
 
+## Follow-up: shared renderer after DX12 extraction (2026-11-25)
+
+**Pending native macOS validation.** The DX12 milestone's shared renderer
+extraction has current Windows/WSL coverage, but the native Mac evidence below
+predates it. On 2026-11-25 the project owner explicitly deferred this check as
+a macOS follow-up; it does not block the Windows DX12 milestone. Deferral is
+not a passing result or a new macOS/Metal certification.
+
+On an authorized Apple Silicon Mac, use source equivalent to the completed DX12
+implementation, mcpp 2026.11.21.1 or later, and the current dependencies:
+
+```sh
+export MACOSX_DEPLOYMENT_TARGET=26.0
+bash scripts/dev/build.sh -p packages/renderer
+bash scripts/dev/test.sh -p tests/renderer-neutral
+bash scripts/dev/test.sh -p tests/header_cleanliness
+bash scripts/dev/test.sh -p tests/architecture renderer_planning_ownership_structure_test
+```
+
+For the 2026-11-25 inventory, expect 16 neutral, 47 header and one ownership
+test, with no failures or unexplained skips. Record the exact source snapshot
+(including uncommitted changes), OS/architecture, Xcode and mcpp versions,
+deployment target, commands, exit codes and complete test names/results.
+This closes the shared-module compilation/CPU-test check only; it does not
+replace full Cocoa/Metal, sanitizer or SDK acceptance. Reconcile the expected
+test inventory explicitly if the source changes before the follow-up runs.
+
 ## Recorded native evidence (2026-11-21)
 
 These results were recorded before the current checkout. They are retained

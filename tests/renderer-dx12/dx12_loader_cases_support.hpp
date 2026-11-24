@@ -23,22 +23,25 @@ inline int loader_child_case(std::string_view mode) {
   using namespace cgpui;
   if (GetModuleHandleW(L"vulkan-1.dll")) return dx12_fail(20, "child imported Vulkan before main");
   const bool dx12 = mode == "dx12" || mode == "dx12-invalid";
+  const bool automatic = mode == "default" || mode == "auto" || mode == "auto-invalid";
+  const bool invalid_adapter = mode == "dx12-invalid" || mode == "auto-invalid";
   const bool healthy = mode == "healthy-vulkan";
-  const char* backend = dx12 ? "dx12" : mode == "default" ? "" : mode == "auto" ? "auto" : "vulkan";
+  const char* backend = dx12 ? "dx12" : mode == "default" ? "" : automatic ? "auto" : "vulkan";
   if (mode != "dx12" && mode != "dx12-invalid" && mode != "vulkan" && mode != "default" &&
-      mode != "auto" && !healthy) return dx12_fail(21, "unknown loader child mode");
+      mode != "auto" && mode != "auto-invalid" && !healthy) return dx12_fail(21, "unknown loader child mode");
   if (_putenv_s("CGPUI_RENDERER", backend) ||
-      _putenv_s("CGPUI_DX12_ADAPTER", mode == "dx12-invalid" ? "invalid-adapter" : "warp"))
+      _putenv_s("CGPUI_DX12_ADAPTER", invalid_adapter ? "invalid-adapter" : "warp"))
     return dx12_fail(22, "cannot select loader child environment");
   {
     Dx12Window window;
     if (!window.hwnd) return dx12_fail(23, "loader child native window unavailable");
     auto renderer = create_renderer(window.descriptor());
-    if (mode == "dx12" || healthy) {
+    if (mode == "dx12" || (automatic && !invalid_adapter) || healthy) {
       if (!renderer) return dx12_fail(24, renderer.error().message.c_str());
       const auto info = (*renderer)->backend_info();
       const auto expected = healthy ? RendererBackend::vulkan : RendererBackend::dx12;
-      const auto selection = healthy ? RendererBackendSelection::vulkan : RendererBackendSelection::dx12;
+      const auto selection = healthy ? RendererBackendSelection::vulkan
+          : automatic ? RendererBackendSelection::automatic : RendererBackendSelection::dx12;
       if (info.backend != expected || info.selection != selection || info.adapter_name.empty() ||
           !info.device_generation || !info.fallback_reason.empty() ||
           (!healthy && (!info.software_adapter || !info.adapter_luid)) ||
@@ -46,8 +49,8 @@ inline int loader_child_case(std::string_view mode) {
         return dx12_fail(25, "loader child backend metadata/module state or real captured pixels differ");
       std::cout << "LOADER_CASE mode=" << mode << " pixels=64x64 adapter=" << info.adapter_name << '\n';
     } else {
-      const auto expected = dx12 ? ErrorCode::invalid_argument : ErrorCode::renderer_initialization_failed;
-      const char* diagnostic = dx12 ? "CGPUI_DX12_ADAPTER" : "vulkan-1.dll";
+      const auto expected = invalid_adapter ? ErrorCode::invalid_argument : ErrorCode::renderer_initialization_failed;
+      const char* diagnostic = invalid_adapter ? "CGPUI_DX12_ADAPTER" : "vulkan-1.dll";
       if (renderer || renderer.error().code != expected || renderer.error().message.find(diagnostic) == std::string::npos)
         return dx12_fail(26, "explicit backend failure was masked, fell back, or lost its loader diagnostic");
       std::cout << "LOADER_CASE mode=" << mode << " refused=" << renderer.error().message << '\n';

@@ -72,7 +72,7 @@ Result<void> VulkanCompositionPresenter::record_transfers() {
                          VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
 }
 
-Result<void> VulkanCompositionPresenter::submit(
+VkResult VulkanCompositionPresenter::submit(
     VkQueue queue, VkCommandBuffer frame, VkFence fence) const {
   const std::array<VkCommandBuffer, 3> command_buffers{transfers_[0], frame, transfers_[1]};
   const std::uint64_t render_key = win32_composition_render_key;
@@ -92,9 +92,7 @@ Result<void> VulkanCompositionPresenter::submit(
       .pNext = &keyed_mutex,
       .commandBufferCount = static_cast<std::uint32_t>(command_buffers.size()),
       .pCommandBuffers = command_buffers.data()};
-  return require_vk_success(
-      vkQueueSubmit(queue, 1, &submit_info, fence),
-      "vkQueueSubmit under the composition keyed mutex failed");
+  return vkQueueSubmit(queue, 1, &submit_info, fence);
 }
 
 Result<void> VulkanCompositionPresenter::present() { return composition_->present(); }

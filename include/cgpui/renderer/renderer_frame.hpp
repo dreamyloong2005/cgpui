@@ -42,6 +42,10 @@ class RenderFrame {
   // Optional; the default implementation reports unsupported_platform.
   // Only successful Present may publish a requested capture.
   virtual Result<void> request_pixel_capture();
+  // renderer_recovery_pending terminates this frame without successful Present.
+  // Discard it and retry from begin_frame later; it is not completed recovery.
+  // Built-in DX12/Vulkan frames are single-use: every Present attempt finishes
+  // the frame. A retry acquires and records a new frame, never replays this object.
   virtual Result<void> present() = 0;
 };
 
@@ -49,10 +53,14 @@ class Renderer {
  public:
   virtual ~Renderer() = default;
 
+  // renderer_recovery_pending means the requested size/scale is not yet applied.
+  // Retain the latest request and retry it before drawing at the new extent.
   virtual Result<void> resize(Size framebuffer_size, DpiScale scale) = 0;
   // frame_not_ready means no frame was acquired and no work submitted; callers
   // should arrange a future attempt without a busy loop. It is begin-only:
   // present/resize must not use it. frame_retry_required retains recovery semantics.
+  // renderer_recovery_pending also acquires no frame, but denotes unfinished
+  // device recovery rather than presentation admission; retry with a delay.
   virtual Result<std::unique_ptr<RenderFrame>> begin_frame() = 0;
   [[nodiscard]] virtual RendererBackendInfo backend_info() const;
   [[nodiscard]] virtual const RendererFrameDiagnosticSnapshot*

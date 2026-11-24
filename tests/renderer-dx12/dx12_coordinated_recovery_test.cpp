@@ -1,5 +1,6 @@
 #include "../support/frame_wait_test_support.hpp"
 #include "dx12_recovery_test_support.hpp"
+#include "dx12_dred_native_test_support.hpp"
 
 using namespace cgpui;
 using namespace cgpui_test;
@@ -23,15 +24,22 @@ bool finish(Renderer& renderer, RenderFrame& frame, std::array<std::uint8_t, 4> 
 
 int main() {
   Dx12RecoveryDeadline deadline;
+  dred_capture_requests();
   Dx12Window first_window, second_window;
+  DredNativeReadout first_scalar, second_scalar;
   if (!deadline.done || !first_window.hwnd || !second_window.hwnd)
     return dx12_fail(1, "coordinated recovery fixture unavailable");
   auto first = create_dx12_renderer(first_window.descriptor());
   auto second = create_dx12_renderer(second_window.descriptor());
   if (!first || !second) return dx12_fail(2, "coordinated renderers unavailable");
   const auto first_before = (*first)->backend_info(), second_before = (*second)->backend_info();
+  if (!dred_record_identity(first_before, "cohort-origin-initial") ||
+      !dred_record_identity(second_before, "cohort-peer-initial")) return dx12_fail(21, "cohort native identity/output failed");
   if (!first_before.adapter_luid || first_before.adapter_luid != second_before.adapter_luid)
     return dx12_fail(3, "coordinated fixture did not select the same adapter");
+  const auto first_weak = dred_attach_public_readout(first_before, first_window.hwnd, first_scalar);
+  const auto second_weak = dred_attach_public_readout(second_before, second_window.hwnd, second_scalar);
+  if (first_weak.expired() || second_weak.expired()) return dx12_fail(19, "cohort scalar readout attachment" );
   const auto red = image({255, 0, 0, 255}), green = image({0, 255, 0, 255});
   auto first_finished = cgpui_test::wait_for_test_frame(**first);
   auto second_finished = cgpui_test::wait_for_test_frame(**second);
@@ -50,11 +58,16 @@ int main() {
   const auto* borrowed_second = (*second)->last_frame_pixels();
   if (!borrowed_second) return dx12_fail(7, "peer warmup capture unavailable");
   const auto saved_second = borrowed_second->rgba8;
-  if (!dx12_remove_native_device(first_before))
+  const auto loss = dred_remove_actual(first_before, dx12_recovery_debug_requested());
+  if (!loss.valid)
     return dx12_fail(7, "coordinated native removal failed");
   const auto first_retry = (*first)->begin_frame();
   if (first_retry || first_retry.error().code != ErrorCode::frame_retry_required)
     return dx12_fail(8, "same-thread peer still blocks coordinated recovery");
+  if (first_scalar.calls != 1 || second_scalar.calls != 1 ||
+      !dred_current_readout(first_scalar, loss, first_before.device_generation) ||
+      !dred_current_readout(second_scalar, loss, second_before.device_generation))
+    return dx12_fail(20, "origin/eligible-peer current scalar missing before lazy rebuild" );
   const auto first_after = (*first)->backend_info(), pending_info = (*second)->backend_info();
   if (first_after.device_generation != first_before.device_generation + 1 ||
       first_after.adapter_luid != first_before.adapter_luid ||
@@ -74,6 +87,8 @@ int main() {
   if (peer_retry || peer_retry.error().code != ErrorCode::frame_retry_required)
     return dx12_fail(12, "pending peer frame did not rebuild before requesting retry");
   const auto second_after = (*second)->backend_info();
+  if (!dred_record_identity(first_after, "cohort-origin-recovered") ||
+      !dred_record_identity(second_after, "cohort-peer-recovered")) return dx12_fail(21, "cohort recovered identity/output failed");
   if (second_after.device_generation != second_before.device_generation + 1 ||
       second_after.adapter_luid != second_before.adapter_luid || (*second)->last_frame_pixels())
     return dx12_fail(13, "peer rebuild generation or lost-frame capture differs");
@@ -93,6 +108,6 @@ int main() {
   if (!finish(**first, **first_new, {255, 0, 0, 255}) ||
       !finish(**second, **second_new, {0, 255, 0, 255}))
     return dx12_fail(17, "coordinated recovery lost or mixed cached images");
-  return dx12_recovered_native_device_clean(first_after)
+  return dx12_recovered_native_device_clean(first_after) && dred_flush_output()
       ? 0 : dx12_fail(18, "coordinated recovered device debug errors");
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dx12_frame_pacing_native_internal.hpp"
+#include "dx12_initialization_failure_internal.hpp"
 
 namespace cgpui {
 enum class Dx12FrameAdmission { disabled, pending, ready };
@@ -17,12 +18,14 @@ class Dx12FramePacing {
 
   // Configure once; even a disabled route needs reset before reconfiguration.
   // A failed configuration adopts no handle and leaves this owner unconfigured.
-  Result<void> configure(IDXGISwapChain2* chain, bool enabled);
+  Result<void> configure(IDXGISwapChain2* chain, bool enabled, Dx12InitializationFailureClass* failure = nullptr);
   Result<Dx12FrameAdmission> try_admit();
   // Only after an actual Present attempt, not CPU-frame abandonment or timeout.
   void presentation_attempted() noexcept;
   // Caller first proves completion/removal/never-submitted before native teardown.
   void reset() noexcept;
+  // Preserve the same outliving private native/test API across chain replacement.
+  Dx12FramePacingApi& api() const noexcept;
 
  private:
   Dx12FramePacingApi& api_;

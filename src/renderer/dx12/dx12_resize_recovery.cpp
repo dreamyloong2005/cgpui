@@ -13,7 +13,8 @@ Result<void> dx12_resize_recovering(Dx12State& state, Size size, DpiScale scale)
   auto resized = dx12_resize(state, size, scale);
   if (resized || *recovered) return resized;
   // Removal may have occurred inside ResizeBuffers. Reconstruct at most once
-  // in this call, then finish the requested resize; resize has no retry contract.
+  // in this call, then finish the requested resize. Pending returns before any
+  // requested extent is applied; the runtime retains/retries its latest extent.
   recovered = dx12_recover_removed_device(state);
   if (!recovered) return std::unexpected(recovered.error());
   if (!*recovered) return resized;

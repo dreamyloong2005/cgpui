@@ -12,12 +12,15 @@
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 #include "vulkan_glyph_atlas_uploads_internal.hpp"
 #include "vulkan_image_texture_resources_internal.hpp"
+#include "vulkan_image_retention_internal.hpp"
 #include "vulkan_image_texture_uploads_internal.hpp"
 #include "vulkan_image_vertex_buffer_internal.hpp"
 #include "vulkan_present_pacing_internal.hpp"
 #include "vulkan_rounded_rect_buffers_internal.hpp"
 #include "vulkan_swapchain_internal.hpp"
 #include "vulkan_text_vertex_buffer_internal.hpp"
+
+#include <optional>
 
 namespace cgpui {
 
@@ -29,6 +32,7 @@ class VulkanRendererState final {
       RenderSurfaceDescriptor descriptor);
 
   Result<void> resize(Size framebuffer_size, DpiScale scale);
+  [[nodiscard]] Result<void> require_live_device() const;
   // Device pixels per logical pixel for the current surface.
   [[nodiscard]] DpiScale scale() const;
   [[nodiscard]] RendererBackendInfo backend_info() const;
@@ -50,7 +54,7 @@ class VulkanRendererState final {
       std::span<const TextSelectionDraw> text_selections,
       std::span<const TextCaretDraw> text_carets,
       std::span<const ImageDraw> image_draws,
-      std::span<const ImageUploadBatch> image_uploads,
+      std::span<ImageUploadBatch> image_uploads,
       std::span<const ImageAssetId> image_invalidations,
       bool capture_requested);
 
@@ -61,13 +65,19 @@ class VulkanRendererState final {
   void destroy_sync_objects();
   void destroy_swapchain();
   void install_swapchain(VulkanSwapchainResources&& resources);
+  std::vector<VulkanFrameCommandReuseState> prepare_swapchain_install(
+      VulkanSwapchainResources& resources);
+  Result<void> create_device_resources();
+  void destroy_device_resources(bool wait_idle);
+  Result<void> recover_after_device_loss(VkResult failure, std::string message);
 
   Result<void> create_command_pool();
   Result<void> create_sync_objects();
   Result<void> create_render_finished_semaphores();
   void destroy_render_finished_semaphores();
   Result<void> wait_for_present_pacing();
-  Result<void> submit_frame(
+  Result<bool> complete_frame_acquisition(VkResult acquired);
+  VkResult submit_frame(
       VkCommandBuffer command_buffer,
       VkSemaphore render_finished);
   Result<VulkanFramePixelCaptureCommand> prepare_frame_pixel_capture(
@@ -89,7 +99,7 @@ class VulkanRendererState final {
       const;
   Result<void> prepare_image_texture_frame(
       std::span<const ImageDraw> image_draws,
-      std::span<const ImageUploadBatch> image_uploads,
+      std::span<ImageUploadBatch> image_uploads,
       std::span<const ImageAssetId> image_invalidations);
   void commit_image_texture_frame();
   void commit_glyph_atlas_frame();
@@ -110,7 +120,7 @@ class VulkanRendererState final {
   // Win32 composition surfaces (popup windows) present through
   // DirectComposition instead of a swapchain (vulkan_composition_*.cpp).
   [[nodiscard]] bool composition_surface() const;
-  Result<void> select_composition_device();
+  Result<void> select_composition_device(VkPhysicalDevice preferred);
   Result<VulkanSwapchainResources> create_composition_resources(
       bool* retired_old_swapchain);
   // The layout a frame leaves its image in: present source for swapchain
@@ -128,20 +138,25 @@ class VulkanRendererState final {
       VulkanSwapchainResources& resources);
 
   Result<void> create_instance();
+  Result<void> initialize_device_selection();
   Result<void> create_surface();
   Result<VulkanQueueFamilySearch> find_queue_families(
       VkPhysicalDevice device) const;
   Result<bool> has_device_extension(
       VkPhysicalDevice device,
       const char* extension_name) const;
-  Result<void> select_physical_device();
+  Result<void> select_physical_device(VkPhysicalDevice preferred = VK_NULL_HANDLE);
   Result<void> create_device();
 
   RenderSurfaceDescriptor descriptor_;
+  std::optional<std::uint32_t> requested_device_index_;
   VkInstance instance_ = VK_NULL_HANDLE;
   VkSurfaceKHR surface_ = VK_NULL_HANDLE;
   VkPhysicalDevice physical_device_ = VK_NULL_HANDLE;
   VkDevice device_ = VK_NULL_HANDLE;
+  std::uint64_t device_generation_ = 0;
+  bool device_recovery_terminal_ = false;
+  std::optional<Error> device_recovery_error_;
   std::uint32_t graphics_queue_family_ = 0;
   std::uint32_t present_queue_family_ = 0;
   VkQueue graphics_queue_ = VK_NULL_HANDLE;
@@ -176,6 +191,8 @@ class VulkanRendererState final {
   VulkanGlyphAtlasUploadResources glyph_atlas_uploads_;
   VulkanImageTextureResources image_texture_resources_;
   VulkanImageTextureUploadResources image_texture_uploads_;
+  std::vector<VulkanRetainedImage> retained_image_uploads_;
+  bool image_restore_pending_ = false;
   VulkanImageVertexBufferResources image_vertex_buffer_;
   std::vector<TexturedGlyphQuad> glyph_atlas_draw_quads_;
   std::vector<VulkanGlyphAtlasDrawBinding> glyph_atlas_draw_bindings_;

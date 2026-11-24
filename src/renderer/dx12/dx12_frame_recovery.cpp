@@ -25,7 +25,8 @@ Result<void> dx12_prepare_frame(Dx12State& state) {
 
 Result<void> dx12_handle_frame_failure(Dx12State& state, Error error) {
   if (!state.owner_alive) return dx12_fail_orphan_frame(state, std::move(error));
-  if (error.code == ErrorCode::frame_retry_required) return std::unexpected(std::move(error));
+  if (error.code == ErrorCode::frame_retry_required ||
+      error.code == ErrorCode::renderer_recovery_pending) return std::unexpected(std::move(error));
   state.failed = true;
   auto recovered = dx12_recover_removed_device(state);
   if (!recovered) return std::unexpected(recovered.error());

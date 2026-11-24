@@ -39,6 +39,7 @@ RendererSurfaceComposition VulkanRendererState::surface_composition() const {
 // descriptor if the new swapchain cannot be created.
 Result<RendererSurfaceComposition> VulkanRendererState::set_transparent_surface(
     bool transparent) {
+  if (auto live = require_live_device(); !live) return std::unexpected(live.error());
   if (descriptor_.transparent_background == transparent &&
       surface_composition_.supported) {
     return surface_composition_;

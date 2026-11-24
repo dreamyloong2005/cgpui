@@ -3,6 +3,14 @@
 Date: 2026-11-24. User goal: 做到DX12全部完成再停下.
 Status: ACTIVE; no claim of full parity, default readiness or release.
 
+## Current execution cadence
+
+The user now requests **implementation first, consolidated verification afterward**
+(`加速开发，全部实现后再验证`). See
+`.planning/2026-11-24-dx12-implementation-batch/task_plan.md` for current parallel
+implementation. Older entries below describe their historical acceptance only;
+they do not justify repeated full matrices during this unfinished batch.
+
 ## Authority and boundaries
 
 The original phased design remains available read-only at
@@ -15,35 +23,95 @@ Do not rewrite or build the separate design checkout or the user's Linux checkou
 Preserve modular development, private presentation policy, native menus and
 native-first Popup with failure-only Overlay. No app-selected window mode,
 backend blacklist, hidden menu replacement, or false successful present after
-loss. Default/auto stays Vulkan until full readiness gates actually pass.
-Explicit DX12 never silently falls back. Local commits only; no remote push.
+loss. Windows default/auto is now a local DX12-first validation candidate after
+focused readiness; complete activated-source acceptance is still required.
+Explicit DX12 never silently falls back. No remote push without human approval.
 
-## Completion worklist (must be audited against actual code)
+## Current completion checklist: implementation versus acceptance
 
-- [complete] Finish reusable texture staging pages, preserve geometry and
-  synchronous GPU lifetime semantics; quantify allocation and correctness.
-- [pending] Audit every public Renderer/RenderFrame operation against Vulkan and
-  original acceptance, separating implemented behavior from missing regression
-  coverage. Add common real-pixel parity tests, not renamed tests alone.
-- [pending] Complete shared CPU ownership and neutral public planner vocabulary
-  where still required; avoid speculative extraction of API-specific code.
-- [pending] Audit frame pacing/command reuse/descriptor allocation/dirty glyph
-  uploads and actual memory/work behavior. Implement missing specified work and
-  establish reproducible performance gates without claiming FPS from allocation
-  counts. Optional readback optimization is not a substitute for semantic parity.
-- [pending] Resolve required ordinary-window background transitions/chrome/menu
-  compatibility using new evidence, not rejected recipes repeated unchanged.
-  Maintain explicit unsupported errors until strict native desktop/interaction
-  tests pass. Do not waive this gate just because primitive captures pass.
-- [pending] Audit recovery contract end to end (runtime redraw after retry,
-  multiwindow/foreign-thread peers, retained resources, Vulkan parity).
-- [pending] Add reproducible WARP/debug/GPU-validation CI and full example/UI
-  acceptance; verify diagnostics, retained-image accounting and release packaging.
-- [pending] Only after preceding gates, implement and verify automatic creation
-  preference/fallback, repository+installed SDK behavior, docs and release build
-  acceptance. No runtime backend switching; no publication without authorization.
-- [pending] Final independent Standards/Spec review, Windows/WSL regression,
-  hardware+WARP/debug+ASan, installed/release SDK and source consistency checks.
+This source audit supersedes stale "candidate/unimplemented" descriptions in the
+historical progress entries below. An implementation check is not acceptance of
+the current combined source, a default switch, or a release claim.
+
+### Implemented
+
+- [x] Every public DX12 Renderer/RenderFrame operation has an implementation;
+  there is no remaining primitive stub. Final-upload-per-ID image batches,
+  valid-missing-image skipping, successful capture publication/history and
+  healthy acquired-frame lifetime are implemented. The thirteen shared native
+  pixel scenes select the requested backend; current regression is a separate gate.
+- [x] Required shared CPU geometry/planning and neutral public leaf ownership
+  are implemented. Historical `compat_*` forwarders intentionally preserve the
+  old entry points without duplicating algorithms; deleting them is not a goal.
+- [x] Geometry/texture staging pages, SRV descriptor pooling, conditional dirty
+  glyph transport, command recording reuse and opaque/composition frame admission
+  are implemented. The steady-state probe exists; allocation reductions are not
+  FPS, GPU-time or latency parity evidence.
+- [x] DX12 retained-image accounting and bounded owned DRED status exist.
+  Debug breadcrumbs now use guarded exact reads into bounded owned numeric
+  samples, explicitly best-effort/non-atomic; final runtime verification remains.
+- [x] Managed-owner token dispatch, bounded DX12 native retirement/reconstruction
+  and Runtime delayed recovery/latest-desired-resize handling are implemented.
+  Busy owners never authorize purge; unsupported endpoints and timeout remain
+  explicit failures. Vulkan device reconstruction parity is also required by the
+  original plan (4.7 / phase6 / decision3), and is now being implemented. The
+  earlier exclusion here was incorrect; this batch is not yet validated.
+- [x] Eligible fresh system-title-bar and menu-free client-title-bar ordinary windows have a private
+  composition-first opaque route and dynamic alpha replacement. Existing flip
+  history remains refused. Native Popup/initial-alpha sticky behavior remains.
+- [x] Manual hosted WARP/common CI source and desktop prerequisite/runner command
+  owners exist. Desktop scheduling deliberately remains blocked without externally
+  audited authorization; local workflow files are not deployed-CI evidence.
+
+### Remaining implementation and capability boundaries
+
+- [ ] Finish and validate Vulkan exact-device-loss reconstruction, retained
+  image/glyph restoration, stale-frame rejection and terminal failed-rebuild policy.
+- [ ] Validate strict DX12 high_performance/minimum_power adapter preferences
+  and the strict Vulkan index selector (original plan 4.1); explicit requests
+  never silently fall back or change their selected adapter during recovery.
+
+- [x] Extend the existing dynamic route to eligible client-title-bar ordinary
+  windows without HMENU. Promotion rechecks current menu/chrome eligibility;
+  four additional native regressions are authored and awaiting execution.
+- [ ] Resolve broader required window compatibility with an actual supported
+  mechanism, or retain an explicit documented capability boundary: client title
+  bar plus HMENU, hidden/undecorated ordinary alpha and pre-26100 Windows are not
+  made supported by primitive captures or removal of a guard. Dynamic return to
+  opaque currently retains the active alpha lease as a bounded safety constraint;
+  releasing it needs a compositor-completion/lifetime design, not merely a
+  successful asynchronous DComp Commit.
+- [x] Implement the original debug-breadcrumb requirement without unsafe direct
+  borrowed traversal: ReadProcessMemory, bounded exact reads, overflow/ring/
+  mutation checks and explicit partial outcomes. No diagnostic result controls
+  recovery. This does not promise an atomic/coherent device-wide snapshot or
+  full DRED; page-fault enrichment was not required by the original plan.
+- [x] Implement automatic DX12-first creation with typed capability failure plus
+  explicit checked same-HWND rollback before initialization-only Vulkan fallback.
+  Focused native 23, architecture 257 and neutral 16 passed before applying the
+  reviewed local default/doc/test activation. Repository default contracts are
+  migrated; installed-SDK verification is being updated. Full activated-source
+  acceptance is pending, not a release claim. Explicit requests never fall back;
+  runtime backend switching is out of scope.
+
+Readback/blur-target pooling and deeper frame overlap are optional optimizations,
+not new mandatory completion items. Keep the current synchronous lifetime
+contract honest rather than adding work solely to extend this checklist.
+
+### Acceptance and external prerequisites
+
+- [ ] Consolidated current-source behavior/structure review and Windows/WSL,
+  available hardware/WARP/debug/GPU-validation/ASan regression. Historical slice
+  counts do not certify the new combined source.
+- [ ] Real desktop window/menu/transition and example/UI acceptance, comparable
+  performance observations, Release build and installed SDK/source consistency.
+  Different backend-native work counts are not required to be numerically equal.
+- [ ] Actual hosted CI execution; desktop runner server-side authorization and
+  the subsequently reviewed scheduling change. Do not replace authorization with
+  repository booleans, labels or a local successful run.
+- [ ] Reconcile current documentation and readiness claims with the resulting
+  evidence; preserve unavailable old-Windows/physical-monitor/driver/macOS limits.
+  No remote push, publication or goal-complete claim follows from source completion.
 
 ## Evidence limits
 
@@ -216,3 +284,5 @@ redefined as complete solely to close the checklist.
   Next: independently reviewed private DRED scalar implementation plus actual-native
   controls revision1 (actual identity/request classification) and P0-preserving
   additive bridge. All remain external/unbuilt, and complete DRED is still OPEN.
+
+- Consolidated local acceptance progress (2026-11-25) is recorded in the implementation-batch task_plan.md: Windows1004, native240 and common107both on Intel/NVIDIA/WARP, ASan240+107both, full39Release/localSDK127objects and typed-WSL715 pass. Performance desktop precondition and external CI remain open; no overall completion/release claim. Evidence and failed attempts are retained.

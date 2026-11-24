@@ -28,9 +28,12 @@ int main() {
     require(capture.find("pixels.rgba8.resize") < capture.find("state.readback->Map") &&
         capture.find("state.readback->Unmap") < capture.find("return pixels;"),
         "allocate before Map and complete Unmap before returning the candidate");
-    require(has(read("src/renderer/dx12/dx12_state_internal.hpp"),
-        "Result<RendererFramePixels> dx12_read_capture(Dx12State& state);"),
-        "capture value boundary stays private");
+    require(has(read("src/renderer/dx12/dx12_capture_internal.hpp"),
+        "Result<RendererFramePixels> dx12_read_capture(Dx12State& state);") &&
+        has(read("src/renderer/dx12/dx12_state_operations_internal.hpp"),
+            "#include \"dx12_capture_internal.hpp\"") &&
+        !has(read("src/renderer/dx12/dx12_state_internal.hpp"), "dx12_read_capture("),
+        "private capture leaf owns the value boundary; state aggregates only include it");
     const auto submit = read("src/renderer/dx12/dx12_presentation.cpp");
     const auto publish = submit.find("if (candidate_pixels) state.pixels = std::move(candidate_pixels);");
     const auto completion = submit.find("diagnostics.complete_successful_frame();");
@@ -82,6 +85,7 @@ int main() {
         "dx12_capture_publication_structure_test|tests/architecture/dx12/dx12_capture_publication_structure_test.cpp"),
         "register both native and structure regressions");
     limit("src/renderer/dx12/dx12_capture.cpp", 60);
+    limit("src/renderer/dx12/dx12_capture_internal.hpp", 20);
     limit("src/renderer/dx12/dx12_presentation.cpp", 110);
     limit("src/renderer/dx12/dx12_renderer.cpp", 100);
     limit("tests/renderer-dx12/dx12_capture_publication_test.cpp", 140);

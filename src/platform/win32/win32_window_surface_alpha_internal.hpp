@@ -26,7 +26,9 @@ class Win32WindowSurfaceAlpha {
 
  private:
   [[nodiscard]] bool supported() const;
+  HRESULT reserve(UINT_PTR owner_cookie);
   HRESULT acquire(UINT_PTR owner_cookie);
+  HRESULT suspend();
   HRESULT release_owner();
   HWND hwnd_ = nullptr;
   UINT_PTR instance_ = 0;
@@ -35,11 +37,13 @@ class Win32WindowSurfaceAlpha {
   WindowTitleBarMode title_bar_ = WindowTitleBarMode::system;
   bool compatible_chrome_ = true;
   bool opaque_history_ = false;
+  bool reserved_ = false;
   bool active_ = false;
   bool operating_ = false;
   bool repairing_ = false;
 };
 
 [[nodiscard]] Win32WindowSurfaceAlpha* win32_window_surface_alpha(HWND hwnd);
+HRESULT win32_set_redirection_alpha(HWND hwnd, bool enabled);
 
 } // namespace cgpui

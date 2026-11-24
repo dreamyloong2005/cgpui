@@ -1,5 +1,6 @@
 #include "cgpui/renderer/renderer_backend.hpp"
 #include "../renderer_backend_selection_internal.hpp"
+#include "../dx12/dx12_initialization_attempt_internal.hpp"
 
 #include <cstdlib>
 #include <memory>
@@ -22,7 +23,7 @@ Result<std::unique_ptr<Renderer>> create_renderer(
   const std::unique_ptr<char, decltype(&std::free)> setting(value, &std::free);
   return detail::select_renderer_backend(
       descriptor, value ? std::string_view(value) : std::string_view{},
-      create_vulkan_renderer, create_dx12_renderer);
+      create_vulkan_renderer, create_dx12_renderer, dx12_attempt_renderer_initialization);
 }
 
 } // namespace cgpui

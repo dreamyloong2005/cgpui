@@ -41,7 +41,8 @@ void vulkan_record_frame_pixel_capture(
 Result<void> vulkan_complete_frame_pixel_capture(
     VkDevice device,
     VkFence fence,
-    VulkanFramePixelCaptureResources& resources);
+    VulkanFramePixelCaptureResources& resources,
+    VkResult* native_failure = nullptr);
 void vulkan_destroy_frame_pixel_capture(
     VkDevice device,
     VulkanFramePixelCaptureResources& resources);

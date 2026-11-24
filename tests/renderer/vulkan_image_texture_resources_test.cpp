@@ -157,13 +157,15 @@ int test_structure() {
       read_source("src/renderer/vulkan/vulkan_state_internal.hpp");
   const std::string state_source =
       read_source("src/renderer/vulkan/vulkan_state.cpp");
+  const std::string device_resources =
+      read_source("src/renderer/vulkan/vulkan_device_resources.cpp");
   const std::string lifetime =
       read_source("tests/renderer/vulkan_frame_lifetime_test.cpp");
   const std::string structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
   if (header.empty() || images.empty() || resources.empty() || frame.empty() ||
       renderer.empty() || presentation.empty() || state.empty() ||
-      state_source.empty() || lifetime.empty() || structure.empty()) {
+      state_source.empty() || device_resources.empty() || lifetime.empty() || structure.empty()) {
     return 30;
   }
   if (!contains(header, "struct VulkanImageTextureResource") ||
@@ -181,7 +183,9 @@ int test_structure() {
           presentation,
           "image_draws, image_uploads, image_invalidations") ||
       !contains(state, "VulkanImageTextureResources image_texture_resources_") ||
-      !contains(state_source, "vulkan_destroy_image_texture_resources(") ||
+      !contains(state_source, "destroy_device_resources(true)") ||
+      !contains(device_resources, "VulkanRendererState::destroy_device_resources(") ||
+      !contains(device_resources, "vulkan_destroy_image_texture_resources(") ||
       !contains(lifetime, "test_image_texture_resource_frame(") ||
       !contains(structure, "vulkan_image_texture_images.cpp") ||
       !contains(structure, "vulkan_image_texture_resources.cpp") ||

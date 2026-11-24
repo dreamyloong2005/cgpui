@@ -38,7 +38,7 @@ int main() {
     const auto swapchain = read("src/renderer/dx12/dx12_swapchain.cpp");
     const auto resize = read("src/renderer/dx12/dx12_swapchain_resize.cpp");
     const auto flags = read("src/renderer/dx12/dx12_swapchain_flags_internal.hpp");
-    require(has(swapchain, "state.frame_pacing->configure(state.swapchain.Get(), waitable)") &&
+    require(has(swapchain, "state.frame_pacing->configure(state.swapchain.Get(), waitable, failure)") &&
                 has(swapchain, "(descriptor.Flags & DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT) != 0") &&
                 !has(swapchain, "SetMaximumFrameLatency(") &&
                 !has(swapchain, "Result<void> dx12_resize(") && !has(resize, "frame_pacing") &&

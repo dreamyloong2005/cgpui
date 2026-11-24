@@ -9,6 +9,7 @@ void WindowRuntime::deactivate_native_additional_windows() {
     const RuntimeWindowCallbackScope shutdown_scope(*this);
     for (WindowRuntimeRecord& record : state_->windows.window_runtime_records_->records()) {
       if (record.runtime_id == state_->windows.root_window_runtime_id_) continue;
+      state_->windows.surface_resizes_.clear(record.runtime_id);
       state_->scheduling.frame_readiness_.clear(*this, record.runtime_id);
       Renderer* renderer = record.renderer;
       record.owns_renderer = false;

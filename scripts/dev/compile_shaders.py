@@ -5,7 +5,7 @@
   python scripts/dev/compile_shaders.py --check   exit 1 if an output differs
   --metal  only the Metal outputs (a Mac without the Vulkan SDK; spirv-val
            is not needed)
-  --dxil   only the experimental DX12 primitive outputs (requires slangc/dxc)
+  --dxil   only the DX12 primitive outputs (requires slangc/dxc)
 
 Vulkan: SPIR-V 1.3 (the renderer requests Vulkan 1.1), checked with
 spirv-val --target-env vulkan1.1, written as uint32 arrays to

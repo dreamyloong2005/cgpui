@@ -93,7 +93,7 @@ int main() {
               "Async executor",
               "Test support",
               "Examples",
-              "Windows: Win32 + Vulkan",
+              "Windows: Win32 + DX12",
               "Linux: Wayland + Vulkan",
               "macOS: Cocoa + Metal",
               "X11",

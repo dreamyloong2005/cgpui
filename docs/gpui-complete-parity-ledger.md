@@ -28,7 +28,9 @@ Required Surface Summary, it denotes an unresolved candidate gap; after Step
 
 ## Platform Targets
 
-- Windows: Win32 + Vulkan.
+- Windows: Win32 + DX12 for automatic selection, with Vulkan fallback only after
+  a classified initialization failure and proven same-window cleanup. Historical
+  phase results below remain Vulkan evidence, not new DX12 acceptance.
 - Linux: Wayland + Vulkan.
 - macOS: Cocoa + Metal on native arm64 only. The dual-architecture Phase J
   results below are historical xmake evidence, not the current release matrix.

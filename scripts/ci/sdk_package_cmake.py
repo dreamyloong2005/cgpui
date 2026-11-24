@@ -135,8 +135,8 @@ def readme(manifest: dict) -> str:
             lines += [
                 "Windows loads vulkan-1.dll only when the Vulkan backend is selected.",
                 "SDK consumers need no Vulkan import library, headers or delay-load flags.",
-                "Vulkan runtime selection still requires a working loader/driver;",
-                "DX12 selection does not load it and failures never select another backend.",
+                "Vulkan requires a runtime loader/driver; explicit or successful automatic DX12 does not load it.",
+                "Only automatic initialization can try Vulkan after classified DX12 unavailability and checked same-managed-window cleanup; explicit requests and runtime failures never switch backends.\nDX12 adapter diagnostics accept an index, high_performance, minimum_power or warp; nonempty settings forbid fallback and recovery stays on the recorded LUID.\nCGPUI_VULKAN_DEVICE accepts an exact initial device index when Vulkan is initialized; recovery pins that physical-device identity and does not reread the environment.",
             ]
     lines += [
         "",

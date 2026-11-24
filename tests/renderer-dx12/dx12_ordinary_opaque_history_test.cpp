@@ -1,11 +1,33 @@
 #include "../support/frame_wait_test_support.hpp"
 #include "dx12_ordinary_test_support.hpp"
 #include "dx12_ordinary_menu_pixels_support.hpp"
+#include <atomic>
+#include <thread>
 
 using namespace cgpui;
 using namespace cgpui_test;
 
 namespace {
+bool establish_actual_flip_history(const PlatformWindow& window) {
+  const auto geometry = window.state();
+  const RenderSurfaceDescriptor descriptor{.native_surface = window.native_surface(),
+      .framebuffer_size = geometry.framebuffer_size, .scale = geometry.scale};
+  std::atomic<bool> done{false};
+  bool passed = false;
+  std::thread worker([&] {
+    { // The foreign-thread factory deliberately retains the real HWND flip route.
+      auto renderer = create_dx12_renderer(descriptor);
+      if (renderer) {
+        auto frame = wait_for_test_frame(**renderer);
+        if (frame) { (*frame)->clear({0, 1, 1, 1}); passed = bool((*frame)->present()); }
+      }
+    }
+    done.store(true, std::memory_order_release);
+  });
+  while (!done.load(std::memory_order_acquire)) pump_messages_for(10);
+  worker.join();
+  return passed;
+}
 bool opaque_frame(Renderer& renderer, const PlatformWindow& window) {
   auto frame = cgpui_test::wait_for_test_frame(renderer);
   if (!frame) return false;
@@ -30,6 +52,7 @@ int main() {
   const HWND hwnd = ordinary_hwnd(**window);
   const HMENU menu = GetMenu(hwnd);
   const LONG_PTR extended = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+  if (!establish_actual_flip_history(**window)) return dx12_fail(12, "actual foreign-thread HWND flip control failed");
   auto renderer = ordinary_renderer(**window, false);
   if (!renderer || !ordinary_composition((*renderer)->surface_composition(), false) ||
       !opaque_frame(**renderer, **window))

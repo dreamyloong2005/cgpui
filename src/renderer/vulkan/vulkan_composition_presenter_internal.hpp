@@ -58,7 +58,7 @@ class VulkanCompositionPresenter {
   // Submits `frame` between the transfers from and to
   // VK_QUEUE_FAMILY_EXTERNAL, acquiring the keyed mutex with the render
   // key and releasing it with the present key; signals `fence`.
-  Result<void> submit(VkQueue queue, VkCommandBuffer frame, VkFence fence) const;
+  VkResult submit(VkQueue queue, VkCommandBuffer frame, VkFence fence) const;
   // The D3D11 side copies the submitted frame into the composition
   // swapchain and presents it.
   Result<void> present();

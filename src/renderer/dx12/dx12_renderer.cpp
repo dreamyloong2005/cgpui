@@ -3,10 +3,10 @@
 #include "dx12_frame_recovery_internal.hpp"
 #include "dx12_frame_admission_internal.hpp"
 #include "dx12_backdrop_blur_internal.hpp"
-#include "dx12_device_cohort_internal.hpp"
 #include "dx12_surface_internal.hpp"
 #include "dx12_window_alpha_internal.hpp"
 #include "dx12_renderer_creation_internal.hpp"
+#include "dx12_initialization_internal.hpp"
 #include "dx12_frame_pacing_native_internal.hpp"
 #include "cgpui/renderer/renderer_backend.hpp"
 
@@ -72,15 +72,12 @@ Result<std::unique_ptr<Renderer>> dx12_create_renderer(
     Dx12SynchronizationApi* synchronization_api) {
   auto state = std::make_shared<Dx12State>(&pacing_api, synchronization_api);
   Dx12OperationGuard operation(*state);
-  if (auto surface = dx12_configure_surface(*state, descriptor); !surface)
-    return std::unexpected(surface.error());
-  if (auto device = dx12_create_device(*state); !device) return std::unexpected(device.error());
-  state->backdrop_blur->support = dx12_backdrop_blur_support(*state->device.Get());
-  if (auto pipeline = dx12_create_pipeline(*state); !pipeline) return std::unexpected(pipeline.error());
-  if (auto history = dx12_mark_opaque_window(*state); !history) return std::unexpected(history.error());
-  if (auto surface = dx12_create_swapchain(*state); !surface) return std::unexpected(surface.error());
-  if (auto debug = dx12_check_debug_errors(*state); !debug) return std::unexpected(debug.error());
-  dx12_register_device_cohort(state);
+  if (auto initialized = dx12_initialize_renderer_state(state, descriptor); !initialized)
+    return std::unexpected(initialized.error());
+  return std::make_unique<Dx12Renderer>(std::move(state));
+}
+
+std::unique_ptr<Renderer> dx12_wrap_initialized_renderer(std::shared_ptr<Dx12State> state) {
   return std::make_unique<Dx12Renderer>(std::move(state));
 }
 } // namespace cgpui

@@ -21,6 +21,9 @@ enum class ErrorCode {
   // begin_frame acquired no frame and submitted no work: schedule a delayed
   // attempt rather than treating temporary presentation backpressure as fatal.
   frame_not_ready,
+  // Device recovery is waiting for other owners to retire their native state.
+  // No successful frame/resize is implied; retry later without a busy loop.
+  renderer_recovery_pending,
 };
 
 struct Error {

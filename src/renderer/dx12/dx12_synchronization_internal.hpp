@@ -4,6 +4,7 @@
 
 namespace cgpui {
 struct Dx12State;
+Result<void> dx12_wait_idle(Dx12State& state);
 struct Dx12SynchronizationWaitResult {
   DWORD status = WAIT_FAILED;
   DWORD error = ERROR_SUCCESS;

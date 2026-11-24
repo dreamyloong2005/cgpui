@@ -12,6 +12,10 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
   }
   const RuntimeWindowCallbackScope callback_scope(*this);
   record.redraw_scheduled = false;
+  if (auto resized = state_->windows.surface_resizes_.retry(record.runtime_id, *record.renderer); !resized)
+    return resized;
+  if (!record.active || !record.window || !record.renderer ||
+      state_->core.should_quit_ || state_->core.shutting_down_) return {};
 
   FrameStatistics frame_statistics;
   frame_statistics.render_pass_count = 1;
@@ -64,6 +68,10 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
   if (!record.active) return {};
 
   std::vector<WindowControlRegion> window_control_regions;
+  if (state_->core.should_quit_ || state_->core.shutting_down_) return {};
+  if (state_->windows.surface_resizes_.has_pending(record.runtime_id))
+    return std::unexpected(Error{ErrorCode::renderer_recovery_pending,
+        "a renderer resize became pending during view callbacks"});
   auto result = render_view(
       *record.renderer,
       view,
@@ -78,7 +86,8 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
     return std::unexpected(result.error());
   }
   if (!record.active) return {};
-  state_->scheduling.frame_readiness_.clear(*this, record.runtime_id);
+  if (!state_->windows.surface_resizes_.has_pending(record.runtime_id))
+    state_->scheduling.frame_readiness_.clear(*this, record.runtime_id);
   // Lifetime scope retains the record, not its renderer/window after reentrant close.
   if (!record.active || record.window == nullptr || record.renderer == nullptr ||
       state_->core.should_quit_ || state_->core.shutting_down_) return {};

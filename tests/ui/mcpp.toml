@@ -37,6 +37,10 @@ defines = [
 
 [test]
 discover = [
+    "runtime_surface_resizes_test.cpp",
+    "window_runtime_recovery_pending_frame_test.cpp",
+    "window_runtime_recovery_pending_resize_test.cpp",
+    "window_runtime_recovery_pending_lifetime_test.cpp",
     "window_runtime_frame_readiness_delay_test.cpp",
     "window_runtime_frame_readiness_cancellation_test.cpp",
     "window_runtime_frame_readiness_lifetime_test.cpp",

@@ -2,6 +2,7 @@
 #include "dx12_native_retirement_internal.hpp"
 #include "dx12_operation_internal.hpp"
 #include "dx12_state_internal.hpp"
+#include "dx12_recovery_ticket_internal.hpp"
 #include <mutex>
 
 namespace cgpui {
@@ -19,6 +20,7 @@ void dx12_retire_removed_cohort_peers(Dx12State& origin) {
     const HRESULT reason = peer->device->GetDeviceRemovedReason();
     if (SUCCEEDED(reason)) continue;
     peer->removal_reason = reason;
+    peer->recovery_ticket = dx12_recovery_tickets().ticket_for(peer->recovery_lease);
     peer->recovery_pending = true;
     peer->failed = true;
     dx12_release_native_objects(*peer);

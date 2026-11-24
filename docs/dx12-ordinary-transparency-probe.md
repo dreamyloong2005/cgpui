@@ -1,12 +1,16 @@
 # Ordinary DX12 transparency and native HMENU: probe evidence
 
 Date: 2026-11-23. This document preserves the **negative uncorrected probe** and
-its later successful alpha-repair follow-up. The bounded production slice now
+its later successful alpha-repair follow-up. At that milestone the bounded slice
 accepts initial transparent DX12 creation on a CGPUI-owned, decorated ordinary
 window with a visible system title bar, Windows build 26100+, and successful
 native alpha enablement. Raw HWNDs, other ordinary chrome and dynamic upgrades
-remain unsupported. Opaque ordinary windows and native alpha Popups retain their
-existing routes. DComp stays private; there is no public window-mode choice.
+were unsupported. The newer implementation adds eligible client-title-bar initial
+alpha and composition-first dynamic alpha, without converting old HWND-flip
+history. See [current backend status](dx12-backend.md) for supported combinations
+and the separate, still-pending combined-batch acceptance. This historical probe
+does not validate those additions. DComp stays private; there is no public
+window-mode choice.
 
 ## Question and experiment
 
@@ -130,7 +134,7 @@ Follow-up evidence lives in `D:/Dev/shots/cgpui-dx12-nc-alpha-20261123/`, includ
 `auto-attribute-active.log`, the `dx12_ordinary_*-first-run.log` files and
 `ordinary-backdrop-first-run.log`. See [current backend scope](dx12-backend.md).
 
-## Initial-only boundary and remaining gates
+## Historical initial-only boundary and remaining gates
 
 Do not ship one of these recipes by hiding HMENU, forcing framework menus,
 adding application-facing presentation modes, or silently changing backend.
@@ -142,13 +146,20 @@ migration, physical pointer interactions or arbitrary driver TDR.
 
 In a separate transition probe, a fresh ordinary DComp host worked, but an
 ordinary HWND previously presented through an opaque flip swapchain retained
-stale client content after its old GPU owners were retired. Therefore production
-opaque windows keep their original flip route and reject transparent intent;
-their HWND instance retains conservative flip history even after renderer
-destruction. A composition-from-first-frame experiment passed its own strict
-toggle control but is **not adopted as the opaque-window default**. A child host
-alone does not make the parent's opaque backing transparent. Safe dynamic
-upgrades and any change to all opaque-window semantics remain separate work.
+stale client content after its old GPU owners were retired. At that milestone,
+production opaque windows therefore kept their flip route and rejected transparent
+intent. A composition-from-first-frame experiment passed its own strict toggle
+control but had not yet been adopted. A child host alone did not make the parent's
+opaque backing transparent.
+
+The current implementation now gives eligible fresh managed ordinary windows a
+private composition-from-start **IGNORE** route with dynamic premultiplied-chain
+replacement. This newer implementation is not acceptance established by the old
+probe. Existing HWND-flip instances still retain conservative history and refuse
+the rejected upgrade, even after renderer destruction. See
+[current backend scope](dx12-backend.md) for present eligibility, constraints and
+validation status; do not read the historical initial-only result as the current
+policy for every opaque window.
 
 The backend-neutral runtime clear policy for alpha-capable ordinary windows is
 separate. Its recording-frame tests do not replace these native DX12 desktop

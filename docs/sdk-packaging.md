@@ -6,8 +6,8 @@ on Windows).
 
 | Package | Platform | Runtime / toolchain |
 |---|---|---|
-| `cgpui-sdk-windows-x64-debug` | Windows x64, Win32 + Vulkan | MSVC, `/MD` (no optimization, `/Z7`) |
-| `cgpui-sdk-windows-x64-release` | Windows x64, Win32 + Vulkan | MSVC, `/MD` |
+| `cgpui-sdk-windows-x64-debug` | Windows x64, Win32 + DX12 / Vulkan | MSVC, `/MD` (no optimization, `/Z7`) |
+| `cgpui-sdk-windows-x64-release` | Windows x64, Win32 + DX12 / Vulkan | MSVC, `/MD` |
 | `cgpui-sdk-linux-x86_64-debug` | Linux x86_64, Wayland (+ X11) + Vulkan | GCC, libstdc++ |
 | `cgpui-sdk-linux-x86_64-release` | Linux x86_64, Wayland (+ X11) + Vulkan | GCC, libstdc++ |
 
@@ -115,29 +115,35 @@ Shaders are written in Slang and compiled to SPIR-V at development time
 `cgpui_renderer_vulkan`, and the package has no shader files. The Vulkan
 renderer requires Vulkan 1.1 (SPIR-V 1.3).
 
-Windows packages also include the backend dispatcher and experimental DX12
-library, whose rectangle/text/image/shadow/backdrop DXIL is embedded (no runtime shader compiler). Vulkan
-remains the default; the [DX12 bootstrap](dx12-backend.md) is not feature-complete.
+Windows packages include the backend dispatcher and DX12 library, whose
+rectangle/text/image/shadow/backdrop DXIL is embedded (no runtime shader compiler).
+Automatic selection tries DX12 first; only a classified unavailable-backend
+initialization failure with checked same-window cleanup permits Vulkan fallback.
+Explicit selections never fall back and runtime failures never switch APIs. See
+[DX12 selection and scope](dx12-backend.md#selection-and-testing).
 `python -B tests/ci/dx12_package_graph_test.py` checks both the SDK graph and the
 base Windows package's copied libraries so neither can omit the factory owner.
 
 Newly built Windows SDKs do not statically import `vulkan-1.dll`. Only selecting
-Vulkan initializes its private runtime loader; explicit DX12 selection does not
-load Vulkan. Loading uses the safe default search (application directory,
-System32 and directories registered with `AddDllDirectory`), not the current
+Vulkan initializes its private runtime loader; explicit DX12 selection and
+successful automatic DX12 selection do not load Vulkan. Loading uses the safe
+default search (application directory, System32 and directories registered with
+`AddDllDirectory`), not the current
 directory or ambient `PATH`. All 88 required exports must bind before the typed
 table is published; existing optional version/device-extension queries remain
 optional under their previous checks. Missing/damaged DLLs and missing required
 exports return `renderer_initialization_failed`, with the DLL/Win32 error or
-missing symbol, without selecting another backend. Failed bindings are retryable;
-a successful binding retains the DLL for process lifetime.
+missing symbol. A failed explicit Vulkan selection never tries DX12; a failed
+automatic Vulkan fallback retains both initialization causes in the returned
+error and stops. Failed bindings are retryable; a successful binding retains the
+DLL for process lifetime.
 
 Building the repository or packaging these libraries still requires the Vulkan
 SDK headers on Windows. An installed consumer needs no Vulkan SDK, Vulkan import
 library or delay-load flags/hooks; a Vulkan runtime is needed only if Vulkan is
-selected (including the unchanged default/`auto` selection). Linux keeps its
-direct system Vulkan linkage. This describes the current packaging code, not a
-claim that a new clean committed SDK release has been published.
+explicitly selected or reached through the checked automatic fallback. Linux
+keeps its direct system Vulkan linkage. This describes the current packaging
+code, not a claim that a new clean committed SDK release has been published.
 
 ## manifest.json
 

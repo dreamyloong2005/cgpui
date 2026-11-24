@@ -1,0 +1,54 @@
+name: DX12 WARP common experiment
+
+# Opt-in only. A hosted pass does not certify the native desktop suite.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  common:
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - name: Initialize evidence and require a trusted default-branch dispatch
+        shell: pwsh
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          $output = Join-Path $env:RUNNER_TEMP "cgpui-warp-common-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          New-Item -ItemType Directory -Path $output -ErrorAction Stop | Out-Null
+          "DX12_OUTPUT=$output" >> $env:GITHUB_ENV
+          @{ status='pending setup and native execution'; ref=$env:GITHUB_REF; sha=$env:GITHUB_SHA; attempt=$env:GITHUB_RUN_ATTEMPT } |
+            ConvertTo-Json | Set-Content -LiteralPath (Join-Path $output 'status.json') -Encoding utf8
+          if ($env:GITHUB_EVENT_NAME -ne 'workflow_dispatch' -or -not $env:DEFAULT_BRANCH -or
+              $env:GITHUB_REF -ne "refs/heads/$env:DEFAULT_BRANCH") {
+            throw 'This opt-in experiment only executes the trusted default branch; arbitrary refs are not accepted'
+          }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate checker fixtures (not GPU acceptance)
+        shell: bash
+        run: bash scripts/ci/run-with-github-annotation.sh "$DX12_OUTPUT/checker-fixtures.log" -- python -B -m unittest discover -s scripts/ci/dx12_fixtures -p 'windows_dx12_*test.py' -v
+      - uses: ./.github/actions/setup-phase-g-dependencies
+        with:
+          platform: windows
+      - name: Require pre-provisioned Graphics Tools and record host facts
+        shell: bash
+        run: bash scripts/ci/run-with-github-annotation.sh "$DX12_OUTPUT/prerequisites-driver.log" -- pwsh -NoProfile -File scripts/ci/windows-dx12-prerequisites.ps1 -Lane hosted-common -OutputRoot "$DX12_OUTPUT"
+      - name: Run exact WARP debug and GPU-validation identity plus shared scenes
+        shell: bash
+        run: bash scripts/ci/run-with-github-annotation.sh "$DX12_OUTPUT/lane-driver.log" -- python -B scripts/ci/windows-dx12-run.py --lane hosted-common --output "$DX12_OUTPUT"
+      - name: Preserve first-failure and complete available evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dx12-warp-common-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.DX12_OUTPUT }}
+          if-no-files-found: error

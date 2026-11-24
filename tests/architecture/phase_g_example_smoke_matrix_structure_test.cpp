@@ -90,6 +90,12 @@ int main() {
       !contains(workflow, "weston") ||
       !contains(workflow, "mesa-vulkan-drivers")) return 5;
 
+  const auto windows_job = workflow.find("  windows-examples-smoke:");
+  const auto linux_job = workflow.find("  linux-examples-smoke:", windows_job);
+  if (linux_job == std::string::npos ||
+      !contains(workflow.substr(windows_job, linux_job - windows_job), "CGPUI_RENDERER: vulkan") ||
+      contains(windows, "$env:CGPUI_RENDERER =")) return 10;
+
   if (!contains(manifests,
                 "\"phase_g_example_smoke_matrix_structure_test.cpp\"")) {
     return 6;

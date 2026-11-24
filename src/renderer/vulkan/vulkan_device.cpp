@@ -41,13 +41,14 @@ Result<void> VulkanRendererState::create_device() {
       .ppEnabledExtensionNames = device_extensions.data(),
   };
 
+  VkDevice created = VK_NULL_HANDLE;
   if (auto result = require_vk_success(
-          vkCreateDevice(physical_device_, &create_info, nullptr, &device_),
+          vkCreateDevice(physical_device_, &create_info, nullptr, &created),
           "vkCreateDevice failed");
       !result) {
     return result;
   }
-
+  device_ = created;
   vkGetDeviceQueue(device_, graphics_queue_family_, 0, &graphics_queue_);
   vkGetDeviceQueue(device_, present_queue_family_, 0, &present_queue_);
   return {};

@@ -24,7 +24,9 @@ RendererFramePixelEncoding pixel_encoding(VkFormat format) {
 Result<void> vulkan_complete_frame_pixel_capture(
     VkDevice device,
     VkFence fence,
-    VulkanFramePixelCaptureResources& resources) {
+    VulkanFramePixelCaptureResources& resources,
+    VkResult* native_failure) {
+  if (native_failure) *native_failure = VK_SUCCESS;
   if (device == VK_NULL_HANDLE || fence == VK_NULL_HANDLE ||
       !resources.allocated() || resources.extent.width == 0 ||
       resources.extent.height == 0) {
@@ -32,9 +34,10 @@ Result<void> vulkan_complete_frame_pixel_capture(
         ErrorCode::invalid_argument,
         "Vulkan frame pixel capture completion is invalid"));
   }
-  if (auto result = require_vk_success(
-          vkWaitForFences(
-              device, 1, &fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max()),
+  const VkResult waited = vkWaitForFences(
+      device, 1, &fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
+  if (native_failure) *native_failure = waited;
+  if (auto result = require_vk_success(waited,
           "vkWaitForFences for frame pixel capture failed");
       !result) {
     return result;
@@ -42,19 +45,20 @@ Result<void> vulkan_complete_frame_pixel_capture(
   const std::size_t byte_size =
       static_cast<std::size_t>(resources.extent.width) *
       resources.extent.height * 4;
-  void* mapped = nullptr;
-  if (auto result = require_vk_success(
-          vkMapMemory(device, resources.memory, 0, byte_size, 0, &mapped),
-          "vkMapMemory for frame pixel capture failed");
-      !result) {
-    return result;
-  }
   RendererFramePixels pixels{
       .width = resources.extent.width,
       .height = resources.extent.height,
       .encoding = pixel_encoding(resources.format),
       .rgba8 = std::vector<std::uint8_t>(byte_size),
   };
+  void* mapped = nullptr;
+  const VkResult mapped_result = vkMapMemory(device, resources.memory, 0, byte_size, 0, &mapped);
+  if (native_failure) *native_failure = mapped_result;
+  if (auto result = require_vk_success(mapped_result,
+          "vkMapMemory for frame pixel capture failed");
+      !result) {
+    return result;
+  }
   std::memcpy(pixels.rgba8.data(), mapped, byte_size);
   vkUnmapMemory(device, resources.memory);
   if (bgra_format(resources.format)) {

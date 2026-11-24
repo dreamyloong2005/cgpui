@@ -10,7 +10,7 @@ After editing one, run
 python scripts/dev/compile_shaders.py           # writes the outputs below
 python scripts/dev/compile_shaders.py --check   # exit 1 if one is stale
 python scripts/dev/compile_shaders.py --metal   # Metal outputs only (no spirv-val)
-python scripts/dev/compile_shaders.py --dxil    # Experimental DX12 primitive outputs
+python scripts/dev/compile_shaders.py --dxil    # DX12 primitive outputs
 ```
 
 with `slangc` and `spirv-val` from the Vulkan SDK (`VULKAN_SDK`, or `SLANGC` /

@@ -135,7 +135,10 @@ void vulkan_destroy_frame_pixel_capture(
       vkFreeMemory(device, resources.memory, nullptr);
     }
   }
+  // Native buffers are replaceable; successful CPU readback history is not.
+  auto pixels = std::move(resources.pixels);
   resources = {};
+  resources.pixels = std::move(pixels);
 }
 
 } // namespace cgpui

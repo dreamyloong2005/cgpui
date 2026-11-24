@@ -34,7 +34,7 @@ int main() {
   if (cgpui::renderer_backend_target_name(cgpui::RendererBackendTarget::dx12) !=
       std::string_view{"DirectX 12"}) return 24;
   if (cgpui::default_renderer_backend_for(cgpui::DesktopPlatformTarget::windows) !=
-      cgpui::RendererBackendTarget::vulkan) {
+      cgpui::RendererBackendTarget::dx12) {
     return 1;
   }
   if (cgpui::default_renderer_backend_for(cgpui::DesktopPlatformTarget::linux_wayland) !=
@@ -142,7 +142,7 @@ int main() {
   if (audit_text.empty()) {
     return 17;
   }
-  if (!contains(audit_text, "Windows: Win32 + Vulkan") ||
+  if (!contains(audit_text, "Windows: Win32 + DX12") ||
       !contains(audit_text, "Linux: Wayland + Vulkan") ||
       !contains(audit_text, "macOS: Cocoa + Metal")) {
     return 18;

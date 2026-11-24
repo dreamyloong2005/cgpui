@@ -1,3 +1,4 @@
+#include "dx12_swapchain_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_command_observation_internal.hpp"
 #include "dx12_frame_command_reuse_internal.hpp"

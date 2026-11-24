@@ -2,12 +2,11 @@
 
 namespace cgpui {
 
-Result<void> VulkanRendererState::submit_frame(
+VkResult VulkanRendererState::submit_frame(
     VkCommandBuffer command_buffer,
     VkSemaphore render_finished) {
-  if (auto result = require_vk_success(
-          vkResetFences(device_, 1, &in_flight_), "vkResetFences failed");
-      !result) {
+  if (const VkResult result = vkResetFences(device_, 1, &in_flight_);
+      result != VK_SUCCESS) {
     return result;
   }
   // Composition surfaces order the image with D3D11 by its keyed mutex.
@@ -26,9 +25,7 @@ Result<void> VulkanRendererState::submit_frame(
       .signalSemaphoreCount = 1,
       .pSignalSemaphores = &render_finished,
   };
-  return require_vk_success(
-      vkQueueSubmit(graphics_queue_, 1, &submit_info, in_flight_),
-      "vkQueueSubmit failed");
+  return vkQueueSubmit(graphics_queue_, 1, &submit_info, in_flight_);
 }
 
 } // namespace cgpui

@@ -53,9 +53,12 @@ void WindowRuntime::handle_native_additional_window_event(
     record->scale = resized->scale;
     record->descriptor.size = to_logical_pixels(resized->size, resized->scale);
     const Result<void> resize_result =
-        record->renderer->resize(resized->size, resized->scale);
+        state_->windows.surface_resizes_.request(record->runtime_id,
+            *record->renderer, resized->size, resized->scale);
     record_platform_diagnostic(
         window_scale_diagnostic(*resized, resize_result.has_value()));
+    if (!resize_result && !state_->scheduling.frame_readiness_.handle(
+            *this, runtime_id, resize_result.error())) fail_and_quit(resize_result.error());
     return;
   }
   if (std::holds_alternative<WindowRedrawRequested>(event)) {

@@ -11,9 +11,9 @@ namespace {
 class VulkanFrame final : public RenderFrame {
  public:
   explicit VulkanFrame(std::shared_ptr<VulkanRendererState> state)
-      : state_(std::move(state)) {}
+      : state_(std::move(state)), generation_(state_->backend_info().device_generation) {}
 
-  void clear(Color color) override { clear_color_ = color; }
+  void clear(Color color) override { if (!finished_) clear_color_ = color; }
   void draw_rect(const SolidRect& rect) override {
     append_draw(rects_, rect, RendererPrimitiveKind::solid_rect);
   }
@@ -54,6 +54,7 @@ class VulkanFrame final : public RenderFrame {
       std::vector<Draw>& draws,
       const Draw& draw,
       RendererPrimitiveKind primitive_kind) {
+    if (finished_) return;
     draw_order_.push_back(VulkanFrameDrawOrderEntry{
         .primitive_kind = primitive_kind,
         .command_index = draws.size(),
@@ -63,6 +64,7 @@ class VulkanFrame final : public RenderFrame {
   }
 
   std::shared_ptr<VulkanRendererState> state_;
+  std::uint64_t generation_ = 0;
   Color clear_color_{.r = 0.08F, .g = 0.09F, .b = 0.10F, .a = 1.0F};
   std::vector<SolidRect> rects_;
   std::vector<RoundedRectDraw> rounded_rects_;
@@ -76,6 +78,7 @@ class VulkanFrame final : public RenderFrame {
   std::vector<ImageAssetId> image_invalidations_;
   std::vector<VulkanFrameDrawOrderEntry> draw_order_;
   bool capture_requested_ = false;
+  bool finished_ = false;
 };
 
 class VulkanRenderer final : public Renderer {
@@ -88,6 +91,8 @@ class VulkanRenderer final : public Renderer {
   }
 
   Result<std::unique_ptr<RenderFrame>> begin_frame() override {
+    if (auto result = state_->require_live_device(); !result)
+      return std::unexpected(result.error());
     return std::make_unique<VulkanFrame>(state_);
   }
 
@@ -131,6 +136,7 @@ VulkanRendererState::last_frame_diagnostic_snapshot() const {
 }
 
 void VulkanFrame::upload_image(const ImageAsset& image) {
+  if (finished_) return;
   const std::span<const ImageAsset> assets(&image, 1);
   std::vector<ImageUploadBatch> batches = plan_image_uploads(assets);
   if (batches.empty()) {
@@ -149,6 +155,7 @@ void VulkanFrame::upload_image(const ImageAsset& image) {
 }
 
 void VulkanFrame::invalidate_image(ImageAssetId asset_id) {
+  if (finished_) return;
   if (asset_id.value == 0 ||
       std::ranges::find(image_invalidations_, asset_id) !=
           image_invalidations_.end()) {
@@ -158,6 +165,8 @@ void VulkanFrame::invalidate_image(ImageAssetId asset_id) {
 }
 
 Result<void> VulkanFrame::request_pixel_capture() {
+  if (finished_) return std::unexpected(vulkan_error(ErrorCode::invalid_argument,
+      "Vulkan frame has already finished"));
   if (auto result = state_->request_pixel_capture(); !result) {
     return result;
   }
@@ -166,6 +175,13 @@ Result<void> VulkanFrame::request_pixel_capture() {
 }
 
 Result<void> VulkanFrame::present() {
+  if (auto result = state_->require_live_device(); !result) return result;
+  if (generation_ != state_->backend_info().device_generation)
+    return std::unexpected(vulkan_error(ErrorCode::frame_retry_required,
+        "Vulkan frame belongs to a retired device; acquire a new frame"));
+  if (finished_) return std::unexpected(vulkan_error(ErrorCode::invalid_argument,
+      "Vulkan frame has already finished"));
+  finished_ = true; // Prepare transfers accepted image bytes into the recovery cache.
   return state_->present_frame(
       clear_color_,
       draw_order_,

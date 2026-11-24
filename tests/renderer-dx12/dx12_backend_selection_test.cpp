@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <string>
+#include <string_view>
 
 using namespace cgpui;
 using namespace cgpui_test;
@@ -35,30 +36,39 @@ int main() {
   if (renderer) return dx12_fail(3, "explicit DX12 failure fell back");
   preference.set("auto");
   renderer = create_renderer(window.descriptor());
-  if (!renderer) return dx12_fail(4, renderer.error().message.c_str());
+  if (renderer || renderer.error().code != ErrorCode::invalid_argument ||
+      renderer.error().message.find("CGPUI_DX12_ADAPTER") == std::string::npos)
+    return dx12_fail(4, "automatic selection bypassed an invalid DX12 adapter request");
+  preference.set("vulkan");
+  renderer = create_renderer(window.descriptor());
+  if (!renderer) return dx12_fail(5, renderer.error().message.c_str());
   auto info = (*renderer)->backend_info();
   if (info.backend != RendererBackend::vulkan ||
-      info.selection != RendererBackendSelection::automatic ||
+      info.selection != RendererBackendSelection::vulkan || !info.fallback_reason.empty() ||
       info.adapter_name.empty() || info.device_generation == 0) {
-    return dx12_fail(5, "auto no longer reports real Vulkan backend");
+    return dx12_fail(6, "explicit Vulkan was affected by the invalid DX12 adapter request");
   }
   renderer->reset();
   adapter.set("warp");
-  preference.set("dx12");
-  renderer = create_renderer(window.descriptor());
-  if (!renderer) return dx12_fail(6, renderer.error().message.c_str());
-  info = (*renderer)->backend_info();
-  if (info.backend != RendererBackend::dx12 ||
-      info.selection != RendererBackendSelection::dx12 || !info.software_adapter ||
-      info.adapter_name.empty() || !info.adapter_luid || info.device_generation == 0) {
-    return dx12_fail(7, "explicit WARP backend metadata differs");
-  }
-  auto frame = cgpui_test::wait_for_test_frame(**renderer);
-  if (!frame) return dx12_fail(8, frame.error().message.c_str());
-  (*frame)->clear({1, 0, 0, 1});
-  if (!(*frame)->request_pixel_capture() || !(*frame)->present() ||
-      !dx12_pixel((*renderer)->last_frame_pixels(), 5, 5, {255, 0, 0, 255})) {
-    return dx12_fail(9, "dispatcher did not forward actual capture");
+  for (const char* choice : {"dx12", "auto", ""}) {
+    Dx12Window fresh;
+    if (!fresh.hwnd) return dx12_fail(7, "fresh selection HWND unavailable");
+    preference.set(choice);
+    auto selected = create_renderer(fresh.descriptor());
+    if (!selected) return dx12_fail(8, selected.error().message.c_str());
+    info = (*selected)->backend_info();
+    const auto selection = std::string_view(choice) == "dx12"
+        ? RendererBackendSelection::dx12 : RendererBackendSelection::automatic;
+    if (info.backend != RendererBackend::dx12 || info.selection != selection ||
+        !info.software_adapter || info.adapter_name.empty() || !info.adapter_luid ||
+        !info.device_generation || !info.fallback_reason.empty())
+      return dx12_fail(9, "explicit or healthy automatic WARP backend metadata differs");
+    auto frame = cgpui_test::wait_for_test_frame(**selected);
+    if (!frame) return dx12_fail(10, frame.error().message.c_str());
+    (*frame)->clear({1, 0, 0, 1});
+    if (!(*frame)->request_pixel_capture() || !(*frame)->present() ||
+        !dx12_pixel((*selected)->last_frame_pixels(), 5, 5, {255, 0, 0, 255}))
+      return dx12_fail(11, "dispatcher did not forward actual capture");
   }
   return 0;
 }

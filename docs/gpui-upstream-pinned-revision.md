@@ -47,7 +47,9 @@ Phase A treats these upstream files as the initial parity source set:
 
 ## Platform Interpretation
 
-- Windows parity target: Win32 + Vulkan in CGPUI.
+- Windows parity target: Win32 + DX12 or Vulkan in CGPUI. Current automatic
+  selection prefers DX12 with checked initialization-only Vulkan fallback; the
+  pinned revision and historical Vulkan phase evidence are unchanged.
 - Linux parity target: Wayland + Vulkan in CGPUI.
 - macOS parity target: Cocoa + Metal after Windows/Linux core stabilization.
 - X11 + Vulkan strict Linux parity was activated and completed in Phase I.

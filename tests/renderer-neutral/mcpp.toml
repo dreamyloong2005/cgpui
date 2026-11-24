@@ -26,5 +26,6 @@ discover = [
     "rect_geometry_test.cpp",
     "rect_planning_ownership_test.cpp",
     "backend_selection_test.cpp",
+    "backend_automatic_selection_test.cpp",
     "backend_info_test.cpp",
 ]

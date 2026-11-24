@@ -49,7 +49,7 @@ int main() {
                 has(read("src/renderer/dx12/dx12_recovery.cpp"), "state.operation_depth > 1"),
             "retirement and nested origin recovery must respect active outer operations");
     const auto renderer = read("src/renderer/dx12/dx12_renderer.cpp");
-    require(has(renderer, "dx12_register_device_cohort(state)") &&
+    require(has(read("src/renderer/dx12/dx12_initialization.cpp"), "dx12_register_device_cohort(state)") &&
                 has(renderer, "!state_->recovery_pending && state_->pixels"),
             "successful renderers register privately and pending peers hide stale captures");
     const auto purge = read("src/renderer/dx12/dx12_native_retirement.cpp");

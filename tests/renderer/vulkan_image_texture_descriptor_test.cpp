@@ -122,11 +122,13 @@ int test_structure() {
       read_source("src/renderer/vulkan/vulkan_image_texture_images.cpp");
   const std::string state_source =
       read_source("src/renderer/vulkan/vulkan_state.cpp");
+  const std::string device_resources =
+      read_source("src/renderer/vulkan/vulkan_device_resources.cpp");
   const std::string structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
   if (public_header.empty() || commands.empty() || private_header.empty() ||
       samplers.empty() || descriptors.empty() || resource_binding.empty() ||
-      images.empty() || state_source.empty() || structure.empty()) {
+      images.empty() || state_source.empty() || device_resources.empty() || structure.empty()) {
     return 40;
   }
   if (!contains(public_header, "enum class ImageSamplingMode") ||
@@ -141,7 +143,9 @@ int test_structure() {
       !contains(resource_binding,
                 "vulkan_bind_image_texture_resource_descriptors(") ||
       !contains(images, "vkFreeDescriptorSets") ||
-      !contains(state_source,
+      !contains(state_source, "create_device_resources()") ||
+      !contains(device_resources, "VulkanRendererState::create_device_resources()") ||
+      !contains(device_resources,
                 "vulkan_create_image_texture_descriptor_resources(") ||
       !contains(structure, "vulkan_image_texture_descriptors.cpp")) {
     return 41;

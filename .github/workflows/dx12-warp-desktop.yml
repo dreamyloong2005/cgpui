@@ -1,0 +1,39 @@
+name: DX12 desktop authorization prerequisite
+
+# Deliberately NO self-hosted job. The actual server-side workflow/ref authority
+# has not been configured/audited. Variables, labels and mutable YAML checks are
+# not proof of that authority; see docs/dx12-warp-ci.md before adding a runner.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  authorization_prerequisite:
+    runs-on: windows-2025
+    timeout-minutes: 5
+    steps:
+      - name: Record pending external authorization and fail closed
+        shell: pwsh
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          $output = Join-Path $env:RUNNER_TEMP "cgpui-warp-desktop-dispatch-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          New-Item -ItemType Directory -Path $output -ErrorAction Stop | Out-Null
+          "DX12_DISPATCH_OUTPUT=$output" >> $env:GITHUB_ENV
+          @{ status='blocked: server-side runner authorization is not verified; no native execution';
+             authorized=$false; native_execution=$false; ref=$env:GITHUB_REF; sha=$env:GITHUB_SHA } |
+            ConvertTo-Json | Set-Content -LiteralPath (Join-Path $output 'authorization.json') -Encoding utf8
+          if ($env:GITHUB_EVENT_NAME -ne 'workflow_dispatch' -or -not $env:DEFAULT_BRANCH -or
+              $env:GITHUB_REF -ne "refs/heads/$env:DEFAULT_BRANCH") {
+            throw 'Only a trusted default-branch manual dispatch is supported'
+          }
+          throw 'Desktop CI is unprovisioned: configure and independently audit server-side selected-workflow/ref runner authorization first. No self-hosted job is defined.'
+      - name: Preserve the blocked authorization result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dx12-warp-desktop-authorization-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.DX12_DISPATCH_OUTPUT }}
+          if-no-files-found: error

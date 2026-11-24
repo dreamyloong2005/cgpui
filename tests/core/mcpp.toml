@@ -19,4 +19,7 @@ sources = []
 [test]
 discover = [
     "entity_store_test.cpp",
+    "native_window_work_test.cpp",
+    "native_window_work_reentry_test.cpp",
+    "native_window_work_thread_test.cpp",
 ]

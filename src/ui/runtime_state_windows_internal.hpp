@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgpui/ui/window_runtime.hpp"
+#include "runtime_surface_resizes_internal.hpp"
 
 namespace cgpui {
 
@@ -17,6 +18,7 @@ struct WindowRuntime::RuntimeWindowState {
   WindowRuntimeId keyboard_popup_{};
   std::uint64_t next_window_runtime_id_ = 2;
   std::unique_ptr<RuntimeWindowStore> window_runtime_records_;
+  RuntimeSurfaceResizes surface_resizes_;
   #include "runtime_window_ownership_state_internal.hpp"
 };
 

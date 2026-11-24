@@ -19,6 +19,10 @@ struct State {
   bool destroyed = false;
   std::deque<std::optional<cgpui::ErrorCode>> outcomes;
   std::optional<cgpui::ErrorCode> present_error;
+  std::deque<std::optional<cgpui::ErrorCode>> resize_outcomes;
+  cgpui::Size last_resize_size{};
+  cgpui::DpiScale last_resize_scale{};
+  std::function<void()> on_present;
 };
 
 // Only transport/time are adapted. Window events are dispatched by the existing

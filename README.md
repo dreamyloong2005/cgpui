@@ -7,14 +7,17 @@ without a Rust FFI layer.
 
 ## Supported Desktop Targets
 
-- Windows: Win32 + Vulkan
+- Windows: Win32 + DX12, with checked initialization-only Vulkan fallback
 - Linux: Wayland + Vulkan
 - Linux: X11/XCB + Vulkan
 - macOS: Cocoa + Metal on Apple Silicon (arm64) only
 
-Windows also has an opt-in [experimental DX12 bootstrap](docs/dx12-backend.md)
-for opaque-window rectangles, text, images, shadows and backdrop blur. It is not feature-complete; Vulkan stays
-the default.
+Windows automatic selection tries [DX12](docs/dx12-backend.md) first. Only a
+classified unavailable-backend initialization failure with proven same-window
+cleanup permits Vulkan fallback. Explicit backend selection never falls back,
+and runtime failures never switch APIs. Ordinary-window transparency remains
+[capability-bounded](docs/dx12-backend.md#bounded-ordinary-window-transparency);
+this local default change is not a published SDK or all-driver certification.
 
 The [macOS SDK](docs/macos-sdk.md) targets arm64; no Intel (x86_64) or
 Universal SDK is provided. The minimum macOS is 26.0 and CI runs on

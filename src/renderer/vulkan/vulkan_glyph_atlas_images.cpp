@@ -1,30 +1,9 @@
 #include "vulkan_glyph_atlas_resources_internal.hpp"
 
 #include "vulkan_device_internal.hpp"
-
-#include <cmath>
-#include <limits>
+#include "vulkan_glyph_atlas_validation_internal.hpp"
 
 namespace cgpui {
-namespace {
-
-Result<VkExtent2D> glyph_atlas_extent(Size size) {
-  constexpr float max_dimension =
-      static_cast<float>(std::numeric_limits<std::uint32_t>::max());
-  if (!std::isfinite(size.width) || !std::isfinite(size.height) ||
-      size.width <= 0.0F || size.height <= 0.0F ||
-      size.width > max_dimension || size.height > max_dimension) {
-    return std::unexpected(vulkan_error(
-        ErrorCode::renderer_initialization_failed,
-        "invalid Vulkan glyph atlas image extent"));
-  }
-  return VkExtent2D{
-      .width = static_cast<std::uint32_t>(std::ceil(size.width)),
-      .height = static_cast<std::uint32_t>(std::ceil(size.height)),
-  };
-}
-
-} // namespace
 
 Result<VkSampler> vulkan_create_glyph_atlas_sampler(VkDevice device) {
   VkSampler sampler = VK_NULL_HANDLE;
@@ -54,7 +33,13 @@ Result<VulkanGlyphAtlasPageResource> vulkan_create_glyph_atlas_page_resource(
     VkDescriptorPool descriptor_pool,
     VkSampler sampler,
     const GlyphAtlasProductionResourceRecord& record) {
-  auto extent = glyph_atlas_extent(record.image.size);
+  if (physical_device == VK_NULL_HANDLE || device == VK_NULL_HANDLE) {
+    return std::unexpected(vulkan_error(ErrorCode::renderer_initialization_failed,
+        "glyph atlas creation requires a current physical/logical device"));
+  }
+  VkPhysicalDeviceProperties properties{};
+  vkGetPhysicalDeviceProperties(physical_device, &properties);
+  auto extent = vulkan_glyph_atlas_extent(record.image.size, properties.limits.maxImageDimension2D);
   if (!extent) {
     return std::unexpected(extent.error());
   }

@@ -37,7 +37,7 @@ int main() {
       !contains(docs[0], "CGPUI_LINUX_BACKEND") ||
       !contains(docs[1], "## Static Fast Path") ||
       !contains(docs[1], "## Dynamic Escape Hatch") ||
-      !contains(docs[2], "Win32 + Vulkan") ||
+      !contains(docs[2], "Win32 + DX12") ||
       !contains(docs[2], "Wayland + Vulkan") ||
       !contains(docs[2], "X11/XCB + Vulkan")) return 3;
   if (!contains(docs[3], "gpui-official-example-matrix.json") ||

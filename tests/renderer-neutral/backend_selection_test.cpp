@@ -2,6 +2,7 @@
 
 #include <array>
 #include <string_view>
+#include <utility>
 
 namespace {
 int vulkan_calls = 0;
@@ -42,9 +43,16 @@ cgpui::Result<std::unique_ptr<cgpui::Renderer>> dx12_factory(
   return std::make_unique<FakeRenderer>(cgpui::RendererBackend::dx12);
 }
 
+cgpui::detail::RendererInitializationAttempt automatic_attempt(
+    const cgpui::RenderSurfaceDescriptor& descriptor) {
+  auto result = dx12_factory(descriptor);
+  if (!result) return std::unexpected(cgpui::detail::RendererInitializationFailure{result.error()});
+  return std::move(*result);
+}
+
 auto select(std::string_view preference) {
   return cgpui::detail::select_renderer_backend(
-      {}, preference, vulkan_factory, dx12_factory);
+      {}, preference, vulkan_factory, dx12_factory, automatic_attempt);
 }
 } // namespace
 
@@ -66,12 +74,13 @@ int main() {
     vulkan_calls = dx12_calls = 0;
     const auto result = select(preference);
     const bool explicit_dx12 = std::string_view(preference) == "dx12";
-    if (!result || vulkan_calls != (explicit_dx12 ? 0 : 1) ||
-        dx12_calls != (explicit_dx12 ? 1 : 0)) return 3;
+    const bool use_dx12 = std::string_view(preference) != "vulkan";
+    if (!result || vulkan_calls != (use_dx12 ? 0 : 1) ||
+        dx12_calls != (use_dx12 ? 1 : 0)) return 3;
     const auto info = (*result)->backend_info();
     const auto expected_selection = explicit_dx12 ? dx12
         : std::string_view(preference) == "vulkan" ? vulkan : automatic;
-    if (info.backend != (explicit_dx12 ? cgpui::RendererBackend::dx12
+    if (info.backend != (use_dx12 ? cgpui::RendererBackend::dx12
                                     : cgpui::RendererBackend::vulkan) ||
         info.selection != expected_selection || info.adapter_name != "test adapter" ||
         info.vendor_id != 42 || info.adapter_luid != 123 || !info.software_adapter ||
@@ -84,15 +93,15 @@ int main() {
   for (const auto preference : {"", "auto", "vulkan", "dx12"}) {
     vulkan_calls = dx12_calls = 0;
     const auto result = select(preference);
-    const bool explicit_dx12 = std::string_view(preference) == "dx12";
-    const auto expected_code = explicit_dx12 ? cgpui::ErrorCode::unsupported_platform
+    const bool use_dx12 = std::string_view(preference) != "vulkan";
+    const auto expected_code = use_dx12 ? cgpui::ErrorCode::unsupported_platform
         : cgpui::ErrorCode::renderer_initialization_failed;
-    const auto expected_message = explicit_dx12 ? "DX12 original error"
+    const auto expected_message = use_dx12 ? "DX12 original error"
                                                : "Vulkan original error";
     if (result || result.error().code != expected_code ||
         result.error().message != expected_message ||
-        vulkan_calls != (explicit_dx12 ? 0 : 1) ||
-        dx12_calls != (explicit_dx12 ? 1 : 0)) return 6;
+        vulkan_calls != (use_dx12 ? 0 : 1) ||
+        dx12_calls != (use_dx12 ? 1 : 0)) return 6;
   }
   const auto missing = cgpui::detail::select_renderer_backend({}, "dx12", vulkan_factory, nullptr);
   if (missing || missing.error().code != cgpui::ErrorCode::renderer_initialization_failed)

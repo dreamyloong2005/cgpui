@@ -9,6 +9,16 @@ Result<void> WindowRuntime::try_draw_frame() {
   }
   const RuntimeWindowCallbackScope callback_scope(*this);
   begin_frame_scheduling();
+  if (auto resized = state_->windows.surface_resizes_.retry(
+          state_->windows.root_window_runtime_id_, *state_->windows.renderer_); !resized) {
+    abort_frame_scheduling();
+    return resized;
+  }
+  if (state_->core.should_quit_ || state_->core.shutting_down_ ||
+      !state_->windows.window_ || !state_->windows.renderer_) {
+    abort_frame_scheduling();
+    return {};
+  }
 
   FrameStatistics frame_statistics;
   frame_statistics.render_pass_count = 1;
@@ -39,6 +49,11 @@ Result<void> WindowRuntime::try_draw_frame() {
     }
   }
 
+  if (state_->core.should_quit_ || state_->core.shutting_down_ ||
+      !state_->windows.window_ || !state_->windows.renderer_) {
+    abort_frame_scheduling();
+    return {};
+  }
   state_->diagnostics.last_render_record_ = RenderRecord{
       .sequence = ++state_->diagnostics.render_sequence_,
       .view_id = state_->views.root_view_id_,
@@ -50,6 +65,11 @@ Result<void> WindowRuntime::try_draw_frame() {
   if (state_->core.after_render_callback_) {
     state_->core.after_render_callback_(context(), *state_->diagnostics.last_render_record_);
   }
+  if (state_->core.should_quit_ || state_->core.shutting_down_ ||
+      !state_->windows.window_ || !state_->windows.renderer_) {
+    abort_frame_scheduling();
+    return {};
+  }
 
   layout_element_tree_with_animations(frame_statistics);
   update_platform_accessibility_tree();
@@ -57,6 +77,16 @@ Result<void> WindowRuntime::try_draw_frame() {
 
   std::vector<WindowControlRegion> window_control_regions;
   const auto* root_record = find_window_runtime_record(state_->windows.root_window_runtime_id_);
+  if (state_->core.should_quit_ || state_->core.shutting_down_ ||
+      !state_->windows.window_ || !state_->windows.renderer_) {
+    abort_frame_scheduling();
+    return {};
+  }
+  if (state_->windows.surface_resizes_.has_pending(state_->windows.root_window_runtime_id_)) {
+    abort_frame_scheduling();
+    return std::unexpected(Error{ErrorCode::renderer_recovery_pending,
+        "a renderer resize became pending during view callbacks"});
+  }
   auto result = render_view(
       *state_->windows.renderer_,
       state_->core.view_,
@@ -72,7 +102,9 @@ Result<void> WindowRuntime::try_draw_frame() {
     abort_frame_scheduling();
     return std::unexpected(result.error());
   }
-  state_->scheduling.frame_readiness_.clear(*this, state_->windows.root_window_runtime_id_);
+  // A successful old frame must not cancel a resize queued by a native callback.
+  if (!state_->windows.surface_resizes_.has_pending(state_->windows.root_window_runtime_id_))
+    state_->scheduling.frame_readiness_.clear(*this, state_->windows.root_window_runtime_id_);
   // Timer cancellation can synchronously reenter platform lifecycle callbacks.
   if (state_->core.should_quit_ || state_->core.shutting_down_ ||
       state_->windows.window_ == nullptr || state_->windows.renderer_ == nullptr) {

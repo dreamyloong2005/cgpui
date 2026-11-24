@@ -97,6 +97,8 @@ jobs:
 
   windows-examples-smoke:
     runs-on: windows-latest
+    env:
+      CGPUI_RENDERER: vulkan
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-phase-g-dependencies

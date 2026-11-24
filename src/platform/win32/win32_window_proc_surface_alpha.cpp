@@ -18,7 +18,8 @@ bool win32_window_proc_handle_surface_alpha(
     result = wparam == 0 && lparam == 0 ? static_cast<LRESULT>(alpha->instance()) : 0;
     return true;
   }
-  if (message >= win32_surface_alpha_query_message && message <= win32_surface_alpha_mark_opaque_message) {
+  if ((message >= win32_surface_alpha_query_message && message <= win32_surface_alpha_mark_opaque_message) ||
+      message == win32_surface_alpha_reserve_message || message == win32_surface_alpha_suspend_message) {
     // Every wire payload is an integer token. Send/Post and nested dispatch use
     // exactly the same validation and never dereference a caller-owned address.
     result = alpha->request(message, static_cast<UINT_PTR>(wparam), static_cast<UINT_PTR>(lparam));

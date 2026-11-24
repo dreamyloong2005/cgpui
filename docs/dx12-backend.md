@@ -1,18 +1,80 @@
-# Experimental Direct3D 12 backend
+# Direct3D 12 backend
 
-DX12 is an **opt-in experimental backend** for opaque ordinary windows,
-bounded initially transparent ordinary windows and alpha-composited native
-Popups, not a complete replacement for Vulkan. Vulkan
-remains the Windows default; Linux stays Vulkan and macOS stays Metal. The
-previous Popup policy is unchanged for Vulkan.
+Windows automatic selection prefers **DX12**, with Vulkan fallback only after
+a classified unavailable-backend initialization failure and proven cleanup on the
+same managed window. Explicit backend selection never falls back, and frame,
+resize or recovery failures never switch APIs. DX12 supports opaque ordinary
+windows, bounded ordinary-window transparency and alpha-composited native Popups;
+its capability limits below still apply. Linux stays Vulkan and macOS stays
+Metal. Popup policy remains native-first with Overlay only on genuine failure.
 
-## Implemented slice
+> Development status: this local implementation activates automatic DX12-first
+> selection alongside bounded owned DRED diagnostics, owner-dispatched recovery,
+> Runtime handling for [unfinished recovery](renderer-recovery-pending.md),
+> [manual WARP CI](dx12-warp-ci.md), and bounded dynamic ordinary-window alpha.
+> Native GPU-preference selection, explicit Vulkan device selection and Vulkan
+> device-loss reconstruction are implemented. The attempt-7 snapshot passed the
+> bounded Windows, hardware/WARP and local SDK checks below; remaining acceptance
+> gates are stated separately. This is not a published SDK release, hosted CI
+> result, or all-driver certification.
+
+## Current validation status (2026-11-25)
+
+The implementation snapshot in `root-attempt-7` has these fresh local results:
+
+- Windows full regression passed **1028/1028**, and the optimized Release build
+  completed all **39 workspace members**.
+- Intel hardware 0, NVIDIA hardware 1 and WARP each passed the **243-test DX12
+  suite** and **124 common tests per backend** (Vulkan/DX12). DX12 debug was
+  requested; WARP also requested GPU validation. These are suite/lane results,
+  not universal per-test adapter attestation: some initialization tests remove
+  pins, and DX12 adapter settings do not select Vulkan devices.
+- The local installed Windows SDK check covered the exact **129 DX12 source
+  objects** and two healthy automatic-DX12 captures, in a clean environment and
+  with an invalid app-local loader; Vulkan stayed unloaded. `/MT` was used; CMake was
+  configure-only. It is not a published SDK or every-consumer/CRT certification.
+- Local CI fixtures passed **38/38**; driver fixtures passed **17/17** on PS7
+  and **15 with the two specified PS7-only skips** on PS5. SDK graph/header
+  fixtures passed **9/9** and **15/15** without skips, and the runner fixture
+  passed its three controlled cases. These are not hosted CI execution.
+- The source-equivalent typed WSL export passed **725/725**, built all **39
+  members**, and passed Linux GCC **2/2** and macOS architecture-rejection **1/1**
+  fixtures. Source checks matched before and after; the four restored GNU tool
+  symlinks preserve source content. This is not native macOS/Metal execution.
+- Current-source ASan passed **243/243 DX12 tests** and **124/124 common tests
+  per backend**, with zero skips. This is not per-test adapter attestation.
+- A fresh performance run completed **18 series** on the same Intel adapter:
+  three scenes (`rect-grid`, `cached-images`, `mixed`) x two backends x three
+  repeats, each with **120 warmup frames and 600 samples**. All runs and raw-output
+  audits passed. This establishes comparable recorded samples, not an FPS,
+  GPU-time, speedup or performance-parity claim. The earlier visibility-guard
+  failure remains a separate historical failure with **0 measured samples**.
+
+Native Vulkan recovery tests inject failure results into real native calls after
+safely draining a healthy device; they are not driver removal/TDR evidence. Native
+GPU-preference tests check hardware ordering or explicitly proven unavailability,
+not silent substitution with WARP/Vulkan. Broader desktop/driver and older-Windows
+coverage, native macOS/Metal, hosted CI and release verification are not claimed.
+No commit, push, publication or release is implied.
+
+The Windows DX12 implementation milestone is complete within the supported
+contracts documented here. The project owner deferred the original plan's
+[native macOS shared-renderer check](macos-validation.md#follow-up-shared-renderer-after-dx12-extraction-2026-11-25)
+as a separate macOS follow-up on 2026-11-25; it remains unverified, not waived
+into a passing result.
+
+## Implemented capabilities
 
 - Native D3D12 hardware device (feature level 11.0 and shader model 6.0), direct
   command queue, root signature/PSO, two-buffer swapchain and fence-based
-  resource retirement. The first suitable hardware adapter is selected; software
-  fallback is not automatic.
-- Opaque ordinary windows retain an opaque HWND flip-discard swapchain. Native
+  resource retirement. Unset adapter selection chooses the first suitable hardware
+  adapter; diagnostic selectors can request a native GPU preference, exact DXGI
+  index or WARP as documented below. Software fallback is not automatic.
+- Opaque ordinary windows use either the original HWND flip-discard route or,
+  for eligible fresh managed system-title-bar or menu-free client-title-bar
+  windows, a composition-from-start
+  swapchain with **IGNORE** alpha. The latter preserves opaque clear semantics
+  while enabling the bounded dynamic transition described below. Native
   Popups and eligible initially transparent ordinary windows use a premultiplied
   flip-sequential composition swapchain on the same DX12
   command queue, hosted privately by DirectComposition. There is no D3D11 device,
@@ -89,7 +151,7 @@ still rejects. Legal image draws whose pixels are unavailable are skipped, in
 both DX12 and Vulkan, without rejecting the remaining frame. Invalid parameters,
 identity mismatches and native failures still report errors. Resolved draws retain immutable
 CPU snapshots, including across later frames' replacements/invalidation.
-Uploads reach the GPU lazily when first drawn; images are evicted after more
+DX12 uploads reach the GPU lazily when first drawn; images are evicted after more
 than 120 successfully presented idle frames. Glyph pages are cached for the renderer lifetime and
 republished as full immutable CPU snapshots when dirty. Eligible native successors
 use the conditional dirty-region transport below; CPU history and snapshots are
@@ -135,8 +197,11 @@ unchanged.
 Initially alpha-composited swapchains remain premultiplied even when transparent
 intent becomes false, as on the existing Vulkan Popup composition path.
 `set_transparent_surface` updates that intent/report without changing the HWND
-topology or actual alpha mode. An opaque ordinary renderer still rejects an
-attempt to enable transparency; it never silently changes presentation routes.
+topology or actual alpha mode on those initial-alpha routes. An ordinary HWND
+flip renderer still rejects enabling transparency. The new eligible
+composition-from-start route can replace its composition swapchain's alpha mode
+without converting an HWND-flip window. Its bounded regressions are included in
+the attempt-7 native suite; unsupported window topologies remain unsupported.
 
 ## Bounded geometry upload reuse
 
@@ -268,9 +333,9 @@ minimal-upload, cache bound or asynchronous-rendering claim follows from D<P.
 
 DX12 can reuse one immutable native BUNDLE for a restricted exact-static scene
 on an opaque ordinary HWND. The renderer selects this privately; applications
-choose neither a reuse mode nor another window type. Vulkan remains the Windows
-default, and transparent ordinary windows, native Popups and their existing
-composition/fallback policies are unchanged.
+choose neither a reuse mode nor another window type. This optimization does
+not change transparent ordinary windows, native Popups or their existing
+composition/fallback policies.
 
 Eligible frames contain only rectangle-family geometry and already-uploaded
 immutable RGBA images, with one common effective scissor and one SRV page.
@@ -334,11 +399,14 @@ successful pixels when the device/surface remains unchanged. Borrowed storage mu
 be copied before later renderer/frame operations or destruction. This contract is
 for capture-capable built-in backends, not custom no-op implementations.
 
-Capture history is not promised across resize, surface replacement or device
-recovery. DX12's extent-changing ResizeBuffers path and recovery keep their
+Cross-backend capture history is not promised across resize, surface replacement
+or device recovery. DX12's extent-changing ResizeBuffers path and recovery keep their
 explicit invalidation; a recovery-pending peer's getter remains null. Same-size
 resize does not newly clear pixels. These boundaries and native borrowed-buffer
-lifetime rules are unchanged by the history alignment.
+lifetime rules are unchanged by the history alignment. Vulkan's new device-loss
+path retains the most recent successful CPU capture through native retirement,
+including failed reconstruction; it does not publish a failed candidate or make
+those historical pixels evidence of the new generation.
 
 DX12 implements the existing `Renderer::last_frame_diagnostic_snapshot()` API;
 there is no DX12-specific public diagnostic type. It returns null until the first
@@ -365,8 +433,10 @@ and backdrop storage. Pending raw request buffers are destroyed on image
 preparation exit, before successful sampling; finished frames retain resolved
 immutable snapshots, not a second raw upload copy. It is not
 RSS, VRAM, total renderer memory, a peak or a budget. Known zero differs from
-unreported/unavailable: Vulkan, Metal and custom snapshots currently default to
-no value. DX12 also reports no value if its weak bookkeeping registration cannot
+unreported/unavailable: Metal and custom snapshots default to no value. Vulkan
+now samples retained recovery-upload RGBA payloads after successful presentation,
+not DX12's cross-frame immutable-snapshot census; the two ownership models are
+not identical memory measurements. DX12 reports no value if its weak bookkeeping registration cannot
 allocate; it never publishes a known partial sum. This unavailability persists
 for that image-cache lifetime, including across native recovery. Existing image
 allocation and other diagnostic allocations retain their existing exception
@@ -423,6 +493,49 @@ promise identical work distribution across backends. Vulkan and DX12 have
 different batching and upload policies; their raw counts are not a cross-backend
 performance-equivalence claim.
 
+## Owned DRED status and best-effort breadcrumbs
+
+When debug is requested, setup queries the native DRED settings interface before
+device creation and records whether the breadcrumb-enable setter returned. This
+is a request observation, not a claim that every external native device was
+created with those settings. A later setup failure does not suppress the removal
+interface query.
+
+Before native retirement, a focused private observer reads the **actual**
+`GetDeviceRemovedReason`. A failed native lease publishes one owned scalar
+snapshot containing that HRESULT and the setup/interface-query facts. A live
+device does not consume the observation opportunity; a later lease may publish
+another snapshot while retaining prior history. Temporary QI references end
+before return. Debug-off uses typed not-requested states and emits no new debug
+message. Formatting uses fixed storage and makes unknown quantities explicit.
+
+Debug-requested confirmed loss also queries `GetAutoBreadcrumbsOutput`. The
+query HRESULT is distinct from QI status. A successful query is sampled through
+`ReadProcessMemory(GetCurrentProcess(), ...)` into fixed owned storage, never
+by directly dereferencing native node, name, history or COM-child pointers.
+Every read must succeed with its exact requested byte count. An unreadable or
+short read discards the current node; prior accepted nodes remain available.
+
+Sampling is bounded to 64 nodes, 32 operations per node, 512 reads and 65536
+requested bytes. History windows surround the last-completed count and respect
+DRED's 65536-operation ring; native counts never determine allocation sizes.
+Cycle, truncation, invalid address, changed metadata/progress, exhausted budget
+and failed/short reads have distinct outcomes. Failed queries are not reported
+as a successfully observed empty list. Bounded numeric samples go to debugger
+messages, while the existing lease history retains only their scalar summary.
+
+These are **best-effort, non-atomic, non-coherent diagnostics**, not a device-wide
+snapshot. Equal metadata re-reads detect some changes but cannot exclude address
+reuse or plausible unrelated values under concurrent external-owner mutation.
+Samples never control recovery, native retirement or rendering results. No
+borrowed addresses, names or COM references escape the observation. Per-lease
+observation is not exact process-wide capture-once, and page-fault output is not
+requested. Its bounded storage/call count is not a hard latency bound
+on OS/debugger calls. Reporting cannot authorize native retirement or overwrite
+the separate synchronization/removal proof. The attempt-7 suite includes these
+bounded diagnostics tests; its scope and remaining gates are recorded in
+[validation status](#current-validation-status-2026-11-25).
+
 ## Bounded ordinary-window transparency
 
 Initial `transparent_background=true` is supported for a CGPUI-owned, decorated
@@ -460,13 +573,42 @@ status/repair detects it rather than claiming compatibility. The pre-existing
 opaque client-title-bar/HMENU layout defect is not fixed by this slice, and no
 framework-drawn replacement menu is installed.
 
-This is **initial-only**, not an opaque-to-transparent upgrade. Opaque windows
-keep their existing flip-discard and clear semantics. A recorded HWND-flip
-attempt permanently disqualifies that HWND instance from later ordinary-alpha
-creation, even after the opaque renderer is destroyed. A probe found stale
-opaque client content after retiring the old flip chain; success of GPU teardown
-alone was not sufficient. An all-composition-from-start experiment is research,
-not the production default. See the [probe evidence](dx12-ordinary-transparency-probe.md).
+The original initially-alpha path retains its sticky premultiplied semantics.
+The current implementation batch additionally reserves a private composition
+route for a fresh, eligible managed **system-title-bar**, or **client-title-bar
+without HMENU**, opaque ordinary window
+created on its owner thread. It begins with actual `DXGI_ALPHA_MODE_IGNORE`, not
+premultiplied clear/blending masquerading as opaque. Native HMENU is neither
+hidden nor replaced. Unmanaged, old-OS, incompatible-chrome, prior-flip and
+foreign-thread factory paths retain the original opaque HWND route.
+
+The reservation alone does not enable native alpha repair or lock ordinary
+chrome/menu changes. A later transparent request rechecks current eligibility,
+including the client-title-bar menu and in-progress menu-installation gates,
+constructs a complete replacement chain and pacing state, and binds it to the
+same private composition host. Switching back uses IGNORE alpha; initial-alpha
+windows and Popups keep their older sticky-PREMULT contract. Consecutive changes
+before a successful frame coalesce without unbounded chain history. The original
+visible chain remains owned until the successful frame's Commit, before capture
+or diagnostics publication. Failed binding/rollback retains every possibly
+bound owner and reports failure rather than publishing a fictitious transition.
+Replacement is rejected with an outstanding frame or inside a nested operation.
+
+Before the first alpha promotion, opaque worker operations remain supported while
+the window owner pumps the bounded token-status handshake. Actual alpha changes
+require the owner thread. After promotion the native alpha lease remains active
+even when the composition chain switches back to IGNORE; therefore its existing
+owner-thread, fixed-chrome and native-menu repair rules continue until renderer
+state destruction. IGNORE still presents opaque pixels; it is not a released
+alpha lease or restored worker/chrome permission.
+
+A recorded HWND-flip attempt still permanently disqualifies that HWND instance
+from later ordinary-alpha creation, even after renderer destruction. The stale
+client-content failure in the [probe evidence](dx12-ordinary-transparency-probe.md)
+is not bypassed by teardown or by clearing history. The new path avoids creating
+that original flip chain; it does not attempt a proven-failing flip-to-composition
+conversion. Dynamic GPU/desktop/menu/worker/lifetime/failure regressions passed
+again in the bounded attempt-7 native suite.
 
 The native alpha lease survives GPU recovery; native GPU objects retire before
 the lease releases. Ordinary-alpha factory/begin/present/resize/intent operations
@@ -525,14 +667,18 @@ normal recovery, or silently switch backends.
 
 ## Bounded device recovery
 
-On confirmed native device removal, the renderer can rebuild once per public
+On confirmed native device removal, DX12 can rebuild once per public
 operation on its original adapter LUID. HWND, framebuffer size/DPI and CPU image
 and glyph caches survive. Native textures/descriptors/upload status now belong
 to a private per-renderer realization cache, not immutable CPU draw snapshots;
 native realizations can be retired during recovery even while finished frames or
 invalidated image snapshots remain alive. Expired realizations are pruned after idle.
+Recovery looks up that recorded LUID, not a new adapter index or preference order,
+and never rereads `CGPUI_DX12_ADAPTER`; changing the environment cannot move an
+existing renderer to another adapter or backend.
 
-All old GPU owners are retired before replacement. `device_generation` advances
+Known local old GPU owners are retired before replacement; external references
+are not owned by this protocol. `device_generation` advances
 only after device, pipeline, swapchain and native validation succeed. A recovered
 `begin_frame` or failed `present` returns `frame_retry_required` to request a new
 frame, not claim the lost frame was presented. Failed frames do not advance image
@@ -546,13 +692,17 @@ There is no unbounded wait for compositor commits. If an external/compositor
 owner still blocks reconstruction, the bounded attempt returns its actual error.
 Successful reconstruction creates a new host with a fresh first-frame commit.
 
-Recovery now coordinates renderers on the **same adapter and HWND-owning UI
-thread**. Confirmed native loss first retires eligible peers' old GPU resources;
-only the triggering renderer rebuilds immediately. Other peers remain pending
-until their next begin/present/resize, and increment their own generation only
-after their own complete reconstruction. An old active CPU frame requests a new
-frame rather than submitting across generations. It remains outstanding until
-presented or abandoned; old-frame destruction cannot unlock a newer frame.
+The new implementation adds **owner-dispatched coordination across managed
+window threads** on the same adapter, retaining the same-owner idle fast path.
+A private native lease starts before device creation, covering partial/in-flight
+construction. Retirement is acknowledged only after actual native release, not
+weak-state expiration. A loss wave blocks new local attachments until its known
+participants are retired or independently observed healthy. The triggering
+renderer returns `renderer_recovery_pending` while coordination is unfinished,
+without waiting for a foreign thread under its operation gate. Other peers
+rebuild only on their next legal begin/present/resize, advancing generation after
+complete reconstruction. An old active CPU frame requests a new frame rather
+than submitting across generations; its lifetime cannot unlock a newer frame.
 
 A private weak registry holds no device reference. Its metadata lock is never
 held across native calls. Per-renderer recursive operation gates protect state
@@ -567,20 +717,24 @@ Peers' CPU caches, capability reports and borrowed capture storage survive
 native-only retirement. Pending peers report no current capture; an existing
 borrowed capture remains alive until that peer's own next mutating operation.
 This is not a thread-safe borrowed-pointer guarantee or permission to race
-destruction with calls. Existing opaque/Popup calls are not newly restricted to
-the creation thread, but automatic peer coordination only runs on the HWND-owning
-thread. The new ordinary-alpha lease has the owning-thread restriction above.
+destruction with calls. Native retirement callbacks execute on each managed
+HWND's owner thread, using instance-bound integer messages, nonblocking state
+gates and actual removal checks. Busy callbacks do not acknowledge or purge;
+the outer operation may post a coalesced retry after releasing its gate.
+Ordinary-alpha mutations retain their owning-thread restriction.
 
-External native references, different-window-thread peers, busy peer operations,
-or a concurrently finishing native destructor may still block replacement of
-the removed singleton. The attempt returns the actual terminal initialization
-error with unchanged generation, not an unbounded retry loop. A skipped peer
-must itself progress through recovery or release its native resources; simply
-unlocking its operation gate does not trigger background recovery. Once blockers
-are gone, an explicit later call can reconstruct the same renderer. The normal
-UI runtime exits on terminal frame errors and does not recreate factories or
-coordinate foreign threads automatically. Invalid input and live-device sync
-errors are not treated as removal, and no backend/adapter fallback occurs.
+Each cooperation wave has a fixed five-second deadline. Missing managed owner
+endpoints, failed native posts or an unpumped/busy owner past that deadline return
+an explicit terminal error, not an unbounded retry or permission to free active
+resources. External native references can still block reconstruction and retain
+their actual native error. Once real release removes blockers, a direct client's
+later explicit call may reconstruct. WindowRuntime defers pending recovery on
+its window-bound timer and reapplies the latest desired resize before drawing;
+terminal errors remain fatal. Invalid input and live-device sync errors are not
+treated as removal; no backend/adapter fallback occurs. See the full
+[pending and ownership contract](renderer-recovery-pending.md). Bounded managed
+cross-thread tests passed again in the attempt-7 native suite; this does not
+certify arbitrary external owners or driver resets.
 
 Native acceptance uses explicit idle-device `RemoveDevice` and independently
 checked post-recovery pixels. It does not certify hardware reset/TDR behavior.
@@ -591,10 +745,62 @@ event loop, with root-first and child-first recovery on two same-thread windows.
 The fixture observes the actual typed begin-frame retry without retrying the
 frame itself or replacing the renderer factory. It checks the same adapter,
 advanced generation, newly painted pixels, retained image/glyph reuploads and
-the next warm frame's zero upload payload. Both tests passed under WARP with
-the DX12 debug layer on 2026-11-24; no production runtime change was required.
-This closes that bounded runtime-retry test gap, not foreign-thread recovery,
-arbitrary driver resets, hardware acceptance or the final full regression matrix.
+the next warm frame's zero upload payload. Both tests passed again in the
+attempt-7 native suite. This covers bounded same-thread runtime retry, not
+arbitrary driver resets or general hardware acceptance.
+
+### Vulkan native device-loss reconstruction
+
+Vulkan now preserves raw `VkResult` at pacing, acquire, reset-fence/submit,
+present, resize-idle and capture wait/map boundaries. Only confirmed
+`VK_ERROR_DEVICE_LOST` authorizes device reconstruction; error-message text,
+out-of-memory, timeout and out-of-date/suboptimal surface status do not. Failure
+cleanup also preserves a device loss discovered while waiting to retire work.
+Swapchain recreation and non-loss failures retain their separate error paths.
+
+One synchronous rebuild retires the old device's native resources, including
+private Popup interop owners, while preserving the instance, surface and logical
+descriptor. Automatic Vulkan selection prefers the prior physical adapter if
+still suitable; otherwise it may choose another suitable adapter. With an
+explicit `CGPUI_VULKAN_DEVICE` index, recovery instead pins the originally chosen
+`VkPhysicalDevice` identity within the preserved instance: changed enumeration
+order or environment values cannot move it, and a missing/unsuitable original
+device fails. Neither policy is an API/backend fallback. Generation increments
+only after complete device resources are installed. Recovery during presentation
+returns `frame_retry_required`, never successful presentation of the lost frame. Failed
+reconstruction cleans its partial native owners and leaves a stable terminal
+error; repeated calls do not restart it. The path does not emit
+`renderer_recovery_pending` or add cross-thread owner coordination.
+
+The CPU glyph cache survives; cleared native upload prefixes force restoration.
+Accepted image-preparation payloads move from the frame into a retained CPU cache
+without another RGBA copy. The latest accepted same-ID upload replaces its prior
+payload, and invalidation, allocation changes and normal idle eviction prune the
+retained entries. Failed frames are not transactional rollbacks of preparation.
+Restoration preserves each image's prior idle age and allocation identity, lets
+incoming uploads supersede old bytes, and checks the replacement device's current
+texture limits before creating any retained image, including on an image-free
+frame. Invalid identity/limit requests remain errors, not ignored images.
+Vulkan keeps its existing preparation-frame cache-aging semantics; this is not
+DX12's successfully-presented-frame aging policy.
+
+Vulkan frames are single-use once a current-generation `present` starts, whether
+that attempt succeeds or fails. A second present rejects rather than replaying
+moved upload buffers. A frame acquired before device reconstruction returns a
+typed retry without applying its uploads or invalidations to the new generation.
+Acquire a new frame after retry. If Vulkan resize discovers loss, reconstruction
+uses the requested size/scale and resize returns success only after confirmed
+complete reconstruction and a generation advance. Otherwise it returns an error;
+it does not return a completed-frame retry. This preserves WindowRuntime's shared
+resize contract. The latest successful CPU capture survives this native retirement.
+
+The new `vulkan_device_recovery_*` tests exercise native owners, retained
+image/glyph pixels, stale frames, terminal reconstruction, non-loss controls,
+smaller replacement limits and private Popup interop. Their loss hooks first prove
+the real healthy device idle, then inject the selected native failure result;
+they do not remove the driver device or mutate production renderer state. Their
+smaller-limit hook is also a controlled capability simulation, not a physical
+adapter migration. These tests passed in the attempt-7 Windows and common suites.
 
 ## Selection and testing
 
@@ -602,10 +808,35 @@ On Windows, `create_renderer` reads `CGPUI_RENDERER`:
 
 | Value | Behavior |
 | --- | --- |
-| Unset, empty, `auto` | Vulkan only until DX12 reaches parity |
+| Unset, empty, `auto` | DX12 first; Vulkan only after classified failure and checked same-window rollback |
 | `vulkan` | Vulkan only; return its error on failure |
-| `dx12` | Experimental DX12 only; return its error on failure |
+| `dx12` | DX12 only; return its error on failure |
 | Anything else | `invalid_argument`; create neither backend |
+
+Automatic fallback is an initialization-only transaction, not an availability
+promise for every failed DX12 setup. Only native `DXGI_ERROR_UNSUPPORTED`,
+`DXGI_ERROR_NOT_FOUND`, `E_NOINTERFACE` or `E_NOTIMPL` at classified capability
+sites can be candidates. Invalid descriptors/settings, busy/recovery conditions,
+device loss, resource exhaustion, diagnostic setup/InfoQueue failures and unsafe
+cleanup remain terminal. A nonempty `CGPUI_DX12_ADAPTER` or enabled
+`CGPUI_DX12_DEBUG`/`CGPUI_DX12_GPU_VALIDATION` forbids fallback, preserving the
+requested adapter and diagnostics. Malformed diagnostic settings are errors.
+
+Checked rollback requires the same managed HWND instance on its owner thread,
+no submitted frame/recovery, and no committed or ambiguous composition graph.
+It retires the uncommitted native owners and explicitly checks alpha-token
+release before allowing Vulkan to use the original descriptor. Failed surface
+acquisition does not infer success from best-effort destructor cleanup. Raw or
+foreign-owner HWNDs cannot provide this proof and may fail without fallback.
+A successful opaque initialization on older Windows does not enable a later
+backend switch when an ordinary-alpha request is unsupported.
+
+Automatic successes report `RendererBackendSelection::automatic`, the actual
+backend and live adapter/generation metadata. A Vulkan fallback owns the original
+DX12 failure in `fallback_reason`; if Vulkan also fails, the returned error
+retains both causes and the Vulkan error code. Runtime operations stay bound to
+the selected backend, including pending work and device recovery. Linux and
+macOS factory/default behavior is unchanged.
 
 Named factories in `cgpui/renderer/renderer_backend.hpp` bypass that selection:
 `create_vulkan_renderer(descriptor)` and, on Windows,
@@ -616,11 +847,12 @@ native/composition mode field.
 Windows applications using `create_renderer` link `cgpui.renderer-windows`,
 which owns both backend dependencies. Backend-only consumers may link the
 named backend package. SDK link closure includes the dispatcher and both
-backends, but this does not change the default or certify a DX12 release.
+backends. This link closure alone does not certify a DX12 release.
 On Windows, neither the dispatcher nor the installed SDK imports `vulkan-1.dll`
-at process startup. Selecting DX12 does not load Vulkan, even though both backend
-libraries remain in the SDK link closure. Only Vulkan initialization loads the
-DLL, through a private `LoadLibraryExW` owner using
+at process startup. Explicit or successful automatic DX12 selection does not
+load Vulkan, even though both backend libraries remain in the SDK link closure.
+Only Vulkan initialization loads the DLL, through a private `LoadLibraryExW`
+owner using
 `LOAD_LIBRARY_SEARCH_DEFAULT_DIRS`: the application directory, System32 and
 explicit user directories registered with `AddDllDirectory`. It neither searches
 the current directory/ambient `PATH` nor changes the process DLL-search policy.
@@ -630,17 +862,19 @@ before publishing any function pointer. Existing optional version and
 device-extension queries retain their previous checks. Missing or damaged DLLs
 return `renderer_initialization_failed` with `vulkan-1.dll` and the Win32 error
 code; missing required exports return the same typed error naming the export.
-There is no backend fallback: default/`auto` still means Vulkan, and a failed
-Vulkan initialization does not select DX12. Failed binding attempts release
+A failed explicit Vulkan initialization does not select DX12. If Vulkan fails
+after checked automatic fallback, selection stops with both initialization
+causes; it does not cycle back to DX12. Failed binding attempts release
 their module reference and can be retried; successful binding is serialized and
 keeps its module reference for process lifetime, including late resource teardown.
 
 Building the repository on Windows still needs the Vulkan SDK headers.
 Consumers of a newly built installed Windows SDK need neither the Vulkan SDK nor
 its import library or delay-load flags/hooks; they need a Vulkan runtime only
-when selecting Vulkan. Older static-import SDKs keep their manifest-declared
-dependencies. Linux retains its original direct Vulkan linkage. This is startup
-dependency isolation, not a DX12 default switch or a new release.
+when explicitly selecting Vulkan or reaching the checked automatic fallback.
+Older static-import SDKs keep their manifest-declared dependencies. Linux retains
+its original direct Vulkan linkage. This is startup dependency isolation;
+local automatic activation is not a new SDK release.
 
 Run the native acceptance suite from PowerShell:
 
@@ -653,8 +887,45 @@ $env:CGPUI_DX12_DEBUG = '1'
 scripts/dev/test.ps1 -Renderer dx12 -p tests/renderer-dx12
 ```
 
-`CGPUI_DX12_ADAPTER` also accepts an explicit DXGI adapter index, with no
-fallback. `CGPUI_DX12_GPU_VALIDATION=1` requests GPU-based validation. Debug
+`CGPUI_DX12_ADAPTER` controls initial DX12 selection:
+
+| Value | Behavior |
+| --- | --- |
+| Unset or empty | First suitable hardware adapter in `EnumAdapters1` order |
+| Unsigned decimal index | Exact `EnumAdapters1` index; no alternative adapter |
+| `high_performance` | Hardware-only `IDXGIFactory6::EnumAdapterByGpuPreference` high-performance order |
+| `minimum_power` | Hardware-only native minimum-power preference order |
+| `warp` | Explicit WARP software adapter |
+| Anything else, including signs/whitespace or overflow | `invalid_argument` |
+
+Preferred modes skip only unavailable device capabilities, not resource
+exhaustion, device loss, busy recovery or other terminal failures. Missing
+Factory6 or failed preferred enumeration is an error, not permission to use
+legacy enumeration order. Every nonempty selector forbids automatic Vulkan
+fallback. After creation, recovery stays on the recorded LUID regardless of
+environment edits. These are diagnostic controls, not application window modes.
+
+The native preference regression intentionally overrides an enclosing numeric or
+WARP lane and independently queries native preferred order. Available hardware
+must match its LUID, captured pixels and pinned recovery checks. If Factory6 is
+absent or enumeration exhausts without suitable hardware, it must instead prove
+that renderer initialization failed without Vulkan fallback, with an explicit
+unavailable result in the log. Arbitrary oracle errors fail the test. This
+branch is not hardware-rendering evidence or a silent skip.
+
+Vulkan initialization separately reads `CGPUI_VULKAN_DEVICE` once. Unset/empty
+keeps automatic suitability/alpha preference; an unsigned decimal uint32 index
+requests exactly that initial `vkEnumeratePhysicalDevices` entry. Signs,
+whitespace, trailing characters and overflow return `invalid_argument`.
+An out-of-range or unsuitable selected device fails without trying another
+adapter. Both ordinary and private Popup paths still require their full native
+capabilities. Recovery pins the original physical-device identity within the
+same instance, not a possibly reordered index, and never rereads the environment.
+This setting does not select the Vulkan backend or alter successful automatic
+DX12 selection; use `CGPUI_RENDERER=vulkan` to request Vulkan explicitly. It is
+a private diagnostic override, not a public window-mode option.
+
+`CGPUI_DX12_GPU_VALIDATION=1` requests GPU-based validation. Debug
 requests require the installed Windows graphics debugging layer; missing
 support returns an error instead of silently claiming validation. Debug
 configuration is fixed before the process's first DX12 device and cannot be
@@ -695,8 +966,9 @@ It logs the requested/actual backend, adapter name, vendor, LUID and software
 flag. A DX12 WARP request additionally requires a software adapter. Invalid
 selectors, initialization failures, unsupported required capabilities,
 missing captures or identity mismatches fail rather than silently skip.
-Unset/empty/`auto` retains the common tests' existing named-Vulkan default;
-production dispatcher/default behavior is unchanged.
+Unset/empty/`auto` retains the common tests' existing named-Vulkan default.
+This deliberately differs from the production Windows dispatcher's DX12-first
+automatic policy: common pixel contracts must not silently substitute a backend.
 
 Previously these scenes used a hard-coded Vulkan helper, so setting
 `CGPUI_RENDERER=dx12` alone could not demonstrate DX12 coverage. The common
@@ -719,12 +991,15 @@ all-adapter or performance acceptance claim. WARP/debug/GPU-validation controls
 above can be used for separate requested-backend runs; ordinary-window/menu,
 recovery, example/UI, CI and release-readiness gates remain independent.
 
-## Not implemented yet
+## Scope and remaining acceptance
 
-Dynamic opaque-to-transparent upgrades, client-title-bar ordinary alpha with an
-application HMENU, ordinary alpha on hidden/undecorated chrome or older Windows,
-and coordinated cross-thread device-loss recovery are
-future work. The [ordinary transparency probe](dx12-ordinary-transparency-probe.md)
+Dynamic ordinary-window upgrades, managed cross-thread recovery, native GPU
+preferences, explicit Vulkan device selection and Vulkan recovery are implemented
+and covered by the bounded attempt-7 Windows/WSL and ASan results above.
+Performance sampling is complete within the stated scope, not a parity claim.
+Client-title-bar ordinary alpha with an application HMENU, ordinary alpha on
+hidden/undecorated chrome or older Windows remain unsupported. The
+[ordinary transparency probe](dx12-ordinary-transparency-probe.md)
 retains the earlier 11 uncorrected DWM/hosting recipes and the later alpha-only
 menu repair evidence; the negative recipes are not a claim that all DComp/native
 menu combinations are impossible.
@@ -740,11 +1015,14 @@ a controlled background, plus pointer-transparent/nonactivating platform windows
 resize/DPI updates, destruction and idle-device removal. This does not certify
 every desktop configuration, physical monitor migration or arbitrary driver TDR.
 
-The original DX12 plan's shared extraction and shader phases are only partially
-complete: rectangle/text/image/shadow/backdrop algorithms and DXIL are implemented,
-but full parity, broader transparent-window/native-menu compatibility, diagnostic/recovery parity,
-performance gates and default-switch/release verification must precede automatic
-DX12 selection. No release was published by this milestone.
+The shared rectangle/text/image/shadow/backdrop algorithms and DXIL are
+implemented, and local automatic selection follows the bounded initialization
+contract above. This does not extend the supported native-window topologies or
+turn Vulkan results into DX12 evidence. The recorded Windows and requested-lane
+checks are local bounded validation, not general native desktop/driver coverage,
+hosted CI execution or release verification.
+Steady-state reuse/pooling is not a performance-parity claim; deeper asynchronous
+rendering remains optimization work. No release was published by this milestone.
 
 See `.planning/2026-11-23-dx12-bootstrap/`,
 `.planning/2026-11-23-dx12-textures/`,

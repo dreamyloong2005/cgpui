@@ -1,15 +1,20 @@
 #include "dx12_state_internal.hpp"
 #include "dx12_debug_internal.hpp"
 #include "dx12_device_internal.hpp"
+#include "dx12_dred_api_internal.hpp"
 
 namespace cgpui {
 namespace {
-Result<void> create_factory(Dx12State& state) {
+Result<void> create_factory(Dx12State& state, Dx12InitializationFailureClass* failure = nullptr) {
   auto debug = dx12_enable_debug();
   if (!debug) return std::unexpected(debug.error());
+  state.dred_status.configure_setup(dx12_dred_setup(*debug));
   const HRESULT result = CreateDXGIFactory2(*debug ? DXGI_CREATE_FACTORY_DEBUG : 0,
                                             IID_PPV_ARGS(&state.factory));
-  if (FAILED(result)) return std::unexpected(dx12_error(result, "factory creation"));
+  if (FAILED(result)) {
+    if (failure) *failure = dx12_classify_initialization_failure(result);
+    return std::unexpected(dx12_error(result, "factory creation"));
+  }
   return {};
 }
 
@@ -34,9 +39,10 @@ Result<void> create_queue_objects(Dx12State& state) {
 }
 } // namespace
 
-Result<void> dx12_create_device(Dx12State& state) {
-  if (auto factory = create_factory(state); !factory) return factory;
-  if (auto adapter = dx12_select_initial_adapter(state); !adapter) return adapter;
+Result<void> dx12_create_device(Dx12State& state, Dx12InitializationFailureClass* failure) {
+  if (failure) *failure = Dx12InitializationFailureClass::terminal;
+  if (auto factory = create_factory(state, failure); !factory) return factory;
+  if (auto adapter = dx12_select_initial_adapter(state, failure); !adapter) return adapter;
   return create_queue_objects(state);
 }
 

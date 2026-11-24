@@ -7,14 +7,18 @@ The detailed source-of-truth ledger is
 `docs/gpui-complete-parity-ledger.md`, with machine-readable status in
 `docs/gpui-complete-parity-ledger.json`.
 
-The implemented desktop targets are Windows/Win32 + Vulkan, Linux/Wayland +
-Vulkan, Linux/X11 + Vulkan, and macOS/Cocoa + Metal. Phase H closes macOS
-production parity over the stable public APIs and renderer/platform boundaries;
+The implemented desktop targets are Windows/Win32 + DX12 or Vulkan,
+Linux/Wayland + Vulkan, Linux/X11 + Vulkan, and macOS/Cocoa + Metal. Phase H
+closes macOS production parity over the stable public APIs and renderer/platform
+boundaries;
 Phase I closes strict Linux backend parity over the same public surface.
 
 ## Desktop Scope
 
-- Windows uses the Win32 platform backend and Vulkan renderer target.
+- Windows uses the Win32 platform backend, preferring DX12 automatically with
+  Vulkan fallback only after classified initialization failure and proven
+  same-window cleanup. Explicit selections do not fall back. Earlier Vulkan
+  phase results are not new DX12 acceptance.
 - Linux provides Wayland and X11 platform backends with Vulkan renderer targets.
 - macOS uses the Cocoa platform backend and Metal renderer target.
 - The public authoring surface is exposed through `cgpui/cgpui.hpp` and the

@@ -19,8 +19,8 @@ RendererBackendInfo VulkanRendererState::backend_info() const {
       .software_adapter = properties.properties.deviceType ==
                           VK_PHYSICAL_DEVICE_TYPE_CPU,
       .selection = RendererBackendSelection::vulkan,
-      // Swapchain recreation does not replace the underlying VkDevice.
-      .device_generation = device_ != VK_NULL_HANDLE ? 1U : 0U,
+      // Only a fully installed replacement device advances the generation.
+      .device_generation = device_generation_,
   };
   if (identity.deviceLUIDValid == VK_TRUE) {
     std::uint64_t luid = 0;

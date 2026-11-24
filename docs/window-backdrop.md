@@ -98,9 +98,10 @@ Switching to `none` keeps the transparent swapchain. A material-only window's
 clear turns opaque again; an explicitly transparent window keeps transparent
 clear while its renderer actually supports alpha. The creation-time backdrop
 in `Window::descriptor()` does not override the live material state. This
-runtime policy does not add alpha capability to a backend or platform. DX12 now
-supports a bounded initially transparent ordinary-window route described below;
-it still refuses dynamic upgrades from an opaque ordinary renderer.
+runtime policy does not add alpha capability to a backend or platform. DX12
+supports the bounded initial-alpha and composition-from-start ordinary-window
+routes described below. Only the latter permits dynamic alpha replacement;
+an existing HWND-flip renderer still refuses the upgrade.
 
 ## Vulkan composite alpha
 
@@ -203,7 +204,7 @@ changes the margins so the surface is repainted at once. Windows without an
 extended frame keep the null brush and the default handling, except for the
 independent DX12 ordinary-alpha lease below.
 
-### Experimental DX12 ordinary windows
+### DX12 ordinary windows
 
 Windows build **26100+** can use DX12 initial ordinary transparency on a
 CGPUI-owned, decorated window with a visible system or client-drawn title bar.
@@ -213,23 +214,40 @@ attribute must succeed. A creation-time backdrop already makes the runtime
 request initial renderer transparency; explicit `chrome.transparent_background`
 does likewise. There is no application-facing DComp/native window-mode choice.
 Raw HWNDs, hidden title bars, undecorated windows and older OS versions remain
-unsupported; Vulkan/default selection and Popups are unchanged. An active alpha
-lease fixes its initial title-bar mode and rejects fullscreen, hidden or
+unsupported on DX12; automatic selection does not turn later alpha failures into
+backend switches. Vulkan capability and native-first, failure-only Popup Overlay
+policy are unchanged. An active alpha lease fixes its initial title-bar mode and
+rejects fullscreen, hidden or
 undecorated transitions. See [DX12 backend scope](dx12-backend.md#bounded-ordinary-window-transparency).
 
 The alpha lease owns `DWMWA_REDIRECTIONBITMAP_ALPHA` independently of this
 material module's backdrop type and frame margins. Its redirected client remains
-alpha-zero black even when the material is `none`. Actual composition stays
-premultiplied after `set_transparent_surface(false)`; that call changes intent,
-not topology. The runtime still chooses an opaque clear when neither explicit
-transparency nor an applied material requires a transparent clear.
+alpha-zero black even when the material is `none`. On initially-alpha routes,
+actual composition stays premultiplied after `set_transparent_surface(false)`;
+that call changes intent, not topology. The runtime still chooses an opaque
+clear when neither explicit transparency nor an applied material requires a
+transparent clear.
 
-An ordinary renderer created opaque keeps its old HWND flip swapchain.
-`set_backdrop(mica)` cannot upgrade that renderer to alpha; a system title bar can
-show a title-bar-only material, not an applied client material. An opaque client
-title bar reports no visible title-bar material. Destroying the opaque renderer
-does not erase the HWND's flip history or permit later alpha creation.
-Request a needed material/transparent surface at window creation instead.
+Eligible fresh managed ordinary windows instead start with a private composition
+swapchain using IGNORE alpha. They may later replace it with a premultiplied
+chain on the same host, retaining the old visible chain until the first new
+frame passes Present, GPU/debug checks and Commit. Runtime `set_backdrop` can
+therefore request client alpha on this route; actual material application still
+depends on the platform policy above. System-title-bar windows retain HMENU;
+client-title-bar promotion requires no installed menu or in-flight menu change.
+
+A direct `set_transparent_surface(false)` can replace this dynamic chain with
+IGNORE alpha again. Its active native alpha lease deliberately remains until
+renderer-state retirement: an asynchronous Commit is not permission to release
+the old visual's HWND requirements. Thus fixed chrome/owner-thread restrictions
+remain after promotion, even when the reported composition is opaque.
+
+Existing HWND-flip renderers and ineligible windows are not converted. They can
+show a system-title-bar-only material but cannot apply it to an opaque client;
+opaque client title bars have no visible system material. Renderer destruction
+does not erase flip history. These are private capability boundaries, not an
+application-selected window mode. See the current backend document for the
+combined implementation's validation status.
 
 On the supported **system-title-bar** route, menus remain actual Windows HMENUs.
 The platform preserves the native

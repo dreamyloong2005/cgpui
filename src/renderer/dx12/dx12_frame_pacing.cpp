@@ -4,8 +4,10 @@
 namespace cgpui {
 Dx12FramePacing::Dx12FramePacing(Dx12FramePacingApi& api) noexcept : api_(api) {}
 Dx12FramePacing::~Dx12FramePacing() { reset(); }
+Dx12FramePacingApi& Dx12FramePacing::api() const noexcept { return api_; }
 
-Result<void> Dx12FramePacing::configure(IDXGISwapChain2* chain, bool enabled) {
+Result<void> Dx12FramePacing::configure(IDXGISwapChain2* chain, bool enabled, Dx12InitializationFailureClass* failure) {
+  if (failure) *failure = Dx12InitializationFailureClass::terminal;
   if (configured_) return std::unexpected(Error{.code = ErrorCode::invalid_argument,
       .message = "DX12 frame pacing must be reset before reconfiguration"});
   if (!enabled) {
@@ -13,7 +15,7 @@ Result<void> Dx12FramePacing::configure(IDXGISwapChain2* chain, bool enabled) {
     return {};
   }
   const HRESULT configured = api_.set_maximum_latency(chain, 1);
-  if (FAILED(configured)) return std::unexpected(dx12_error(configured, "maximum frame latency"));
+  if (FAILED(configured)) return std::unexpected(dx12_initialization_error(configured, "maximum frame latency", failure));
   const HANDLE handle = api_.latency_object(chain);
   if (!handle) return std::unexpected(Error{.code = ErrorCode::renderer_initialization_failed,
       .message = "DX12 waitable swapchain returned a null frame-latency handle"});

@@ -1,4 +1,5 @@
 #include "vulkan_internal.hpp"
+#include "vulkan_device_selection_internal.hpp"
 
 #include <optional>
 
@@ -33,7 +34,7 @@ bool VulkanRendererState::composition_surface() const {
 // No surface to present to: the first Vulkan 1.1 device with graphics that
 // imports D3D11 textures with their keyed mutex. Its queue renders and
 // submits; D3D11 on the same adapter presents.
-Result<void> VulkanRendererState::select_composition_device() {
+Result<void> VulkanRendererState::select_composition_device(VkPhysicalDevice preferred) {
   std::uint32_t device_count = 0;
   if (auto result = require_vk_success(
           vkEnumeratePhysicalDevices(instance_, &device_count, nullptr),
@@ -47,6 +48,12 @@ Result<void> VulkanRendererState::select_composition_device() {
           "vkEnumeratePhysicalDevices failed");
       !result) {
     return result;
+  }
+  devices.resize(device_count);
+  if (auto selected = vulkan_filter_device_candidates(devices, requested_device_index_, preferred); !selected)
+    return selected;
+  if (const auto previous = std::ranges::find(devices, preferred); previous != devices.end()) {
+    std::rotate(devices.begin(), previous, previous + 1);
   }
   const std::span<const char* const> extensions = vulkan_composition_device_extensions();
   for (VkPhysicalDevice device : devices) {

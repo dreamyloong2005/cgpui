@@ -2,6 +2,7 @@
 #include "win32_popup_window_internal.hpp"
 #include "win32_window_factory_internal.hpp"
 #include "win32_window_registry_internal.hpp"
+#include "win32_native_window_work_internal.hpp"
 
 #include <utility>
 
@@ -19,6 +20,7 @@ Win32Window::Win32Window(
 }
 
 Win32Window::~Win32Window() {
+  win32_native_window_work_close(hwnd_, native_work_instance_);
   invalidate_window_registration();
   surface_alpha_.detach();
   if (hwnd_ != nullptr) {
@@ -32,6 +34,7 @@ Win32Window::~Win32Window() {
 
 void Win32Window::attach(HWND hwnd) {
   hwnd_ = hwnd;
+  native_work_instance_ = win32_native_window_work_open(hwnd);
   surface_alpha_.attach(hwnd);
   uia_accessibility_.attach(hwnd);
   refresh_cursor(true);
@@ -39,6 +42,7 @@ void Win32Window::attach(HWND hwnd) {
 }
 
 void Win32Window::detach() {
+  win32_native_window_work_close(hwnd_, native_work_instance_);
   surface_alpha_.detach();
   set_pointer_capture(false);
   revoke_drop_target();

@@ -2467,7 +2467,8 @@ int main() {
   if (line_count(runtime_renderer_resize_results_source) > 80 ||
       !contains(runtime_renderer_resize_results_source,
                 "Result<void> WindowRuntime::try_resize_surface(") ||
-      !contains(runtime_renderer_resize_results_source, "renderer_->resize(") ||
+      !contains(runtime_renderer_resize_results_source, "surface_resizes_.request(") ||
+      !contains(read_source("src/ui/runtime_surface_resizes.cpp"), "renderer.resize(size, scale)") ||
       contains(runtime_renderer_resize_results_source, "fail_and_quit(") ||
       contains(runtime_renderer_resize_results_source,
                "WindowRuntime::try_create_renderer(") ||

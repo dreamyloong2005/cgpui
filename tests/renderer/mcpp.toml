@@ -55,6 +55,13 @@ sources = [
     "renderer_pixel_test_window.cpp",
     "renderer_pixel_test_capture.cpp",
     "renderer_backdrop_pass_test_support.cpp",
+    "vulkan_acquire_sync_failure_test_support.cpp",
+    "vulkan_image_create_failure_test_support.cpp",
+    "vulkan_device_recovery_image_limits_test_support.cpp",
+    "vulkan_device_recovery_hooks_test_support.cpp",
+    "vulkan_device_recovery_lifetime_test_support.cpp",
+    "vulkan_device_recovery_operations_test_support.cpp",
+    "vulkan_device_recovery_scene_test_support.cpp",
     "vulkan_missing_image_native_trace_test_support.cpp",
     "vulkan_missing_image_native_draw_sequence_test_support.cpp",
     "vulkan_missing_image_native_reuse_scene_test_support.cpp",
@@ -88,6 +95,12 @@ discover = [
 # Windows and Linux only (Vulkan, or a backend macOS does not have).
 [target.'cfg(any(os = "windows", os = "linux"))'.test]
 discover = [
+    "vulkan_device_selection_policy_test.cpp",
+    "vulkan_device_recovery_retention_test.cpp",
+    "vulkan_device_recovery_accounting_test.cpp",
+    "vulkan_device_recovery_restore_policy_test.cpp",
+    "vulkan_device_recovery_retained_validation_test.cpp",
+    "vulkan_glyph_atlas_extent_limit_test.cpp",
     "native_text_glyph_spacing_test.cpp",
     "vulkan_backdrop_blur_plan_test.cpp",
     "vulkan_box_shadow_geometry_test.cpp",
@@ -146,6 +159,17 @@ discover = [
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "vulkan_device_recovery_limits_test.cpp",
+    "vulkan_device_selection_native_test.cpp",
+    "vulkan_device_selection_unsuitable_test.cpp",
+    "vulkan_device_recovery_acquire_sync_test.cpp",
+    "vulkan_device_recovery_eviction_failure_test.cpp",
+    "vulkan_device_recovery_alpha_test.cpp",
+    "vulkan_device_recovery_sites_test.cpp",
+    "vulkan_device_recovery_content_test.cpp",
+    "vulkan_device_recovery_failure_test.cpp",
+    "vulkan_device_recovery_nonloss_test.cpp",
+    "vulkan_device_recovery_popup_test.cpp",
     "renderer_image_batch_last_upload_test.cpp",
     "renderer_image_batch_invalidation_prefix_test.cpp",
     "renderer_image_batch_abandonment_test.cpp",

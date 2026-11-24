@@ -1,5 +1,6 @@
 #include "renderer_backend_selection_internal.hpp"
 #include "renderer_selection_metadata_internal.hpp"
+#include "renderer_automatic_selection_internal.hpp"
 
 #include <utility>
 
@@ -20,10 +21,13 @@ Result<RendererBackendSelection> parse_renderer_backend_selection(
 
 Result<std::unique_ptr<Renderer>> select_renderer_backend(
     const RenderSurfaceDescriptor& descriptor, std::string_view preference,
-    RendererFactory vulkan_factory, RendererFactory dx12_factory) {
+    RendererFactory vulkan_factory, RendererFactory dx12_factory,
+    RendererAttemptFactory automatic_attempt) {
   const auto selection = parse_renderer_backend_selection(preference);
   if (!selection) return std::unexpected(selection.error());
-  // No automatic DX12 attempt and no fallback from an explicit request.
+  if (*selection == RendererBackendSelection::automatic)
+    return select_automatic_renderer(descriptor, vulkan_factory, automatic_attempt);
+  // Only explicit requests reach named factories; they never fall back.
   const auto factory = *selection == RendererBackendSelection::dx12
       ? dx12_factory : vulkan_factory;
   if (!factory) return std::unexpected(Error{

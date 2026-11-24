@@ -28,8 +28,8 @@ Result<void> VulkanCompositionPresenter::resize(VkExtent2D) {
   return std::unexpected(unsupported());
 }
 
-Result<void> VulkanCompositionPresenter::submit(VkQueue, VkCommandBuffer, VkFence) const {
-  return std::unexpected(unsupported());
+VkResult VulkanCompositionPresenter::submit(VkQueue, VkCommandBuffer, VkFence) const {
+  return VK_ERROR_FEATURE_NOT_PRESENT;
 }
 
 Result<void> VulkanCompositionPresenter::present() { return std::unexpected(unsupported()); }

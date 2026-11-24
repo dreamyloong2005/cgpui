@@ -11,7 +11,8 @@ namespace cgpui {
 
 bool WindowRuntime::RuntimeFrameReadiness::handle(
     WindowRuntime& runtime, WindowRuntimeId window, const Error& error) {
-  if (error.code == ErrorCode::frame_not_ready) {
+  if (error.code == ErrorCode::frame_not_ready ||
+      error.code == ErrorCode::renderer_recovery_pending) {
     if (auto scheduled = defer(runtime, window); !scheduled)
       runtime.fail_and_quit(scheduled.error());
     return true;
@@ -102,6 +103,7 @@ void WindowRuntime::RuntimeFrameReadiness::clear(
 }
 
 void WindowRuntime::RuntimeFrameReadiness::clear_all(WindowRuntime& runtime) {
+  runtime.state_->windows.surface_resizes_.clear_all();
   const auto retired = std::exchange(pending_, {});
   for (const auto& pending : retired)
     if (pending.timer.value) (void)runtime.cancel_timer(pending.timer);

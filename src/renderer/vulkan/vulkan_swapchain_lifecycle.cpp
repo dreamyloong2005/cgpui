@@ -79,6 +79,7 @@ void VulkanRendererState::destroy_swapchain() {
 
 void VulkanRendererState::install_swapchain(
     VulkanSwapchainResources&& resources) {
+  auto command_reuse = prepare_swapchain_install(resources);
   swapchain_ = resources.swapchain;
   swapchain_format_ = resources.format;
   swapchain_extent_ = resources.extent;
@@ -92,8 +93,7 @@ void VulkanRendererState::install_swapchain(
   rounded_rect_pipeline_resources_ = resources.rounded_rect_pipeline;
   framebuffers_ = std::move(resources.framebuffers);
   command_buffers_ = std::move(resources.command_buffers);
-  command_reuse_states_.clear();
-  command_reuse_states_.resize(command_buffers_.size());
+  command_reuse_states_ = std::move(command_reuse);
   resources.swapchain = VK_NULL_HANDLE;
   resources.render_pass = VK_NULL_HANDLE;
   resources.image_pipeline = {};

@@ -1,6 +1,10 @@
 #pragma once
 
 #include "dx12_native_internal.hpp"
+#include "dx12_dred_site_internal.hpp"
+#include "dx12_surface_policy_internal.hpp"
+#include "dx12_state_operations_internal.hpp"
+#include "../../core/native_window_work_internal.hpp"
 #include "cgpui/renderer/renderer_frame_diagnostic_snapshot.hpp"
 #include <array>
 #include <cstdint>
@@ -24,13 +28,19 @@ class Dx12FrameCommandReuse;
 class Dx12CommandObservation;
 class Dx12FramePacing;
 class Dx12FramePacingApi;
-struct Dx12State {
+struct Dx12RecoveryLease;
+struct Dx12RecoveryTicket;
+struct Dx12State : std::enable_shared_from_this<Dx12State> {
   explicit Dx12State(Dx12FramePacingApi* pacing_api = nullptr,
                      Dx12SynchronizationApi* synchronization_api = nullptr);
   ~Dx12State();
   mutable std::recursive_mutex operation_mutex;
   std::size_t operation_depth = 0;
   DWORD window_thread_id = 0;
+  std::shared_ptr<Dx12RecoveryLease> recovery_lease;
+  std::shared_ptr<Dx12RecoveryTicket> recovery_ticket;
+  std::shared_ptr<NativeWindowWork> recovery_work;
+  NativeWindowWorkToken recovery_work_token;
   Dx12Ptr<IDXGIFactory4> factory;
   Dx12Ptr<IDXGIAdapter1> adapter;
   Dx12Ptr<ID3D12Device> device;
@@ -40,6 +50,7 @@ struct Dx12State {
   std::uint64_t fence_value = 0;
   std::uint64_t pending_fence_value = 0;
   HRESULT removal_reason = S_OK;
+  Dx12DredSite dred_status;
   Dx12Ptr<IDXGISwapChain3> swapchain;
   std::unique_ptr<Dx12CompositionHost> composition_host;
   std::unique_ptr<Dx12WindowAlphaLease> window_alpha;
@@ -76,22 +87,12 @@ struct Dx12State {
   bool submitted = false;
   bool failed = false;
   bool recovery_pending = false;
-  bool composition_surface = false;
+  Dx12SurfacePolicy surface_policy;
+  bool surface_changing = false;
+  bool composition_surface = false; // Actual PREMULT alpha, independent of the native route.
   bool transparent_background = false;
   // Optional private test boundary; its owner must outlive this state.
   Dx12SynchronizationApi* synchronization_api = nullptr;
 };
 
-Result<void> dx12_create_device(Dx12State& state);
-Result<void> dx12_create_swapchain(Dx12State& state);
-Result<void> dx12_create_targets(Dx12State& state);
-Result<void> dx12_resize(Dx12State& state, Size size, DpiScale scale);
-Result<void> dx12_create_pipeline(Dx12State& state);
-Result<void> dx12_wait_idle(Dx12State& state);
-Result<void> dx12_check_debug_errors(Dx12State& state);
-Result<void> dx12_prepare_capture(Dx12State& state);
-void dx12_record_capture(Dx12State& state, ID3D12Resource& target);
-Result<RendererFramePixels> dx12_read_capture(Dx12State& state);
-void dx12_transition(ID3D12GraphicsCommandList& commands, ID3D12Resource& resource,
-                     D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 } // namespace cgpui

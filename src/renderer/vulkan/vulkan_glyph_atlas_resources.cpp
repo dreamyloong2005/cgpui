@@ -1,4 +1,5 @@
 #include "vulkan_glyph_atlas_resources_internal.hpp"
+#include "vulkan_glyph_atlas_validation_internal.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -70,6 +71,8 @@ Result<void> vulkan_update_glyph_atlas_resources(
     VkDevice device,
     const GlyphAtlasProductionPlan& plan,
     VulkanGlyphAtlasResources& resources) {
+  if (auto result = vulkan_validate_glyph_atlas_resources(physical_device, plan.live_resources);
+      !result) return result;
   if (!vulkan_glyph_atlas_plan_fits_descriptor_capacity(plan)) {
     return std::unexpected(vulkan_error(
         ErrorCode::renderer_initialization_failed,

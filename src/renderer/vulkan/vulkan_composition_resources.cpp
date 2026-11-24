@@ -43,15 +43,20 @@ Result<VulkanSwapchainResources> VulkanRendererState::create_composition_resourc
       .image_usage = vulkan_composition_usage,
       .images = {composition_->image()},
   };
-  if (auto result = create_swapchain_targets(resources); !result) {
+  try {
+    if (auto result = create_swapchain_targets(resources); !result) {
+      destroy_swapchain_resources(resources);
+      return std::unexpected(result.error());
+    }
+    // DXGI_ALPHA_MODE_PREMULTIPLIED, whatever the request.
+    surface_composition_ = vulkan_surface_composition(
+        VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
+        descriptor_.transparent_background);
+    return resources;
+  } catch (...) {
     destroy_swapchain_resources(resources);
-    return std::unexpected(result.error());
+    throw;
   }
-  // DXGI_ALPHA_MODE_PREMULTIPLIED, whatever the request.
-  surface_composition_ = vulkan_surface_composition(
-      VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
-      descriptor_.transparent_background);
-  return resources;
 }
 
 } // namespace cgpui

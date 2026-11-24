@@ -6,6 +6,7 @@
 #include "win32_window_proc_background_internal.hpp"
 #include "win32_window_proc_popup_internal.hpp"
 #include "win32_window_proc_surface_alpha_internal.hpp"
+#include "win32_native_window_work_internal.hpp"
 
 namespace cgpui {
 
@@ -18,7 +19,8 @@ LRESULT CALLBACK win32_window_proc(
       GetWindowLongPtrW(hwnd, GWLP_USERDATA));
   LRESULT result = 0;
   const UINT_PTR alpha_instance = win32_window_surface_alpha_instance(hwnd);
-  if (win32_window_proc_handle_surface_alpha(hwnd, message, wparam, lparam, result) ||
+  if (win32_window_proc_handle_native_work(hwnd, message, wparam, lparam, result) ||
+      win32_window_proc_handle_surface_alpha(hwnd, message, wparam, lparam, result) ||
       win32_window_proc_handle_popup(hwnd, message, result) ||
       win32_window_proc_handle_test_drag(window, message, lparam, result) ||
       win32_window_proc_handle_accessibility(

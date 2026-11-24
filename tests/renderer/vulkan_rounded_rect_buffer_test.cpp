@@ -101,8 +101,10 @@ int test_rounded_rect_buffer_structure() {
       read_source("src/renderer/vulkan/vulkan_state_internal.hpp");
   const std::string destructor =
       read_source("src/renderer/vulkan/vulkan_state.cpp");
+  const std::string device_resources =
+      read_source("src/renderer/vulkan/vulkan_device_resources.cpp");
   if (header.empty() || source.empty() || shared.empty() || frame.empty() ||
-      state.empty() || destructor.empty()) {
+      state.empty() || destructor.empty() || device_resources.empty()) {
     return 30;
   }
   if (!contains(header, "struct VulkanRoundedRectBufferResources") ||
@@ -112,7 +114,9 @@ int test_rounded_rect_buffer_structure() {
       !contains(shared, "vkMapMemory") ||
       !contains(frame, "prepare_rounded_rect_frame(") ||
       !contains(state, "VulkanRoundedRectBufferResources rounded_rect_buffers_") ||
-      !contains(destructor, "vulkan_destroy_rounded_rect_buffers(")) {
+      !contains(destructor, "destroy_device_resources(true)") ||
+      !contains(device_resources, "VulkanRendererState::destroy_device_resources(") ||
+      !contains(device_resources, "vulkan_destroy_rounded_rect_buffers(")) {
     return 31;
   }
   return 0;

@@ -2,7 +2,7 @@
 
 Both effects live in the shared Vulkan renderer (Win32 and Wayland) and in
 the Metal renderer (macOS); see [Metal](#metal) for the differences.
-The opt-in Windows [DX12 backend](dx12-backend.md) also implements these effects.
+The Windows [DX12 backend](dx12-backend.md) also implements these effects.
 The Vulkan pipeline details below are not a description of DX12's native
 resource topology; the shared Windows pixel scenes select either backend.
 

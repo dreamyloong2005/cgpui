@@ -6,30 +6,7 @@ VulkanRendererState::VulkanRendererState(RenderSurfaceDescriptor descriptor)
     : descriptor_(std::move(descriptor)) {}
 
 VulkanRendererState::~VulkanRendererState() {
-  if (device_ != VK_NULL_HANDLE) {
-    vkDeviceWaitIdle(device_);
-    destroy_swapchain();
-    composition_.reset();  // its imported image and transfer commands
-    destroy_sync_objects();
-    vulkan_destroy_rounded_rect_buffers(device_, solid_rect_buffers_);
-    vulkan_destroy_rounded_rect_buffers(device_, rounded_rect_buffers_);
-    vulkan_destroy_rounded_rect_buffers(device_, box_shadow_buffers_);
-    vulkan_destroy_backdrop_blur_resources(device_, backdrop_blur_resources_);
-    vulkan_destroy_image_vertex_buffer(device_, image_vertex_buffer_);
-    vulkan_destroy_text_vertex_buffer(device_, text_vertex_buffer_);
-    vulkan_destroy_frame_pixel_capture(device_, frame_pixel_capture_);
-    vulkan_destroy_image_texture_upload_resources(
-        device_, image_texture_uploads_);
-    vulkan_destroy_image_texture_resources(device_, image_texture_resources_);
-    vulkan_destroy_image_texture_descriptor_resources(
-        device_, image_texture_resources_);
-    vulkan_destroy_glyph_atlas_upload_resources(device_, glyph_atlas_uploads_);
-    vulkan_destroy_glyph_atlas_resources(device_, glyph_atlas_resources_);
-    if (command_pool_ != VK_NULL_HANDLE) {
-      vkDestroyCommandPool(device_, command_pool_, nullptr);
-    }
-    vkDestroyDevice(device_, nullptr);
-  }
+  destroy_device_resources(true);
   if (surface_ != VK_NULL_HANDLE) {
     vkDestroySurfaceKHR(instance_, surface_, nullptr);
   }
@@ -42,6 +19,9 @@ Result<std::shared_ptr<VulkanRendererState>> VulkanRendererState::create(
     RenderSurfaceDescriptor descriptor) {
   auto renderer = std::shared_ptr<VulkanRendererState>(
       new VulkanRendererState(std::move(descriptor)));
+  if (auto result = renderer->initialize_device_selection(); !result) {
+    return std::unexpected(result.error());
+  }
   if (auto result = renderer->create_instance(); !result) {
     return std::unexpected(result.error());
   }
@@ -51,30 +31,10 @@ Result<std::shared_ptr<VulkanRendererState>> VulkanRendererState::create(
   if (auto result = renderer->select_physical_device(); !result) {
     return std::unexpected(result.error());
   }
-  if (auto result = renderer->create_device(); !result) {
+  if (auto result = renderer->create_device_resources(); !result) {
     return std::unexpected(result.error());
   }
-  if (auto result = vulkan_create_image_texture_descriptor_resources(
-          renderer->device_, renderer->image_texture_resources_);
-      !result) {
-    return std::unexpected(result.error());
-  }
-  if (auto result = renderer->create_command_pool(); !result) {
-    return std::unexpected(result.error());
-  }
-  if (auto result = vulkan_create_glyph_atlas_descriptor_resources(
-          renderer->device_,
-          renderer->glyph_atlas_resources_);
-      !result) {
-    return std::unexpected(result.error());
-  }
-  if (auto result = renderer->create_swapchain(); !result) {
-    return std::unexpected(result.error());
-  }
-  if (auto result = renderer->create_sync_objects(); !result) {
-    return std::unexpected(result.error());
-  }
-
+  renderer->device_generation_ = 1;
   return renderer;
 }
 

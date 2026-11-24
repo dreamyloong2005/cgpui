@@ -21,7 +21,7 @@ Registry& registry() {
 } // namespace
 
 void dx12_register_device_cohort(const std::shared_ptr<Dx12State>& state) {
-  state->window_thread_id = GetWindowThreadProcessId(state->hwnd, nullptr);
+  if (!state->window_thread_id) state->window_thread_id = GetWindowThreadProcessId(state->hwnd, nullptr);
   if (!state->info.adapter_luid || !state->window_thread_id) return;
   auto& records = registry();
   std::lock_guard lock(records.mutex);

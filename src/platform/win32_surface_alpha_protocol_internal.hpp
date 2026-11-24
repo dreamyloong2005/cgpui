@@ -14,6 +14,9 @@ inline constexpr UINT win32_surface_alpha_acquire_message = WM_APP + 5U;
 inline constexpr UINT win32_surface_alpha_release_message = WM_APP + 6U;
 inline constexpr UINT win32_surface_alpha_status_message = WM_APP + 7U;
 inline constexpr UINT win32_surface_alpha_mark_opaque_message = WM_APP + 8U;
+// +9 belongs to the separate native-window-work mailbox.
+inline constexpr UINT win32_surface_alpha_reserve_message = WM_APP + 16U;
+inline constexpr UINT win32_surface_alpha_suspend_message = WM_APP + 17U;
 inline constexpr const wchar_t* win32_surface_alpha_property = L"CGPUI.SurfaceAlpha.V1";
 
 // The property identifies protocol V1. Renderer callers require the same process
@@ -31,4 +34,9 @@ inline constexpr const wchar_t* win32_surface_alpha_property = L"CGPUI.SurfaceAl
 // history, rejects an active lease, and makes later query/acquire E_NOTIMPL.
 // Foreign-thread destruction may PostMessageW(release, owner_cookie, instance).
 // Both tokens are checked on the window thread; no borrowed data is queued.
+// reserve: fresh eligible system/client-caption ordinary HWND, holds the owner token
+// with bitmap alpha FALSE; no BufferedPaint/menu repair. acquire may promote the
+// same reservation. suspend rolls back that promotion without dropping ownership.
+// Client caption requires no HMENU; acquire rechecks current menu/chrome capability.
+// A reservation blocks mark_opaque, but active() remains actual bitmap alpha.
 } // namespace cgpui

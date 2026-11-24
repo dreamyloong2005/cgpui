@@ -33,6 +33,7 @@ int main() {
     const auto factory = read("src/renderer/windows/windows_renderer_factory.cpp");
     require(has(factory, "select_renderer_backend(") && has(factory, "CGPUI_RENDERER") &&
                 has(factory, "create_vulkan_renderer") && has(factory, "create_dx12_renderer") &&
+                has(factory, "dx12_attempt_renderer_initialization") &&
                 std::count(factory.begin(), factory.end(), '\n') <= 50,
             "Windows dispatcher only reads environment and delegates selection");
     const auto dispatcher = read("packages/renderer-windows/mcpp.toml");

@@ -36,9 +36,10 @@ int main() {
       !has(read("src/ui/runtime_rendering.cpp"), "frame_readiness_.handle(") ||
       !has(read("src/ui/runtime_window_rendering.cpp"), "frame_readiness_.handle(")) return 2;
   const auto presentation = read("src/renderer/vulkan/vulkan_presentation.cpp");
-  const auto first_retry = presentation.find("ErrorCode::frame_retry_required");
-  if (first_retry == std::string::npos ||
-      presentation.find("ErrorCode::frame_retry_required", first_retry + 1) == std::string::npos) return 3;
+  const auto acquisition = read("src/renderer/vulkan/vulkan_frame_acquisition.cpp");
+  if (!has(presentation, "ErrorCode::frame_retry_required") ||
+      !has(presentation, "complete_frame_acquisition(acquire_result)") ||
+      !has(acquisition, "ErrorCode::frame_retry_required") || !bounded(acquisition, 45)) return 3;
   const auto surface = read("src/renderer/metal/metal_surface.mm");
   if (!has(surface, "state.layer.framebufferOnly = NO") ||
       has(surface, "state.layer.framebufferOnly = YES")) return 4;

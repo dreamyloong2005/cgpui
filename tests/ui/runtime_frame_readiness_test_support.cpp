@@ -39,6 +39,7 @@ class Frame final : public cgpui::RenderFrame {
   void draw_rect(const cgpui::SolidRect&) override {}
   cgpui::Result<void> present() override {
     ++state_->presents;
+    if (auto callback = std::exchange(state_->on_present, {})) callback();
     if (state_->present_error)
       return std::unexpected(cgpui::Error{*state_->present_error, "scripted present outcome"});
     return {};
@@ -102,7 +103,17 @@ View::View(std::shared_ptr<State> state) : state_(std::move(state)) {}
 void View::bind(std::shared_ptr<State> state) { state_ = std::move(state); }
 void View::paint(cgpui::PaintList&, cgpui::Size) { ++state_->paints; }
 Renderer::Renderer(std::shared_ptr<State> state) : state_(std::move(state)) {}
-cgpui::Result<void> Renderer::resize(cgpui::Size, cgpui::DpiScale) { ++state_->resizes; return {}; }
+cgpui::Result<void> Renderer::resize(cgpui::Size size, cgpui::DpiScale scale) {
+  ++state_->resizes;
+  state_->last_resize_size = size;
+  state_->last_resize_scale = scale;
+  if (!state_->resize_outcomes.empty()) {
+    const auto outcome = state_->resize_outcomes.front();
+    state_->resize_outcomes.pop_front();
+    if (outcome) return std::unexpected(cgpui::Error{*outcome, "scripted resize outcome"});
+  }
+  return {};
+}
 cgpui::Result<std::unique_ptr<cgpui::RenderFrame>> Renderer::begin_frame() {
   ++state_->begins;
   if (!state_->outcomes.empty()) {

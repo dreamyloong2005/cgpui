@@ -14,17 +14,22 @@
 mcpp builds and runs tests in parallel. It must not download a toolchain:
 the workspace uses the installed one (`[workspace.toolchain]`).
 
-## Windows: Win32 + Vulkan
+## Windows: Win32 + DX12 / Vulkan
 
-- Windows 10 or later
+- Windows 10 or later; ordinary-window DX12 alpha has the narrower
+  [Windows-build and managed-window requirements](dx12-backend.md#bounded-ordinary-window-transparency)
 - Visual Studio 2022 Build Tools with the x64 C++ workload
 - PowerShell 7 for CI scripts
 - The LunarG Vulkan SDK (1.4.341.1 here) with `VULKAN_SDK` set;
-  `packages/renderer-vulkan/build.mcpp` takes the headers and `vulkan-1.lib`
-  from it. Its `slangc` and `spirv-val` are needed only to compile edited
+  `packages/renderer-vulkan/build.mcpp` takes its headers, not `vulkan-1.lib`.
+  Its `slangc` and `spirv-val` are needed only to compile edited
   shaders ([Getting Started](shaders.md)).
-- A driver and loader with Vulkan 1.1 or later: the shaders are SPIR-V 1.3,
-  and the renderer skips devices below 1.1.
+- A D3D12 adapter supporting feature level 11.0 and shader model 6.0 for DX12.
+  Automatic selection prefers hardware; WARP is an explicit diagnostic choice.
+- A driver and loader with Vulkan 1.1 or later only when Vulkan is explicitly
+  selected or reached through checked initialization fallback: the shaders are
+  SPIR-V 1.3, and the renderer skips devices below 1.1. A successful automatic
+  DX12 initialization does not load Vulkan. Linux/macOS selection is unchanged.
 
 The toolchain is `msvc@system` (the installed Build Tools), in any UI
 language: mcpp takes header dependencies from cl.exe's `/sourceDependencies`
@@ -36,10 +41,11 @@ the SHA-256-pinned x64 Vulkan SDK 1.4.341.1 and exports `VULKAN_SDK` before
 checking the build environment. `scripts/ci/windows-package.ps1` is the package
 entrypoint.
 
-For the hosted Win32 example tests only, CI selects the SwiftShader Vulkan
-driver bundled with the runner's x64 Chrome, verifies it with `vulkaninfo`,
-then exercises actual Win32 surfaces and presents frames. The SDK does not
-ship this driver and local builds do not change Vulkan driver registration.
+For the hosted Win32 example tests only, CI explicitly selects Vulkan with
+`CGPUI_RENDERER=vulkan` and the SwiftShader driver bundled with the runner's
+x64 Chrome, verifies it with `vulkaninfo`, then exercises actual Win32 surfaces
+and presents frames. This is a Vulkan gate, not automatic DX12 coverage. The SDK
+does not ship this driver and local builds do not change Vulkan driver registration.
 
 ## Linux: Wayland + Vulkan
 

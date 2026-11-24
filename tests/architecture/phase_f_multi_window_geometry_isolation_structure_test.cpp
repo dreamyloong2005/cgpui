@@ -51,7 +51,8 @@ int main() {
   if (!contains(activation, "record.framebuffer_size = window_state.framebuffer_size") ||
       !contains(activation, "record.viewport_size = to_logical_pixels(") ||
       !contains(events, "record->framebuffer_size = resized->size") ||
-      !contains(events, "record->renderer->resize(resized->size, resized->scale)")) return 3;
+      !contains(events, "surface_resizes_.request(record->runtime_id,") ||
+      !contains(read_source("src/ui/runtime_surface_resizes.cpp"), "renderer.resize(size, scale)")) return 3;
   if (!contains(records, ".viewport_size = record.viewport_size") ||
       !contains(records, ".scale = record.scale") ||
       !contains(frames, ".viewport_size = record.viewport_size") ||

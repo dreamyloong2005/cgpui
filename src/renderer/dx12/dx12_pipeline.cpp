@@ -5,7 +5,8 @@
 #include <cstddef>
 
 namespace cgpui {
-Result<void> dx12_create_pipeline(Dx12State& state) {
+Result<void> dx12_create_pipeline(Dx12State& state, Dx12InitializationFailureClass* failure) {
+  if (failure) *failure = Dx12InitializationFailureClass::terminal;
   D3D12_ROOT_PARAMETER parameter{};
   parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
   parameter.Constants.ShaderRegister = 0;
@@ -18,10 +19,10 @@ Result<void> dx12_create_pipeline(Dx12State& state) {
   Dx12Ptr<ID3DBlob> blob, errors;
   HRESULT result = D3D12SerializeRootSignature(&signature, D3D_ROOT_SIGNATURE_VERSION_1,
                                                &blob, &errors);
-  if (FAILED(result)) return std::unexpected(dx12_error(result, "root signature serialization"));
+  if (FAILED(result)) return std::unexpected(dx12_initialization_error(result, "root signature serialization", failure));
   result = state.device->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(),
                                              IID_PPV_ARGS(&state.root_signature));
-  if (FAILED(result)) return std::unexpected(dx12_error(result, "root signature creation"));
+  if (FAILED(result)) return std::unexpected(dx12_initialization_error(result, "root signature creation", failure));
   const D3D12_INPUT_ELEMENT_DESC inputs[] = {
       {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, offsetof(RectVertex, position), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
       {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offsetof(RectVertex, color), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
@@ -31,7 +32,7 @@ Result<void> dx12_create_pipeline(Dx12State& state) {
   pipeline.PS = dx12_rect_fragment_shader();
   pipeline.InputLayout = {inputs, 3};
   result = state.device->CreateGraphicsPipelineState(&pipeline, IID_PPV_ARGS(&state.pipeline));
-  if (FAILED(result)) return std::unexpected(dx12_error(result, "rectangle pipeline"));
+  if (FAILED(result)) return std::unexpected(dx12_initialization_error(result, "rectangle pipeline", failure));
   return dx12_check_debug_errors(state);
 }
 } // namespace cgpui

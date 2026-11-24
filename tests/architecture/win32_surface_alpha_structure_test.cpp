@@ -24,6 +24,7 @@ int main() {
   try {
     for (const auto* path : {
         "src/platform/win32/win32_window_surface_alpha.cpp",
+        "src/platform/win32/win32_window_surface_alpha_lease.cpp",
         "src/platform/win32/win32_window_surface_alpha_protocol.cpp",
         "src/platform/win32/win32_window_proc_surface_alpha.cpp",
         "src/platform/win32/win32_native_menu_alpha.cpp",
@@ -58,7 +59,8 @@ int main() {
             "the versioned private protocol carries only tokens, never request addresses or callbacks");
     const auto owner = read("src/platform/win32/win32_window_surface_alpha.cpp");
     const auto requests = read("src/platform/win32/win32_window_surface_alpha_protocol.cpp");
-    require(has(owner, "minimum_build = 26100") && has(owner, "FAILED(enabled)") &&
+    const auto lease = read("src/platform/win32/win32_window_surface_alpha_lease.cpp");
+    require(has(owner, "minimum_build = 26100") && has(lease, "FAILED(enabled)") &&
                 has(owner, "SetPropW") && has(owner, "RemovePropW") && has(owner, "opaque_history_") &&
                 has(requests, "instance != instance_") &&
                 has(requests, "owner_cookie_ == owner_cookie") &&
@@ -92,13 +94,16 @@ int main() {
                 !has(owner, "win32_plan_window_backdrop"),
             "native alpha ownership is independent of material/backdrop ownership");
     const auto renderer = read("src/renderer/dx12/dx12_window_alpha.cpp");
-    const auto entry = read("src/renderer/dx12/dx12_renderer.cpp");
+    const auto entry = read("src/renderer/dx12/dx12_initialization.cpp");
+    const auto mark_opaque = entry.find("dx12_mark_opaque_window(");
+    const auto create_chain = entry.find("dx12_create_swapchain(");
     require(has(renderer, "win32_surface_alpha_protocol_internal.hpp") &&
                 has(renderer, "PostMessageW") && has(renderer, "GetCurrentThreadId()") &&
                 has(renderer, "GetCurrentProcessId()") && has(renderer, "win32_surface_alpha_mark_opaque_message") &&
                 !has(renderer, "Win32SurfaceAlphaRequest") &&
                 !has(renderer, "Win32Window") && !has(renderer, "DwmSetWindowAttribute") &&
-                entry.find("dx12_mark_opaque_window(") < entry.find("dx12_create_swapchain("),
+                mark_opaque != std::string::npos && create_chain != std::string::npos &&
+                mark_opaque < create_chain,
             "renderer lease uses only private HWND tokens and marks flip use before native swapchain creation");
     const auto package = read("packages/renderer-dx12/mcpp.toml");
     require(!has(package, "platform-win32") && !has(package, "uxtheme.lib"),

@@ -1,3 +1,4 @@
+#include "dx12_capture_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_buffers_internal.hpp"
 #include <cstring>

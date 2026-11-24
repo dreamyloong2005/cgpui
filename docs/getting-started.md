@@ -79,11 +79,11 @@ scripts/dev/test.ps1 -Renderer both -p tests/renderer
 scripts/dev/test.ps1 -Renderer dx12 -p tests/renderer renderer_text_ink_extent_pixel_test
 ```
 
-The 13 common Windows scenes verify requested/actual backend identity: mismatch
-fails, never skips or falls back. Unset/empty/`auto` retains Vulkan; production
-defaults and private `vulkan_*` tests are unchanged. See
-[DX12 testing](dx12-backend.md#common-windows-pixel-contracts) for scenes and controls;
-these commands are instructions, not evidence of passing every configuration.
+The 13 common Windows scenes require exact requested/actual identity: no skips or fallback.
+Unset/empty/`auto` uses named Vulkan in this helper; private `vulkan_*` tests stay Vulkan.
+Production Windows uses [DX12-first selection](dx12-backend.md#selection-and-testing).
+See [scene controls](dx12-backend.md#common-windows-pixel-contracts); these commands
+are instructions, not evidence of passing every configuration.
 
 ## 6. Start an Application
 

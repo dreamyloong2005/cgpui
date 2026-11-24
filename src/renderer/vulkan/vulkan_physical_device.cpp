@@ -1,5 +1,6 @@
 #include "vulkan_internal.hpp"
 #include "vulkan_device_preference_internal.hpp"
+#include "vulkan_device_selection_internal.hpp"
 
 #include <optional>
 
@@ -83,8 +84,8 @@ Result<bool> VulkanRendererState::has_device_extension(
   return false;
 }
 
-Result<void> VulkanRendererState::select_physical_device() {
-  if (composition_surface()) return select_composition_device();
+Result<void> VulkanRendererState::select_physical_device(VkPhysicalDevice preferred) {
+  if (composition_surface()) return select_composition_device(preferred);
   std::uint32_t device_count = 0;
   if (auto result = require_vk_success(
           vkEnumeratePhysicalDevices(instance_, &device_count, nullptr),
@@ -92,7 +93,6 @@ Result<void> VulkanRendererState::select_physical_device() {
       !result) {
     return result;
   }
-
   if (device_count == 0) {
     return std::unexpected(vulkan_error(
         ErrorCode::renderer_initialization_failed,
@@ -106,6 +106,9 @@ Result<void> VulkanRendererState::select_physical_device() {
       !result) {
     return result;
   }
+  devices.resize(device_count);
+  if (auto selected = vulkan_filter_device_candidates(devices, requested_device_index_, preferred); !selected)
+    return selected;
 
   // Enumeration order wins, except that a transparent surface prefers the
   // first suitable device whose surface can composite premultiplied alpha.
@@ -139,6 +142,10 @@ Result<void> VulkanRendererState::select_physical_device() {
         .families = queue_families->families,
         .composite_alpha = vulkan_surface_composite_alpha(device, surface_),
     };
+    if (device == preferred) {
+      selected = candidate; // A still-suitable original adapter wins recovery.
+      break;
+    }
     if (!selected || vulkan_prefer_device_candidate(
                          candidate, *selected,
                          descriptor_.transparent_background)) {

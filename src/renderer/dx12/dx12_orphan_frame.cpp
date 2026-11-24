@@ -38,7 +38,8 @@ Result<void> dx12_fail_orphan_frame(Dx12State& state, Error error) {
   state.failed = true;
   retire_removed_epoch(state);
   // There is no facade from which to obtain a new frame. Never advertise a retry.
-  if (error.code == ErrorCode::frame_retry_required || error.code == ErrorCode::frame_not_ready)
+  if (error.code == ErrorCode::frame_retry_required || error.code == ErrorCode::frame_not_ready ||
+      error.code == ErrorCode::renderer_recovery_pending)
     return std::unexpected(unavailable("DX12 orphan frame cannot retry or rebuild its native epoch"));
   return std::unexpected(std::move(error));
 }

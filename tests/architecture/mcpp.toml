@@ -25,13 +25,18 @@ sources = [
 
 [test]
 discover = [
+    "native_window_work_structure_test.cpp",
     "dx12/*_structure_test.cpp",
     "architecture_test_discovery_test.cpp",
     "renderer_steady_state_structure_test.cpp",
     "renderer_frame_wait_structure_test.cpp",
     "runtime_frame_readiness_structure_test.cpp",
+    "runtime_surface_resizes_structure_test.cpp",
     "win32_timer_initialization_structure_test.cpp",
     "renderer_common_pixel_structure_test.cpp",
+    "vulkan_device_selection_structure_test.cpp",
+    "vulkan_recovery_content_structure_test.cpp",
+    "vulkan_device_recovery_structure_test.cpp",
     "vulkan_loader_structure_test.cpp",
     "win32_surface_alpha_structure_test.cpp",
     "renderer_backend_selection_structure_test.cpp",

@@ -6,15 +6,11 @@ namespace cgpui {
 Result<VulkanSwapchainResources> VulkanRendererState::create_swapchain_resources(
     VkSwapchainKHR old_swapchain,
     bool* retired_old_swapchain) {
-  if (retired_old_swapchain != nullptr) {
-    *retired_old_swapchain = false;
-  }
+  if (retired_old_swapchain != nullptr) *retired_old_swapchain = false;
   if (composition_surface()) return create_composition_resources(retired_old_swapchain);
 
   auto details = query_vulkan_swapchain_surface(physical_device_, surface_);
-  if (!details) {
-    return std::unexpected(details.error());
-  }
+  if (!details) return std::unexpected(details.error());
 
   const VulkanSwapchainCreatePlan plan =
       build_vulkan_swapchain_create_plan(
@@ -32,30 +28,33 @@ Result<VulkanSwapchainResources> VulkanRendererState::create_swapchain_resources
       .image_usage = plan.image_usage,
       .present_pacing = plan.present_pacing,
   };
-  if (auto result = require_vk_success(
-          vkCreateSwapchainKHR(
-              device_, &create_info, nullptr, &resources.swapchain),
-          "vkCreateSwapchainKHR failed");
-      !result) {
-    return std::unexpected(result.error());
-  }
-  if (retired_old_swapchain != nullptr && old_swapchain != VK_NULL_HANDLE) {
-    *retired_old_swapchain = true;
-  }
+  try {
+    if (auto result = require_vk_success(
+            vkCreateSwapchainKHR(
+                device_, &create_info, nullptr, &resources.swapchain),
+            "vkCreateSwapchainKHR failed");
+        !result) {
+      return std::unexpected(result.error());
+    }
+    if (retired_old_swapchain != nullptr && old_swapchain != VK_NULL_HANDLE) *retired_old_swapchain = true;
 
-  if (auto result = populate_swapchain_images(resources); !result) {
-    destroy_swapchain_resources(resources);
-    return std::unexpected(result.error());
-  }
-  if (auto result = create_swapchain_targets(resources); !result) {
-    destroy_swapchain_resources(resources);
-    return std::unexpected(result.error());
-  }
+    if (auto result = populate_swapchain_images(resources); !result) {
+      destroy_swapchain_resources(resources);
+      return std::unexpected(result.error());
+    }
+    if (auto result = create_swapchain_targets(resources); !result) {
+      destroy_swapchain_resources(resources);
+      return std::unexpected(result.error());
+    }
 
-  surface_composition_ = vulkan_surface_composition(
-      details->capabilities.supportedCompositeAlpha,
-      descriptor_.transparent_background);
-  return resources;
+    surface_composition_ = vulkan_surface_composition(
+        details->capabilities.supportedCompositeAlpha,
+        descriptor_.transparent_background);
+    return resources;
+  } catch (...) {
+    destroy_swapchain_resources(resources);
+    throw;
+  }
 }
 
 // Views, render pass, pipelines, framebuffers and command buffers over

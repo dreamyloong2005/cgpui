@@ -37,6 +37,7 @@ enum class RendererBackendTarget {
     DesktopPlatformTarget target) {
   switch (target) {
     case DesktopPlatformTarget::windows:
+      return RendererBackendTarget::dx12;
     case DesktopPlatformTarget::linux_wayland:
       return RendererBackendTarget::vulkan;
     case DesktopPlatformTarget::macos_cocoa:

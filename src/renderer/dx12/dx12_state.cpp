@@ -14,6 +14,7 @@
 #include "dx12_texture_upload_internal.hpp"
 #include "dx12_frame_pacing_internal.hpp"
 #include "dx12_srv_descriptor_pool_internal.hpp"
+#include "dx12_recovery_work_internal.hpp"
 
 namespace cgpui {
 Dx12State::Dx12State(Dx12FramePacingApi* pacing_api, Dx12SynchronizationApi* synchronization)
@@ -33,6 +34,7 @@ Dx12State::~Dx12State() {
   Dx12OperationGuard operation(*this);
   dx12_retire_submitted_work(*this);
   dx12_release_native_objects(*this);
+  dx12_cancel_recovery_work(*this);
   window_alpha.reset();
 }
 } // namespace cgpui

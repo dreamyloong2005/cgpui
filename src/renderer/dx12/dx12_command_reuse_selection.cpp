@@ -46,7 +46,8 @@ Result<std::optional<Dx12ReuseScene>> dx12_select_reuse_scene(Dx12State& state, 
     std::span<const Dx12DrawCommand> draws, bool capture, bool mutations, std::uint64_t surface) {
   const auto no = [] { return std::optional<Dx12ReuseScene>{}; };
   if (!state.device || !state.hwnd || !state.swapchain || state.submitted || state.failed || state.recovery_pending || FAILED(state.removal_reason) ||
-      state.composition_surface || state.transparent_background || capture || mutations || !surface ||
+      state.composition_surface || dx12_composition_route(state.surface_policy) ||
+      state.transparent_background || capture || mutations || !surface ||
       draws.empty() || draws.size() > 256 || !state.pipeline || !state.root_signature) return no();
   Dx12ReuseScene scene; Budget budget; scene.bindings.resize(draws.size());
   for (std::size_t i = 0; i < draws.size(); ++i) {

@@ -34,11 +34,13 @@ int main() {
                 has(swapchain, "DXGI_ALPHA_MODE_PREMULTIPLIED") && has(swapchain, "DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL"),
             "transparent Popup and ordinary HWND must retain distinct private presentation paths");
     const auto surface = read("src/renderer/dx12/dx12_surface.cpp");
-    require(has(surface, "WS_EX_NOREDIRECTIONBITMAP") && has(surface, "dx12_surface_clear(") &&
+    require(has(read("src/renderer/dx12/dx12_surface_validation.cpp"), "WS_EX_NOREDIRECTIONBITMAP") &&
+                has(surface, "dx12_validate_surface_descriptor(descriptor)") && has(surface, "dx12_surface_clear(") &&
                 has(surface, "RendererCompositeAlpha::pre_multiplied"),
             "surface policy owns host validation, actual alpha reporting and premultiplied clear");
     const auto renderer = read("src/renderer/dx12/dx12_renderer.cpp");
-    require(has(renderer, "dx12_configure_surface(") && has(renderer, "dx12_surface_composition(") &&
+    require(has(renderer, "dx12_initialize_renderer_state(") &&
+                has(read("src/renderer/dx12/dx12_initialization.cpp"), "dx12_configure_surface(") && has(renderer, "dx12_surface_composition(") &&
                 !has(renderer, "DCompositionCreate") && !has(renderer, "CreateSwapChainForComposition"),
             "renderer entry must delegate native hosting and surface intent");
     const auto submit = read("src/renderer/dx12/dx12_presentation.cpp");

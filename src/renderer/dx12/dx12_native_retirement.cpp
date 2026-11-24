@@ -9,9 +9,11 @@
 #include "dx12_texture_upload_internal.hpp"
 #include "dx12_frame_pacing_internal.hpp"
 #include "dx12_srv_descriptor_pool_internal.hpp"
+#include "dx12_recovery_ticket_internal.hpp"
 
 namespace cgpui {
 void dx12_release_native_objects(Dx12State& state) noexcept {
+  dx12_observe_dred_status(state);
   // The caller proved completion/removal, or never submitted the partial build.
   if (FAILED(state.removal_reason)) state.command_reuse->removed(state); // Covers actual removed cohort/orphan paths too.
   state.submitted = false;
@@ -47,8 +49,10 @@ void dx12_release_native_objects(Dx12State& state) noexcept {
   state.fence.Reset();
   if (state.fence_event.value) CloseHandle(state.fence_event.value);
   state.fence_event.value = nullptr;
+  state.dred_status.close_local_lease();
   state.device.Reset();
   state.adapter.Reset();
   state.factory.Reset();
+  dx12_recovery_tickets().released(state.recovery_lease);
 }
 } // namespace cgpui

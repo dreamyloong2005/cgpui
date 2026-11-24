@@ -5,7 +5,9 @@ the public authoring model used by Windows and Linux.
 
 ## Target Matrix
 
-- Windows: Win32 + Vulkan, completed before Phase H.
+- Windows: Win32 + DX12 for current automatic selection, with checked
+  initialization-only Vulkan fallback. The Vulkan baseline was completed before
+  Phase H; those historical results do not validate DX12 activation.
 - Linux: Wayland + Vulkan, completed before Phase H.
 - macOS: Cocoa + Metal on Apple Silicon (arm64) only.
 - X11: XCB + Vulkan, completed in Phase I.

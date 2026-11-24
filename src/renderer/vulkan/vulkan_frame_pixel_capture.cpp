@@ -41,10 +41,13 @@ VulkanRendererState::prepare_frame_pixel_capture(
 
 Result<void> VulkanRendererState::complete_frame_pixel_capture(
     const VulkanFramePixelCaptureCommand& capture) {
-  return capture.enabled()
-             ? vulkan_complete_frame_pixel_capture(
-                   device_, in_flight_, frame_pixel_capture_)
-             : Result<void>{};
+  if (!capture.enabled()) return {};
+  VkResult failure = VK_SUCCESS;
+  auto result = vulkan_complete_frame_pixel_capture(
+      device_, in_flight_, frame_pixel_capture_, &failure);
+  return failure == VK_ERROR_DEVICE_LOST
+      ? recover_after_device_loss(failure, "Vulkan pixel readback lost device")
+      : result;
 }
 
 } // namespace cgpui

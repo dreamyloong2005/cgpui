@@ -15,8 +15,9 @@ Result<void> VulkanRendererState::present_frame(
     std::span<const TextSelectionDraw> text_selections,
     std::span<const TextCaretDraw> text_carets,
     std::span<const ImageDraw> image_draws,
-    std::span<const ImageUploadBatch> image_uploads,
+    std::span<ImageUploadBatch> image_uploads,
     std::span<const ImageAssetId> image_invalidations, bool capture_requested) {
+  if (auto result = require_live_device(); !result) return result;
   if (presentation_blocked_) {
     return std::unexpected(vulkan_error(
         ErrorCode::renderer_initialization_failed,
@@ -54,27 +55,10 @@ Result<void> VulkanRendererState::present_frame(
       ? VK_SUCCESS
       : vkAcquireNextImageKHR(device_, swapchain_, present_pacing_.image_acquire_timeout,
                               image_available_, VK_NULL_HANDLE, &image_index);
-  const VulkanSwapchainRecoveryPlan acquire_plan =
-      vulkan_plan_swapchain_recovery(
-          VulkanSwapchainOperation::acquire, acquire_result);
-  if (acquire_plan.recovery_timing ==
-      VulkanSwapchainRecoveryTiming::before_frame) {
-    if (auto result = recover_swapchain_after_surface_status(); !result) {
-      return result;
-    }
-    return std::unexpected(vulkan_error(
-        ErrorCode::frame_retry_required,
-        "swapchain was recreated before frame acquisition; retry the frame"));
-  }
-  if (!acquire_plan.operation_succeeded) {
-    return recover_after_failed_acquire(
-        ErrorCode::frame_acquisition_failed,
-        "vkAcquireNextImageKHR failed",
-        false);
-  }
+  const auto acquired = complete_frame_acquisition(acquire_result);
+  if (!acquired) return std::unexpected(acquired.error());
   diagnostic_timer.finish_stage(RendererFrameTimingStage::image_acquisition);
-  const bool recreate_after_frame = acquire_plan.recovery_timing ==
-                                    VulkanSwapchainRecoveryTiming::after_frame;
+  const bool recreate_after_frame = *acquired;
 
   if (image_index >= command_buffers_.size() ||
       image_index >= command_reuse_states_.size() ||
@@ -119,8 +103,11 @@ Result<void> VulkanRendererState::present_frame(
 
   VkCommandBuffer command_buffer = command_buffers_[image_index];
   VkSemaphore render_finished = render_finished_[image_index];
-  if (auto result = submit_frame(command_buffer, render_finished); !result) {
-    return recover_after_failed_submit(result.error().message);
+  if (const VkResult result = submit_frame(command_buffer, render_finished);
+      result != VK_SUCCESS) {
+    if (result == VK_ERROR_DEVICE_LOST)
+      return recover_after_device_loss(result, "Vulkan frame submission lost device");
+    return recover_after_failed_submit("Vulkan frame submission failed");
   }
   diagnostic_timer.finish_stage(RendererFrameTimingStage::queue_submission);
   commit_image_texture_frame();
@@ -145,6 +132,8 @@ Result<void> VulkanRendererState::present_frame(
   const VulkanSwapchainRecoveryPlan present_plan =
       vulkan_plan_swapchain_recovery(
           VulkanSwapchainOperation::present, present_result);
+  if (present_result == VK_ERROR_DEVICE_LOST)
+    return recover_after_device_loss(present_result, "vkQueuePresentKHR lost device");
   if (!present_plan.operation_succeeded &&
       present_plan.recovery_timing == VulkanSwapchainRecoveryTiming::none) {
     return recover_after_failed_present("vkQueuePresentKHR failed");
@@ -172,6 +161,7 @@ Result<void> VulkanRendererState::present_frame(
       pending_frame_upload_bytes_,
       diagnostic_timer.timings());
   last_frame_diagnostic_snapshot_.backdrop_blur = backdrop_blur_diagnostics();
+  vulkan_report_retained_images(retained_image_uploads_, last_frame_diagnostic_snapshot_);
   has_frame_diagnostic_snapshot_ = true;
 
   return {};
