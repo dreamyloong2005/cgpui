@@ -67,6 +67,7 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_capture_publication_test.cpp",
     "dx12_composition_pacing_cold_resize_test.cpp",
     "dx12_composition_pacing_resize_test.cpp",
     "dx12_composition_pacing_recovery_test.cpp",

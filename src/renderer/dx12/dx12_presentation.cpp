@@ -8,7 +8,11 @@
 #include "dx12_texture_upload_frame_internal.hpp"
 #include "dx12_frame_pacing_internal.hpp"
 
+#include <optional>
+#include <type_traits>
+
 namespace cgpui {
+static_assert(std::is_nothrow_move_assignable_v<std::optional<RendererFramePixels>>);
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
                               std::span<const Dx12DrawCommand> draws, bool capture,
                               std::size_t command_count, std::uint64_t admission_call_ns) {
@@ -74,13 +78,17 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   if (auto idle = dx12_wait_idle(state); !idle) return idle;
   dx12_commit_texture_uploads(state);
   if (FAILED(presented)) return std::unexpected(dx12_error(presented, "present"));
+  std::optional<RendererFramePixels> candidate_pixels;
   if (capture) {
-    if (auto read = dx12_read_capture(state); !read) return read;
+    auto read = dx12_read_capture(state);
+    if (!read) return std::unexpected(read.error());
+    candidate_pixels = std::move(*read);
   }
   if (auto checked = dx12_check_debug_errors(state); !checked) return checked;
   if (auto committed = dx12_commit_composition(state); !committed) return committed;
   diagnostics.finish_stage(RendererFrameTimingStage::presentation);
   diagnostics.publish();
+  state.pixels = std::move(candidate_pixels);
   // DXGI_STATUS_OCCLUDED is a valid hidden-window presentation. The render
   // and optional readback completed; avoid a tight retry loop for hidden HWNDs.
   return {};

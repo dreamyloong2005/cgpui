@@ -41,13 +41,17 @@ bool Dx12CompositionProbe::present_pixels(bool blue) {
   composition_probe_hresult("Present", presented);
   if (!result("post_present_retirement", dx12_wait_idle(*state))) return false;
   if (FAILED(presented)) { outcome = CompositionProbeExit::unmeasured; return false; }
-  if (!result("capture_readback", dx12_read_capture(*state))) return false;
+  auto pixels = dx12_read_capture(*state);
+  if (!pixels) return result("capture_readback", std::unexpected(pixels.error()));
+  composition_probe_note("capture_readback", "ok");
   auto& host = *state->composition_host;
   if (!host.committed) {
     if (!native("Commit_after_first_Present", host.device->Commit())) return false;
     host.committed = true;
   }
-  return verify_pixels(blue) && debug_clean() &&
+  if (!debug_clean()) return false;
+  state->pixels = std::move(*pixels);
+  return verify_pixels(blue) &&
       invariant(windows.visibility_unchanged(), "presentation changed hidden/visible state");
 }
 } // namespace cgpui_test

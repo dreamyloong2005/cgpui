@@ -84,7 +84,7 @@ Result<void> dx12_wait_idle(Dx12State& state);
 Result<void> dx12_check_debug_errors(Dx12State& state);
 Result<void> dx12_prepare_capture(Dx12State& state);
 void dx12_record_capture(Dx12State& state, ID3D12Resource& target);
-Result<void> dx12_read_capture(Dx12State& state);
+Result<RendererFramePixels> dx12_read_capture(Dx12State& state);
 void dx12_transition(ID3D12GraphicsCommandList& commands, ID3D12Resource& resource,
                      D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 } // namespace cgpui

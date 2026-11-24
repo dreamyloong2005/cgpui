@@ -92,3 +92,15 @@ redefined as complete solely to close the checklist.
   final2969path matrix Windows827/WSL667 and122native per adapter plus ASan/SDK.
   Prepared diagnostics/CI/window/recovery work and remaining public-operation
   contract differences are indexed in `next-slices.md`, not marked implemented.
+- Capture publication accepted at
+  `.planning/2026-11-24-dx12-capture-publication/`: true cold/warm native late-debug
+  RED/GREEN, structure226/native123 and six rebuilt composition probes passed.
+  Frozen2971path Windows829/WSL668, both all-member builds, native123 per adapter,
+  common94 per selected backend, ASan123/common94+94 and installed SDK passed.
+  Source matching and exact inventories pass; this is not whole-DX12 completion.
+- Retained-image candidate was rebased around capture publication and independently
+  source-reviewed on both axes; no runtime evidence yet. The DRED breadcrumb
+  candidate must not be applied as-is: a new device-wide retirement review found
+  peer-release-before-later-copy ordering is not protected by per-state gates.
+  This is a proved ordering gap, not a proved UAF. See the external
+  `cgpui-dx12-dred-20261124/candidates/retirement-boundary-review.md` before integration.

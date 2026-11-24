@@ -179,6 +179,12 @@ FPS improvement, asynchronous renderer or performance equivalence to Vulkan.
 
 ## Frame diagnostics
 
+DX12 pixel capture is published only after readback, debug validation and any
+required composition Commit succeed. A late failure exposes no candidate pixels; it does
+not restore the previous capture, which Present already invalidated. This is a
+DX12-specific safety boundary, not a change to Vulkan's capture-history policy.
+Readback extraction owns an unpublished CPU value until that successful boundary.
+
 DX12 implements the existing `Renderer::last_frame_diagnostic_snapshot()` API;
 there is no DX12-specific public diagnostic type. It returns null until the first
 fully successful present. Publication follows submission, GPU completion,

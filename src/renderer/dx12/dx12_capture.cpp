@@ -25,19 +25,20 @@ void dx12_record_capture(Dx12State& state, ID3D12Resource& target) {
   state.commands->CopyTextureRegion(&destination, 0, 0, 0, &source, nullptr);
 }
 
-Result<void> dx12_read_capture(Dx12State& state) {
+Result<RendererFramePixels> dx12_read_capture(Dx12State& state) {
   const auto pitch = state.capture_layout.Footprint.RowPitch;
   const auto offset = static_cast<SIZE_T>(state.capture_layout.Offset);
   // GetCopyableFootprints does not allocate trailing padding after the final
   // row. Mapping a full pitch for that row exceeds non-aligned-width buffers.
   const D3D12_RANGE read{offset,
       offset + SIZE_T(pitch) * (state.height - 1) + SIZE_T(state.width) * 4};
+  RendererFramePixels pixels{.width = state.width, .height = state.height,
+                            .encoding = RendererFramePixelEncoding::linear};
+  // Allocate before mapping: an allocation exception must not leave it mapped.
+  pixels.rgba8.resize(std::size_t(state.width) * state.height * 4);
   void* mapped = nullptr;
   const HRESULT result = state.readback->Map(0, &read, &mapped);
   if (FAILED(result)) return std::unexpected(dx12_error(result, "capture mapping"));
-  RendererFramePixels pixels{.width = state.width, .height = state.height,
-                            .encoding = RendererFramePixelEncoding::linear};
-  pixels.rgba8.resize(std::size_t(state.width) * state.height * 4);
   const auto* source = static_cast<const unsigned char*>(mapped) + offset;
   const auto row = std::size_t(state.width) * 4;
   for (UINT y = 0; y != state.height; ++y) {
@@ -45,7 +46,6 @@ Result<void> dx12_read_capture(Dx12State& state) {
   }
   const D3D12_RANGE written{0, 0};
   state.readback->Unmap(0, &written);
-  state.pixels = std::move(pixels);
-  return {};
+  return pixels; // Caller owns the candidate until all successful-frame checks pass.
 }
 } // namespace cgpui
