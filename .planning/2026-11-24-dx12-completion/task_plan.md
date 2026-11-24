@@ -204,3 +204,15 @@ redefined as complete solely to close the checklist.
   tests-only integration and DRED scalar no-traversal candidates remain external,
   unexecuted; window/background/chrome/HMENU, CI/native-platform and release
   completion gates remain OPEN. Overall complete-DX12 goal remains ACTIVE.
+
+- Idle foreign-thread native-retirement prerequisite accepted in
+  `.planning/2026-11-24-dx12-cross-thread-probe/`: tests-only source,6 supervision
+  controls, WARP pumping/parked true omit-purge RED44/parent94 then restored GREEN,
+  Intel pumping/parked GREEN; independent actual-source/evidence review0. Frozen
+  3243 source passes warmed jobs1 Windows946/native201/architecture248 and the new
+  WSL structure guard. Incorrect jobs4 native run and cold-build1200s timeout are
+  preserved, not counted as acceptance. Production foreign-thread refusal remains;
+  captured DIRECT does not prove active-BUNDLE/origin-gate-held automatic recovery.
+  Next: independently reviewed private DRED scalar implementation plus actual-native
+  controls revision1 (actual identity/request classification) and P0-preserving
+  additive bridge. All remain external/unbuilt, and complete DRED is still OPEN.

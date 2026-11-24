@@ -22,6 +22,13 @@ discover = []
 
 [target.'cfg(os = "windows")'.build]
 sources = [
+    "dx12_foreign_probe_control_test_support.cpp",
+    "dx12_foreign_probe_process_test_support.cpp",
+    "dx12_foreign_probe_fixture_test_support.cpp",
+    "dx12_foreign_probe_frame_test_support.cpp",
+    "dx12_foreign_probe_retirement_test_support.cpp",
+    "dx12_foreign_probe_peer_test_support.cpp",
+    "dx12_foreign_probe_case_test_support.cpp",
     "dx12_command_reuse_signature_fixture_test_support.cpp",
     "dx12_command_reuse_signature_mutations_test_support.cpp",
     "dx12_command_reuse_image_signature_test_support.cpp",
@@ -92,6 +99,7 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_idle_foreign_native_probe_test.cpp",
     "dx12_command_reuse_signature_test.cpp",
     "dx12_command_reuse_selection_test.cpp",
     "dx12_command_reuse_public_owner_test.cpp",
