@@ -15,6 +15,7 @@ they do not justify repeated full matrices during this unfinished batch.
 
 The original phased design remains available read-only at
 `D:/Dev/Projects/cgpui-dx12-design/docs/superpowers/plans/2026-11-22-dx12-renderer-backend-plan.md`.
+(The dx12-design branch and worktree were deleted on 2026-11-25; that plan is gone.)
 Its topology details and some proposed API/packaging/recovery mechanisms predate
 implemented decisions. The current owning code, tests, current backend document,
 and later acceptance records take precedence over stale implementation recipes.

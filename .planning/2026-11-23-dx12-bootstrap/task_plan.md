@@ -3,6 +3,7 @@
 Baseline: `4d49b9ec`, branch `phase-v`. User requested implementation after
 reviewing the DX12 status. Preserve the pre-existing untracked `.vscode/`.
 The separate `dx12-design` checkout is a design reference, not the edit target.
+(The dx12-design branch and worktree were deleted on 2026-11-25; that plan is gone.)
 
 ## First milestone and acceptance seams
 

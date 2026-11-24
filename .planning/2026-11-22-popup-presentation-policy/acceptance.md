@@ -21,6 +21,7 @@ menus are unchanged.
 - Main checkout: `D:/Dev/Projects/cgpui`, branch `phase-v`, baseline `11f7eb76`.
 - Design checkout: `D:/Dev/Projects/cgpui-dx12-design`, branch `dx12-design`,
   baseline `b513dc0c`. Its plan and GPUI research note are separate changes.
+  (The dx12-design branch and worktree were deleted on 2026-11-25; that plan is gone.)
 - Neutral public capability is a declaration in the renderer leaf header;
   base behavior, Vulkan policy and runtime negotiation have focused sources.
 - Window activation remains exactly 70 lines. Existing architecture limits

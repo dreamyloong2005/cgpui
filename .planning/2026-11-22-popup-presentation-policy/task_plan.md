@@ -8,7 +8,7 @@ Implement the corrected DX12/window design: public window intent, private presen
 - Preserve current Vulkan adapter selection, main-window transparency/backdrops, native menus, non-Windows behavior and .vscode.
 - Keep DComp/Vulkan interop modules and regression tests. Runtime intersects real platform/renderer capabilities and attempts popups rather than imposing a Windows Vulkan ban.
 - mcpp >=2026.11.21.1, scripts/dev entry points only. Serial build/test processes. No push or merge.
-- Baseline phase-v HEAD 11f7eb76; design worktree dx12-design HEAD b513dc0c. Only .vscode was untracked in main checkout; prior research note in design checkout is ours.
+- Baseline phase-v HEAD 11f7eb76; design worktree dx12-design HEAD b513dc0c (deleted on 2026-11-25). Only .vscode was untracked in main checkout; prior research note in design checkout is ours.
 
 ## Phases
 1. [complete] Update all owning plans and widget docs for the final user decision: Vulkan popups retained, failure-only fallback, no public presentation modes.
