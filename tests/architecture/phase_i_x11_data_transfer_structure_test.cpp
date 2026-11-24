@@ -68,6 +68,7 @@ int main() {
       !contains(test_sh, "cgpui_start_test_display") ||
       contains(test_sh, "exec \"$MCPP\"") ||
       !contains(display, "Xvfb \":$number\"") ||
+      !contains(display, "-nolisten tcp -noreset > \"$log\"") ||
       !contains(display, "export DISPLAY=\":$number\"")) {
     return 4;
   }

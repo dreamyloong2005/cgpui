@@ -39,7 +39,9 @@ cgpui_start_test_display() {
     if [ -e "/tmp/.X$number-lock" ]; then
       continue
     fi
-    Xvfb ":$number" -screen 0 1280x720x24 -nolisten tcp > "$log" 2>&1 &
+    # Keep one server generation across readiness probes and test clients.
+    # A last-client reset races the next xcb_connect, even within one test.
+    Xvfb ":$number" -screen 0 1280x720x24 -nolisten tcp -noreset > "$log" 2>&1 &
     CGPUI_XVFB_PID=$!
     trap 'kill "$CGPUI_XVFB_PID" 2> /dev/null; wait "$CGPUI_XVFB_PID" 2> /dev/null; rm -f "'"$log"'"' EXIT
     local _
