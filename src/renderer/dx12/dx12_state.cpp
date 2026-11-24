@@ -13,7 +13,7 @@
 #include "dx12_frame_pacing_internal.hpp"
 
 namespace cgpui {
-Dx12State::Dx12State(Dx12FramePacingApi* pacing_api)
+Dx12State::Dx12State(Dx12FramePacingApi* pacing_api, Dx12SynchronizationApi* synchronization)
     : image_cache(std::make_unique<Dx12ImageCache>()),
       text_cache(std::make_unique<Dx12TextCache>()),
       texture_renderer(std::make_unique<Dx12TextureRenderer>()),
@@ -21,7 +21,8 @@ Dx12State::Dx12State(Dx12FramePacingApi* pacing_api)
       geometry_uploads(std::make_unique<Dx12GeometryUploads>()),
       texture_uploads(std::make_unique<Dx12TextureUploads>()),
       frame_pacing(std::make_unique<Dx12FramePacing>(
-          pacing_api ? *pacing_api : dx12_native_frame_pacing_api())) {}
+          pacing_api ? *pacing_api : dx12_native_frame_pacing_api())),
+      synchronization_api(synchronization) {}
 
 Dx12State::~Dx12State() {
   Dx12OperationGuard operation(*this);

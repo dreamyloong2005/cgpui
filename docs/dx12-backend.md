@@ -37,7 +37,11 @@ previous Popup policy is unchanged for Vulkan.
   reported unavailable, the shared fallback draws only the requested tint.
 - Pixel readback with row-pitch handling, resize, and explicit rejection of
   overlapping frames or resize while a frame is outstanding. Destroying a
-  renderer before its outstanding frame is safe; that frame cannot present.
+  renderer before its outstanding frame is safe; an already-acquired unfinished
+  frame can finish once while its original native epoch and caller-owned HWND
+  remain valid. Recording and capture requests remain available on that frame.
+  Ownerless frames never rebuild devices or advertise recovery/pending retries;
+  removed/purged epochs, destroyed HWNDs and already-finished frames reject.
 - Nonblocking DXGI frame admission for opaque HWND and composition chains,
   including the first frame. A pending begin returns `frame_not_ready`; WindowRuntime defers redraw
   through its window-bound timer rather than publishing success or hot-looping.
@@ -64,6 +68,15 @@ successful, validated Present. This does not change Popup's native-first,
 failure-only Overlay policy or expand ordinary-window alpha compatibility.
 See [frame readiness](frame-readiness.md) for grant lifetime, runtime cancellation
 and the native/controlled-test evidence boundaries.
+
+An outstanding or finished frame retains its backend state independently of the
+Renderer facade, including native presentation objects and any ordinary-alpha
+window lease. The final state owner retires GPU work and composition before
+releasing the alpha token. This does not keep the external platform window alive
+or permit HWND lifetime races; alpha operations retain their owner-thread/token
+checks. No new recovery or cross-thread coordination is promised for an orphan.
+There is no Renderer getter after facade deletion: callers cannot inspect an
+orphan capture by dereferencing the deleted facade or a stale borrowed pointer.
 
 Image uploads and invalidations update the CPU cache while commands are recorded;
 abandoning or rejecting a frame does not roll back those cache operations. Each

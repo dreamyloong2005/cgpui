@@ -51,11 +51,12 @@ int main() {
         has(recovery, "api.ready != old_ready + 1"),
         "real removal must expose one raw typed retry, close old owner and freshly admit replacement");
     require(has(orphan, "for (const bool finished_first : {false, true})") &&
-        has(orphan, "renderer.reset();") && has(orphan, "const auto dead_present = (*orphan)->present();") &&
+        has(orphan, "renderer.reset();") && has(orphan, "const auto orphan_present = (*orphan)->present();") &&
+        has(orphan, "if (!orphan_capture || !orphan_present ||") &&
         has(orphan, "const auto repeated_orphan = (*finished)->present();") &&
         has(orphan, "const auto overlap = renderer->begin_frame();") &&
         has(orphan, "api.closes != 1 || !api.close_ok") && has(orphan, "api.polls != polls"),
-        "both last-frame orders and raw invalid-owner/finished/overlap calls must preserve native lifetime");
+        "both last-frame orders, healthy orphan success and raw finished/overlap rejection preserve native lifetime");
     const auto window = leaf("dx12_composition_pacing_window_test_support.cpp");
     require(has(window, "SetWindowPos(") && has(window, "SWP_NOACTIVATE") &&
         has(window, "!IsWindowVisible(popup)") && !has(window, "ShowWindow("),

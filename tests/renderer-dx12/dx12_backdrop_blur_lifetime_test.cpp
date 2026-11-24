@@ -78,9 +78,10 @@ int main() {
   if (!orphan) return dx12_fail(33, "orphan backdrop begin failed");
   (*orphan)->draw_backdrop_blur({.rect = {{4, 4}, {48, 40}}, .blur_radius = 16});
   renderer->reset();
+  const auto capture = (*orphan)->request_pixel_capture();
   const auto result = (*orphan)->present();
-  if (result || result.error().code != ErrorCode::invalid_argument)
-    return dx12_fail(34, "orphan backdrop frame accepted after owner destruction");
+  if (!capture || !result || (*orphan)->present())
+    return dx12_fail(34, "healthy orphan backdrop frame must finish exactly once with HWND alive");
   orphan->reset();
   return 0;
 }

@@ -139,6 +139,7 @@ discover = [
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "renderer_orphan_frame_contract_test.cpp",
     "renderer_frame_wait_win32_test.cpp",
     "native_text_rasterization_test.cpp",
     "renderer_pixel_backend_identity_test.cpp",

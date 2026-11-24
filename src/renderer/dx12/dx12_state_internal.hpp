@@ -22,7 +22,8 @@ class Dx12TextureUploads;
 class Dx12FramePacing;
 class Dx12FramePacingApi;
 struct Dx12State {
-  explicit Dx12State(Dx12FramePacingApi* pacing_api = nullptr);
+  explicit Dx12State(Dx12FramePacingApi* pacing_api = nullptr,
+                     Dx12SynchronizationApi* synchronization_api = nullptr);
   ~Dx12State();
   mutable std::recursive_mutex operation_mutex;
   std::size_t operation_depth = 0;

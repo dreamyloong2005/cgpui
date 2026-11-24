@@ -52,16 +52,15 @@ int orphan_case(bool finished_first) {
     finished->reset(); // The still-active orphan alone must retain the state's native lifetime.
     if (api.closes) return dx12_fail(12, "finished-frame destruction closed the surviving active orphan");
   }
-  (*orphan)->clear({0, 0, 1, 0.5F}); // CPU recording does not restore its destroyed owner.
-  const auto dead_capture = (*orphan)->request_pixel_capture();
-  const auto dead_present = (*orphan)->present();
-  const auto repeated_dead = (*orphan)->present();
-  if (dead_capture || dead_capture.error().code != ErrorCode::invalid_argument ||
-      dead_present || dead_present.error().code != ErrorCode::invalid_argument ||
-      repeated_dead || repeated_dead.error().code != ErrorCode::invalid_argument ||
+  (*orphan)->clear({0, 0, 1, 0.5F}); // Healthy acquired state remains owned independently of facade.
+  const auto orphan_capture = (*orphan)->request_pixel_capture();
+  const auto orphan_present = (*orphan)->present();
+  const auto repeated_present = (*orphan)->present();
+  if (!orphan_capture || !orphan_present ||
+      repeated_present || repeated_present.error().code != ErrorCode::invalid_argument ||
       api.sets != 1 || api.gets != 1 || api.polls != polls || api.ready != 2 || api.closes ||
       !windows.matches(false) || !pacing_begin_debug_clean(info))
-    return dx12_fail(13, "invalid-owner/finished rejection changed native pacing or hidden lifetime");
+    return dx12_fail(13, "healthy orphan completion/finished rejection changed native pacing or hidden lifetime");
   orphan->reset();
   if (!finished_first && api.closes)
     return dx12_fail(14, "active-frame destruction closed state retained by the finished frame");

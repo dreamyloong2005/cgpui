@@ -122,3 +122,14 @@ redefined as complete solely to close the checklist.
   latest-successful-capture history. Decision in `public-contract-decision.md`;
   prepare separate exact common regressions and deliberate DX12 migration, not
   source changes during the completed retention freeze.
+- Orphan lifetime compatibility implemented with actual RED/GREEN and independent
+  actual-source two-axis review0: focused ownerless finish/no-rebuild policy,
+  true late native removal, first-Commit cold Popup and alpha lease desktop
+  checks. Accepted structure228/native136; frozen2997path Windows846/WSL671,
+  all builds, native136 per adapter, common96 per selection, ASan136/96+96,
+  SDK and exact inventory/source checks pass. See orphan-frame acceptance.
+- Capture-history candidate now independently rebased onto the actual orphan
+  source; image-batching A/B has independent Standards/Spec0. Both external only,
+  neither compiled/applied/accepted. Benchmark revised candidate closes three
+  source-review gaps but is likewise unexecuted. Shared SRV-pool design exists
+  with same-page blur tuple and safe retirement requirements, not implementation.

@@ -22,6 +22,8 @@ Result<bool> dx12_recover_removed_device(Dx12State& state) {
   HRESULT reason = state.removal_reason;
   if (SUCCEEDED(reason)) reason = actual;
   if (!state.recovery_pending && SUCCEEDED(reason)) return false;
+  if (!state.owner_alive) return std::unexpected(Error{.code = ErrorCode::invalid_argument,
+      .message = "DX12 device reconstruction requires a live renderer owner"});
   // A nested callback cannot discard resources still used by its outer entry.
   if (state.operation_depth > 1) {
     return std::unexpected(dx12_error(HRESULT_FROM_WIN32(ERROR_BUSY), "reentrant device recovery"));

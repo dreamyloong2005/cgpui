@@ -75,10 +75,16 @@ int main() {
   auto orphan = cgpui_test::wait_for_test_frame(**renderer);
   if (!orphan) return dx12_fail(15, "retained active frame unavailable");
   (*orphan)->clear({1, 0, 0, 0.5F});
+  ClientAlphaTopology retained;
+  if (!retained.capture(**window)) return dx12_fail(20, "retained client alpha topology unavailable");
   renderer->reset();
-  const auto rejected = (*orphan)->present();
-  if (rejected || rejected.error().code != ErrorCode::invalid_argument || (*finished)->present() ||
-      ordinary_renderer(**window, true)) return dx12_fail(16, "ownerless frame or occupied client lease accepted");
+  const auto capture = (*orphan)->request_pixel_capture();
+  const auto presented = (*orphan)->present();
+  if (!capture || !presented || (*orphan)->present() || (*finished)->present() ||
+      ordinary_renderer(**window, true) || !retained.same(**window) || !client_alpha_hits(**window) ||
+      !expect_screen_color({128, 127, 0}, {retained.origin.x + retained.client.right / 2,
+                                          retained.origin.y + retained.client.bottom / 2}))
+    return dx12_fail(16, "healthy orphan alpha pixels, one-shot lifetime, occupied lease or topology differ");
   orphan->reset(); finished->reset();
   auto replacement = ordinary_renderer(**window, true);
   if (!replacement || !client_alpha_paint(**replacement, **window, false) || !client_alpha_hits(**window))

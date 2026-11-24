@@ -22,6 +22,7 @@ discover = []
 
 [target.'cfg(os = "windows")'.build]
 sources = [
+    "dx12_orphan_native_removal_test_support.cpp",
     "dx12_image_retention_test_support.cpp",
     "dx12_composition_pacing_pixels_test_support.cpp",
     "dx12_composition_pacing_window_test_support.cpp",
@@ -68,6 +69,11 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_orphan_removed_test.cpp",
+    "dx12_orphan_late_error_test.cpp",
+    "dx12_orphan_cold_popup_test.cpp",
+    "dx12_orphan_late_removal_test.cpp",
+    "dx12_orphan_present_test.cpp",
     "dx12_capture_publication_test.cpp",
     "dx12_image_retention_test.cpp",
     "dx12_image_retention_cache_test.cpp",

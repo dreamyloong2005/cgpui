@@ -68,8 +68,9 @@ Result<std::unique_ptr<Renderer>> create_dx12_renderer(const RenderSurfaceDescri
 }
 
 Result<std::unique_ptr<Renderer>> dx12_create_renderer(
-    const RenderSurfaceDescriptor& descriptor, Dx12FramePacingApi& pacing_api) {
-  auto state = std::make_shared<Dx12State>(&pacing_api);
+    const RenderSurfaceDescriptor& descriptor, Dx12FramePacingApi& pacing_api,
+    Dx12SynchronizationApi* synchronization_api) {
+  auto state = std::make_shared<Dx12State>(&pacing_api, synchronization_api);
   Dx12OperationGuard operation(*state);
   if (auto surface = dx12_configure_surface(*state, descriptor); !surface)
     return std::unexpected(surface.error());

@@ -76,7 +76,7 @@ void Dx12Frame::draw_text_caret(const TextCaretDraw& caret) {
 }
 Result<void> Dx12Frame::request_pixel_capture() {
   Dx12OperationGuard operation(*state_);
-  if (released_ || !state_->owner_alive) return std::unexpected(Error{
+  if (released_) return std::unexpected(Error{
       .code = ErrorCode::invalid_argument, .message = "DX12 frame is no longer active"});
   capture_ = true;
   return {};
@@ -86,8 +86,6 @@ Result<void> Dx12Frame::present() {
   if (released_) return std::unexpected(Error{.code = ErrorCode::invalid_argument,
       .message = "DX12 frame has already finished"});
   release();
-  if (!state_->owner_alive) return std::unexpected(Error{.code = ErrorCode::invalid_argument,
-      .message = "DX12 renderer was destroyed before its frame"});
   state_->pixels.reset();
   if (error_) return std::unexpected(*error_);
   if (auto ready = dx12_prepare_present(*state_, generation_); !ready) return ready;

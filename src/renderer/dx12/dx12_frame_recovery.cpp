@@ -1,5 +1,6 @@
 #include "dx12_frame_recovery_internal.hpp"
 #include "dx12_recovery_internal.hpp"
+#include "dx12_orphan_frame_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include "dx12_window_alpha_internal.hpp"
 
@@ -23,6 +24,7 @@ Result<void> dx12_prepare_frame(Dx12State& state) {
 }
 
 Result<void> dx12_handle_frame_failure(Dx12State& state, Error error) {
+  if (!state.owner_alive) return dx12_fail_orphan_frame(state, std::move(error));
   if (error.code == ErrorCode::frame_retry_required) return std::unexpected(std::move(error));
   state.failed = true;
   auto recovered = dx12_recover_removed_device(state);
@@ -32,6 +34,7 @@ Result<void> dx12_handle_frame_failure(Dx12State& state, Error error) {
 }
 
 Result<void> dx12_prepare_present(Dx12State& state, std::uint64_t frame_generation) {
+  if (!state.owner_alive) return dx12_prepare_orphan_present(state, frame_generation);
   if (auto valid = dx12_validate_window_alpha(state); !valid) return valid;
   auto recovered = dx12_recover_removed_device(state);
   if (!recovered) return std::unexpected(recovered.error());

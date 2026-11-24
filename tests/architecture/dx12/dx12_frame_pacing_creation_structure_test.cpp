@@ -24,7 +24,7 @@ int main() {
   try {
     const auto renderer = read("src/renderer/dx12/dx12_renderer.cpp");
     require(has(renderer, "dx12_create_renderer(descriptor, dx12_native_frame_pacing_api())") &&
-                has(renderer, "std::make_shared<Dx12State>(&pacing_api)") &&
+                has(renderer, "std::make_shared<Dx12State>(&pacing_api, synchronization_api)") &&
                 has(renderer, "std::make_unique<Dx12Renderer>(std::move(state))"),
             "public native-default and private API seam must use the same actual renderer creation path");
     const auto state = read("src/renderer/dx12/dx12_state_internal.hpp");
@@ -32,7 +32,8 @@ int main() {
                 !has(state, "HANDLE pacing") && !has(state, "bool pacing"),
             "private state delegates unique handle/grant ownership to its focused module");
     const auto constructor = read("src/renderer/dx12/dx12_state.cpp");
-    require(has(constructor, "pacing_api ? *pacing_api : dx12_native_frame_pacing_api()"),
+    require(has(constructor, "pacing_api ? *pacing_api : dx12_native_frame_pacing_api()") &&
+                has(constructor, "synchronization_api(synchronization)"),
             "state retains an outliving private API without a production fake-switch");
     const auto swapchain = read("src/renderer/dx12/dx12_swapchain.cpp");
     const auto resize = read("src/renderer/dx12/dx12_swapchain_resize.cpp");

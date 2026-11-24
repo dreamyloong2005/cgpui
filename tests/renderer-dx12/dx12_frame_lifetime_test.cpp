@@ -38,7 +38,10 @@ int main() {
   if (!orphan) return dx12_fail(14, "orphan frame creation failed");
   renderer->reset();
   (*orphan)->clear({1, 0, 0, 1});
-  if ((*orphan)->present()) return dx12_fail(15, "frame accepted after renderer destruction");
+  const auto capture = (*orphan)->request_pixel_capture();
+  const auto presented = (*orphan)->present();
+  if (!capture || !presented || (*orphan)->present() || (*orphan)->request_pixel_capture())
+    return dx12_fail(15, "healthy orphan must complete once, without regaining finished-frame permission");
   orphan->reset();
   return 0;
 }

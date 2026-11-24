@@ -26,11 +26,15 @@ int main() {
     return dx12_fail(4, "production recovery lost its borrowed API, old close or new acquisition");
   auto orphan = pacing_begin_bounded(*renderer, api);
   if (!orphan || !*orphan) return dx12_fail(5, "real post-recovery frame unavailable");
+  const auto after = renderer->backend_info();
+  const auto polls = api.polls;
   renderer.reset();
   if (api.closes != 1) return dx12_fail(6, "renderer destruction closed state retained by an orphan frame");
-  const auto dead_present = (*orphan)->present();
-  if (dead_present || dead_present.error().code != ErrorCode::invalid_argument || api.closes != 1)
-    return dx12_fail(7, "orphan frame lost its invalid-owner contract or native ownership");
+  const auto capture = (*orphan)->request_pixel_capture();
+  const auto presented = (*orphan)->present();
+  if (!capture || !presented || (*orphan)->present() || api.closes != 1 ||
+      api.sets != 2 || api.gets != 2 || api.polls != polls || !pacing_begin_debug_clean(after))
+    return dx12_fail(7, "healthy recovered orphan must finish once without new pacing/native ownership");
   orphan->reset();
   return api.closes == 2 && api.close_ok
       ? 0 : dx12_fail(8, "last frame release did not close the replacement latency handle once");
