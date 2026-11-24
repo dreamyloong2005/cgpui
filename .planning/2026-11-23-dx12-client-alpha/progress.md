@@ -14,6 +14,7 @@ Evidence directory: `D:/Dev/shots/cgpui-dx12-client-alpha-20261123/`.
   `codex/prototype-dx12-client-menu-20261123`, commit
   `bb343e0a77a9ad1d99b56d51c31b6a3c31b410bc`. Production has no prototype files,
   native-style rewrite, replacement menu or geometry adjustment.
+  (That branch was deleted on 2026-11-25 without merging; its source is gone.)
 - Enabled initial no-application-HMENU alpha in the private platform owner;
   froze the initial decorated system/client title-bar mode while leased.
 - Added focused RAII menu admission with read-only registry preflight before

@@ -102,6 +102,7 @@ on local `codex/prototype-dx12-native-menu-alpha`, commit
 `65fc087703985e7070e32cade39d8b42b5482035`, with probe-only registration. The
 prior-flip transition remains a strict negative, not a passing production test.
 The all-composition-from-first-opaque-frame toggle experiment is not adopted.
+(That branch was deleted on 2026-11-25 without merging; its source is gone.)
 
 No native old-Windows or macOS verification, physical mouse hover, real monitor
 migration, HDR/remote-session coverage, arbitrary TDR, full workbench acceptance,

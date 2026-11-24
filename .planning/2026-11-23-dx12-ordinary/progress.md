@@ -19,6 +19,7 @@
   `codex/prototype-dx12-ordinary-20261123`, commit
   `3cde7234d70ab341b10be8a7b4ae7f072e636f10`, and in the evidence folder. It and
   its temporary mcpp registration were removed from the production checkout.
+  (That branch was deleted on 2026-11-25 without merging; its source is gone.)
   No ordinary DX12 support is advertised; no native menu is hidden or replaced.
 
 ## Runtime bug: RED -> GREEN

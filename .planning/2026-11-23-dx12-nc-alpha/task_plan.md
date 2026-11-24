@@ -71,6 +71,7 @@ Prototype archived on local `codex/prototype-dx12-native-menu-alpha` at
 `65fc087703985e7070e32cade39d8b42b5482035`. Four probe files and temporary suite
 registration/uxtheme test-link workaround removed from production. The production
 platform package owns uxtheme link closure.
+(That branch was deleted on 2026-11-25 without merging; its source is gone.)
 
 Review found and fixed the pointer-message lifetime vulnerability, accidental
 opaque-worker factory restriction (test RED exit3 then GREEN), and older-Windows

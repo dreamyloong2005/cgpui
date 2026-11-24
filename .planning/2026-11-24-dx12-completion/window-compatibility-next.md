@@ -17,6 +17,7 @@ parity follows from it.
   `65fc087703985e7070e32cade39d8b42b5482035`, branch
   `codex/prototype-dx12-native-menu-alpha`, file
   `tests/renderer-dx12/dx12_ordinary_transition_probe_test.cpp`.
+  (That branch was deleted on 2026-11-25 without merging; its source is gone.)
 - Raw transition evidence:
   `D:/Dev/shots/cgpui-dx12-nc-alpha-20261123/transition-warp.log` and
   `D:/Dev/shots/cgpui-dx12-nc-alpha-20261123/transition-three-warp.log`.

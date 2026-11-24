@@ -36,6 +36,7 @@ The probe source/registration is only on the local throwaway branch
 `codex/prototype-dx12-ordinary-20261123`, commit
 `3cde7234d70ab341b10be8a7b4ae7f072e636f10`, and in the evidence directory. The
 production suite contains no probe whose exit 0 merely records negative results.
+(That branch was deleted on 2026-11-25 without merging; its source is gone.)
 
 ## Verification
 

@@ -68,21 +68,13 @@ are already observable after DWM setup, before DX12/DComp creation.
 
 ## Retained sources and reproduction
 
-The throwaway source and temporary mcpp registration are archived on local
-branch `codex/prototype-dx12-ordinary-20261123`, commit
-`3cde7234d70ab341b10be8a7b4ae7f072e636f10` (based on `65eb6ae6`). They are not in
-the production test suite: the probe exits successfully after recording negative
-observations, so its process success must not be reported as feature acceptance.
-
-In a checkout of that archive, create a fresh absolute output directory and run:
-
-```powershell
-$env:MCPP_JOBS = '1'
-$env:CGPUI_DX12_DEBUG = '1'
-$env:CGPUI_DX12_ADAPTER = 'warp' # Repeat in fresh processes with '0' and '1'.
-$env:CGPUI_HOST_PROBE_OUTPUT_DIR = '<fresh absolute directory>'
-scripts/dev/test.ps1 -p tests/renderer-dx12 dx12_ordinary_host_probe_test
-```
+The throwaway probe (`dx12_ordinary_host_probe_test`) was never part of the
+production test suite: it exits successfully after recording negative
+observations, so its process success must not be reported as feature
+acceptance. Its source was kept on a local prototype branch and was deleted
+on 2026-11-25; the probe can no longer be rerun from the repository. The
+recorded results below and the archived sources in the evidence directory
+remain.
 
 Evidence: `D:/Dev/shots/cgpui-dx12-ordinary-20261123/`:
 `probe-v3-{warp,0,1}.log`, corresponding `*-images/` BMPs,

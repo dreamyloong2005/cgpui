@@ -40,6 +40,7 @@ Evidence: D:/Dev/shots/cgpui-dx12-client-alpha-20261123/.
 - Candidates/probe files archived under local
   codex/prototype-dx12-client-menu-20261123 at
   bb343e0a77a9ad1d99b56d51c31b6a3c31b410bc and removed from production.
+  (That branch was deleted on 2026-11-25 without merging; its source is gone.)
 - Final bounded scope: initial decorated visible client titlebar alpha WITHOUT
   native HMENU; active mode stays fixed. Existing menu blocks factory; active
   client alpha blocks nonempty application menu installation, preserving model,

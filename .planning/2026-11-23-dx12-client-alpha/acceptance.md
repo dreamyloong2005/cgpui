@@ -85,6 +85,7 @@ No production build runs after the SDK stage in the driver.
   Prototype source is archived only at
   `codex/prototype-dx12-client-menu-20261123`,
   `bb343e0a77a9ad1d99b56d51c31b6a3c31b410bc`.
+  (That branch was deleted on 2026-11-25 without merging; its source is gone.)
 - The controls test originally expected an event the existing Win32 backend
   does not emit. Its corrected oracle checks real `IsIconic` plus public
   lifecycle display state; no unrelated event implementation was added.
