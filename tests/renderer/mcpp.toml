@@ -63,6 +63,7 @@ include_dirs = ["../../src/renderer/metal", "metal"]
 
 [test]
 discover = [
+    "renderer_retained_image_diagnostics_test.cpp",
     "renderer_frame_wait_contract_test.cpp",
     "renderer_popup_support_test.cpp",
     "renderer_draw_count_diagnostics_test.cpp",

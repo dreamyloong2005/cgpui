@@ -33,10 +33,13 @@ int main() {
         "capture value boundary stays private");
     const auto submit = read("src/renderer/dx12/dx12_presentation.cpp");
     const auto publish = submit.find("state.pixels = std::move(candidate_pixels);");
+    const auto completion = submit.find("diagnostics.complete_successful_frame();");
     require(has(submit, "std::optional<RendererFramePixels> candidate_pixels;") &&
         has(submit, "is_nothrow_move_assignable_v<std::optional<RendererFramePixels>>") &&
         publish != std::string::npos && publish > submit.find("dx12_check_debug_errors(state)") &&
-        publish > submit.find("dx12_commit_composition(state)") && publish > submit.find("diagnostics.publish()"),
+        completion != std::string::npos &&
+        completion > submit.find("dx12_commit_composition(state)") && publish > completion &&
+        !has(submit, "diagnostics.publish();"),
         "pixels publish only after all native checks and diagnostic preparation succeed");
     const auto frame = read("src/renderer/dx12/dx12_frame.cpp");
     require(frame.find("state_->pixels.reset()") < frame.find("dx12_submit_frame(") &&

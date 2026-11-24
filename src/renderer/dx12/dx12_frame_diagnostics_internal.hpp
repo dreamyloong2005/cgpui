@@ -23,7 +23,10 @@ class Dx12FrameDiagnostics {
   void submitted(std::size_t local_resource_index = 0);
   void uploaded(bool glyph, std::size_t bytes);
   void finish_stage(RendererFrameTimingStage stage);
+  // Diagnostic-only ledger publication: no cache aging or native-success claim.
   void publish();
+  // Production calls only after every fallible native presentation stage passes.
+  void complete_successful_frame();
 
  private:
   struct Group {
@@ -31,6 +34,8 @@ class Dx12FrameDiagnostics {
   };
   using Clock = std::chrono::steady_clock;
   void plan();
+  void prepare_publication();
+  void publish_prepared() noexcept;
   Dx12State& state_;
   std::span<const Dx12DrawCommand> draws_;
   RendererFrameDiagnosticSnapshot snapshot_;

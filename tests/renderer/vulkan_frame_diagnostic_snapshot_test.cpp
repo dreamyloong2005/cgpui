@@ -134,6 +134,7 @@ int test_builds_frame_snapshot() {
                  snapshot.work.pending_batch_count == 1 &&
                  snapshot.work.pending_draw_count == 1 &&
                  snapshot.upload_bytes.total_byte_count == 8 &&
+                 !snapshot.retained_image_byte_count && !snapshot.retained_image_byte_count_saturated &&
                  snapshot.timings.total_nanoseconds == 13 &&
                  snapshot.dropped_resources.resources.size() == 1
              ? 0

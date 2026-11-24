@@ -104,3 +104,21 @@ redefined as complete solely to close the checklist.
   peer-release-before-later-copy ordering is not protected by per-state gates.
   This is a proved ordering gap, not a proved UAF. See the external
   `cgpui-dx12-dred-20261124/candidates/retirement-boundary-review.md` before integration.
+- Retained-image payload has actual StageA exit40 / StageB GREEN, structure227,
+  native131 WARP-debug and neutral schema passes, plus actual-source two-axis
+  review0. Accepted frozen2986path matrix Windows839/WSL670, native131 per adapter,
+  shared95 per selected backend, ASan131/95+95 and fixed installed SDK counts;
+  exact inventories/source matches. See `.planning/2026-11-24-dx12-image-retention/`.
+- Public-operation follow-up now has primary-source contract evidence and an
+  external revised orphan-frame A/B candidate. Original plan/ledger explicitly
+  preserve frame-outlives-facade; healthy same-epoch completion must be separated
+  from permission to rebuild. Candidate only, no applied/runtime claim.
+- Performance audit identifies actual missing work, not only missing numbers:
+  recorded-command reuse, pooled SRV slots and dirty-region glyph GPU copies.
+  Existing staging allocation wins/pacing are not FPS or steady-state latency
+  proof. External report: `D:/Dev/shots/cgpui-dx12-performance-20261124/audit.md`.
+  A small noncapture benchmark is being prepared, not executed or accepted.
+- User explicitly chose existing Vulkan-compatible last-upload-per-frame and
+  latest-successful-capture history. Decision in `public-contract-decision.md`;
+  prepare separate exact common regressions and deliberate DX12 migration, not
+  source changes during the completed retention freeze.

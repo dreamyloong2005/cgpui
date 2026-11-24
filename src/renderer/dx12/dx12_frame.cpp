@@ -1,7 +1,6 @@
 #include "dx12_operation_internal.hpp"
 #include "dx12_frame_internal.hpp"
 #include "dx12_frame_recovery_internal.hpp"
-#include "dx12_image_cache_internal.hpp"
 #include "renderer_device_pixels_internal.hpp"
 #include <cmath>
 
@@ -93,7 +92,6 @@ Result<void> Dx12Frame::present() {
   if (error_) return std::unexpected(*error_);
   if (auto ready = dx12_prepare_present(*state_, generation_); !ready) return ready;
   auto result = dx12_submit_frame(*state_, clear_, draws_, capture_, command_count_, admission_call_ns_);
-  if (result) state_->image_cache->finish_frame();
   if (!result) return dx12_handle_frame_failure(*state_, std::move(result.error()));
   return result;
 }

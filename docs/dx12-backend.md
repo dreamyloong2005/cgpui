@@ -196,6 +196,27 @@ The borrowed result remains subject to renderer lifetime, the next successful
 publication and the existing caller synchronization requirements. Copy the
 snapshot when retaining historical measurements across later presents.
 
+`retained_image_byte_count` is an optional CPU-payload sample taken after the
+successful frame's image-cache aging/eviction and before snapshot publication.
+DX12 counts each distinct live immutable RGBA image snapshot once across cache,
+active/finished frames and submission references. Replacement or invalidation
+does not subtract pixels still held by an earlier draw; releasing those owners
+appears in a later successful sample. Recovery reupload does not create another
+CPU copy. This is independent of per-frame upload bytes, which may be zero.
+
+The count excludes caller-owned assets, row padding, glyphs, allocation capacity,
+native textures/descriptors, staging/readback and backdrop storage. It is not
+RSS, VRAM, total renderer memory, a peak or a budget. Known zero differs from
+unreported/unavailable: Vulkan, Metal and custom snapshots currently default to
+no value. DX12 also reports no value if its weak bookkeeping registration cannot
+allocate; it never publishes a known partial sum. This unavailability persists
+for that image-cache lifetime, including across native recovery. Existing image
+allocation and other diagnostic allocations retain their existing exception
+behavior; this is not a general out-of-memory guarantee. Representational overflow
+clamps to `SIZE_MAX` and sets the independent
+`retained_image_byte_count_saturated` flag. Historical samples, including this
+availability and saturation, are unchanged by failed/abandoned frames or resize.
+
 Counts describe logical backend work, not GPU draw-call or pixel counts:
 
 - Commands retain their original public draw-call identity and primitive kind,

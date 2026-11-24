@@ -87,7 +87,7 @@ Result<void> dx12_submit_frame(Dx12State& state, Color clear,
   if (auto checked = dx12_check_debug_errors(state); !checked) return checked;
   if (auto committed = dx12_commit_composition(state); !committed) return committed;
   diagnostics.finish_stage(RendererFrameTimingStage::presentation);
-  diagnostics.publish();
+  diagnostics.complete_successful_frame();
   state.pixels = std::move(candidate_pixels);
   // DXGI_STATUS_OCCLUDED is a valid hidden-window presentation. The render
   // and optional readback completed; avoid a tight retry loop for hidden HWNDs.

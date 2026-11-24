@@ -1,10 +1,7 @@
 #include "dx12_frame_diagnostics_internal.hpp"
-#include "dx12_backdrop_blur_internal.hpp"
 #include "dx12_draw_commands_internal.hpp"
 #include "dx12_state_internal.hpp"
-#include <array>
 #include <limits>
-#include <utility>
 
 namespace cgpui {
 namespace {
@@ -87,23 +84,7 @@ void Dx12FrameDiagnostics::finish_stage(RendererFrameTimingStage stage) {
 
 void Dx12FrameDiagnostics::publish() {
   if (published_) return;
-  static constexpr std::array supported{
-      RendererPrimitiveKind::solid_rect, RendererPrimitiveKind::rounded_rect,
-      RendererPrimitiveKind::text, RendererPrimitiveKind::text_selection,
-      RendererPrimitiveKind::text_caret, RendererPrimitiveKind::image,
-      RendererPrimitiveKind::box_shadow, RendererPrimitiveKind::backdrop_blur};
-  planned_work_.draw_count = snapshot_.planned_draws.total_count;
-  submitted_work_.draw_count = snapshot_.submitted_draws.total_count;
-  // Texture upload demand is observed at actual recording, after lazy cache
-  // resolution. A successful candidate has submitted all these payload bytes.
-  planned_work_.upload_byte_count = snapshot_.upload_bytes.total_byte_count;
-  submitted_work_.upload_byte_count = snapshot_.upload_bytes.total_byte_count;
-  snapshot_.work = compare_renderer_frame_work(planned_work_, submitted_work_);
-  snapshot_.dropped_resources = classify_renderer_dropped_resources(
-      planned_resources_, submitted_resources_, supported);
-  snapshot_.backdrop_blur.offscreen_targets_allocated =
-      state_.backdrop_blur && !state_.backdrop_blur->frame_targets.empty();
-  state_.diagnostics = std::move(snapshot_);
-  published_ = true;
+  prepare_publication();
+  publish_prepared();
 }
 } // namespace cgpui

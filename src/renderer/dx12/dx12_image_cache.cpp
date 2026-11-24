@@ -9,7 +9,9 @@ Result<void> Dx12ImageCache::upload(Dx12State& state, const ImageAsset& image) {
   auto texture = dx12_create_texture(state, image.bitmap.width, image.bitmap.height,
       image.bitmap.stride, DXGI_FORMAT_R8G8B8A8_UNORM, image.bitmap.pixels);
   if (!texture) return std::unexpected(texture.error());
-  entries_.insert_or_assign(image.id.value, Entry{describe_image_asset(image), std::move(*texture)});
+  const auto stored = entries_.insert_or_assign(
+      image.id.value, Entry{describe_image_asset(image), std::move(*texture)}).first;
+  retention_.track(stored->second.texture);
   return {};
 }
 
@@ -32,7 +34,7 @@ Result<Dx12TextureHandle> Dx12ImageCache::find(const ImageAssetDescriptor& descr
   return entry.texture;
 }
 
-void Dx12ImageCache::finish_frame() {
+void Dx12ImageCache::finish_frame() noexcept {
   for (auto entry = entries_.begin(); entry != entries_.end();) {
     auto& value = entry->second;
     if (value.touched) value.idle_frames = 0;
@@ -41,5 +43,8 @@ void Dx12ImageCache::finish_frame() {
     if (value.idle_frames > 120) entry = entries_.erase(entry);
     else ++entry;
   }
+}
+Dx12ImageRetentionSample Dx12ImageCache::retained_image_payload() noexcept {
+  return retention_.sample();
 }
 } // namespace cgpui

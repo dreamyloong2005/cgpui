@@ -26,6 +26,8 @@ inline bool diagnostic_same(const cgpui::RendererFrameDiagnosticSnapshot* a,
   return a && a->work.planned_work == b.work.planned_work && a->work.submitted_work == b.work.submitted_work &&
       diagnostic_pending(a->work) == diagnostic_pending(b.work) &&
       diagnostic_uploads(a->upload_bytes) == diagnostic_uploads(b.upload_bytes) &&
+      a->retained_image_byte_count == b.retained_image_byte_count &&
+      a->retained_image_byte_count_saturated == b.retained_image_byte_count_saturated &&
       diagnostic_counts(a->planned_draws) == diagnostic_counts(b.planned_draws) &&
       diagnostic_counts(a->submitted_draws) == diagnostic_counts(b.submitted_draws) &&
       a->dropped_resources.resources == b.dropped_resources.resources &&
