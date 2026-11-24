@@ -2,6 +2,7 @@
 
 #include "dx12_state_internal.hpp"
 #include "dx12_draw_commands_internal.hpp"
+#include "dx12_image_batch_internal.hpp"
 
 namespace cgpui {
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
@@ -39,6 +40,7 @@ class Dx12Frame final : public RenderFrame {
   const std::uint64_t admission_call_ns_;
   Color clear_{0, 0, 0, 1};
   std::vector<Dx12DrawCommand> draws_;
+  Dx12ImageBatch images_;
   std::size_t command_count_ = 0;
   std::optional<Error> error_;
   bool capture_ = false;

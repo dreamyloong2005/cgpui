@@ -78,12 +78,19 @@ checks. No new recovery or cross-thread coordination is promised for an orphan.
 There is no Renderer getter after facade deletion: callers cannot inspect an
 orphan capture by dereferencing the deleted facade or a stale borrowed pointer.
 
-Image uploads and invalidations update the CPU cache while commands are recorded;
-abandoning or rejecting a frame does not roll back those cache operations. Each
-recorded draw retains an immutable texture snapshot, so replacing/invalidation
-later in the same frame does not change earlier draws. Uploads reach the GPU
-lazily when first drawn; images are evicted after more than 120 successfully
-presented idle frames. Glyph pages are cached for the renderer lifetime and
+Image uploads copy caller bytes into a frame-owned pending batch. The final
+upload for an ID supplies every image draw in that frame; pending invalidations
+are applied first, irrespective of their recording order, then uploads and
+image-draw resolution. Abandonment and rejection before image preparation do
+not apply that batch. A failure after preparation starts does not promise
+rollback; callers can resupply needed assets. Invalid intermediate same-ID
+uploads may be replaced before final validation, but an invalid final upload
+still rejects. DX12 continues to reject missing/incompatible image assets at
+resolution; Vulkan missing-image behavior/error codes remain a separate policy
+difference, not silently standardized here. Resolved draws retain immutable
+CPU snapshots, including across later frames' replacements/invalidation.
+Uploads reach the GPU lazily when first drawn; images are evicted after more
+than 120 successfully presented idle frames. Glyph pages are cached for the renderer lifetime and
 republished as full-page snapshots when dirty. This is correctness-first, not a
 partial-upload, pooled-descriptor or bounded-glyph-cache performance guarantee.
 
@@ -232,7 +239,10 @@ appears in a later successful sample. Recovery reupload does not create another
 CPU copy. This is independent of per-frame upload bytes, which may be zero.
 
 The count excludes caller-owned assets, row padding, glyphs, allocation capacity,
-native textures/descriptors, staging/readback and backdrop storage. It is not
+native textures/descriptors, unapplied raw frame-upload requests, staging/readback
+and backdrop storage. Pending raw request buffers are destroyed on image
+preparation exit, before successful sampling; finished frames retain resolved
+immutable snapshots, not a second raw upload copy. It is not
 RSS, VRAM, total renderer memory, a peak or a budget. Known zero differs from
 unreported/unavailable: Vulkan, Metal and custom snapshots currently default to
 no value. DX12 also reports no value if its weak bookkeeping registration cannot
@@ -282,7 +292,9 @@ Earlier pending probes, runtime timer/event-loop delays, time holding an abandon
 or active frame, recovery handling and application frame recording are excluded.
 Each frame owns its own admission sample; failed/unpublished candidates never
 replace the last successful diagnostic. Resource preparation includes diagnostic
-planning. All stage contributions use the shared saturating category/total sum.
+planning. The frame-batched CPU image prefix runs before this diagnostic owner
+and is excluded from these selected stage sums; a full Present API wall-clock
+measurement includes it. All stage contributions use the shared saturating category/total sum.
 These values do not measure GPU timestamps, scanout or end-to-end input latency.
 Resource realization may occur during command recording, so stage names do not
 promise identical work distribution across backends. Vulkan and DX12 have

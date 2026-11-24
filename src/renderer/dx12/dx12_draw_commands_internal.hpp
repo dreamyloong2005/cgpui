@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dx12_texture_internal.hpp"
+#include "dx12_image_request_internal.hpp"
 #include "cgpui/renderer/planning/rect_geometry.hpp"
 #include "cgpui/renderer/planning/box_shadow_geometry.hpp"
 #include "cgpui/renderer/planning/backdrop_blur_plan.hpp"
@@ -22,7 +23,8 @@ struct Dx12TexturedDraw {
   ImageSamplingMode sampling = ImageSamplingMode::linear;
   bool glyph = false;
 };
-using Dx12DrawPayload = std::variant<RectGeometry, Dx12TexturedDraw, BoxShadowGeometry, BackdropBlurPlan>;
+using Dx12DrawPayload = std::variant<RectGeometry, Dx12TexturedDraw, BoxShadowGeometry,
+                                     BackdropBlurPlan, Dx12PendingImageDraw>;
 struct Dx12DrawCommand {
   Dx12DrawPayload payload;
   RendererPrimitiveKind kind = RendererPrimitiveKind::solid_rect;

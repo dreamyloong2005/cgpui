@@ -16,6 +16,7 @@ static_assert(std::is_nothrow_move_assignable_v<std::optional<RendererFramePixel
 Result<void> dx12_submit_frame(Dx12State& state, Color clear,
                               std::span<const Dx12DrawCommand> draws, bool capture,
                               std::size_t command_count, std::uint64_t admission_call_ns) {
+  if (auto resolved = dx12_require_resolved_images(draws); !resolved) return resolved;
   Dx12FrameDiagnostics diagnostics(state, draws, command_count, admission_call_ns);
   if (auto idle = dx12_wait_idle(state); !idle) return idle;
   diagnostics.finish_stage(RendererFrameTimingStage::pacing_wait);

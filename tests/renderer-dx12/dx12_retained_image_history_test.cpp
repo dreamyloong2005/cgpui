@@ -18,8 +18,15 @@ int main() {
     if (!abandoned) return dx12_fail(2, "initial abandoned frame unavailable");
     (*abandoned)->upload_image(red);
   }
-  if ((*renderer)->last_frame_diagnostic_snapshot() || !retention_empty_frame(**renderer, 4))
-    return dx12_fail(3, "abandonment published or later success failed to observe retained record-time pixels");
+  if ((*renderer)->last_frame_diagnostic_snapshot() || !retention_empty_frame(**renderer, 0))
+    return dx12_fail(3, "abandonment published or applied its pending image bytes");
+  {
+    auto seed = wait_for_test_frame(**renderer);
+    if (!seed) return dx12_fail(9, "successful retained-history seed unavailable");
+    (*seed)->upload_image(red);
+    if (!retention_present_image(**renderer, **seed, describe_image_asset(red), {{255, 0, 0, 255}, 4, 4}))
+      return dx12_fail(10, "successful retained-history seed pixels/payload absent");
+  }
   const auto* borrowed = (*renderer)->last_frame_diagnostic_snapshot();
   const auto saved = *borrowed;
   const auto unchanged = [&] {
@@ -29,7 +36,7 @@ int main() {
   if (!invalid) return dx12_fail(4, "failed retained-image frame unavailable");
   (*invalid)->upload_image(green);
   (*invalid)->clear({std::numeric_limits<float>::quiet_NaN(), 0, 0, 1});
-  const auto failed = (*invalid)->present(); // Raw negative oracle; never retried.
+  const auto failed = (*invalid)->present(); // Known early rejection: the image prefix never runs.
   if (failed || failed.error().code != ErrorCode::invalid_argument || !unchanged())
     return dx12_fail(5, "failed frame rewrote the previous successful retained payload");
   invalid->reset();
@@ -42,7 +49,7 @@ int main() {
       (*renderer)->resize({0, 64}, {1}) || !unchanged() ||
       !(*renderer)->resize({64, 64}, {1}) || !unchanged())
     return dx12_fail(7, "abandonment/resize changed historical retained count or saturation");
-  if (!retention_empty_frame(**renderer, 12))
-    return dx12_fail(8, "next success failed to sample record-time mutations from failed/abandoned frames");
+  if (!retention_empty_frame(**renderer, 4))
+    return dx12_fail(8, "abandoned/early-rejected pending bytes changed the next successful census");
   return 0;
 }

@@ -22,12 +22,14 @@ int main() {
   if (!state) return dx12_fail(1, "texture snapshot mixed fixture unavailable");
   auto original = diagnostic_image();
   auto replacement = original;
+  replacement.id.value += 1; // Distinct live payloads still require non-aliasing staging slices.
   for (unsigned y = 0; y != 2; ++y) for (unsigned x = 0; x != 2; ++x) {
     const auto offset = y * replacement.bitmap.stride + x * 4;
     replacement.bitmap.pixels[offset] = replacement.bitmap.pixels[offset + 2] = 0;
     replacement.bitmap.pixels[offset + 1] = replacement.bitmap.pixels[offset + 3] = 255;
   }
   const auto asset = describe_image_asset(original);
+  const auto replacement_asset = describe_image_asset(replacement);
   for (unsigned pass = 0; pass != 2; ++pass) {
     state->frame_active = true;
     Dx12Frame frame(state);
@@ -35,16 +37,16 @@ int main() {
     if (!pass) frame.upload_image(original);
     frame.draw_image({.bounds = {{0, 0}, {16, 16}}, .asset = asset, .sampling = ImageSamplingMode::nearest});
     if (!pass) {
-      // A later same-id upload and mutations of caller bytes cannot rewrite
-      // the first draw's immutable snapshot or share its staging slice.
+      // Caller-copy ownership and two distinct payloads must remain independent;
+      // same-ID immutable replacement lifetime is covered across finished frames.
       original.bitmap.pixels.assign(original.bitmap.pixels.size(), 0);
       frame.upload_image(replacement);
     }
     for (const float y : {0.0F, 24.0F})
-      frame.draw_image({.bounds = {{24, y}, {16, 16}}, .asset = asset, .sampling = ImageSamplingMode::nearest});
+      frame.draw_image({.bounds = {{24, y}, {16, 16}}, .asset = replacement_asset, .sampling = ImageSamplingMode::nearest});
     for (const float y : {24.0F, 44.0F}) frame.draw_text(diagnostic_text("M", 16, {0, y}));
     if (!frame.request_pixel_capture() || !frame.present() || !state->pixels ||
-        !image_tile(&*state->pixels, 0, 0, !pass) || !image_tile(&*state->pixels, 24, 0, false) ||
+        !image_tile(&*state->pixels, 0, 0, true) || !image_tile(&*state->pixels, 24, 0, false) ||
         !image_tile(&*state->pixels, 24, 24, false) || !diagnostic_ink(&*state->pixels, 0, 24, 20, 42) ||
         !diagnostic_ink(&*state->pixels, 0, 44, 20, 64))
       return dx12_fail(2, "mixed image/glyph staging changed snapshot pixels or text coverage");

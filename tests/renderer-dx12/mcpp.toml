@@ -69,6 +69,9 @@ cgpui.renderer-windows = { path = "../../packages/renderer-windows" }
 
 [target.'cfg(os = "windows")'.test]
 discover = [
+    "dx12_image_batch_test.cpp",
+    "dx12_image_batch_validation_test.cpp",
+    "dx12_image_batch_orphan_test.cpp",
     "dx12_orphan_removed_test.cpp",
     "dx12_orphan_late_error_test.cpp",
     "dx12_orphan_cold_popup_test.cpp",

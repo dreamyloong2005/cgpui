@@ -45,6 +45,13 @@ int main() {
     require(!has(frame, "state_->pixels.reset()") &&
         has(read("src/renderer/dx12/dx12_renderer.cpp"), "!state_->recovery_pending && state_->pixels"),
         "Present preserves successful history while pending recovery retains its getter boundary");
+    const auto images = frame.find("images_.prepare(*state_, draws_)");
+    const auto image_prepare = read("src/renderer/dx12/dx12_image_prepare.cpp");
+    require(images != std::string::npos && images > frame.find("dx12_prepare_present(*state_, generation_)") &&
+        images < frame.find("dx12_submit_frame(") &&
+        has(frame, "if (auto prepared = images_.prepare(*state_, draws_); !prepared) return prepared;") &&
+        !has(image_prepare, "state.pixels") && !has(image_prepare, "state_->pixels"),
+        "deferred image preparation preserves capture history and returns CPU input failures before submission");
     require(has(read("src/renderer/dx12/dx12_swapchain_resize.cpp"), "state.pixels.reset();") &&
         has(read("src/renderer/dx12/dx12_recovery.cpp"), "state.pixels.reset();"),
         "stable-surface history must not remove explicit resize/recovery invalidation");

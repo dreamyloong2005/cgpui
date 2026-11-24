@@ -140,3 +140,11 @@ redefined as complete solely to close the checklist.
   batching is next. Human also explicitly accepted engineering recommendation
   to skip valid not-yet-uploaded images with honest diagnostics while rejecting
   invalid requests/native errors; a separate follow-up candidate is underway.
+- Frame-batched images accepted in `.planning/2026-11-24-dx12-image-batching/`:
+  actual shared A three Vulkan pass / three DX12 semantic exit40 -> B both pass;
+  focused native139/structure229, first full frozen3011path Windows854/WSL672,
+  all builds, native139 per adapter, common100 per selection, ASan/SDK all pass.
+  Next is approved missing-image skip + truthful Vulkan diagnostics and strict
+  malformed-input controls. Source-reviewed external candidates include added
+  native Vulkan reuse oracle; its first version had an observer identity gap
+  and a separately preserved revised candidate is awaiting re-review/execution.

@@ -13,25 +13,32 @@ int main() {
   const auto red = retention_image(9820, {255, 0, 0, 255});
   const auto green = retention_image(9820, {0, 255, 0, 255});
   const auto asset = describe_image_asset(red);
-  auto finished = wait_for_test_frame(**renderer);
-  if (!finished) return dx12_fail(3, "immutable snapshots frame unavailable");
-  (*finished)->clear({0, 0, 1, 1});
-  (*finished)->upload_image(red);
-  (*finished)->draw_image({.bounds = {{0, 0}, {24, 64}}, .asset = asset});
-  (*finished)->upload_image(green);
-  (*finished)->draw_image({.bounds = {{32, 0}, {24, 64}}, .asset = asset});
-  (*finished)->invalidate_image(asset.id);
-  if (!(*finished)->request_pixel_capture() || !(*finished)->present() ||
-      !dx12_pixel((*renderer)->last_frame_pixels(), 8, 8, {255, 0, 0, 255}) ||
-      !dx12_pixel((*renderer)->last_frame_pixels(), 40, 8, {0, 255, 0, 255}) ||
-      !retention_sample(**renderer, 8, 8))
-    return dx12_fail(4, "same-id immutable pixels or unique retained payload were lost after invalidation");
-  // Cache is empty. The finished frame, not the submission vector after the next
-  // frame starts, must keep both immutable CPU snapshots observable.
-  if (!retention_empty_frame(**renderer, 8))
-    return dx12_fail(5, "finished frame's payload was confused with current cache residency");
-  finished->reset();
-  if (!retention_empty_frame(**renderer, 0))
-    return dx12_fail(6, "final immutable owner release did not appear in the next successful sample");
+  auto old_red = wait_for_test_frame(**renderer);
+  if (!old_red) return dx12_fail(3, "old immutable red frame unavailable");
+  (*old_red)->upload_image(red);
+  if (!retention_present_image(**renderer, **old_red, asset, {{255, 0, 0, 255}, 4, 4}))
+    return dx12_fail(4, "old immutable red pixels or payload absent");
+  auto old_green = wait_for_test_frame(**renderer);
+  if (!old_green) return dx12_fail(5, "replacement immutable green frame unavailable");
+  (*old_green)->upload_image(green);
+  if (!retention_present_image(**renderer, **old_green, asset, {{0, 255, 0, 255}, 8, 4}))
+    return dx12_fail(6, "same-ID cross-frame replacement lost the still-owned red snapshot");
+  {
+    auto invalidation = wait_for_test_frame(**renderer);
+    if (!invalidation) return dx12_fail(7, "invalidation-only retained frame unavailable");
+    (*invalidation)->invalidate_image(asset.id);
+    (*invalidation)->clear({0, 0, 1, 1});
+    if (!(*invalidation)->request_pixel_capture() || !(*invalidation)->present() ||
+        !dx12_pixel((*renderer)->last_frame_pixels(), 32, 32, {0, 0, 255, 255}) ||
+        !retention_sample(**renderer, 8, 0))
+      return dx12_fail(8, "cache invalidation subtracted payload still owned by finished frames");
+  }
+  // Subsequent frame-start cleanup drops submission references; the two finished
+  // frames, not current cache residency, must still retain both immutable images.
+  if (!retention_empty_frame(**renderer, 8)) return dx12_fail(9, "old frame payload omitted after submission cleanup");
+  old_red->reset();
+  if (!retention_empty_frame(**renderer, 4)) return dx12_fail(10, "old red final-owner release was not sampled");
+  old_green->reset();
+  if (!retention_empty_frame(**renderer, 0)) return dx12_fail(11, "old green final-owner release was not sampled");
   return 0;
 }

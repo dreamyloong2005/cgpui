@@ -44,7 +44,7 @@ int main() {
     (*frame)->clear({0, 0, 0, 1});
     (*frame)->upload_image(red);
     (*frame)->draw_image({.bounds = {{0, 0}, {32, 32}}, .asset = asset});
-    // A caller-owned bitmap and a later same-id upload cannot rewrite this draw.
+    // Caller bytes are copied, but all draws resolve the final same-ID upload.
     red.bitmap.pixels[0] = 0;
     (*frame)->draw_rect({.rect = {{8, 8}, {16, 16}}, .color = {0, 0, 1, 1}});
     (*frame)->upload_image(green);
@@ -53,10 +53,17 @@ int main() {
     if (!(*frame)->request_pixel_capture()) return dx12_fail(3, "snapshot capture failed");
     if (auto result = (*frame)->present(); !result) return dx12_fail(4, result.error().message.c_str());
     const auto* pixels = (*renderer)->last_frame_pixels();
-    if (!dx12_pixel(pixels, 4, 4, {255, 0, 0, 255}) ||
+    if (!dx12_pixel(pixels, 4, 4, {0, 255, 0, 255}) ||
         !dx12_pixel(pixels, 12, 12, {0, 0, 255, 255}) ||
         !dx12_pixel(pixels, 20, 12, {0, 255, 0, 255}))
       return dx12_fail(5, "same-frame image replacement/invalidation or primitive order differs");
+  }
+  if (const int result = expect_cached(**renderer, asset, {0, 255, 0, 255})) return result;
+  {
+    auto invalidation = cgpui_test::wait_for_test_frame(**renderer);
+    if (!invalidation) return dx12_fail(16, "invalidation-only begin failed");
+    (*invalidation)->invalidate_image(asset.id);
+    if (!(*invalidation)->present()) return dx12_fail(17, "invalidation-only Present failed");
   }
   {
     auto frame = cgpui_test::wait_for_test_frame(**renderer);
@@ -65,18 +72,24 @@ int main() {
     if (const int result = reject_frame(**frame)) return result;
   }
   {
+    auto seed = cgpui_test::wait_for_test_frame(**renderer);
+    if (!seed) return dx12_fail(18, "known-cache seed unavailable");
+    (*seed)->upload_image(green);
+    if (!(*seed)->present()) return dx12_fail(19, "known-cache seed failed");
+  }
+  {
     auto abandoned = cgpui_test::wait_for_test_frame(**renderer);
     if (!abandoned) return dx12_fail(7, "abandoned begin failed");
-    // CPU snapshots are record-time cache updates, not a public transaction.
-    // Abandoning must not mark an unsubmitted GPU texture as uploaded.
+    // Pending replacement is frame-owned; abandonment never applies this prefix.
     (*abandoned)->upload_image(blue);
     (*abandoned)->draw_image({.bounds = {{0, 0}, {32, 32}}, .asset = asset});
   }
-  if (const int result = expect_cached(**renderer, asset, {0, 0, 255, 255})) return result;
+  if (const int result = expect_cached(**renderer, asset, {0, 255, 0, 255})) return result;
   {
     auto failed = cgpui_test::wait_for_test_frame(**renderer);
     if (!failed) return dx12_fail(8, "failed-frame begin failed");
     (*failed)->upload_image(green);
+    // Existing DX12 missing policy only; no cross-backend rollback guarantee.
     auto missing = asset;
     missing.id.value = 999;
     (*failed)->draw_image({.bounds = {{0, 0}, {32, 32}}, .asset = missing});

@@ -60,3 +60,30 @@ or proof of menu/chrome/backdrop/rollback/opaque-clear compatibility.
 - Items4/5/6/8 and broader window/performance/release gates remain open. DRED,
   retained-image accounting and WARP-CI work currently exists only as external
   candidates/design, not implemented or accepted repository behavior.
+
+## Latest status correction
+
+Retained-image CPU accounting is implemented/accepted (`d893fdee`), with an
+actual-owner weak census rather than only cache residency. Orphan acquired-frame
+completion is accepted (`58e16f71`), and last-successful requested capture history
+is accepted (`0f6b2c6e`). The capture slice preserves one unlocated opaque native
+menu fixture timeout from its first full run; unchanged second matrix passed.
+
+Image batching is applied and focused GREEN (native139, architecture229, shared
+three scenes on both backends), undergoing frozen3011-path full acceptance. The
+human additionally accepted valid-not-yet-uploaded skip with honest diagnostics
+and strict invalid/native-error handling. That follow-up remains an external
+candidate; it also corrects Vulkan's currently phantom image submission counts.
+
+DRED remains unimplemented. The old per-state traversal candidate cannot prove
+device-wide borrowed-node lifetime. New independent device-epoch design at
+`D:/Dev/shots/cgpui-dx12-dred-20261124/device-epoch-design.md` proposes exact scalar
+status only with NO borrowed output traversal; complete breadcrumbs remain OPEN.
+It inventories normal Reset/prune/resize/local COM cleanup, not just retirement.
+This is an ownership evidence gap, not a demonstrated UAF.
+
+Performance candidates now include shared SRV pages and a revised-creation
+noncapture benchmark, both source-reviewed but not integrated/executed. Glyph
+dirty-copy design remains external. Window-route, cross-thread recovery, actual
+CI, default/release gates and Vulkan device-loss parity are not closed by those
+source candidates or by the accepted capture/image-lifetime contracts.

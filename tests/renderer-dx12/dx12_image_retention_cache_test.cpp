@@ -28,7 +28,8 @@ int main() {
     require(bool(cache.upload(state, image)) && cache.retained_image_payload().byte_count == 32,
         "same-id replacement discarded a still-live old snapshot");
     auto second = cache.find(descriptor);
-    require(bool(second), "replacement snapshot unavailable");
+    require(bool(second) && (*first)->pixels[0] == 255 && (*second)->pixels[0] == 17,
+        "replacement changed the still-owned old immutable payload or failed to copy the new bytes");
     cache.invalidate(image.id);
     require(cache.retained_image_payload().byte_count == 32, "invalidation counted only current cache entries");
     second->reset();

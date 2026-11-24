@@ -27,6 +27,10 @@ class RenderFrame {
     (void)selection;
   }
   virtual void draw_text_caret(const TextCaretDraw& caret) { (void)caret; }
+  // Image-capable implementations copy upload bytes into a frame-owned batch.
+  // Its final upload per ID supplies every draw in this frame; invalidations
+  // apply before uploads regardless of recording order. Unpresented batches
+  // are discarded; failure after processing starts does not promise rollback.
   virtual void upload_image(const ImageAsset& image) { (void)image; }
   virtual void invalidate_image(ImageAssetId asset_id) { (void)asset_id; }
   virtual void draw_image(const ImageDraw& image) { (void)image; }
