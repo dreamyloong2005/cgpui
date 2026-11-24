@@ -1,4 +1,5 @@
 #include "vulkan_internal.hpp"
+#include "vulkan_image_submission_diagnostics_internal.hpp"
 
 namespace cgpui {
 
@@ -114,6 +115,7 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
     return VulkanFrameCommandRecordingResult{
         .action = reuse_plan.action,
         .reason = reuse_plan.reason,
+        .submitted_image_indices = vulkan_submitted_image_indices(extent, draw_order, *image_draw_commands),
     };
   }
   vulkan_invalidate_frame_command_reuse(command_reuse_state);
@@ -192,6 +194,7 @@ Result<VulkanFrameCommandRecordingResult> record_vulkan_frame_command_buffer(
   return VulkanFrameCommandRecordingResult{
       .action = VulkanFrameCommandReuseAction::record,
       .reason = reuse_plan.reason,
+      .submitted_image_indices = vulkan_submitted_image_indices(extent, draw_order, *image_draw_commands),
   };
 }
 

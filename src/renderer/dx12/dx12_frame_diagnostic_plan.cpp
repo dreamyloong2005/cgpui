@@ -29,6 +29,8 @@ void Dx12FrameDiagnostics::plan() {
       } else if constexpr (std::is_same_v<Payload, Dx12TexturedDraw>) {
         if (!payload.vertices.empty() &&
             resolve_clip_stack_scissor(extent, payload.clip_rect, {}).visible) append(0);
+      } else if constexpr (std::is_same_v<Payload, Dx12MissingImageDraw>) {
+        if (resolve_clip_stack_scissor(extent, payload.clip_rect, {}).visible) append(0);
       } else if constexpr (std::is_same_v<Payload, BackdropBlurPlan>) {
         if (payload.vertices.empty()) return;
         for (std::size_t index = 0; index < payload.passes.size(); ++index) {

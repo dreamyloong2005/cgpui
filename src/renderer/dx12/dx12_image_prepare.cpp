@@ -1,5 +1,6 @@
 #include "dx12_image_batch_internal.hpp"
 #include "dx12_image_resolve_internal.hpp"
+#include "dx12_image_request_validation_internal.hpp"
 #include "dx12_image_cache_internal.hpp"
 #include "dx12_state_internal.hpp"
 #include <utility>
@@ -12,6 +13,7 @@ Result<void> Dx12ImageBatch::prepare(Dx12State& state, std::span<Dx12DrawCommand
   std::vector<ImageAssetId> invalidations;
   uploads.swap(uploads_);
   invalidations.swap(invalidations_);
+  if (auto valid = dx12_validate_image_request_identities(draws); !valid) return valid;
   for (const auto id : invalidations) state.image_cache->invalidate(id);
   for (const auto& image : uploads) {
     if (auto uploaded = state.image_cache->upload(state, image); !uploaded) return uploaded;
@@ -21,7 +23,8 @@ Result<void> Dx12ImageBatch::prepare(Dx12State& state, std::span<Dx12DrawCommand
     if (!pending) continue;
     auto resolved = dx12_resolve_image_draw(state, *pending);
     if (!resolved) return std::unexpected(resolved.error());
-    command.payload = std::move(*resolved); // Preserve kind/index/offset and draw order.
+    std::visit([&](auto&& payload) { command.payload = std::move(payload); }, std::move(*resolved));
+    // Preserve kind/index/offset and draw order, including intentional missing markers.
   }
   return dx12_require_resolved_images(draws);
 }

@@ -92,6 +92,7 @@ struct VulkanFrameCommandRecordingResult {
       VulkanFrameCommandReuseAction::record;
   VulkanFrameCommandReuseReason reason =
       VulkanFrameCommandReuseReason::no_recording;
+  std::vector<std::size_t> submitted_image_indices;
 };
 
 [[nodiscard]] VulkanFrameCommandReusePlan vulkan_plan_frame_command_reuse(

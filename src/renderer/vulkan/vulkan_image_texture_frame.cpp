@@ -3,59 +3,21 @@
 #include "vulkan_image_texture_cache_internal.hpp"
 #include "vulkan_image_texture_invalidation_internal.hpp"
 #include "vulkan_image_upload_retirement_internal.hpp"
+#include "vulkan_image_request_validation_internal.hpp"
 
 namespace cgpui {
-namespace {
-
-bool same_allocation_identity(
-    const ImageAssetDescriptor& lhs,
-    const ImageAssetDescriptor& rhs) {
-  return lhs.id == rhs.id && lhs.pixel_width == rhs.pixel_width &&
-         lhs.pixel_height == rhs.pixel_height && lhs.format == rhs.format;
-}
-
-Result<void> validate_image_texture_frame_requests(
-    std::span<const ImageDraw> image_draws,
-    std::span<const ImageUploadBatch> image_uploads) {
-  if (auto result =
-          vulkan_validate_image_texture_resource_requests(image_draws);
-      !result) {
-    return result;
-  }
-  for (std::size_t index = 0; index < image_uploads.size(); ++index) {
-    const ImageUploadBatch& upload = image_uploads[index];
-    if (!vulkan_image_texture_upload_batch_valid(upload)) {
-      return std::unexpected(vulkan_error(
-          ErrorCode::renderer_initialization_failed,
-          "image texture frame contains an invalid upload batch"));
-    }
-    for (std::size_t prior = 0; prior < index; ++prior) {
-      if (image_uploads[prior].image.id == upload.image.id) {
-        return std::unexpected(vulkan_error(
-            ErrorCode::renderer_initialization_failed,
-            "image texture frame contains duplicate uploads"));
-      }
-    }
-    for (const ImageDraw& draw : image_draws) {
-      if (draw.asset.id == upload.image.id &&
-          !same_allocation_identity(draw.asset, upload.image)) {
-        return std::unexpected(vulkan_error(
-            ErrorCode::renderer_initialization_failed,
-            "image texture draw conflicts with its upload"));
-      }
-    }
-  }
-  return {};
-}
-
-} // namespace
-
 Result<void> VulkanRendererState::prepare_image_texture_frame(
     std::span<const ImageDraw> image_draws,
     std::span<const ImageUploadBatch> image_uploads,
     std::span<const ImageAssetId> image_invalidations) {
-  if (auto result =
-          validate_image_texture_frame_requests(image_draws, image_uploads);
+  VkPhysicalDeviceProperties properties{};
+  if (!image_draws.empty() || !image_uploads.empty()) {
+    if (physical_device_ == VK_NULL_HANDLE) return std::unexpected(vulkan_error(
+        ErrorCode::renderer_initialization_failed, "image frame requires a physical device"));
+    vkGetPhysicalDeviceProperties(physical_device_, &properties);
+  }
+  if (auto result = vulkan_validate_image_frame_requests(image_draws, image_uploads,
+          image_invalidations, image_texture_resources_, properties.limits.maxImageDimension2D);
       !result) {
     return result;
   }

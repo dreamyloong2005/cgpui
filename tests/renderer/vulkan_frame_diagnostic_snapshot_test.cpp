@@ -73,7 +73,7 @@ int test_builds_live_resource_accounting() {
       cgpui::VulkanGlyphAtlasDrawBinding{.text_draw_index = 0},
       cgpui::VulkanGlyphAtlasDrawBinding{.text_draw_index = 0},
   };
-  const std::array image_draws{cgpui::ImageDraw{}};
+  const std::array submitted_image_indices{std::size_t{0}};
   const std::vector batches = command_batches();
   const cgpui::VulkanFrameDiagnosticResources resources =
       cgpui::vulkan_build_frame_diagnostic_resources(
@@ -81,7 +81,7 @@ int test_builds_live_resource_accounting() {
           solid_draws,
           rounded_draws,
           text_bindings,
-          image_draws,
+          submitted_image_indices,
           batches);
   return resources.planned_resources.size() == 7 &&
                  resources.submitted_resources.size() == 5 &&

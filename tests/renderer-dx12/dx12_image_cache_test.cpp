@@ -23,6 +23,17 @@ int expect_cached(Renderer& renderer, const ImageAssetDescriptor& asset,
       ? 0 : dx12_fail(13, "cached snapshot pixels differ");
 }
 
+int expect_missing(Renderer& renderer, RenderFrame& frame) {
+  frame.clear({0, 1, 1, 1});
+  frame.draw_rect({.rect = {{0, 0}, {8, 8}}, .color = {0, 0, 1, 1}});
+  if (!frame.request_pixel_capture() || !frame.present()) return dx12_fail(20, "missing image must continue frame");
+  const auto* s = renderer.last_frame_diagnostic_snapshot();
+  return dx12_pixel(renderer.last_frame_pixels(), 4, 4, {0, 0, 255, 255}) &&
+      dx12_pixel(renderer.last_frame_pixels(), 16, 16, {0, 255, 255, 255}) && s &&
+      s->planned_draws.image_count == 1 && s->submitted_draws.image_count == 0 &&
+      s->dropped_resources.missing_submission_resource_count == 1 && !s->work.exact_match()
+      ? 0 : dx12_fail(21, "missing image has stale pixels or false submission");
+}
 int reject_frame(RenderFrame& frame) {
   const auto result = frame.present();
   return !result && result.error().code == ErrorCode::invalid_argument
@@ -69,7 +80,7 @@ int main() {
     auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(6, "invalidation begin failed");
     (*frame)->draw_image({.bounds = {{0, 0}, {32, 32}}, .asset = asset});
-    if (const int result = reject_frame(**frame)) return result;
+    if (const int result = expect_missing(**renderer, **frame)) return result;
   }
   {
     auto seed = cgpui_test::wait_for_test_frame(**renderer);
@@ -89,11 +100,11 @@ int main() {
     auto failed = cgpui_test::wait_for_test_frame(**renderer);
     if (!failed) return dx12_fail(8, "failed-frame begin failed");
     (*failed)->upload_image(green);
-    // Existing DX12 missing policy only; no cross-backend rollback guarantee.
+    // Valid absence is a successful omission, not a rollback test.
     auto missing = asset;
     missing.id.value = 999;
     (*failed)->draw_image({.bounds = {{0, 0}, {32, 32}}, .asset = missing});
-    if (const int result = reject_frame(**failed)) return result;
+    if (const int result = expect_missing(**renderer, **failed)) return result;
   }
   if (const int result = expect_cached(**renderer, asset, {0, 255, 0, 255})) return result;
   {

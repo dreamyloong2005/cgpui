@@ -55,6 +55,10 @@ sources = [
     "renderer_pixel_test_window.cpp",
     "renderer_pixel_test_capture.cpp",
     "renderer_backdrop_pass_test_support.cpp",
+    "vulkan_missing_image_native_trace_test_support.cpp",
+    "vulkan_missing_image_native_draw_sequence_test_support.cpp",
+    "vulkan_missing_image_native_reuse_scene_test_support.cpp",
+    "vulkan_missing_image_native_reuse_loop_test_support.cpp",
 ]
 
 # Private headers for the native Metal pixel tests.
@@ -63,6 +67,7 @@ include_dirs = ["../../src/renderer/metal", "metal"]
 
 [test]
 discover = [
+    "renderer_image_validation_test.cpp",
     "renderer_retained_image_diagnostics_test.cpp",
     "renderer_frame_wait_contract_test.cpp",
     "renderer_popup_support_test.cpp",
@@ -91,6 +96,7 @@ discover = [
     "vulkan_device_pixels_test.cpp",
     "vulkan_device_preference_test.cpp",
     "vulkan_frame_command_reuse_test.cpp",
+    "vulkan_image_submission_diagnostics_test.cpp",
     "vulkan_frame_diagnostic_snapshot_test.cpp",
     "vulkan_frame_geometry_buffer_test.cpp",
     "vulkan_glyph_atlas_descriptor_test.cpp",
@@ -103,6 +109,7 @@ discover = [
     "vulkan_image_texture_cache_test.cpp",
     "vulkan_image_texture_descriptor_test.cpp",
     "vulkan_image_texture_invalidation_test.cpp",
+    "vulkan_image_request_validation_test.cpp",
     "vulkan_image_texture_resources_test.cpp",
     "vulkan_image_texture_upload_test.cpp",
     "vulkan_image_upload_retry_test.cpp",
@@ -156,6 +163,10 @@ discover = [
     "vulkan_frame_lifetime_test.cpp",
     "renderer_frame_pixel_capture_test.cpp",
     "renderer_capture_history_test.cpp",
+    "renderer_missing_image_validation_test.cpp",
+    "renderer_missing_image_contract_test.cpp",
+    "vulkan_missing_image_native_reuse_test.cpp",
+    "vulkan_missing_image_native_draw_sequence_test.cpp",
     "renderer_image_pixel_test.cpp",
     "vulkan_loader_binding_test.cpp",
     "vulkan_loader_concurrency_test.cpp",

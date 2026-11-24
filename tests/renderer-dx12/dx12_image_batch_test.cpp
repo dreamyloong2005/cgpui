@@ -67,8 +67,9 @@ void validation_and_abandonment() {
   auto missing = asset; missing.id.value = 9881;
   std::vector<Dx12DrawCommand> absent{request(missing, 1)};
   Dx12ImageBatch unresolved;
-  require(!unresolved.prepare(state, absent) && !state.failed,
-      "DX12 missing-image input rejection was silently changed into skip or device failure");
+  require(bool(unresolved.prepare(state, absent)) && !state.failed &&
+      std::holds_alternative<Dx12MissingImageDraw>(absent[0].payload) && bool(dx12_require_resolved_images(absent)),
+      "valid absent image must resolve to a missing marker, not pending/native failure");
 }
 }
 int main() {

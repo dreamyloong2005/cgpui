@@ -214,6 +214,7 @@ discover = [
     "platform_source_structure_test.cpp",
     "popup_placement_structure_test.cpp",
     "popup_presentation_policy_structure_test.cpp",
+    "vulkan_missing_image_native_reuse_structure_test.cpp",
     "renderer_source_structure_test.cpp",
     "sdk_packaging_structure_test.cpp",
     "shader_source_structure_test.cpp",

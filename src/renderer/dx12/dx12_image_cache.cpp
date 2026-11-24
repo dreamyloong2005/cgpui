@@ -17,12 +17,15 @@ Result<void> Dx12ImageCache::upload(Dx12State& state, const ImageAsset& image) {
 
 void Dx12ImageCache::invalidate(ImageAssetId id) { entries_.erase(id.value); }
 
-Result<Dx12TextureHandle> Dx12ImageCache::find(const ImageAssetDescriptor& descriptor) {
-  const auto found = entries_.find(descriptor.id.value);
-  if (found == entries_.end()) {
+Result<std::optional<Dx12TextureHandle>> Dx12ImageCache::lookup(const ImageAssetDescriptor& descriptor) {
+  if (!descriptor.id.value || !descriptor.pixel_width || !descriptor.pixel_height ||
+      descriptor.format != ImageFormat::rgba8_unorm ||
+      descriptor.pixel_width > D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION ||
+      descriptor.pixel_height > D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION)
     return std::unexpected(Error{.code = ErrorCode::invalid_argument,
-        .message = "DX12 image draw requires a previously uploaded asset"});
-  }
+        .message = "DX12 image lookup requires a valid identity, extent and format"});
+  const auto found = entries_.find(descriptor.id.value);
+  if (found == entries_.end()) return std::optional<Dx12TextureHandle>{};
   auto& entry = found->second;
   if (entry.descriptor.pixel_width != descriptor.pixel_width ||
       entry.descriptor.pixel_height != descriptor.pixel_height ||
@@ -31,7 +34,15 @@ Result<Dx12TextureHandle> Dx12ImageCache::find(const ImageAssetDescriptor& descr
         .message = "DX12 image draw descriptor does not match its uploaded asset"});
   }
   entry.touched = true;
-  return entry.texture;
+  return std::optional<Dx12TextureHandle>{entry.texture};
+}
+
+Result<Dx12TextureHandle> Dx12ImageCache::find(const ImageAssetDescriptor& descriptor) {
+  auto found = lookup(descriptor);
+  if (!found) return std::unexpected(found.error());
+  if (!*found) return std::unexpected(Error{.code = ErrorCode::invalid_argument,
+      .message = "DX12 image draw requires a previously uploaded asset"});
+  return **found;
 }
 
 void Dx12ImageCache::finish_frame() noexcept {

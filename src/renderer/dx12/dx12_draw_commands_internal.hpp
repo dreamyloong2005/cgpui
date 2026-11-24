@@ -2,6 +2,7 @@
 
 #include "dx12_texture_internal.hpp"
 #include "dx12_image_request_internal.hpp"
+#include "dx12_missing_image_internal.hpp"
 #include "cgpui/renderer/planning/rect_geometry.hpp"
 #include "cgpui/renderer/planning/box_shadow_geometry.hpp"
 #include "cgpui/renderer/planning/backdrop_blur_plan.hpp"
@@ -24,7 +25,7 @@ struct Dx12TexturedDraw {
   bool glyph = false;
 };
 using Dx12DrawPayload = std::variant<RectGeometry, Dx12TexturedDraw, BoxShadowGeometry,
-                                     BackdropBlurPlan, Dx12PendingImageDraw>;
+                                     BackdropBlurPlan, Dx12PendingImageDraw, Dx12MissingImageDraw>;
 struct Dx12DrawCommand {
   Dx12DrawPayload payload;
   RendererPrimitiveKind kind = RendererPrimitiveKind::solid_rect;

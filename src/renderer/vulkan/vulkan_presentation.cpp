@@ -89,7 +89,7 @@ Result<void> VulkanRendererState::present_frame(
     return recover_after_failed_record(pixel_capture.error().message);
   }
 
-  if (auto result = record_vulkan_frame_command_buffer(
+  auto recording = record_vulkan_frame_command_buffer(
           command_buffers_[image_index],
           render_pass_,
           framebuffers_[image_index],
@@ -107,14 +107,14 @@ Result<void> VulkanRendererState::present_frame(
           image_texture_resources_, image_texture_uploads_,
           *pixel_capture,
           command_reuse_states_[image_index], frame_effects());
-      !result) {
-    return recover_after_failed_record(result.error().message);
+  if (!recording) {
+    return recover_after_failed_record(recording.error().message);
   }
   diagnostic_timer.finish_stage(RendererFrameTimingStage::command_recording);
   VulkanFrameDiagnosticResources diagnostic_resources =
       vulkan_build_frame_diagnostic_resources(
           draw_order, solid_rect_buffers_.draws, rounded_rect_buffers_.draws,
-          glyph_atlas_draw_bindings_, image_draws, last_command_batches_,
+          glyph_atlas_draw_bindings_, recording->submitted_image_indices, last_command_batches_,
           box_shadow_buffers_.draws, backdrop_blur_plan_.passes);
 
   VkCommandBuffer command_buffer = command_buffers_[image_index];

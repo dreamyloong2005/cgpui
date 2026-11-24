@@ -52,11 +52,11 @@ int main() {
     require(has(prepare, "uploads.swap(uploads_)") && has(prepare, "invalidations.swap(invalidations_)") &&
         before(prepare, "state.image_cache->invalidate(id)", "state.image_cache->upload(state, image)") &&
         before(prepare, "state.image_cache->upload(state, image)", "dx12_resolve_image_draw(state, *pending)") &&
-        has(prepare, "command.payload = std::move(*resolved)") && !has(prepare, "command_index =") &&
+        has(prepare, "command.payload = std::move(payload)") && !has(prepare, "command_index =") &&
         !has(prepare, "finish_frame") && !has(prepare, "CreateCommittedResource"),
         "focused prefix owns local raw bytes through exits and resolves payloads without reordering/aging/native work");
     const auto resolve = read("src/renderer/dx12/dx12_image_resolve.cpp");
-    require(has(resolve, "state.image_cache->find(device.asset)") && has(resolve, "dx12_finite_textured_draw(draw)") &&
+    require(has(resolve, "state.image_cache->lookup(device.asset)") && has(resolve, "dx12_finite_textured_draw(draw)") &&
         !has(resolve, "renderer_to_device_pixels") &&
         before(submit, "dx12_require_resolved_images(draws)", "Dx12FrameDiagnostics diagnostics(") &&
         has(read("src/renderer/dx12/dx12_draw_dispatch.cpp"), "operator()(const Dx12PendingImageDraw&)"),

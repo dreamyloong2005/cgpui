@@ -148,3 +148,12 @@ redefined as complete solely to close the checklist.
   malformed-input controls. Source-reviewed external candidates include added
   native Vulkan reuse oracle; its first version had an observer identity gap
   and a separately preserved revised candidate is awaiting re-review/execution.
+
+- Valid missing images accepted: DX12 skips legal unavailable images with honest
+  diagnostics, Vulkan accounts actual successful fresh/reused selection and
+  rejects invalid inputs before cache mutation. Final verified-flush frozen3038
+  matrix Windows864/WSL677/native140/common107+ASan+SDK passed strict inventories
+  and sixphase native reuse trace. Two earlier evidence attempts retained: Xvfb
+  reset race fixed independently6b2de264; ASan stdout tail fixed explicitly in
+  the test, not by weakening oracle. See missing-image acceptance. Baseline
+  benchmark is next, SRV pool afterwards; overall completion gates remain open.

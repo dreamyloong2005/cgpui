@@ -46,10 +46,14 @@ int main() {
     auto frame = cgpui_test::wait_for_test_frame(**renderer);
     if (!frame) return dx12_fail(10, "evicted frame failed");
     (*frame)->draw_image({.bounds = {{0, 0}, {16, 16}}, .asset = describe_image_asset(cold)});
-    const auto result = (*frame)->present();
-    if (result || result.error().code != ErrorCode::invalid_argument)
-      return dx12_fail(11, "image cache retained an upload beyond 120 idle frames");
-    if (!retention_sample(**renderer, 4, 0)) return dx12_fail(19, "failed evicted-image draw replaced history");
+    (*frame)->clear({0, 1, 1, 1});
+    if (!(*frame)->request_pixel_capture() || !(*frame)->present())
+      return dx12_fail(11, "evicted image must skip without rejecting the frame");
+    const auto* s = (*renderer)->last_frame_diagnostic_snapshot();
+    if (!dx12_pixel((*renderer)->last_frame_pixels(), 8, 8, {0, 255, 255, 255}) || !s ||
+        s->planned_draws.image_count != 1 || s->submitted_draws.image_count != 0 ||
+        s->dropped_resources.missing_submission_resource_count != 1 || s->work.exact_match() ||
+        !retention_sample(**renderer, 4, 0)) return dx12_fail(19, "eviction skip/copy/retention diagnostics differ");
   }
   auto frame = cgpui_test::wait_for_test_frame(**renderer);
   if (!frame) return dx12_fail(12, "eviction error poisoned renderer");

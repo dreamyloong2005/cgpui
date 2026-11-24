@@ -33,6 +33,11 @@ class RenderFrame {
   // are discarded; failure after processing starts does not promise rollback.
   virtual void upload_image(const ImageAsset& image) { (void)image; }
   virtual void invalidate_image(ImageAssetId asset_id) { (void)asset_id; }
+  // DX12/Vulkan omit valid images whose pixels are unavailable and continue the
+  // frame; visible omissions remain missing_submission_resource diagnostics.
+  // Invalid input/descriptor mismatches and native failures still fail Present.
+  // Layout metadata is not image readiness; actual final uploads validate bytes.
+  // Metal has not yet adopted this missing-image contract.
   virtual void draw_image(const ImageDraw& image) { (void)image; }
   // Optional; the default implementation reports unsupported_platform.
   // Only successful Present may publish a requested capture.
