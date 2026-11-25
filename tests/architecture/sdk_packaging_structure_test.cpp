@@ -84,7 +84,7 @@ int main() {
       !has(packer, "msvc_runtime(") || !has(packer, "example_workbench") ||
       !has(packer, "\"build_system\"") ||
       !has(packer, "\"schema_version\": 4") ||
-      !has(packer, "\"schema_version\": 2")) {
+      has(packer, "\"schema_version\": 2")) {  // macOS writes schema 4 too
     return fail(4, "the manifest records source, toolchain, links and hashes");
   }
   if (!has(packer, "validate_sdk_headers(root)") ||

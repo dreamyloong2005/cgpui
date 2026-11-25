@@ -11,8 +11,12 @@ on Windows).
 | `cgpui-sdk-linux-x86_64-debug` | Linux x86_64, Wayland (+ X11) + Vulkan | GCC, libstdc++ |
 | `cgpui-sdk-linux-x86_64-release` | Linux x86_64, Wayland (+ X11) + Vulkan | GCC, libstdc++ |
 
-macOS uses the separate **Phase J** archive format, not the C10 clean-tree
-release pipeline above. On an Apple Silicon Mac with a native arm64 shell, mcpp,
+macOS uses the **Phase J** archive pipeline. Like the packages above it
+builds only a clean committed tree (`sdk-package.py check-clean` before the
+build, again after it) and writes a schema 4 `manifest.json` with the commit,
+mcpp, compiler, library origins and vendored dependencies; it adds
+`deployment_target`, `frameworks` and `metadata/build.json` (OS, Xcode,
+mcpp, commit). On an Apple Silicon Mac with a native arm64 shell, mcpp,
 Python 3.12+, CMake, and a Metal-capable graphical session, run
 `MACOSX_DEPLOYMENT_TARGET=26.0 scripts/ci/macos-phase-j-release.sh arm64`.
 It verifies the release archive and builds and runs its CMake consumer outside

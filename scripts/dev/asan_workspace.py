@@ -106,6 +106,8 @@ def main() -> int:
                   text, count=1, flags=re.S)
     text = text.replace('path = "tools/linux-gcc"',
                         f'path = "{relative}/tools/linux-gcc"')
+    text = text.replace('path = "tools/macos-clang"',
+                        f'path = "{relative}/tools/macos-clang"')
     text = text.replace('ar = "scripts/dev/macos-ar.py"',
                         f'ar = "{relative}/scripts/dev/macos-ar.py"')
     build = (f'cxx_runtime = "{flags["cxx_runtime"]}"\n'

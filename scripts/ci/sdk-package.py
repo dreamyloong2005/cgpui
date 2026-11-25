@@ -79,6 +79,8 @@ def write_workspace(repo: Path, output: Path, cxx_runtime: str) -> None:
                         f'ar = "{relative}/scripts/dev/macos-ar.py"')
     text = text.replace('path = "tools/linux-gcc"',
                         f'path = "{relative}/tools/linux-gcc"')
+    text = text.replace('path = "tools/macos-clang"',
+                        f'path = "{relative}/tools/macos-clang"')
     text, count = re.subn(r'cxx_runtime = "[a-z-]+"',
                           f'cxx_runtime = "{cxx_runtime}"', text)
     if count != 1:
@@ -282,6 +284,8 @@ def write_cmake(package_root: Path, version: str, platform: str, mode: str,
 
 def stage_macos(args) -> None:
     repo, root = args.repo_root.resolve(), args.package_root
+    # macos-package.sh checks before the build; this is the check after it.
+    check_clean(repo, allow_untracked=False)
     validate_sdk_headers(root)
     libraries = link_order(repo, "macos")
     copy_libraries(args, libraries, root)
@@ -295,14 +299,31 @@ def stage_macos(args) -> None:
     version = project_version(repo)
     write_cmake(root, version, "macos", args.mode, None, libraries,
                 system + [f"-framework {name}" for name in frameworks])
+    bundled = {lib["package"] for lib in libraries if lib["origin"] != "cgpui"}
+    # Schema 4, as the Windows and Linux packages, plus the macOS fields:
+    # deployment_target, frameworks and metadata/build.json.
     manifest = {
-        "schema_version": 2, "package": f"cgpui-macos-{args.arch}-{args.mode}",
+        "schema_version": 4, "package": f"cgpui-macos-{args.arch}-{args.mode}",
+        "version": version,
+        "git_commit": git(repo, "rev-parse", "HEAD").strip(),
+        "dirty": False,
+        "source_check": "git status --porcelain empty before the build "
+                        "and after it",
         "platform": "macos", "architecture": args.arch, "mode": args.mode,
-        "deployment_target": "26.0", "version": version, "cxx_standard": "c++23",
+        "deployment_target": "26.0", "cxx_standard": "c++23",
+        "build_system": dict(mcpp_info(args.mcpp, args.workspace),
+                             profile=args.profile),
+        "compiler": compiler_info(args.build_dir, "macos"),
         "header_root": "include/cgpui",
         "libraries": [lib["path"] for lib in libraries],
         "link_names": [lib["name"] for lib in libraries],
+        "library_origins": {lib["name"]: lib["origin"] for lib in libraries},
         "system_libraries": system, "frameworks": frameworks,
+        "vendored_dependencies": vendored_dependencies(repo, bundled),
+        "link_order_source": "example_workbench dependency graph "
+                             "(examples/workbench/mcpp.toml); system "
+                             "libraries and frameworks from its mcpp link line",
+        "shaders": "embedded as Metal Shading Language source in cgpui_renderer_metal",
         "cmake_config": "lib/cmake/cgpui/cgpuiConfig.cmake",
         "executables": copy_programs(args, root), "consumer_sample": "share/cgpui/sdk_consumer",
         "documents": ["README.md"],
@@ -397,6 +418,9 @@ def main() -> int:
     mac.add_argument("--repo-root", type=Path, required=True)
     mac.add_argument("--build-dir", type=Path, required=True)
     mac.add_argument("--package-root", type=Path, required=True)
+    mac.add_argument("--profile", required=True)
+    mac.add_argument("--workspace", type=Path, required=True)
+    mac.add_argument("--mcpp", required=True)
     final = commands.add_parser("finalize")
     final.add_argument("--platform", choices=("windows", "linux"), required=True)
     final.add_argument("--mode", choices=("debug", "release"), required=True)

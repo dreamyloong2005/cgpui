@@ -150,11 +150,19 @@ class SDKHeaderClosureTest(unittest.TestCase):
                 stack.enter_context(patch.object(PACKER, name, return_value=result))
             for entry, platform, schema in ((PACKER.finalize, "windows", 4),
                                              (PACKER.finalize, "linux", 4),
-                                             (PACKER.stage_macos, "macos", 2)):
+                                             (PACKER.stage_macos, "macos", 4)):
                 with self.subTest(platform=platform):
                     entry(self.arguments(platform))
                     manifest = json.loads((self.root / "manifest.json").read_text())
                     self.assertEqual(manifest["schema_version"], schema)
+                    for field in ("git_commit", "dirty", "source_check", "build_system",
+                                  "compiler", "library_origins", "vendored_dependencies"):
+                        self.assertIn(field, manifest)
+                    self.assertFalse(manifest["dirty"])
+                    if platform == "macos":
+                        self.assertEqual(manifest["deployment_target"], "26.0")
+                        self.assertIn("frameworks", manifest)
+                        self.assertIn("metadata/build.json", manifest["metadata"])
                     self.assertNotIn("private_headers", manifest)
                     self.assertNotIn("private_headers_reason", manifest)
                     self.assertFalse((self.root / "src").exists())

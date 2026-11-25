@@ -6,6 +6,8 @@
 #include "runtime_window_store_internal.hpp"
 #include "runtime_window_lifetime_internal.hpp"
 
+#include <utility>
+
 namespace cgpui {
 
 WindowRuntime::~WindowRuntime() {
@@ -26,7 +28,10 @@ WindowRuntime::~WindowRuntime() {
       if (!task.completed) {
         task.cancelled = true;
       }
-      retired_callbacks.push_back(std::move(task.callback));
+      // std::exchange leaves the slot empty on every standard library;
+      // libc++ moves small std::function targets by copying them, so a
+      // moved-from callback would still hold its captures.
+      retired_callbacks.push_back(std::exchange(task.callback, {}));
     }
     state_->tasks.task_completion_queue_.clear();
   }

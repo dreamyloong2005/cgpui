@@ -28,6 +28,10 @@ done
 output_root="$(cd "$output_probe" && pwd -P)$output_suffix"
 [[ "$output_root" != "$repo_root" && "$output_root/" == "$repo_root/"* ]] || exit 2
 
+# Only committed sources are packaged: the tree is checked here and again
+# after the build (stage-macos), as the Windows and Linux SDKs are. The
+# output root stays inside build/, which .gitignore excludes.
+python3 "$repo_root/scripts/ci/sdk-package.py" check-clean --repo-root "$repo_root"
 rm -rf -- "$output_root"
 workspace_root="$output_root/workspace"
 package_root="$output_root/package"
@@ -68,21 +72,23 @@ install -m 0644 "$repo_root/third_party/VENDORED.md" \
 product_version=$(sw_vers -productVersion)
 build_version=$(sw_vers -buildVersion)
 xcode_version=$(xcodebuild -version | paste -sd ';' -)
+git_commit=$(git -C "$repo_root" rev-parse HEAD)
 python3 - "$metadata_root/build.json" "$arch" "$mcpp_version" \
-  "$product_version" "$build_version" "$xcode_version" <<'PY'
+  "$product_version" "$build_version" "$xcode_version" "$git_commit" <<'PY'
 import json
 import pathlib
 import sys
 
 path = pathlib.Path(sys.argv[1])
 metadata = {
-    "schema_version": 2,
+    "schema_version": 3,  # 3 adds git_commit
     "architecture": sys.argv[2],
     "deployment_target": "26.0",
     "mcpp_version": sys.argv[3],
     "macos_product_version": sys.argv[4],
     "macos_build_version": sys.argv[5],
     "xcode_version": sys.argv[6],
+    "git_commit": sys.argv[7],
 }
 path.write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
 if json.loads(path.read_text(encoding="utf-8")) != metadata:
@@ -91,7 +97,8 @@ PY
 
 python3 "$repo_root/scripts/ci/sdk-package.py" stage-macos \
   --repo-root "$repo_root" --build-dir "${build_dirs[0]}" --package-root "$package_root" \
-  --arch "$arch" --mode "$mode"
+  --arch "$arch" --mode "$mode" --profile "$profile" \
+  --workspace "$workspace_root" --mcpp "$MCPP"
 
 required_paths=(
   include/cgpui bin/hello_window README.md manifest.json

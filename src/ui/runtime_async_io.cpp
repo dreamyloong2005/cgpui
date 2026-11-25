@@ -1,5 +1,6 @@
 #include "ui_internal.hpp"
 #include "runtime_async_io_internal.hpp"
+#include <utility>
 
 namespace cgpui {
 
@@ -55,7 +56,7 @@ bool WindowRuntime::RuntimeAsyncIoRegistry::cancel(
     return false;
   }
   record->state->status.store(detail::AsyncIoHookStatus::cancelled);
-  retired_callback = std::move(record->callback);
+  retired_callback = std::exchange(record->callback, {});
   std::erase_if(
       completions_, [id](const Completion& value) { return value.id == id; });
   return true;

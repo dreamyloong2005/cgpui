@@ -2,15 +2,16 @@
 
 The SDK supports only Apple Silicon (arm64). There is no Intel or Universal build.
 Extract the entire `cgpui-macos-arm64-release.tar.gz` archive. Current packages
-use manifest schema 2 and self-contained public headers under `include/`;
+use manifest schema 4 (commit, toolchain and dependency provenance, as on
+Windows and Linux) and self-contained public headers under `include/`;
 they neither require nor ship private `src/ui/` headers. Packaging rejects a
 stale `src/` directory from an older SDK, so use a fresh output directory.
 Rebuild consumers and libraries together after the opaque runtime-state ABI change.
 Use a C++23-capable Xcode toolchain, libc++, and the architecture named in
 `manifest.json`. The SDK is built with a macOS 26.0 deployment target.
-Historical demo and consumer runs used macOS 27.2.1 (arm64), not macOS 13;
-see [native validation history](macos-validation.md). Those runs do not validate
-the current header-isolation changes; a new native consumer run is required.
+The consumer was built and run on macOS 27.2.1 (arm64) on 2026-11-25; see
+[macOS validation](macos-validation.md). The SDK is built only from a clean
+committed tree.
 
 To compile the included consumer in a directory outside the checkout:
 

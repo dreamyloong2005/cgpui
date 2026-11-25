@@ -47,6 +47,7 @@ Host: macOS 27.2.1 (26B131), Xcode 27.2 (27B52), Apple M4, one 1x display.
 | C7 Shaping | done: `core_text` backend and glyph-id rasterizer, Metal glyph placement shared with Vulkan; see `docs/native-text.md`. Text observed in `example_workbench` |
 | C8 IME | done: clause spans from `NSMarkedClauseSegmentAttributeName` / `NSUnderlineStyleAttributeName`, see `docs/ime-composition.md`. Not checked with a real Pinyin or Japanese input method |
 | C9 Widgets | step 1 done: `PlatformWindow::show_context_menu` (macOS NSMenu; other backends unsupported) and `PopoverMenuOptions::prefer_native_menu`; the native menu was observed in `example_workbench`. Step 2 done on macOS: tooltips and menus (with submenus) in popup windows that extend outside the window, overlay as fallback; Windows/Linux follow-up in `2026-11-22-popup-windows-windows-linux-follow-up.md` |
+| C10 SDK | done 2026-11-25: `scripts/ci/macos-package.sh` builds only a clean committed tree (checked before and after the build) and writes a schema 4 manifest like the Windows/Linux packages, plus `deployment_target`, `frameworks` and `metadata/build.json`; `macos-phase-j-release.sh` archived it twice byte-identically and built and ran the CMake consumer outside the checkout on macOS 27.2.1. A second Mac was not used |
 
 ## Order on a Mac
 

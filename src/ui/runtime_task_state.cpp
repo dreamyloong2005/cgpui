@@ -1,4 +1,5 @@
 #include "ui_internal.hpp"
+#include <utility>
 
 namespace cgpui {
 
@@ -71,7 +72,7 @@ bool WindowRuntime::cancel_task(TaskId id) {
   }
   task->cancelled = true;
   task->queued = false;
-  retired_callback = std::move(task->callback);
+  retired_callback = std::exchange(task->callback, {});
   state_->tasks.task_completion_queue_.erase(
       std::remove_if(
           state_->tasks.task_completion_queue_.begin(),

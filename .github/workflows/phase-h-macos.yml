@@ -17,6 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-mcpp
+      - name: Check the Apple clang module driver
+        run: python3 -B tests/ci/macos_clang_toolchain_test.py
       - name: Run complete macOS Debug verification
         run: bash ./scripts/ci/macos-debug.sh
 

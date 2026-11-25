@@ -1,5 +1,6 @@
 #include "ui_internal.hpp"
 #include "runtime_task_priority_internal.hpp"
+#include <utility>
 
 namespace cgpui {
 
@@ -75,7 +76,7 @@ void WindowRuntime::drain_task_completions() {
             continue;
           }
 
-          callback = std::move(task->callback);
+          callback = std::exchange(task->callback, {});
           task->queued = false;
           task->completed = true;
         }

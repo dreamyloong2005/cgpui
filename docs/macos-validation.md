@@ -12,32 +12,43 @@ Use the current [dependencies](platform-dependencies.md),
 Test registration belongs to `tests/*/mcpp.toml`, not a retired build-system
 inventory.
 
-## Follow-up: shared renderer after DX12 extraction (2026-11-25)
+## Native validation (2026-11-25)
 
-**Pending native macOS validation.** The DX12 milestone's shared renderer
-extraction has current Windows/WSL coverage, but the native Mac evidence below
-predates it. On 2026-11-25 the project owner explicitly deferred this check as
-a macOS follow-up; it does not block the Windows DX12 milestone. Deferral is
-not a passing result or a new macOS/Metal certification.
+Apple M4, macOS 27.2.1 (26B131), Xcode 27.2 (27B52), Apple clang 21.0.0,
+mcpp 2026.11.21.1, `MACOSX_DEPLOYMENT_TARGET=26.0`, CMake 4.5.1. Source:
+`fc53fc9e` plus the fixes below, committed together with this record.
 
-On an authorized Apple Silicon Mac, use source equivalent to the completed DX12
-implementation, mcpp 2026.11.21.1 or later, and the current dependencies:
+Fixes found by this run:
 
-```sh
-export MACOSX_DEPLOYMENT_TARGET=26.0
-bash scripts/dev/build.sh -p packages/renderer
-bash scripts/dev/test.sh -p tests/renderer-neutral
-bash scripts/dev/test.sh -p tests/header_cleanliness
-bash scripts/dev/test.sh -p tests/architecture renderer_planning_ownership_structure_test
-```
+- Apple clang leaves C++20 module syntax off, so the shared `cgpui.build`
+  module (`tools/mcpp/cgpui_build.cppm`) and every `build.mcpp` that imports
+  it failed to compile. The macOS toolchain prefix is now `tools/macos-clang`,
+  whose `clang++` runs `/usr/bin/clang++ -fcxx-modules`; mcpp's build-program
+  sub-build receives only the toolchain path, so the flag lives in the driver
+  (as `tools/linux-gcc/bin/g++` does on Linux). The SDK and ASan workspace
+  generators rewrite the prefix path. `tests/ci/macos_clang_toolchain_test.py`
+  checks the three workspaces and builds a `build.mcpp` that imports a module.
+- `runtime_async_io_shutdown_reentry_test` crashed (SIGSEGV): runtime
+  shutdown retired task callbacks with `std::move`, which libc++ implements
+  as a copy for small `std::function` targets, so the moved-from slot kept
+  its captures and destroyed them later against the dismantled runtime.
+  Callback retirement now uses `std::exchange(callback, {})` (shutdown,
+  async I/O cancellation, task completion and cancellation).
 
-For the 2026-11-25 inventory, expect 16 neutral, 47 header and one ownership
-test, with no failures or unexplained skips. Record the exact source snapshot
-(including uncommitted changes), OS/architecture, Xcode and mcpp versions,
-deployment target, commands, exit codes and complete test names/results.
-This closes the shared-module compilation/CPU-test check only; it does not
-replace full Cocoa/Metal, sanitizer or SDK acceptance. Reconcile the expected
-test inventory explicitly if the source changes before the follow-up runs.
+| Check | Command | Result |
+|---|---|---|
+| Shared renderer after DX12 extraction | `scripts/dev/build.sh -p packages/renderer`; `scripts/dev/test.sh -p tests/renderer-neutral`, `-p tests/header_cleanliness`, `-p tests/architecture renderer_planning_ownership_structure_test` | exit 0; 16, 47 and 1 passed, as expected; no skips |
+| Debug | `scripts/ci/macos-debug.sh` | 39 members, 632 passed, 0 failed |
+| Example smoke | `scripts/ci/macos-example-smoke.sh` | passed (12 test programs) |
+| Architecture and headers | `scripts/ci/macos-architecture-header.sh` | 261 + 47 = 308 passed |
+| ASan / UBSan | `scripts/dev/test.sh --asan` | 632 passed, no sanitizer report (no LeakSanitizer on arm64) |
+| Performance | `scripts/ci/macos-performance-baseline.sh` | eight metrics at 64 iterations, passed |
+| Stress | `scripts/ci/macos-stress-matrix.sh` | eight scenarios at scale 1, passed |
+| Release SDK | `scripts/ci/macos-phase-j-release.sh arm64` | two archives byte-identical (sha256 `d523a40b...`, before the schema 4 change), `hello_window` and `sdk_consumer` arm64 `minos 26.0` with system dependencies only, CMake consumer built outside the checkout, SVG pixel checked, `sdk_consumer: first frame presented` |
+
+Not covered: a macOS 13-25 runtime (the deployment target is 26.0),
+cross-display Retina scaling (one 1x display), the hosted `macos-26` CI
+jobs, and LeakSanitizer. Performance and stress use `TestApp` timings.
 
 ## Recorded native evidence (2026-11-21)
 
@@ -72,15 +83,13 @@ as historical evidence, not a fresh certification of subsequent changes.
 The earlier Phase H 380/380 and Phase J `19c51989` results used xmake and
 deployment target 13.0. They must not be substituted for current mcpp runs.
 
-## Revalidation still required after source or toolchain changes
+## Revalidation after source or toolchain changes
 
-The recorded evidence predates the workspace's mcpp 2026.11.21.1 requirement
-and shared `cgpui.build` module. Re-run native build, Debug, architecture/header,
-example smoke, sanitizer, Release consumer, and performance/stress entrypoints
-with the current toolchain before claiming a new macOS verification result.
-Record the commit, toolchain versions, OS, deployment target, and limitations.
+Re-run native build, Debug, architecture/header, example smoke, sanitizer,
+Release consumer, and performance/stress entrypoints with the current
+toolchain before claiming a new macOS verification result. Record the
+commit, toolchain versions, OS, deployment target, and limitations.
 
-The historical mcpp host-build-program linker required `ld64.lld` on `PATH`.
-LLD 22.1.2 rejected Xcode 27 SDK `arm64e.x1` targets; the recorded workaround
-used a launcher delegating to `/usr/bin/ld`. Treat this as a historical
-toolchain constraint to recheck, not a universal requirement of newer mcpp.
+The 2026-11-25 run still put an `ld64.lld` launcher delegating to
+`/usr/bin/ld` on `PATH`: mcpp's host build programs ask for it, and LLD
+22.1.2 rejects Xcode 27 SDK `arm64e.x1` targets. Recheck with newer mcpp.

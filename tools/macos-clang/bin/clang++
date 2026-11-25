@@ -1,0 +1,10 @@
+#!/bin/sh
+# Apple clang driver for the workspace and mcpp's build.mcpp sub-build.
+# Apple clang leaves C++20 module syntax (`module;`, `export module`,
+# `import`) off by default; upstream clang has it on. -fcxx-modules turns it
+# on, so the cgpui.build module (tools/mcpp/cgpui_build.cppm) and the
+# programs that import it compile. mcpp gives its build-program sub-build
+# only the toolchain path, not the manifest's cxxflags, so the flag is added
+# here, as tools/linux-gcc/bin/g++ adds the Linux host flags. Everything else
+# is Apple's /usr/bin/clang++ (it follows xcode-select / DEVELOPER_DIR).
+exec /usr/bin/clang++ -fcxx-modules "$@"

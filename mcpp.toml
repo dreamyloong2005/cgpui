@@ -55,8 +55,10 @@ windows = "msvc@system"
 # Targets use the native compiler and libc. mcpp passes only the prefix to
 # its separate build.mcpp sub-build; see the host-only driver in that prefix.
 linux = { path = "tools/linux-gcc", family = "gcc", sysroot = "/", tools = { cxx = "/usr/bin/g++" } }
-# Apple's /usr/bin compiler drivers follow xcode-select / DEVELOPER_DIR.
-macos = { path = "/usr", family = "llvm", tools = { ld = "/usr/bin/ld", ar = "scripts/dev/macos-ar.py" } }
+# Apple's compiler drivers follow xcode-select / DEVELOPER_DIR. The prefix's
+# clang++ turns on C++20 module syntax (-fcxx-modules), which Apple clang
+# leaves off; mcpp's build.mcpp sub-build receives only this path.
+macos = { path = "tools/macos-clang", family = "llvm", tools = { ld = "/usr/bin/ld", ar = "scripts/dev/macos-ar.py" } }
 
 # Builds and tests use the static C++ runtime: /MT on Windows, and mcpp's
 # default -static-libstdc++ on Linux. `mcpp test` has no --static and the CRT
