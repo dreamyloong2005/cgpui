@@ -44,7 +44,7 @@ Fixes found by this run:
 | ASan / UBSan | `scripts/dev/test.sh --asan` | 632 passed, no sanitizer report (no LeakSanitizer on arm64) |
 | Performance | `scripts/ci/macos-performance-baseline.sh` | eight metrics at 64 iterations, passed |
 | Stress | `scripts/ci/macos-stress-matrix.sh` | eight scenarios at scale 1, passed |
-| Release SDK | `scripts/ci/macos-phase-j-release.sh arm64` | two archives byte-identical (sha256 `d523a40b...`, before the schema 4 change), `hello_window` and `sdk_consumer` arm64 `minos 26.0` with system dependencies only, CMake consumer built outside the checkout, SVG pixel checked, `sdk_consumer: first frame presented` |
+| Release SDK | `scripts/ci/macos-phase-j-release.sh arm64` on the clean tree at `8ffac12d` | clean-tree check passed before and after the build; two archives byte-identical (sha256 `73037203f3f68e111359d190d08e9945f1da9ab3d77b6334a66a415b2dd76f58`); manifest schema 4 with commit `8ffac12d`, `dirty: false`, deployment target 26.0, eight frameworks, clang 21.0.0, mcpp 2026.11.21.1; `hello_window` and `sdk_consumer` arm64 `minos 26.0` with system dependencies only; CMake 4.5.1 consumer built outside the checkout, SVG pixel checked, `sdk_consumer: first frame presented` |
 
 Not covered: a macOS 13-25 runtime (the deployment target is 26.0),
 cross-display Retina scaling (one 1x display), the hosted `macos-26` CI
