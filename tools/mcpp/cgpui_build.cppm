@@ -105,10 +105,13 @@ void source_root_define(int levels) {
 // flags, which reach every consumer's link. `link` = false takes only the
 // compile side (a consumer that includes the headers but links through a
 // dependency).
-void pkg_config(const std::vector<std::string>& modules, bool link = true) {
+// Build programs pass string literals. Do not make the importing translation
+// unit instantiate vector<string> and its allocator across the module boundary.
+void pkg_config(std::initializer_list<const char*> modules, bool link = true) {
   std::string names;
-  for (const std::string& module : modules) {
-    names += " " + module;
+  for (const char* module : modules) {
+    names += ' ';
+    names += module;
   }
   directive("rerun-if-env-changed", "PKG_CONFIG_PATH");
   bool ok = false;

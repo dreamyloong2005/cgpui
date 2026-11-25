@@ -51,14 +51,25 @@ class LinuxGCCTest(unittest.TestCase):
                 f'[toolchain]\nlinux = {{ path = "{(ROOT / tools["path"]).as_posix()}", '
                 f'family = "{tools["family"]}", sysroot = "{tools["sysroot"]}", '
                 f'tools = {{ cxx = "{tools["tools"]["cxx"]}" }} }}\n'
+                '[build-dependencies]\n'
+                f'cgpui.build-support = {{ path = "{(ROOT / "tools/mcpp").as_posix()}" }}\n'
                 '[targets.probe]\nkind = "bin"\nmain = "main.cpp"\n')
-            for name in ("build.mcpp", "main.cpp"):
-                (project / name).write_text(
-                    '#if !defined(__GNUC__) || defined(__clang__)\n#error Expected GCC\n#endif\n'
-                    '#include <array>\n#include <filesystem>\n#include <linux/errno.h>\n'
-                    'int main() { return std::filesystem::exists(".") ? std::array<int, 1>{0}[0] : 1; }\n')
+            gcc_only = '#if !defined(__GNUC__) || defined(__clang__)\n#error Expected GCC\n#endif\n'
+            # Match packages/platform/build.mcpp: no standard headers on the
+            # importing side, and more than one module in the braced list.
+            (project / "build.mcpp").write_text(
+                gcc_only + 'import cgpui.build;\n'
+                'int main() { cgpui_build::pkg_config({"probe-a", "probe-b"}, false); }\n')
+            for suffix in ("a", "b"):
+                (project / f"probe-{suffix}.pc").write_text(
+                    f'Name: probe-{suffix}\nDescription: GCC probe\nVersion: 1\n'
+                    f'Cflags: -DPROBE_{suffix.upper()}=1\n')
+            (project / "main.cpp").write_text(
+                gcc_only + '#if !PROBE_A || !PROBE_B\n#error Missing pkg-config flags\n#endif\n'
+                '#include <array>\n#include <filesystem>\n#include <linux/errno.h>\n'
+                'int main() { return std::filesystem::exists(".") ? std::array<int, 1>{0}[0] : 1; }\n')
             subprocess.run([os.environ.get("MCPP", "mcpp"), "run", "probe"],
-                           cwd=project, check=True)
+                           cwd=project, env={**os.environ, "PKG_CONFIG_PATH": str(project)}, check=True)
 
 
 if __name__ == "__main__":
