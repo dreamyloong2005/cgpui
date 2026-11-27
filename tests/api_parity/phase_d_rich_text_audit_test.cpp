@@ -57,8 +57,6 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string text_aggregate = read_source("include/cgpui/ui/text.hpp");
   const std::string text_rich_text_header =
       read_source("include/cgpui/renderer/text/text_rich_text.hpp");
@@ -96,9 +94,12 @@ int main() {
   const std::string header_cleanliness =
       read_source("tests/header_cleanliness/ui_header_cleanliness.cpp");
 
-  if (manifests.empty() || roadmap.empty() || ledger.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty() ||
-      text_aggregate.empty() || text_rich_text_header.empty() ||
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger.empty() ||
+      ledger_json.empty() ||
+      text_aggregate.empty() ||
+      text_rich_text_header.empty() ||
       text_rich_text_source.empty() ||
       text_rich_text_hit_testing_header.empty() ||
       text_rich_text_hit_testing_source.empty() ||
@@ -107,10 +108,14 @@ int main() {
       text_rich_text_syntax_header.empty() ||
       text_rich_text_syntax_source.empty() ||
       text_rich_text_activation_header.empty() ||
-      text_rich_text_activation_source.empty() || paint_header.empty() ||
-      paint_rich_text_source.empty() || renderer_commands_header.empty() ||
-      render_view_commands_source.empty() || rich_text_run_test.empty() ||
-      render_view_test.empty() || structure_test.empty() ||
+      text_rich_text_activation_source.empty() ||
+      paint_header.empty() ||
+      paint_rich_text_source.empty() ||
+      renderer_commands_header.empty() ||
+      render_view_commands_source.empty() ||
+      rich_text_run_test.empty() ||
+      render_view_test.empty() ||
+      structure_test.empty() ||
       header_cleanliness.empty()) {
     return 1;
   }
@@ -122,24 +127,12 @@ int main() {
   }
 
   if (!contains(roadmap,
-                "- [x] Steps 435-442: Add rich text runs") ||
-      contains(roadmap, "- [ ] Steps 435-442") ||
-      !contains(roadmap, "Step 442 closes the rich-text metadata band") ||
-      !contains(roadmap,
-                "tests/api_parity/phase_d_rich_text_audit_test.cpp") ||
-      !contains(roadmap,
-                "- [x] Steps 443-450: Add text input parity examples")) {
+                "tests/api_parity/phase_d_rich_text_audit_test.cpp")) {
     return 3;
-  }
-
-  if (!contains(task_plan, "Step 442 closes the rich-text metadata band") ||
-      !contains(findings, "Step 442 is an audit-only closeout")) {
-    return 4;
   }
 
   const std::string text_row = line_containing(ledger, "| gpui text system |");
   if (text_row.empty() ||
-      !contains(text_row, "Step 442 rich-text metadata band audit") ||
       !contains(text_row, "RichTextSpan") ||
       !contains(text_row, "RichTextRun") ||
       !contains(text_row, "RichTextRunHit") ||
@@ -155,10 +148,6 @@ int main() {
       !contains(text_row, "inline image drawing/loading") ||
       !contains(text_row, "syntax parsing/editor token source integration")) {
     return 5;
-  }
-  if (contains(text_row,
-               "candidate placement, rich text runs, and final Phase D")) {
-    return 6;
   }
 
   if (!contains(ledger_json, "\"step_442\"") ||

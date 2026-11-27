@@ -1,4 +1,5 @@
 #include "../support/frame_wait_test_support.hpp"
+#include "../support/win32_desktop_test_support.hpp"
 #include "cgpui/renderer/renderer_backend.hpp"
 #include "cgpui/renderer/renderer.hpp"
 
@@ -32,6 +33,8 @@ int fail(int code, const char* message) {
 }
 
 int main() {
+  cgpui_test::Win32DesktopTestLease desktop;
+  if (!desktop.ready()) return fail(20, "exclusive desktop fixture unavailable");
   Window window;
   if (!window.hwnd) return fail(1, "CreateWindowExW failed");
   cgpui::RenderSurfaceDescriptor descriptor{

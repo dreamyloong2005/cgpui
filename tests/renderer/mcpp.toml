@@ -49,6 +49,7 @@ include_dirs = [
 # Native shared pixel harness; no Win32/DX12 source enters Linux or Metal builds.
 [target.'cfg(os = "windows")'.build]
 sources = [
+    "../support/win32_desktop_test_support.cpp",
     "../support/frame_wait_win32_test_support.cpp",
     "renderer_pixel_test_backend_policy.cpp",
     "renderer_pixel_test_backend.cpp",

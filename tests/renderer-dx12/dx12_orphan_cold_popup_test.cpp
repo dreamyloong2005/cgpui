@@ -6,7 +6,7 @@ using namespace cgpui;
 using namespace cgpui_test;
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   if (!deadline.done || !dx12_popup_desktop_ready() || !pacing_begin_debug_enable())
     return dx12_fail(1, "cold orphan popup desktop/debug fixture unavailable");
   CompositionTestWindows windows(48, 48);

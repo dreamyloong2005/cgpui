@@ -1,3 +1,5 @@
+#include "support/cpp_string_literals_test_support.hpp"
+
 #include <array>
 #include <filesystem>
 #include <fstream>
@@ -24,8 +26,9 @@ int main() {
   // Assert maintainable test inputs, not the wording of a completed phase.
   const std::array historical_inputs{
       "\"task_plan.md\"", "\"findings.md\"", "\"progress.md\""};
-  const std::regex phase_prose{"\"Phase [A-Z] Steps? [0-9]"};
-  for (const auto* directory : {"tests/architecture", "tests/renderer"}) {
+  const std::regex phase_prose{R"(\bPhase [A-Z]\b|\bSteps? [0-9])"};
+  for (const auto* directory :
+       {"tests/architecture", "tests/api_parity", "tests/renderer"}) {
     for (const auto& entry : fs::recursive_directory_iterator(root / directory)) {
       const auto extension = entry.path().extension();
       if ((extension != ".cpp" && extension != ".mm") ||
@@ -39,9 +42,15 @@ int main() {
           return fail(entry.path(), "structure checks must not depend on work logs");
         }
       }
-      if (std::regex_search(source, phase_prose) ||
-          source.find("current_handoff") != std::string::npos) {
+      if (source.find("current_handoff") != std::string::npos) {
         return fail(entry.path(), "assert current contracts, not historical phase prose");
+      }
+      for (const auto& value : architecture_test::cpp_string_literals(source)) {
+        // Section anchors and workflow names are navigation, not completion claims.
+        if (value.starts_with("## ") || value.starts_with("name: Phase ")) continue;
+        if (std::regex_search(value, phase_prose)) {
+          return fail(entry.path(), "assert current contracts, not historical phase prose");
+        }
       }
     }
   }

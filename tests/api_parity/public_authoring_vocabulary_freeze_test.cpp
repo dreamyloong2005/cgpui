@@ -49,7 +49,6 @@ int main() {
 
   constexpr std::array required_sections{
       "# Public Authoring Vocabulary Freeze",
-      "Phase B Step 308",
       "The frozen include boundary is `#include \"cgpui/prelude.hpp\"`.",
       "Application entry vocabulary",
       "View authoring vocabulary",
@@ -60,8 +59,7 @@ int main() {
       "Built-in widget vocabulary",
       "Uniform list vocabulary",
       "Out of scope for this freeze",
-      "Forbidden from public examples",
-  };
+      "Forbidden from public examples"};
   for (std::size_t index = 0; index < required_sections.size(); ++index) {
     if (!contains(vocabulary, required_sections[index])) {
       return 10 + static_cast<int>(index);

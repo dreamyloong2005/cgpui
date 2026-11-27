@@ -1,10 +1,13 @@
 #include "cgpui/platform/platform.hpp"
 #include "cgpui/renderer/renderer.hpp"
+#include "../support/win32_desktop_test_support.hpp"
 
 #include <iostream>
 #include <variant>
 
 int main() {
+  cgpui_test::Win32DesktopTestLease desktop;
+  if (!desktop.ready()) return 100;
   auto app = cgpui::create_platform_application();
   if (!app) {
     std::cerr << app.error().message << '\n';

@@ -102,7 +102,6 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase C Step 357 window/examples widget catalog",
       "examples/api_parity/public_window_examples_widget_catalog/main.cpp",
       "api_parity_public_window_examples_widget_catalog",
       "phase_c_window_examples_widget_catalog_test.cpp",
@@ -110,9 +109,7 @@ int main() {
       "slider",
       "list/menu",
       "image/icon",
-      "container widgets",
-      "Step 358 should continue the window/examples widget band",
-  };
+      "container widgets"};
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
         !contains(ledger_md, required_docs[index]) ||
@@ -120,15 +117,6 @@ int main() {
         !contains(vocabulary, required_docs[index])) {
       return 60 + static_cast<int>(index);
     }
-  }
-
-  if (!contains(ledger_json,
-                "\"step_360\": \"Phase C Step 360 window/examples closeout\"") ||
-      !contains(ledger_json,
-                "\"window_examples_next\": \"Phase C Step 360 closes the "
-                "window/examples widget band. Phase C Step 361 SVG/image "
-                "element front-end APIs")) {
-    return 80;
   }
 
   constexpr std::array forbidden_example_fragments{

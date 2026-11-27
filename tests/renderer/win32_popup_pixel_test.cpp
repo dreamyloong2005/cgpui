@@ -117,6 +117,8 @@ int run_on_vendor(cgpui::PlatformApplication& application, std::uint32_t vendor)
 } // namespace
 
 int main() {
+  cgpui_test::Win32DesktopTestLease desktop;
+  if (!desktop.ready()) return 100;
   auto application = cgpui::create_platform_application();
   if (!application || !(*application)->popup_windows_supported()) return 1;
   const auto vendors = cgpui_test::vulkan_vendors();

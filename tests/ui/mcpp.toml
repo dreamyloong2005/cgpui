@@ -37,6 +37,9 @@ defines = [
 
 [test]
 discover = [
+    "window_record_static_tree_test.cpp",
+    "window_record_static_lifetime_test.cpp",
+    "window_record_static_cursor_lifetime_test.cpp",
     "runtime_surface_resizes_test.cpp",
     "window_runtime_recovery_pending_frame_test.cpp",
     "window_runtime_recovery_pending_resize_test.cpp",

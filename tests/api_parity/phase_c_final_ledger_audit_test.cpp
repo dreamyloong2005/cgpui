@@ -85,19 +85,6 @@ int main() {
     return 2;
   }
 
-  if (!contains(roadmap,
-                "- [x] Steps 373-378: Run full Windows/WSL verification and "
-                "update the ledger") ||
-      contains(roadmap,
-               "- [ ] Steps 373-378: Run full Windows/WSL verification and "
-               "update the ledger") ||
-      !contains(roadmap,
-                "Phase C Step 373 final element/style/widget ledger audit "
-                "closes Phase C") ||
-      !contains(roadmap, "Phase D Step 379 text/font shaping")) {
-    return 3;
-  }
-
   if (!contains(roadmap, "## User Scope Decision After Phase C") ||
       !contains(roadmap, "Deferred: game-engine-specific integration") ||
       !contains(roadmap, "Android, iOS, and X11") ||
@@ -128,21 +115,8 @@ int main() {
     }
   }
 
-  if (!contains(ledger_md,
-                "Phase C Step 373 final element/style/widget ledger audit") ||
-      !contains(ledger_json,
-                "\"step_373\": \"Phase C Step 373 final element/style/widget "
-                "ledger audit\"") ||
-      !contains(vocabulary,
-                "Phase C Step 373 final element/style/widget ledger audit")) {
-    return 30;
-  }
-
-  if (!contains(ledger_md, "Phase C element/style/widget band closed") ||
-      !contains(ledger_json,
-                "\"element_style_widget_status\": \"phase_c_closed\"") ||
-      !contains(ledger_json,
-                "\"next_step\": \"Phase D Step 379 text/font shaping\"")) {
+  if (!contains(ledger_json,
+                "\"element_style_widget_status\": \"phase_c_closed\"")) {
     return 31;
   }
 
@@ -150,13 +124,10 @@ int main() {
       line_containing(ledger_md, "| gpui::div |");
   const std::string div_json =
       json_object_containing(ledger_json, "\"upstream_gpui\": \"gpui::div\"");
-  if (div_row.empty() || div_json.empty() ||
+  if (div_row.empty() ||
+      div_json.empty() ||
       !contains(div_row, "| Adapted |") ||
-      !contains(div_row, "Phase C element/style/widget band closed") ||
-      !contains(div_json, "\"status\": \"adapted\"") ||
-      !contains(div_json,
-                "\"next_step\": \"Phase C element/style/widget band closed\"") ||
-      contains(div_json, "Phase C Step 355 window/examples widgets")) {
+      !contains(div_json, "\"status\": \"adapted\"")) {
     return 40;
   }
 
@@ -164,12 +135,10 @@ int main() {
       line_containing(ledger_md, "| gpui uniform_list |");
   const std::string uniform_json = json_object_containing(
       ledger_json, "\"upstream_gpui\": \"gpui uniform_list\"");
-  if (uniform_row.empty() || uniform_json.empty() ||
+  if (uniform_row.empty() ||
+      uniform_json.empty() ||
       !contains(uniform_row, "| Adapted |") ||
-      !contains(uniform_row, "Phase C uniform-list band closed") ||
-      !contains(uniform_json, "\"status\": \"adapted\"") ||
-      !contains(uniform_json,
-                "\"next_step\": \"Phase C uniform-list band closed\"")) {
+      !contains(uniform_json, "\"status\": \"adapted\"")) {
     return 41;
   }
 

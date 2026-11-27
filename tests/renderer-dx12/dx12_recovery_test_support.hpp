@@ -4,6 +4,7 @@
 #define NOMINMAX
 #endif
 #include "dx12_test_support.hpp"
+#include "../support/win32_desktop_test_support.hpp"
 
 #include <d3d12.h>
 #include <d3d12sdklayers.h>
@@ -18,8 +19,10 @@ namespace cgpui_test {
 
 class Dx12RecoveryDeadline {
  public:
-  HANDLE done = CreateEventW(nullptr, TRUE, FALSE, nullptr);
-  Dx12RecoveryDeadline() {
+  HANDLE done = nullptr;
+  explicit Dx12RecoveryDeadline(DesktopTestAccess access = DesktopTestAccess::none) : desktop_(access) {
+    if (!desktop_.ready()) return;
+    done = CreateEventW(nullptr, TRUE, FALSE, nullptr);
     if (done) worker_ = std::thread([this] {
       if (WaitForSingleObject(done, 15000) == WAIT_TIMEOUT) {
         const char message[] = "DX12 device-recovery test timed out\n";
@@ -35,6 +38,7 @@ class Dx12RecoveryDeadline {
     if (done) CloseHandle(done);
   }
  private:
+  Win32DesktopTestLease desktop_;
   std::thread worker_;
 };
 

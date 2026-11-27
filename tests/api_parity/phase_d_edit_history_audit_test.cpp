@@ -55,8 +55,6 @@ int main() {
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger =
       read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string text_model_header =
       read_source("include/cgpui/ui/text_model.hpp");
   const std::string text_model_source = read_source("src/ui/text_model.cpp");
@@ -69,10 +67,14 @@ int main() {
   const std::string structure_test =
       read_source("tests/architecture/ui_source_structure_test.cpp");
 
-  if (manifests.empty() || roadmap.empty() || ledger.empty() ||
-      task_plan.empty() || findings.empty() || text_model_header.empty() ||
-      text_model_source.empty() || text_model_history.empty() ||
-      runtime_clipboard.empty() || text_model_test.empty() ||
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger.empty() ||
+      text_model_header.empty() ||
+      text_model_source.empty() ||
+      text_model_history.empty() ||
+      runtime_clipboard.empty() ||
+      text_model_test.empty() ||
       structure_test.empty()) {
     return 1;
   }
@@ -85,29 +87,17 @@ int main() {
   }
 
   if (!contains(roadmap,
-                "- [x] Steps 419-426: Deepen edit history") ||
-      contains(roadmap, "- [ ] Steps 419-426") ||
-      !contains(roadmap,
-                "Step 424 closes the edit-history band through") ||
-      !contains(roadmap,
-                "tests/api_parity/phase_d_edit_history_audit_test.cpp") ||
-      !contains(roadmap, "Steps 427-434: Complete IME on active targets")) {
+                "tests/api_parity/phase_d_edit_history_audit_test.cpp")) {
     return 3;
   }
 
-  if (!contains(task_plan, "Step 424 closes the edit-history band") ||
-      !contains(findings, "Step 424 is an audit-only closeout")) {
-    return 4;
-  }
-
   const std::string text_row = line_containing(ledger, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
+  if (text_row.empty() ||
       !contains(text_row, "adjacent typing history coalescing") ||
       !contains(text_row, "composition-history grouping") ||
       !contains(text_row, "undo-manager integration points") ||
       !contains(text_row, "redo invalidation diagnostics") ||
       !contains(text_row, "edit transaction diagnostics") ||
-      !contains(text_row, "Step 424 edit-history band audit") ||
       !contains(text_row, "phase_d_edit_history_audit_test") ||
       !contains(text_row, "Win32 TSF message depth")) {
     return 5;

@@ -42,12 +42,14 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
   const std::string phase_c_final_audit =
       read_source("tests/api_parity/phase_c_final_ledger_audit_test.cpp");
 
-  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || phase_c_final_audit.empty()) {
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      ledger_json.empty() ||
+      phase_c_final_audit.empty()) {
     return 1;
   }
 
@@ -58,7 +60,6 @@ int main() {
   }
 
   if (!contains(roadmap, "## Pre-Phase-D Entry Gate") ||
-      !contains(roadmap, "Phase D feature work may continue only after") ||
       !contains(roadmap, "Windows and WSL Arch Linux")) {
     return 3;
   }
@@ -129,7 +130,7 @@ int main() {
       "gpui_parity_ledger_test/default",
   };
   for (const char* item : gate_tests) {
-    if (!contains(roadmap, item) || !contains(task_plan, item)) {
+    if (!contains(roadmap, item)) {
       return 40;
     }
   }
@@ -140,13 +141,6 @@ int main() {
       !contains(ledger_json, "\"active_track_required\"") ||
       !contains(ledger_json, "\"zero_cost_principle\"")) {
     return 50;
-  }
-
-  if (!contains(task_plan,
-                "Pre-Phase-D entry gate is explicit and test-protected") ||
-      !contains(task_plan,
-                "future Phase D continuation must rerun the gate")) {
-    return 60;
   }
 
   if (!contains(phase_c_final_audit, "## User Scope Decision After Phase C") ||

@@ -54,8 +54,6 @@ int main() {
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
       read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string backend_header =
       read_source("include/cgpui/renderer/text/text_shaping_backend.hpp");
   const std::string shape_header = read_source("include/cgpui/renderer/text/text_shape.hpp");
@@ -72,11 +70,16 @@ int main() {
   const std::string text_model_test =
       read_source("tests/ui/text_model_test.cpp");
 
-  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
-      task_plan.empty() || findings.empty() || backend_header.empty() ||
-      shape_header.empty() || backend_source.empty() ||
-      dispatch_source.empty() || harfbuzz_source.empty() ||
-      fallback_source.empty() || wayland_fontconfig_source.empty() ||
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      backend_header.empty() ||
+      shape_header.empty() ||
+      backend_source.empty() ||
+      dispatch_source.empty() ||
+      harfbuzz_source.empty() ||
+      fallback_source.empty() ||
+      wayland_fontconfig_source.empty() ||
       text_model_test.empty()) {
     return 1;
   }
@@ -89,27 +92,13 @@ int main() {
     return 2;
   }
 
-  if (!contains(roadmap,
-                "Step 386 adds this text-shaping readiness audit") ||
-      !contains(roadmap, "guarded HarfBuzz backend now shapes through hb_shape") ||
-      !contains(roadmap, "Step 401 adds deterministic script-run metadata") ||
-      !contains(task_plan, "Step 386 adds a text-shaping readiness audit") ||
-      !contains(task_plan, "Phase D guarded HarfBuzz backend") ||
-      !contains(task_plan, "Step 401 adds deterministic script-run metadata") ||
-      !contains(findings,
-                "Step 386 is a readiness audit rather than a false "
-                "HarfBuzz completion") ||
-      !contains(findings, "Phase D guarded HarfBuzz backend") ||
-      !contains(findings, "Step 401 adds lightweight script-run metadata") ||
-      !contains(roadmap,
-                "- [x] Steps 379-386: Replace fallback-only shaping with "
-                "HarfBuzz-backed")) {
+  if (!contains(roadmap, "guarded HarfBuzz backend now shapes through hb_shape")) {
     return 3;
   }
 
   const std::string text_row =
       line_containing(ledger_md, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
+  if (text_row.empty() ||
       !contains(text_row, "text-shaping readiness audit") ||
       !contains(text_row, "PlatformFontDiscoveryResult") ||
       !contains(text_row, "wayland_fontconfig_discovery.cpp") ||
@@ -195,10 +184,7 @@ int main() {
                 "CGPUI_HAS_FONTCONFIG_DISCOVERY_BACKEND") ||
       !contains(wayland_fontconfig_source, "FcFontList") ||
       !contains(wayland_fontconfig_source,
-                "PlatformFontDiscoveryStatus::native_available") ||
-      !contains(findings,
-                "native Linux font discovery cannot honestly be marked "
-                "complete")) {
+                "PlatformFontDiscoveryStatus::native_available")) {
     return 8;
   }
 

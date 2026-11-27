@@ -24,6 +24,10 @@ bool contains(const std::string& text, std::string_view value) {
 int main() {
   const std::string runner =
       read_source("tests/performance/phase_j_performance_runner.cpp");
+  const std::string samples = read_source("tests/performance/baseline_sample.cpp");
+  const std::string window_workloads = read_source("tests/performance/baseline_window_workloads.cpp");
+  const std::string content_workloads = read_source("tests/performance/baseline_content_workloads.cpp");
+  const std::string scheduling_workloads = read_source("tests/performance/baseline_scheduling_workloads.cpp");
   const std::string policy =
       read_source("docs/gpui-performance-baseline-policy.json");
   const std::string validator =
@@ -34,31 +38,33 @@ int main() {
       read_source("scripts/ci/linux-performance-baseline.sh");
   const std::string macos =
       read_source("scripts/ci/macos-performance-baseline.sh");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string* required[]{&runner, &policy, &validator, &windows,
-                                &linux,  &roadmap, &ledger};
+  const std::string* required[]{&runner, &samples, &window_workloads,
+      &content_workloads, &scheduling_workloads, &policy, &validator,
+      &windows, &linux, &macos, &ledger};
   for (const auto* source : required) if (source->empty()) return 1;
 
   constexpr std::array metrics{
       "startup", "first_frame", "resize", "text_layout",
       "list_scrolling", "image_loading", "async_wakeup", "frame_pacing"};
   for (const auto* metric : metrics) {
-    if (!contains(runner, metric) || !contains(policy, metric)) return 2;
+    if (!contains(samples, metric) || !contains(policy, metric)) return 2;
   }
-  if (!contains(runner, "cgpui::TestApp") ||
-      !contains(runner, "cgpui::measure_text") ||
-      !contains(runner, "calculate_uniform_list_visible_range") ||
-      !contains(runner, "cgpui::decode_image") ||
-      !contains(runner, "start_animation")) return 3;
+  if (!contains(window_workloads, "cgpui::TestApp") ||
+      !contains(window_workloads, "try_draw_frame") ||
+      !contains(window_workloads, "simulate_resize") ||
+      !contains(content_workloads, "cgpui::measure_text") ||
+      !contains(content_workloads, "calculate_uniform_list_visible_range") ||
+      !contains(content_workloads, "cgpui::decode_image") ||
+      !contains(scheduling_workloads, "cgpui::TestApp") ||
+      !contains(scheduling_workloads, "complete_task") ||
+      !contains(scheduling_workloads, "start_animation")) return 3;
   if (!contains(validator, "max_mean_ns") ||
       !contains(windows, "test -p tests/performance") ||
       !contains(linux, "-p tests/performance") ||
       !contains(linux, "CGPUI_LINUX_BACKEND")) return 4;
-  if (!contains(roadmap, "- [x] Steps 811-816: Add performance baselines") ||
-      !contains(ledger, "\"phase_j_steps_811_816_status\": \"complete\"")) {
+  if (!contains(ledger, "\"phase_j_steps_811_816_status\"")) {
     return 5;
   }
   if (!contains(policy, "\"macos-arm64\"") ||

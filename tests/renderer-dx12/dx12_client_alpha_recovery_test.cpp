@@ -15,7 +15,7 @@ bool client_recovery_peer(Renderer& renderer) {
 } // namespace
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   OrdinaryDesktop desktop;
   auto app = create_platform_application();
   if (!deadline.done || !desktop.valid() || !app) return dx12_fail(1, "client recovery fixture unavailable");

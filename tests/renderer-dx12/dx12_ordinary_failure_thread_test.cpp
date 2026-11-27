@@ -7,7 +7,7 @@ using namespace cgpui;
 using namespace cgpui_test;
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   OrdinaryDesktop desktop;
   auto app = create_platform_application();
   if (!deadline.done || !desktop.valid() || !app) return dx12_fail(1, "thread/failure fixture unavailable");

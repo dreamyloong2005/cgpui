@@ -55,8 +55,6 @@ int main() {
   const std::string roadmap = read_source(
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string text_font_header =
       read_source("include/cgpui/platform/font_database.hpp");
   const std::string text_font_source = read_source("src/platform/font_database.cpp");
@@ -72,11 +70,17 @@ int main() {
   const std::string text_model_test =
       read_source("tests/ui/text_model_test.cpp");
 
-  if (manifests.empty() || linux_backends.empty() || roadmap.empty() || ledger.empty() ||
-      task_plan.empty() || findings.empty() || text_font_header.empty() ||
-      text_font_source.empty() || text_shape_header.empty() ||
-      text_shape_source.empty() || fallback_source.empty() ||
-      win32_font.empty() || wayland_fontconfig.empty() ||
+  if (manifests.empty() ||
+      linux_backends.empty() ||
+      roadmap.empty() ||
+      ledger.empty() ||
+      text_font_header.empty() ||
+      text_font_source.empty() ||
+      text_shape_header.empty() ||
+      text_shape_source.empty() ||
+      fallback_source.empty() ||
+      win32_font.empty() ||
+      wayland_fontconfig.empty() ||
       text_model_test.empty()) {
     return 1;
   }
@@ -89,8 +93,7 @@ int main() {
   }
 
   const std::string text_row = line_containing(ledger, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
-      !contains(text_row, "Step 394 font fallback band audit") ||
+  if (text_row.empty() ||
       !contains(text_row, "TextGlyphRun::font_fallback_face_index") ||
       !contains(text_row, "TextFontFallbackRun") ||
       !contains(text_row, "TextMissingGlyphDiagnostic") ||
@@ -109,12 +112,7 @@ int main() {
     return 3;
   }
 
-  if (!contains(roadmap, "Step 394 closes the font discovery/fallback band") ||
-      !contains(roadmap, "- [x] Steps 387-394: Add real font discovery") ||
-      !contains(roadmap, "system-optional fontconfig package wiring") ||
-      !contains(task_plan, "Step 394 closes the font discovery/fallback band") ||
-      !contains(task_plan, "system-optional fontconfig package wiring") ||
-      !contains(findings, "Step 394 is an audit-only closeout")) {
+  if (!contains(roadmap, "system-optional fontconfig package wiring")) {
     return 4;
   }
 

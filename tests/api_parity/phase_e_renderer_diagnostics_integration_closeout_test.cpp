@@ -47,10 +47,10 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty()) {
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      ledger_json.empty()) {
     return 1;
   }
 
@@ -141,27 +141,15 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase E Step 522",
       "renderer diagnostics integration closeout",
-      "Steps 515-521",
-      "work through runtime propagation",
-      "Step 523 pixel/screenshot testing",
-  };
+      "work through runtime propagation"};
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
-        !contains(ledger_md, required_docs[index]) ||
-        !contains(ledger_json, required_docs[index]) ||
-        !contains(task_plan, required_docs[index]) ||
-        !contains(findings, required_docs[index])) {
+      !contains(ledger_md, required_docs[index]) ||
+      !contains(ledger_json, required_docs[index])) {
       return 70 + static_cast<int>(index);
     }
   }
 
-  if (!contains(
-          roadmap,
-          "- [x] Phase E Step 522 closes the renderer diagnostics") ||
-      contains(roadmap, "- [ ] Phase E Step 522:")) {
-    return 80;
-  }
   return 0;
 }

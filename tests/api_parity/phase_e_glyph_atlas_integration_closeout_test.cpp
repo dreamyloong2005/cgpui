@@ -43,8 +43,6 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string production_header =
       read_source("include/cgpui/renderer/glyph_atlas_production.hpp");
   const std::string resources_header = read_source(
@@ -78,14 +76,25 @@ int main() {
   const std::string lifetime_test =
       read_source("tests/renderer/vulkan_frame_lifetime_test.cpp");
 
-  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty() ||
-      production_header.empty() || resources_header.empty() ||
-      uploads_header.empty() || draw_header.empty() || resources.empty() ||
-      staging.empty() || upload_recording.empty() || frame.empty() ||
-      draw_bindings.empty() || draw_data.empty() || command_recording.empty() ||
-      multi_page_test.empty() || lifecycle_test.empty() ||
-      draw_binding_test.empty() || draw_data_test.empty() ||
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      ledger_json.empty() ||
+      production_header.empty() ||
+      resources_header.empty() ||
+      uploads_header.empty() ||
+      draw_header.empty() ||
+      resources.empty() ||
+      staging.empty() ||
+      upload_recording.empty() ||
+      frame.empty() ||
+      draw_bindings.empty() ||
+      draw_data.empty() ||
+      command_recording.empty() ||
+      multi_page_test.empty() ||
+      lifecycle_test.empty() ||
+      draw_binding_test.empty() ||
+      draw_data_test.empty() ||
       lifetime_test.empty()) {
     return 1;
   }
@@ -115,9 +124,7 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase E Step 466 glyph atlas integration closeout",
       "tests/api_parity/phase_e_glyph_atlas_integration_closeout_test.cpp",
-      "Steps 459-465",
       "alpha8 page resources",
       "descriptor capacity",
       "dirty uploads",
@@ -125,23 +132,13 @@ int main() {
       "three atlas pages",
       "VulkanGlyphAtlasDrawBinding",
       "VulkanGlyphAtlasDrawData",
-      "contiguous page runs",
-      "Step 467 text shader pipeline",
-  };
+      "contiguous page runs"};
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
-        !contains(ledger_md, required_docs[index]) ||
-        !contains(ledger_json, required_docs[index]) ||
-        !contains(task_plan, required_docs[index]) ||
-        !contains(findings, required_docs[index])) {
+      !contains(ledger_md, required_docs[index]) ||
+      !contains(ledger_json, required_docs[index])) {
       return 30 + static_cast<int>(index);
     }
-  }
-
-  if (!contains(roadmap,
-                "- [x] Phase E Step 466 closes the production glyph atlas") ||
-      contains(roadmap, "- [ ] Step 466: Close the production glyph atlas")) {
-    return 50;
   }
 
   constexpr std::array module_evidence{

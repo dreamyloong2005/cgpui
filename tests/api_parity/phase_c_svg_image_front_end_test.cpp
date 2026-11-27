@@ -126,8 +126,6 @@ int test_step_361_docs_and_structure_are_recorded() {
       read_source("include/cgpui/ui/image_builder.hpp");
   const std::string widget_source =
       read_source("src/ui/widgets/image_builder.cpp");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
@@ -143,13 +141,10 @@ int test_step_361_docs_and_structure_are_recorded() {
       !contains(widget_source, "ImageElementKind::svg")) {
     return 20;
   }
-  if (!contains(roadmap,
-                "Phase C Step 361 SVG/image front-end source APIs") ||
-      !contains(ledger_md, "ImageSource") ||
+  if (!contains(ledger_md, "ImageSource") ||
       !contains(ledger_json, "\"step_361\"") ||
       !contains(vocabulary, "`svg(...)`") ||
-      !contains(vocabulary, "`svg_image_source(...)`") ||
-      !contains(roadmap, "Phase C Step 362 SVG/image asset registration")) {
+      !contains(vocabulary, "`svg_image_source(...)`")) {
     return 21;
   }
   return 0;

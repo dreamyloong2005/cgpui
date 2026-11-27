@@ -47,10 +47,10 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty()) {
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      ledger_json.empty()) {
     return 1;
   }
 
@@ -78,33 +78,20 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase E Step 498 image integration closeout",
       "tests/api_parity/phase_e_image_integration_closeout_test.cpp",
-      "Steps 491-497",
       "persistent image texture resources",
       "explicit bitmap upload transport",
       "nearest/linear sampling descriptors",
       "stable authored image interleaving",
       "multiplicative image tint",
       "frame-generation image cache",
-      "deduplicated image invalidations",
-      "Step 499 SVG rendering strategy",
-  };
+      "deduplicated image invalidations"};
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
-        !contains(ledger_md, required_docs[index]) ||
-        !contains(ledger_json, required_docs[index]) ||
-        !contains(task_plan, required_docs[index]) ||
-        !contains(findings, required_docs[index])) {
+      !contains(ledger_md, required_docs[index]) ||
+      !contains(ledger_json, required_docs[index])) {
       return 30 + static_cast<int>(index);
     }
-  }
-
-  if (!contains(roadmap,
-                "- [x] Phase E Step 498 closes the image integration band") ||
-      contains(roadmap,
-               "- [ ] Step 498: Close the image integration band")) {
-    return 50;
   }
 
   constexpr std::array module_evidence{

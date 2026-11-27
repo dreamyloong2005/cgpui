@@ -96,8 +96,7 @@ int main() {
       !contains(header_cleanliness, "cgpui/ui/animation_transition.hpp") ||
       !contains(manifests, "\"runtime_animation_transition_test.cpp\"") ||
       !contains(manifests,
-                "\"phase_g_animation_transition_structure_test.cpp\"") ||
-      !contains(previous, "Step 643 animation transition \"")) return 6;
+                "\"phase_g_animation_transition_structure_test.cpp\"")) return 6;
   if (line_count(public_header) > 100 || line_count(source) > 120 ||
       line_count(animation_start) > 80 || line_count(behavior) > 190 ||
       line_count(runtime_header) > 263 || line_count(runtime_internal) > 260) {

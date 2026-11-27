@@ -19,7 +19,7 @@ template <typename T> bool pending(const Result<T>& result) {
 } // namespace
 
 int run_owner_recovery_case(OwnerRecoveryCase mode) {
-  Dx12RecoveryDeadline watchdog;
+  Dx12RecoveryDeadline watchdog{DesktopTestAccess::exclusive};
   ManagedRecoveryWindow origin;
   if (!watchdog.done || !origin.renderer || !owner_recovery_paint(*origin.renderer, true))
     return dx12_fail(1, "managed origin fixture failed");

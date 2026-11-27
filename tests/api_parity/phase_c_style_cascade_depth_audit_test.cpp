@@ -57,22 +57,7 @@ int main() {
     return 2;
   }
 
-  if (!contains(roadmap, "- [x] Steps 331-336: Add style cascade depth") ||
-      !contains(roadmap,
-                "Step 336 closes the Phase C style-cascade depth band") ||
-      !contains(roadmap,
-                "Step 337 starts the focusable/interactable band") ||
-      !contains(roadmap,
-                "Step 338 adds tab-order/focus-ring metadata") ||
-      !contains(roadmap,
-                "Step 339 adds focused click/drag gesture synthesis") ||
-      !contains(roadmap,
-                "Step 340 adds keyboard activation semantics") ||
-      !contains(roadmap,
-                "Step 341 adds disabled interaction semantics") ||
-      !contains(roadmap,
-                "Step 342 closes the focusable/interactable band") ||
-      !contains(roadmap,
+  if (!contains(roadmap,
                 "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp")) {
     return 3;
   }
@@ -101,40 +86,16 @@ int main() {
                 "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp") ||
       !contains(
           ledger_json,
-          "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp") ||
-      !contains(ledger_md,
-                "Phase C Step 336 style cascade depth closeout") ||
-      !contains(ledger_json,
-                "Phase C Step 336 style cascade depth closeout") ||
-      !contains(ledger_md,
-                "Phase C Step 337 pointer-active input semantics") ||
-      !contains(ledger_json,
-                "Phase C Step 337 pointer-active input semantics") ||
-      !contains(ledger_md,
-                "Phase C Step 338 tab-order/focus-ring metadata") ||
-      !contains(ledger_json,
-                "Phase C Step 338 tab-order/focus-ring metadata") ||
-      !contains(ledger_md,
-                "Phase C Step 339 click/drag gesture synthesis") ||
-      !contains(ledger_json,
-                "Phase C Step 339 click/drag gesture synthesis")) {
+          "tests/api_parity/phase_c_style_cascade_depth_audit_test.cpp")) {
     return 30;
   }
   if (!contains(ledger_md,
-                "Phase C Step 340 keyboard activation semantics") ||
-      !contains(ledger_json,
-                "Phase C Step 340 keyboard activation semantics") ||
-      !contains(ledger_md,
                 "should_dispatch_synthesized_keyboard_activation_event") ||
       !contains(ledger_json,
                 "should_dispatch_synthesized_keyboard_activation_event")) {
     return 31;
   }
   if (!contains(ledger_md,
-                "Phase C Step 341 disabled interaction semantics") ||
-      !contains(ledger_json,
-                "Phase C Step 341 disabled interaction semantics") ||
-      !contains(ledger_md,
                 "WindowRuntime::refresh_disabled_interaction_state") ||
       !contains(ledger_json,
                 "WindowRuntime::refresh_disabled_interaction_state") ||

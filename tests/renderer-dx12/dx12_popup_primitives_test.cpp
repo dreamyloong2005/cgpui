@@ -14,7 +14,7 @@ double interval_mass(double sample, double low, double high) {
 } // namespace
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   if (!deadline.done || !dx12_popup_desktop_ready())
     return dx12_fail(1, "popup primitives desktop/DPI/watchdog unavailable");
   CompositionTestWindows windows(48, 48);

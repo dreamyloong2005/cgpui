@@ -4,7 +4,9 @@
 #include <iostream>
 
 namespace cgpui_test {
-VulkanRecoveryDeadline::VulkanRecoveryDeadline() : done_(CreateEventW(nullptr, TRUE, FALSE, nullptr)) {
+VulkanRecoveryDeadline::VulkanRecoveryDeadline() {
+  if (!desktop_.ready()) return;
+  done_ = CreateEventW(nullptr, TRUE, FALSE, nullptr);
   if (done_) worker_ = std::thread([this] {
     if (WaitForSingleObject(done_, 120000) == WAIT_TIMEOUT) {
       const char message[] = "Vulkan simulated recovery test timed out\n";

@@ -74,23 +74,23 @@ Result<void> VulkanRendererState::present_frame(
   }
 
   auto recording = record_vulkan_frame_command_buffer(
-          command_buffers_[image_index],
-          render_pass_,
-          framebuffers_[image_index],
-          swapchain_extent_,
-          rounded_rect_pipeline_resources_,
-          solid_rect_buffers_,
-          rounded_rect_buffers_,
-          text_pipeline_resources_, text_vertex_buffer_,
-          image_pipeline_resources_, image_vertex_buffer_, image_draws,
-          color,
-          draw_order,
-          glyph_atlas_resources_,
-          glyph_atlas_draw_quads_, glyph_atlas_draw_bindings_,
-          glyph_atlas_uploads_,
-          image_texture_resources_, image_texture_uploads_,
-          *pixel_capture,
-          command_reuse_states_[image_index], frame_effects());
+      {.target = {.command_buffer = command_buffers_[image_index],
+                  .render_pass = render_pass_, .framebuffer = framebuffers_[image_index],
+                  .extent = swapchain_extent_, .clear_color = color},
+       .geometry = {.pipeline = rounded_rect_pipeline_resources_,
+                    .solid_rect_buffers = solid_rect_buffers_,
+                    .rounded_rect_buffers = rounded_rect_buffers_},
+       .text = {.pipeline = text_pipeline_resources_, .vertex_buffer = text_vertex_buffer_,
+                .glyph_atlas = glyph_atlas_resources_,
+                .glyph_atlas_draw_quads = glyph_atlas_draw_quads_,
+                .glyph_atlas_draw_bindings = glyph_atlas_draw_bindings_,
+                .uploads = glyph_atlas_uploads_},
+       .images = {.pipeline = image_pipeline_resources_, .vertex_buffer = image_vertex_buffer_,
+                  .draws = image_draws, .textures = image_texture_resources_,
+                  .uploads = image_texture_uploads_},
+       .draw_order = draw_order, .pixel_capture = *pixel_capture,
+       .effects = frame_effects()},
+      command_reuse_states_[image_index]);
   if (!recording) {
     return recover_after_failed_record(recording.error().message);
   }

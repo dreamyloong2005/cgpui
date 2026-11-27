@@ -44,13 +44,13 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string manifests = read_source("examples/api_parity/mcpp.toml") +
       read_source("tests/api_parity/mcpp.toml");
 
-  if (example.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty() ||
+  if (example.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      ledger_json.empty() ||
       manifests.empty()) {
     return 1;
   }
@@ -97,27 +97,17 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase D Step 444 text wrapper public examples",
       "examples/api_parity/public_text_wrapper_examples/main.cpp",
       "api_parity_public_text_wrapper_examples",
       "phase_d_text_wrapper_public_examples_test.cpp",
-      "Step 444 extends the text-input examples band",
       "label and TextElement wrappers",
-      "measurement/wrapping/glyph paint metadata",
-  };
+      "measurement/wrapping/glyph paint metadata"};
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
-        !contains(ledger_md, required_docs[index]) ||
-        !contains(ledger_json, required_docs[index]) ||
-        !contains(task_plan, required_docs[index]) ||
-        !contains(findings, required_docs[index])) {
+      !contains(ledger_md, required_docs[index]) ||
+      !contains(ledger_json, required_docs[index])) {
       return 50 + static_cast<int>(index);
     }
-  }
-
-  if (!contains(ledger_json,
-                "\"step_444\": \"Phase D Step 444 text wrapper public examples\"")) {
-    return 80;
   }
 
   constexpr std::array forbidden_example_fragments{

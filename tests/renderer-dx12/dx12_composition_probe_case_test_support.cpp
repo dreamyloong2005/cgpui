@@ -4,7 +4,7 @@
 
 namespace cgpui_test {
 int run_composition_probe(bool visible) {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{visible ? DesktopTestAccess::exclusive : DesktopTestAccess::none};
   if (!deadline.done) {
     composition_probe_note("watchdog", "unavailable; no capability observation");
     return static_cast<int>(CompositionProbeExit::unmeasured);

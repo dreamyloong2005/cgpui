@@ -7,6 +7,7 @@
 #include <vulkan/vulkan.h>
 #if defined(_WIN32)
 #include "vulkan_loader_windows_internal.hpp"
+#include "../support/win32_desktop_test_support.hpp"
 #endif
 
 #include <cstdio>
@@ -79,6 +80,8 @@ std::string read_file(const std::filesystem::path& path) {
 
 int main() {
 #if defined(_WIN32)
+  cgpui_test::Win32DesktopTestLease desktop;
+  if (!desktop.ready()) return 100;
   if (const auto loader = cgpui::ensure_vulkan_windows_loader(); !loader) {
     std::cerr << loader.error().message << '\n';
     return 1;

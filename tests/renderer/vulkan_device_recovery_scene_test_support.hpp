@@ -11,6 +11,7 @@ class VulkanRecoveryDeadline {
   ~VulkanRecoveryDeadline();
   [[nodiscard]] bool valid() const { return done_ != nullptr; }
  private:
+  Win32DesktopTestLease desktop_;
   HANDLE done_ = nullptr;
   std::thread worker_;
 };

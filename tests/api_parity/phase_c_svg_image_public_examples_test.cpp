@@ -102,22 +102,15 @@ int main() {
   }
 
   constexpr std::array docs_fragments{
-      "Step 363 SVG/image public example",
       "public_svg_image_sources",
       "`api_parity_public_svg_image_sources`",
       "\"step_363\"",
-      "\"public_svg_image_sources\"",
-      "\"image_front_end_next\": \"Phase C Step 367 widget family structure tests\"",
-      "Phase C Step 364 SVG/image band closeout",
-  };
+      "\"public_svg_image_sources\""};
   const std::array docs_sources{
-      roadmap,
       vocabulary,
       ledger_md,
       ledger_json,
       ledger_json,
-      ledger_json,
-      roadmap,
   };
   for (std::size_t index = 0; index < docs_fragments.size(); ++index) {
     if (!contains(docs_sources[index], docs_fragments[index])) {

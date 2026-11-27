@@ -6,7 +6,6 @@
 namespace = "cgpui"
 name = "tests-architecture"
 version = "0.1.0"
-
 [targets.cgpui_tests_architecture_support]
 kind = "lib"
 
@@ -21,10 +20,12 @@ cgpui.build-support = { path = "../../tools/mcpp" }
 [build]
 sources = [
     "support/architecture_test_discovery_test_support.cpp",
+    "support/cpp_string_literals_test_support.cpp",
 ]
 
 [test]
 discover = [
+    "ownership/*_structure_test.cpp",
     "native_window_work_structure_test.cpp",
     "dx12/*_structure_test.cpp",
     "architecture_test_discovery_test.cpp",

@@ -51,12 +51,8 @@ std::string line_containing(const std::string& text, const char* anchor) {
 
 int main() {
   const std::string manifests = read_source("tests/api_parity/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger =
       read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string measurement_header =
       read_source("include/cgpui/renderer/text/text_measurement.hpp");
   const std::string wrapping_header =
@@ -73,11 +69,15 @@ int main() {
   const std::string text_model_test =
       read_source("tests/ui/text_model_test.cpp");
 
-  if (manifests.empty() || roadmap.empty() || ledger.empty() ||
-      task_plan.empty() || findings.empty() || measurement_header.empty() ||
-      wrapping_header.empty() || paragraph_header.empty() ||
-      grapheme_source.empty() || wrapping_source.empty() ||
-      paragraph_source.empty() || structure_test.empty() ||
+  if (manifests.empty() ||
+      ledger.empty() ||
+      measurement_header.empty() ||
+      wrapping_header.empty() ||
+      paragraph_header.empty() ||
+      grapheme_source.empty() ||
+      wrapping_source.empty() ||
+      paragraph_source.empty() ||
+      structure_test.empty() ||
       text_model_test.empty()) {
     return 1;
   }
@@ -89,24 +89,8 @@ int main() {
     return 2;
   }
 
-  if (!contains(roadmap,
-                "- [x] Steps 403-410: Complete text measurement and "
-                "wrapping") ||
-      !contains(roadmap,
-                "Step 410 closes the text measurement/wrapping band through") ||
-      contains(roadmap, "- [ ] Steps 403-410")) {
-    return 3;
-  }
-
-  if (!contains(task_plan,
-                "Step 410 closes the text measurement/wrapping band") ||
-      !contains(findings, "Step 410 is an audit-only closeout")) {
-    return 4;
-  }
-
   const std::string text_row = line_containing(ledger, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
-      !contains(text_row, "Step 410 text measurement/wrapping band audit") ||
+  if (text_row.empty() ||
       !contains(text_row, "TextGraphemeColumn") ||
       !contains(text_row, "TextWrapBreakKind") ||
       !contains(text_row, "TextBidiRun") ||

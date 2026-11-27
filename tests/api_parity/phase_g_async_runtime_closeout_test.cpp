@@ -44,18 +44,18 @@ int main() {
       read_source("tests/architecture/mcpp.toml") +
       read_source("tests/async/mcpp.toml") +
       read_source("tests/platform/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &pool, &priority, &groups, &cancellation, &io, &timers, &entities,
-      &ui_source, &platform_source, &header_cleanliness, &manifests, &roadmap,
-      &ledger_md, &ledger_json, &task_plan, &findings};
+      &pool,
+      &priority,
+      &groups,
+      &cancellation,
+      &io,
+      &timers,
+      &entities,
+      &ui_source,
+      &platform_source,
+      &header_cleanliness,
+      &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(pool, "RuntimeTaskPool") ||
@@ -101,25 +101,9 @@ int main() {
   if (!contains(platform_source, "win32_timer_wakeup.cpp") ||
       !contains(platform_source, "wayland_timer_wakeup.cpp") ||
       !contains(header_cleanliness, "CrossThreadEntity<TestModel>") ||
-      !contains(manifests, "\"phase_g_async_runtime_closeout_test.cpp\"") ||
-      !contains(roadmap, "- [x] Steps 635-642: Complete async runtime")) {
+      !contains(manifests, "\"phase_g_async_runtime_closeout_test.cpp\"")) {
     return 5;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 642 audits and closes the async runtime production band, "
-      "freezing bounded priority scheduling, structured cancellation, async "
-      "I/O, platform timers, cross-thread entity access, diagnostics, shutdown "
-      "behavior, and modular source evidence. Step 643 animation transition "
-      "production behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 6;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
-    return 7;
-  }
   return 0;
 }

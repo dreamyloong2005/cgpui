@@ -7,14 +7,12 @@
 #include "cgpui/ui/layout.hpp"
 #include "cgpui/ui/style.hpp"
 
-#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 namespace cgpui {
@@ -70,15 +68,7 @@ struct AccessibilityTreeSnapshot {
   ElementId root_element_id;
   std::vector<AccessibilityNode> nodes;
 
-  [[nodiscard]] const AccessibilityNode* node(ElementId element_id) const {
-    const auto it = std::find_if(
-        nodes.begin(),
-        nodes.end(),
-        [element_id](const AccessibilityNode& candidate) {
-          return candidate.element_id == element_id;
-        });
-    return it == nodes.end() ? nullptr : &*it;
-  }
+  [[nodiscard]] const AccessibilityNode* node(ElementId element_id) const;
 };
 
 struct EventResult {
@@ -132,166 +122,83 @@ class Element {
  public:
   virtual ~Element() = default;
 
-  [[nodiscard]] ElementId id() const {
-    return id_;
-  }
+  [[nodiscard]] ElementId id() const;
 
-  [[nodiscard]] const std::optional<ElementKey>& key() const {
-    return key_;
-  }
+  [[nodiscard]] const std::optional<ElementKey>& key() const;
 
-  [[nodiscard]] virtual LayoutOutput layout(LayoutInput input) const {
-    const LayoutOutput output{
-        .size = constrain_size({}, input.constraints),
-    };
-    set_layout_bounds(Rect{
-        .origin = output.origin,
-        .size = output.size,
-    });
-    return output;
-  }
+  [[nodiscard]] virtual LayoutOutput layout(LayoutInput input) const;
 
-  [[nodiscard]] std::optional<Rect> layout_bounds() const {
-    return layout_bounds_;
-  }
+  [[nodiscard]] std::optional<Rect> layout_bounds() const;
 
-  [[nodiscard]] virtual ElementId hit_test(Point point) const {
-    return layout_bounds_.has_value() && contains(*layout_bounds_, point) ? id_
-                                                                         : ElementId{};
-  }
+  [[nodiscard]] virtual ElementId hit_test(Point point) const;
 
-  virtual void paint(PaintList& paint_list) const {
-    (void)paint_list;
-  }
+  virtual void paint(PaintList& paint_list) const;
 
-  virtual void inherit_text_style(const Style& style) {
-    (void)style;
-  }
+  virtual void inherit_text_style(const Style& style);
 
-  [[nodiscard]] bool enabled() const {
-    return enabled_;
-  }
+  [[nodiscard]] bool enabled() const;
 
-  void set_enabled(bool enabled) {
-    enabled_ = enabled;
-  }
+  void set_enabled(bool enabled);
 
   [[nodiscard]] FocusMetadata focus_metadata() const;
   void set_focus_metadata(FocusMetadata metadata);
 
-  [[nodiscard]] float flex_grow() const {
-    return flex_grow_;
-  }
+  [[nodiscard]] float flex_grow() const;
 
-  void set_flex_grow(float value) {
-    flex_grow_ = value;
-  }
+  void set_flex_grow(float value);
 
-  [[nodiscard]] float flex_shrink() const {
-    return flex_shrink_;
-  }
+  [[nodiscard]] float flex_shrink() const;
 
-  void set_flex_shrink(float value) {
-    flex_shrink_ = value;
-  }
+  void set_flex_shrink(float value);
 
-  [[nodiscard]] Position position() const {
-    return position_;
-  }
+  [[nodiscard]] Position position() const;
 
-  void set_position(Position value) {
-    position_ = value;
-  }
+  void set_position(Position value);
 
-  [[nodiscard]] EdgeSizes inset() const {
-    return inset_;
-  }
+  [[nodiscard]] EdgeSizes inset() const;
 
-  void set_inset(EdgeSizes value) {
-    inset_ = value;
-  }
+  void set_inset(EdgeSizes value);
 
-  [[nodiscard]] virtual int z_index() const {
-    return z_index_;
-  }
+  [[nodiscard]] virtual int z_index() const;
 
-  void set_z_index(int value) {
-    z_index_ = value;
-  }
+  void set_z_index(int value);
 
-  [[nodiscard]] virtual int layer() const {
-    return layer_;
-  }
+  [[nodiscard]] virtual int layer() const;
 
-  void set_layer(int value) {
-    layer_ = value;
-  }
+  void set_layer(int value);
 
-  [[nodiscard]] int z_order() const {
-    const int explicit_z_index = z_index();
-    return explicit_z_index != 0 ? explicit_z_index : layer();
-  }
+  [[nodiscard]] int z_order() const;
 
-  [[nodiscard]] virtual bool focusable() const {
-    return false;
-  }
+  [[nodiscard]] virtual bool focusable() const;
 
-  [[nodiscard]] virtual AccessibilityRole accessibility_role() const {
-    return AccessibilityRole::generic;
-  }
+  [[nodiscard]] virtual AccessibilityRole accessibility_role() const;
 
-  [[nodiscard]] virtual std::string accessibility_name() const {
-    return {};
-  }
+  [[nodiscard]] virtual std::string accessibility_name() const;
 
-  [[nodiscard]] virtual std::string accessibility_text() const {
-    return {};
-  }
+  [[nodiscard]] virtual std::string accessibility_text() const;
 
-  [[nodiscard]] virtual std::string accessibility_value() const {
-    return {};
-  }
+  [[nodiscard]] virtual std::string accessibility_value() const;
 
   [[nodiscard]] virtual AccessibilityPatternState accessibility_patterns()
-      const {
-    return {};
-  }
+      const;
 
   [[nodiscard]] virtual EventResult handle_accessibility_action(
       const AccessibilityActionRequested& action,
-      const ElementEventContext& context) {
-    (void)action;
-    (void)context;
-    return EventResult::unhandled();
-  }
+      const ElementEventContext& context);
 
-  virtual void focus(const ElementFocusContext& context) {
-    (void)context;
-  }
+  virtual void focus(const ElementFocusContext& context);
 
-  virtual void on_mount(const ElementLifecycleContext& context) {
-    (void)context;
-  }
+  virtual void on_mount(const ElementLifecycleContext& context);
 
-  virtual void on_update(const ElementLifecycleContext& context) {
-    (void)context;
-  }
+  virtual void on_update(const ElementLifecycleContext& context);
 
-  virtual void on_unmount(const ElementLifecycleContext& context) {
-    (void)context;
-  }
+  virtual void on_unmount(const ElementLifecycleContext& context);
 
   [[nodiscard]] virtual EventResult handle_event(
       const PlatformEvent& event,
-      const ElementEventContext& context) {
-    (void)event;
-    (void)context;
-    return EventResult::unhandled();
-  }
+      const ElementEventContext& context);
 
-  void set_layout_bounds(Rect bounds) const {
-    layout_bounds_ = bounds;
-  }
+  void set_layout_bounds(Rect bounds) const;
 
   // Layout bounds are window coordinates at every depth (GPUI model). An
   // element lays its children out around its own bounds as set by layout();
@@ -300,19 +207,13 @@ class Element {
   void place_layout(Rect bounds) const;
   void offset_layout(Point delta) const;
 
-  void assign_id(ElementId id) {
-    id_ = id;
-  }
+  void assign_id(ElementId id);
 
-  void set_key(std::optional<ElementKey> key) {
-    key_ = std::move(key);
-  }
+  void set_key(std::optional<ElementKey> key);
 
  protected:
   // Containers forward to offset_layout() of each child they own.
-  virtual void offset_layout_children(Point delta) const {
-    (void)delta;
-  }
+  virtual void offset_layout_children(Point delta) const;
 
  private:
   ElementId id_;
@@ -328,9 +229,6 @@ class Element {
   mutable std::optional<Rect> layout_bounds_;
 };
 
-[[nodiscard]] inline Point absolute_origin(Size parent_size, EdgeSizes inset) {
-  (void)parent_size;
-  return Point{.x = inset.left, .y = inset.top};
-}
+[[nodiscard]] Point absolute_origin(Size parent_size, EdgeSizes inset);
 
 } // namespace cgpui

@@ -107,7 +107,7 @@ int test_upload_module_structure() {
   const std::string memory =
       read_source("src/renderer/vulkan/vulkan_device_memory.cpp");
   const std::string command_header = read_source(
-      "src/renderer/vulkan/vulkan_command_recording_internal.hpp");
+      "src/renderer/vulkan/vulkan_frame_recording_input_internal.hpp");
   const std::string command_source =
       read_source("src/renderer/vulkan/vulkan_command_recording.cpp");
   const std::string frame =

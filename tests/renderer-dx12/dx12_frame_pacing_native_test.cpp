@@ -6,7 +6,7 @@ using namespace cgpui;
 using namespace cgpui_test;
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   Dx12PacingNativeFixture fixture;
   if (!deadline.done || !fixture.initialize() || fixture.api.sets != 1 || fixture.api.gets != 1)
     return dx12_fail(1, "pacing actual flagged-chain/debug fixture unavailable");

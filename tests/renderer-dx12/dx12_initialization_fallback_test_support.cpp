@@ -69,13 +69,20 @@ bool capture(cgpui::Renderer& renderer) {
       dx12_pixel(renderer.last_frame_pixels(), 5, 5, {255, 0, 0, 255});
 }
 }
-int initialization_fallback_case(bool refuse_release, bool full_uncommitted_host, bool expect_loader_failure) {
+int initialization_fallback_case(bool refuse_release, bool full_uncommitted_host, bool expect_loader_failure,
+                                  void* desktop_ready) {
   using namespace cgpui;
   // This executable exercises unpinned automatic policy. Enabling DX12-only
   // diagnostics/pinning is separately tested as a hard no-fallback contract.
   Environment adapter("CGPUI_DX12_ADAPTER"), debug("CGPUI_DX12_DEBUG"), gpu("CGPUI_DX12_GPU_VALIDATION");
   std::cout << "DX12_AUTO_FALLBACK forced_unpinned=1 adapter_override=empty debug=0 gpu_validation=0" << std::endl;
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
+  if (!deadline.done) return 1;
+  if (desktop_ready) {
+    const bool notified = SetEvent(desktop_ready) != FALSE;
+    CloseHandle(desktop_ready);
+    if (!notified) return 16;
+  }
   OrdinaryDesktop desktop;
   auto app = create_platform_application();
   if (!deadline.done || !desktop.valid() || !app) return 1;

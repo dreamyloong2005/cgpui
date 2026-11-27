@@ -14,6 +14,8 @@
   },
   "notes": [
     "Budgets are regression tripwires, not cross-machine ranking targets.",
-    "CI retains each platform report so baselines can be compared at a fixed revision."
+    "CI retains each platform report so baselines can be compared at a fixed revision.",
+    "The runner validates each workload independently before publishing a report; operation_count records observed completed work, not requested iterations.",
+    "Workload observations add measurement overhead. Compare reports from matching runner revisions, not the earlier shared-sink runner."
   ]
 }

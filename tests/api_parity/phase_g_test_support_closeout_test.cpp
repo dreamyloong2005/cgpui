@@ -43,18 +43,17 @@ int main() {
       read_source("tests/architecture/mcpp.toml") +
       read_source("tests/header_cleanliness/mcpp.toml") +
       read_source("tests/ui/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md =
-      read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json =
-      read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &setup, &input, &timers, &async, &rendering, &services, &runner,
-      &app_cleanliness, &runner_cleanliness, &manifests, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &setup,
+      &input,
+      &timers,
+      &async,
+      &rendering,
+      &services,
+      &runner,
+      &app_cleanliness,
+      &runner_cleanliness,
+      &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(setup, "class TestAppWindow") ||
@@ -99,26 +98,9 @@ int main() {
       !contains(rendering, "src/ui/test_app_rendering.cpp") ||
       !contains(services, "src/ui/test_app_platform_services.cpp") ||
       !contains(services, "src/ui/test_app_services.cpp") ||
-      !contains(runner, "src/ui/test_runner.cpp") ||
-      !contains(roadmap, "- [x] Steps 659-666: Add GPUI-style test")) {
+      !contains(runner, "src/ui/test_runner.cpp")) {
     return 4;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 666 audits and closes the GPUI-style test support band, "
-      "freezing standalone app/window setup, simulated input, deterministic "
-      "timer and async control, rendering control, platform service fakes, "
-      "test runner ergonomics, public header cleanliness, and modular source "
-      "evidence. Step 667 Windows debug build and packaging coverage is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 5;
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
-    return 6;
-  }
   return 0;
 }

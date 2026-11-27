@@ -26,15 +26,13 @@ EventResult WindowRuntime::dispatch_record_event_through_elements(
     WindowRuntimeRecord& record,
     View& view,
     const PlatformEvent& event) {
+  const auto hit = update_record_hover_cursor(record, event);
+  if (!record.active) return EventResult::consumed_event();
+  if (static_tree_for_record(record) != nullptr) {
+    return dispatch_record_event_through_static_elements(record, view, event);
+  }
   ElementTree* tree = element_tree_for_record(record);
   const std::optional<Point> position = pointer_position_for(event);
-  std::optional<ElementId> hit;
-  if (tree != nullptr && position.has_value()) {
-    if (const ElementId id = tree->hit_test_root(*position); id.value != 0) {
-      hit = id;
-    }
-  }
-  update_record_hover_cursor(record, event, hit);
   if (tree != nullptr && record.event_route.has_value()) {
     EventRoute& route = *record.event_route;
     if (record.input.keyboard_focus_element_owner.has_value() &&

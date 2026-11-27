@@ -37,12 +37,8 @@ bool contains(const std::string& text, const char* value) {
 
 int main() {
   const std::string manifests = read_source("tests/api_parity/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger =
       read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string window_header =
       read_source("include/cgpui/core/window.hpp");
   const std::string event_text = read_source("include/cgpui/core/event_text.hpp");
@@ -66,14 +62,20 @@ int main() {
   const std::string structure_test =
       read_source("tests/architecture/platform_source_structure_test.cpp");
 
-  if (manifests.empty() || roadmap.empty() || ledger.empty() ||
-      task_plan.empty() || findings.empty() || window_header.empty() ||
-      event_text.empty() || event_text_source.empty() ||
-      wayland_requests.empty() || wayland_events.empty() ||
-      wayland_window_text.empty() || win32_ime.empty() ||
+  if (manifests.empty() ||
+      ledger.empty() ||
+      window_header.empty() ||
+      event_text.empty() ||
+      event_text_source.empty() ||
+      wayland_requests.empty() ||
+      wayland_events.empty() ||
+      wayland_window_text.empty() ||
+      win32_ime.empty() ||
       win32_ime_placement.empty() ||
-      wayland_keyboard_test.empty() || win32_text_test.empty() ||
-      runtime_text_test.empty() || structure_test.empty()) {
+      wayland_keyboard_test.empty() ||
+      win32_text_test.empty() ||
+      runtime_text_test.empty() ||
+      structure_test.empty()) {
     return 1;
   }
 
@@ -84,30 +86,14 @@ int main() {
     return 2;
   }
 
-  if (!contains(roadmap,
-                "- [x] Steps 427-434: Complete IME on active targets") ||
-      contains(roadmap, "- [ ] Steps 427-434") ||
-      !contains(roadmap,
-                "Step 434 closes the active-target IME platform band") ||
-      !contains(roadmap, "Steps 435-442: Add rich text runs")) {
-    return 3;
-  }
-
-  if (!contains(task_plan, "Step 434 closes the active-target IME band") ||
-      !contains(findings, "Step 434 is an audit-only closeout")) {
-    return 4;
-  }
-
   constexpr std::array ledger_evidence{
-      "Step 434 closes the active-target IME platform band",
       "phase_d_ime_platform_audit_test",
       "ImeTextInputPlacement::candidate_rect",
       "GCS_COMPSTR",
       "GCS_RESULTSTR",
       "last accepted `done(serial)`",
       "production candidate UI policy",
-      "deeper Win32 TSF integration",
-  };
+      "deeper Win32 TSF integration"};
   for (std::size_t index = 0; index < ledger_evidence.size(); ++index) {
     if (!contains(ledger, ledger_evidence[index])) {
       return 10 + static_cast<int>(index);

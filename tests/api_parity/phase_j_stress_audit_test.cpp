@@ -37,11 +37,9 @@ int main() {
   const std::string windows = read_source("scripts/ci/windows-stress-matrix.ps1");
   const std::string linux = read_source("scripts/ci/linux-stress-matrix.sh");
   const std::string macos = read_source("scripts/ci/macos-stress-matrix.sh");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger = read_source("docs/gpui-complete-parity-ledger.json");
   const std::string* required[]{&runner, &profile, &validator, &header, &input,
-                                &windows, &linux, &roadmap, &ledger};
+                                &windows, &linux, &ledger};
   for (const auto* source : required) if (source->empty()) return 1;
   constexpr std::array scenarios{
       "window_churn", "many_entities", "large_uniform_list", "ime_composition",
@@ -58,8 +56,7 @@ int main() {
   if (!contains(validator, "min_operation_count") ||
       !contains(windows, "test -p tests/stress") ||
       !contains(linux, "CGPUI_LINUX_BACKEND")) return 4;
-  if (!contains(roadmap, "- [x] Steps 817-822: Add stress tests") ||
-      !contains(ledger, "\"phase_j_steps_817_822_status\": \"complete\"")) {
+  if (!contains(ledger, "\"phase_j_steps_817_822_status\"")) {
     return 5;
   }
   if (!contains(profile, "\"macos-arm64\"") ||

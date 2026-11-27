@@ -50,7 +50,7 @@ int check_case(Renderer& renderer, const CompositionTestWindows& windows,
 } // namespace
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   if (!deadline.done || !dx12_popup_desktop_ready())
     return dx12_fail(1, "popup desktop/DPI/watchdog fixture unavailable; alpha was not tested");
   CompositionTestWindows windows(48, 48);

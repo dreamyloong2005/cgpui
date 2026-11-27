@@ -6,50 +6,28 @@
 
 #include <string>
 #include <string_view>
-#include <utility>
-#include <variant>
 
 namespace cgpui {
 
 class TextElement : public Element {
  public:
-  explicit TextElement(TextModel* model, Style style = {})
-      : model_(model),
-        style_(std::move(style)),
-        effective_style_(style_) {}
+  explicit TextElement(TextModel* model, Style style = {});
 
-  [[nodiscard]] TextModel* model() const {
-    return model_;
-  }
+  [[nodiscard]] TextModel* model() const;
 
-  [[nodiscard]] std::string_view text() const {
-    return model_ == nullptr ? std::string_view{} : model_->text();
-  }
+  [[nodiscard]] std::string_view text() const;
 
-  [[nodiscard]] const Style& style() const {
-    return style_;
-  }
+  [[nodiscard]] const Style& style() const;
 
-  [[nodiscard]] const Style& effective_style() const {
-    return effective_style_;
-  }
+  [[nodiscard]] const Style& effective_style() const;
 
-  [[nodiscard]] const FontDescriptor& font() const {
-    return effective_style_.font;
-  }
+  [[nodiscard]] const FontDescriptor& font() const;
 
-  [[nodiscard]] float font_size() const {
-    return effective_style_.font_size;
-  }
+  [[nodiscard]] float font_size() const;
 
-  [[nodiscard]] float glyph_width() const {
-    const TextShapeRun run = shape_run();
-    return run.glyphs.empty() ? font_size() * 0.5F : run.glyphs.front().advance;
-  }
+  [[nodiscard]] float glyph_width() const;
 
-  [[nodiscard]] TextShapeRun shape_run() const {
-    return shape_text(text(), font(), font_size());
-  }
+  [[nodiscard]] TextShapeRun shape_run() const;
 
   // While composing, caret_rect is the composition caret and
   // composition_start_rect the caret before the composition text.
@@ -63,17 +41,11 @@ class TextElement : public Element {
       ScrollState& state,
       DpiScale scale) const;
 
-  [[nodiscard]] AccessibilityRole accessibility_role() const override {
-    return AccessibilityRole::text;
-  }
+  [[nodiscard]] AccessibilityRole accessibility_role() const override;
 
-  [[nodiscard]] std::string accessibility_name() const override {
-    return std::string(text());
-  }
+  [[nodiscard]] std::string accessibility_name() const override;
 
-  [[nodiscard]] std::string accessibility_text() const override {
-    return std::string(text());
-  }
+  [[nodiscard]] std::string accessibility_text() const override;
 
   // Measures the composition too, so it does not wrap while composing.
   // The style's size, padding and margin give a CSS content box around
@@ -93,20 +65,13 @@ class TextElement : public Element {
 
 class TextInputElement : public TextElement {
  public:
-  explicit TextInputElement(TextModel& model, Style style = {})
-      : TextElement(&model, std::move(style)) {}
+  explicit TextInputElement(TextModel& model, Style style = {});
 
-  [[nodiscard]] bool focusable() const override {
-    return true;
-  }
+  [[nodiscard]] bool focusable() const override;
 
-  [[nodiscard]] AccessibilityRole accessibility_role() const override {
-    return AccessibilityRole::text_input;
-  }
+  [[nodiscard]] AccessibilityRole accessibility_role() const override;
 
-  [[nodiscard]] std::string accessibility_value() const override {
-    return std::string(text());
-  }
+  [[nodiscard]] std::string accessibility_value() const override;
 
   [[nodiscard]] AccessibilityPatternState accessibility_patterns()
       const override;
@@ -117,71 +82,32 @@ class TextInputElement : public TextElement {
 
   [[nodiscard]] EventResult handle_event(
       const PlatformEvent& event,
-      const ElementEventContext& context) override {
-    (void)context;
-    if (!enabled()) {
-      return EventResult::unhandled();
-    }
-    if (std::holds_alternative<TextInput>(event) ||
-        std::holds_alternative<ImeComposition>(event)) {
-      return EventResult::consumed_event();
-    }
-    if (const auto* pointer = std::get_if<PointerButton>(&event);
-        pointer != nullptr && pointer->pressed &&
-        pointer->button == MouseButton::left) {
-      return EventResult::consumed_event();
-    }
-    return EventResult::unhandled();
-  }
+      const ElementEventContext& context) override;
 };
 
 class LabelElement : public Element {
  public:
-  explicit LabelElement(std::string text, Style style = {})
-      : text_(std::move(text)),
-        style_(std::move(style)),
-        effective_style_(style_) {}
+  explicit LabelElement(std::string text, Style style = {});
 
-  [[nodiscard]] std::string_view text() const {
-    return text_;
-  }
+  [[nodiscard]] std::string_view text() const;
 
-  [[nodiscard]] const Style& style() const {
-    return style_;
-  }
+  [[nodiscard]] const Style& style() const;
 
-  [[nodiscard]] const Style& effective_style() const {
-    return effective_style_;
-  }
+  [[nodiscard]] const Style& effective_style() const;
 
-  [[nodiscard]] const FontDescriptor& font() const {
-    return effective_style_.font;
-  }
+  [[nodiscard]] const FontDescriptor& font() const;
 
-  [[nodiscard]] float font_size() const {
-    return effective_style_.font_size;
-  }
+  [[nodiscard]] float font_size() const;
 
-  [[nodiscard]] float glyph_width() const {
-    const TextShapeRun run = shape_run();
-    return run.glyphs.empty() ? font_size() * 0.5F : run.glyphs.front().advance;
-  }
+  [[nodiscard]] float glyph_width() const;
 
-  [[nodiscard]] TextShapeRun shape_run() const {
-    return shape_text(text_, font(), font_size());
-  }
+  [[nodiscard]] TextShapeRun shape_run() const;
 
-  [[nodiscard]] AccessibilityRole accessibility_role() const override {
-    return AccessibilityRole::label;
-  }
+  [[nodiscard]] AccessibilityRole accessibility_role() const override;
 
-  [[nodiscard]] std::string accessibility_name() const override {
-    return std::string(text_);
-  }
+  [[nodiscard]] std::string accessibility_name() const override;
 
-  [[nodiscard]] std::string accessibility_text() const override {
-    return std::string(text_);
-  }
+  [[nodiscard]] std::string accessibility_text() const override;
 
   [[nodiscard]] LayoutOutput layout(LayoutInput input) const override;
   [[nodiscard]] std::optional<Rect> text_bounds() const;
@@ -189,13 +115,9 @@ class LabelElement : public Element {
   void paint(PaintList& paint_list) const override;
   void inherit_text_style(const Style& style) override;
 
-  [[nodiscard]] int z_index() const override {
-    return style_.z_index;
-  }
+  [[nodiscard]] int z_index() const override;
 
-  [[nodiscard]] int layer() const override {
-    return style_.layer;
-  }
+  [[nodiscard]] int layer() const override;
 
  private:
   std::string text_;

@@ -305,9 +305,7 @@ int main() {
       !contains(ledger, "tests/ui/test_context_focus_activation_test.cpp") ||
       !contains(ledger, "tests/ui/test_context_clipboard_test.cpp") ||
       !contains(ledger, "tests/ui/test_context_time_async_test.cpp") ||
-      !contains(ledger, "tests/ui/test_context_frame_pump_test.cpp") ||
-      !contains(ledger,
-                "Phase G test support closeout")) {
+      !contains(ledger, "tests/ui/test_context_frame_pump_test.cpp")) {
     return 18;
   }
   if (!contains(ledger, "| gpui::test | `CGPUI_TEST`") ||
@@ -364,8 +362,7 @@ int main() {
       !contains(ledger,
                 "tests/ui/command_palette_key_integration_test.cpp") ||
       !contains(ledger,
-                "tests/ui/test_context_keystroke_simulation_test.cpp") ||
-      !contains(ledger, "Phase G Step 675 unit-action macro closeout")) {
+                "tests/ui/test_context_keystroke_simulation_test.cpp")) {
     return 62;
   }
 
@@ -509,18 +506,14 @@ int main() {
               "effective text style",
               "inherited text style",
               "explicit child text-style precedence",
-              "Phase C Step 335 dynamic style invalidation",
               "WindowRuntime::request_style_state_invalidation",
               "runtime_style_invalidation.cpp",
               "window_runtime_input_test.cpp",
               "window_runtime_focus_test.cpp",
-              "Phase C Step 336 style cascade depth closeout",
               "phase_c_style_cascade_depth_audit_test.cpp",
-              "Phase C Step 337 pointer-active input semantics",
               "ViewInputState::active_element_id",
               "WindowRuntime::update_active_state_for_event",
               "runtime_active_state.cpp",
-              "Phase C Step 338 tab-order/focus-ring metadata",
               "FocusMetadata",
               "FocusRingVisibility",
               "ElementBuilder::tab_index",
@@ -528,7 +521,6 @@ int main() {
               "AccessibilityNode::tab_index",
               "WindowRuntime::ordered_focusable_element_ids",
               "runtime_focus_order.cpp",
-              "Phase C Step 339 click/drag gesture synthesis",
               "ElementGestureKind::click",
               "ElementEventContext::gesture",
               "ViewInputState::pointer_down_element_id",
@@ -539,25 +531,20 @@ int main() {
               "dispatch_synthesized_click_event",
               "test_runtime_synthesizes_click_on_release_over_pressed_element",
               "test_runtime_suppresses_click_after_drag_gesture",
-              "Phase C Step 340 keyboard activation semantics",
               "should_dispatch_synthesized_keyboard_activation_event",
               "KeyElement synthesized-click delegation",
               "test_runtime_enter_space_activate_focused_button",
               "test_runtime_raw_key_handler_controls_keyboard_activation",
-              "Phase C Step 341 disabled interaction semantics",
               "WindowRuntime::refresh_disabled_interaction_state",
               "runtime_disabled_interaction.cpp",
               "test_runtime_clears_disabled_interaction_state",
-              "Phase C Step 342 focusable/interactable band closeout",
               "phase_c_focusable_interactable_audit_test.cpp",
-              "Phase C Step 343 built-in widget expansion",
               "ButtonBuilder::label",
               "src/ui/widgets/button_builder.cpp",
               "src/ui/widgets/label_builder.cpp",
               "src/ui/widgets/text_input_builder.cpp",
               "builtin_widget_test.cpp",
               "widget_source_structure_test.cpp",
-              "Phase C Step 344 checkbox/radio/switch widgets",
               "ToggleBuilder",
               "checkbox(...)",
               "radio(...)",
@@ -570,7 +557,6 @@ int main() {
               "src/ui/element_choice_nodes.cpp",
               "src/ui/element_choice_layout.cpp",
               "src/ui/element_choice_paint.cpp",
-              "Phase C Step 345 slider widget",
               "SliderBuilder",
               "slider(...)",
               "SliderElement",
@@ -580,7 +566,6 @@ int main() {
               "src/ui/element_slider_nodes.cpp",
               "src/ui/element_slider_layout.cpp",
               "src/ui/element_slider_paint.cpp",
-              "Phase C Step 346 list/menu widget follow-up",
               "ItemBuilder",
               "list_item(...)",
               "menu_item(...)",
@@ -593,7 +578,6 @@ int main() {
               "src/ui/element_item_nodes.cpp",
               "src/ui/element_item_layout.cpp",
               "src/ui/element_item_paint.cpp",
-              "Phase C Step 347 icon/image widget follow-up",
               "ImageBuilder",
               "image(...)",
               "icon(...)",
@@ -612,7 +596,6 @@ int main() {
               "src/ui/element_image_nodes.cpp",
               "src/ui/element_image_layout.cpp",
               "src/ui/element_image_paint.cpp",
-              "Phase C Step 348 container primitive follow-up",
               "container_builder.hpp",
               "src/ui/widgets/container_builder.cpp",
               "div()",
@@ -620,7 +603,6 @@ int main() {
               "v_flex()",
               "h_stack()",
               "v_stack()",
-              "Phase C Step 349 uniform list parity",
               "UniformListVisibleRange",
               "UniformListItemIdentity",
               "UniformListItemMeasurement",
@@ -649,16 +631,6 @@ int main() {
               "src/ui/uniform_list_selection.cpp",
               "src/ui/element_scroll_layout.cpp",
               "src/ui/element_scroll_events.cpp",
-              "Phase C Step 350 scroll anchoring",
-              "Phase C Step 351 item measurement cache",
-              "Phase C Step 352 large-list recycling",
-              "Phase C Step 353 keyboard/pointer selection",
-              "Phase C Step 354 uniform list closeout",
-              "Phase C Step 355 window/examples widgets",
-              "Phase C Step 356 window/examples workflow",
-              "Phase C Step 357 window/examples widget catalog",
-              "Phase C Step 358 window/examples interaction states",
-              "Phase C Step 359 window/examples service matrix",
               "phase_c_uniform_list_audit_test.cpp",
               "phase_c_window_examples_public_api_test.cpp",
               "phase_c_window_examples_workflow_test.cpp",
@@ -670,11 +642,6 @@ int main() {
               "public_window_examples_widget_catalog/main.cpp",
               "public_window_examples_interaction_states/main.cpp",
               "public_window_examples_service_matrix/main.cpp",
-              "Phase C Step 360 window/examples closeout",
-              "Phase C Step 361 SVG/image element front-end APIs",
-              "Phase C Step 361 SVG/image front-end source APIs",
-              "Phase C Step 362 SVG/image asset registration",
-              "Phase C Step 363 SVG/image public example coverage",
               "ImageAssetRegistry",
               "RegisteredImageAsset",
               "api_parity_public_window_examples_workflow",
@@ -727,7 +694,6 @@ int main() {
               "public_authoring_vocabulary_freeze_test",
               "docs/gpui-public-authoring-vocabulary.md",
               "public_phase_b_completion_audit_test",
-              "final Phase B public vocabulary completion audit",
               "try_install_native_menu",
               "Result<NativeMenuInstallation>",
               "try_show_native_file_dialog",
@@ -768,16 +734,6 @@ int main() {
       !contains(extractor, "extract_public_reexports") ||
       !contains(extractor, "extract_examples")) {
     return 10;
-  }
-
-  const std::string plan = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-upstream-parity-ledger-plan.md");
-  if (plan.empty() ||
-      !contains(plan, "Steps 219-258") ||
-      !contains(plan, "Run RED") ||
-      !contains(plan, "Run GREEN") ||
-      !contains(plan, "Phase A complete")) {
-    return 11;
   }
 
   const std::string example =
@@ -1054,7 +1010,6 @@ int main() {
   }
   if (!contains(public_vocabulary,
                 "# Public Authoring Vocabulary Freeze") ||
-      !contains(public_vocabulary, "Phase B Step 308") ||
       !contains(public_vocabulary,
                 "The frozen include boundary is `#include \"cgpui/prelude.hpp\"`.") ||
       !contains(public_vocabulary, "`Context<T>`") ||

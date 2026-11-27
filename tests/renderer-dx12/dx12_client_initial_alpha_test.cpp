@@ -96,7 +96,7 @@ bool title_row_pixels(Renderer& renderer, const PlatformWindow& window, bool blu
 } // namespace
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   OrdinaryDesktop desktop;
   if (!deadline.done || !desktop.valid()) return dx12_fail(1, "client-alpha desktop unavailable");
   auto app = create_platform_application();

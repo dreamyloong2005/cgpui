@@ -7,7 +7,7 @@
 namespace cgpui_test {
 int srv_alpha_case(unsigned capacity) {
   using namespace cgpui;
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   if (!deadline.done || !dx12_popup_desktop_ready()) return dx12_fail(1, "SRV alpha desktop fixture unavailable");
   CompositionTestWindows windows(48, 48);
   if (!windows.valid() || !windows.expect({0, 255, 0}, windows.backdrop_point()))

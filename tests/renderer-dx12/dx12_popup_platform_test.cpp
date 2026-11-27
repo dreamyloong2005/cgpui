@@ -94,7 +94,7 @@ int check_popup(PlatformApplication& app, PlatformWindow& parent, bool pointer_t
 } // namespace
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   if (!deadline.done || !dx12_popup_desktop_ready()) return dx12_fail(1, "platform popup desktop unavailable");
   auto app = create_platform_application();
   if (!app || !(*app)->popup_windows_supported()) return dx12_fail(2, "platform popup support unavailable");

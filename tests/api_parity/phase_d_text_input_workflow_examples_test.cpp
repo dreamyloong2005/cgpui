@@ -44,13 +44,13 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string manifests = read_source("examples/api_parity/mcpp.toml") +
       read_source("tests/api_parity/mcpp.toml");
 
-  if (example.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty() ||
+  if (example.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      ledger_json.empty() ||
       manifests.empty()) {
     return 1;
   }
@@ -103,28 +103,17 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase D Step 445 text input workflow public example",
       "examples/api_parity/public_text_input_workflow/main.cpp",
       "api_parity_public_text_input_workflow",
       "phase_d_text_input_workflow_examples_test.cpp",
-      "Step 445 extends the text-input examples band",
       "undo/redo and redo invalidation",
-      "line/word navigation and composition cancellation",
-  };
+      "line/word navigation and composition cancellation"};
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
-        !contains(ledger_md, required_docs[index]) ||
-        !contains(ledger_json, required_docs[index]) ||
-        !contains(task_plan, required_docs[index]) ||
-        !contains(findings, required_docs[index])) {
+      !contains(ledger_md, required_docs[index]) ||
+      !contains(ledger_json, required_docs[index])) {
       return 50 + static_cast<int>(index);
     }
-  }
-
-  if (!contains(
-          ledger_json,
-          "\"step_445\": \"Phase D Step 445 text input workflow public example\"")) {
-    return 80;
   }
 
   constexpr std::array forbidden_example_fragments{

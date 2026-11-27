@@ -2,6 +2,7 @@
 
 #include "cgpui/core/geometry.hpp"
 #include "cgpui/platform/native_surface.hpp"
+#include "../support/win32_desktop_test_support.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -21,6 +22,7 @@ class RendererPixelTestWindow {
   [[nodiscard]] cgpui::Size resize_client(int width, int height) const;
 
  private:
+  Win32DesktopTestLease desktop_;
   HINSTANCE instance_ = nullptr;
   HWND hwnd_ = nullptr;
 };

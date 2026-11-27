@@ -16,7 +16,7 @@ inline HWND ordinary_hwnd(const cgpui::PlatformWindow& window) {
 class OrdinaryDesktop {
  public:
   OrdinaryDesktop() {
-    if (!dx12_popup_desktop_ready() ||
+    if (!desktop_.ready() || !dx12_popup_desktop_ready() ||
         !SystemParametersInfoW(SPI_GETWORKAREA, 0, &work_, 0) ||
         work_.right - work_.left < 500 || work_.bottom - work_.top < 380) return;
     brush_ = CreateSolidBrush(RGB(0, 255, 0));
@@ -65,6 +65,7 @@ class OrdinaryDesktop {
   }
 
  private:
+  Win32DesktopTestLease desktop_;
   RECT work_{};
   HBRUSH brush_ = nullptr;
   HWND hwnd_ = nullptr;

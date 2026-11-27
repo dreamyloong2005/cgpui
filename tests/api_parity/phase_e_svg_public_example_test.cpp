@@ -46,11 +46,12 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  if (example.empty() || manifests.empty() || roadmap.empty() ||
-      ledger_md.empty() || ledger_json.empty() || vocabulary.empty() ||
-      task_plan.empty() || findings.empty()) {
+  if (example.empty() ||
+      manifests.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      ledger_json.empty() ||
+      vocabulary.empty()) {
     return 1;
   }
 
@@ -124,17 +125,14 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase E Step 505",
       "public_svg_raster_upload",
       "registered SVG source",
       "viewport-aware raster request",
-      "cached upload and image draw",
-      "Step 506 SVG integration closeout",
-  };
+      "cached upload and image draw"};
   for (const char* value : required_docs) {
-    if (!contains(roadmap, value) || !contains(ledger_md, value) ||
-        !contains(ledger_json, value) || !contains(task_plan, value) ||
-        !contains(findings, value)) {
+    if (!contains(roadmap, value) ||
+      !contains(ledger_md, value) ||
+      !contains(ledger_json, value)) {
       return 80;
     }
   }

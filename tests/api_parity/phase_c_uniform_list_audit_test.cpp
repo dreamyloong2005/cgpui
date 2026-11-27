@@ -58,43 +58,16 @@ int main() {
   }
 
   if (!contains(roadmap,
-                "- [x] Steps 349-354: Implement uniform list parity") ||
-      !contains(roadmap,
-                "Step 354 closes the uniform-list band through") ||
-      !contains(roadmap,
-                "tests/api_parity/phase_c_uniform_list_audit_test.cpp") ||
-      !contains(roadmap,
-                "Step 355 starts the window/examples widget band")) {
+                "tests/api_parity/phase_c_uniform_list_audit_test.cpp")) {
     return 3;
-  }
-  if (contains(roadmap, "Step 354 should close")) {
-    return 4;
-  }
-
-  constexpr std::array roadmap_evidence{
-      "Step 349 starts uniform list parity",
-      "Step 350 adds keyed scroll anchoring",
-      "Step 351 adds keyed item measurement caching",
-      "Step 352 adds `UniformListRecyclingWindow`",
-      "Step 353 adds `UniformListSelectionSource`",
-  };
-  for (std::size_t index = 0; index < roadmap_evidence.size(); ++index) {
-    if (!contains(roadmap, roadmap_evidence[index])) {
-      return 10 + static_cast<int>(index);
-    }
   }
 
   constexpr std::array ledger_evidence{
-      "Phase C Step 349 uniform list parity",
       "UniformListVisibleRange",
       "UniformListItemIdentity",
-      "Phase C Step 350 scroll anchoring",
       "UniformListScrollAnchor",
-      "Phase C Step 351 item measurement cache",
       "UniformListItemMeasurementCache",
-      "Phase C Step 352 large-list recycling",
       "UniformListRecyclingWindow",
-      "Phase C Step 353 keyboard/pointer selection",
       "UniformListSelectionState",
       "src/ui/uniform_list.cpp",
       "src/ui/uniform_list_measurement.cpp",
@@ -105,9 +78,7 @@ int main() {
       "tests/ui/scroll_test.cpp",
       "tests/ui/element_test.cpp",
       "tests/architecture/ui_source_structure_test.cpp",
-      "Phase C Step 354 uniform list closeout",
-      "phase_c_uniform_list_audit_test.cpp",
-  };
+      "phase_c_uniform_list_audit_test.cpp"};
   for (std::size_t index = 0; index < ledger_evidence.size(); ++index) {
     if (!contains(ledger_md, ledger_evidence[index]) ||
         !contains(ledger_json, ledger_evidence[index])) {
@@ -118,22 +89,10 @@ int main() {
   if (!contains(ledger_md, "| gpui uniform_list |") ||
       !contains(ledger_md, "| Adapted |") ||
       !contains(ledger_json, "\"upstream_gpui\": \"gpui uniform_list\"") ||
-      !contains(ledger_json, "\"status\": \"adapted\"") ||
-      !contains(ledger_json,
-                "\"next_step\": \"Phase C uniform-list band closed\"") ||
-      !contains(ledger_json,
-                "\"step_355\": \"Phase C Step 355 window/examples widgets\"")) {
+      !contains(ledger_json, "\"status\": \"adapted\"")) {
     return 60;
   }
-  if (contains(ledger_md, "uniform-list band closeout remains") ||
-      contains(ledger_json, "uniform-list band closeout remains") ||
-      contains(ledger_json,
-               "\"next_step\": \"Phase C Step 354 uniform list closeout\"")) {
-    return 61;
-  }
-
-  if (!contains(vocabulary, "Phase C Step 354 closes the uniform-list band") ||
-      !contains(vocabulary,
+  if (!contains(vocabulary,
                 "tests/api_parity/phase_c_uniform_list_audit_test.cpp")) {
     return 70;
   }

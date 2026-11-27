@@ -13,7 +13,7 @@ bool same_menu(const MenuLoopObservation& reference, const MenuLoopObservation& 
 }
 int dynamic_alpha_menu_case(bool cancel) {
   using namespace cgpui;
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   OrdinaryDesktop desktop;
   auto app = create_platform_application();
   if (!deadline.done || !desktop.valid() || !app) return dx12_fail(1, "dynamic menu fixture unavailable");

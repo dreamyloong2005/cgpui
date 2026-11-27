@@ -5,7 +5,7 @@ using namespace cgpui;
 using namespace cgpui_test;
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   OrdinaryDesktop desktop;
   if (!deadline.done || !desktop.valid()) return dx12_fail(1, "ordinary menu-cancel desktop unavailable");
   auto app = create_platform_application();

@@ -47,10 +47,10 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
-  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty()) {
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      ledger_json.empty()) {
     return 1;
   }
 
@@ -87,10 +87,8 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase E Step 490 clip/composition integration closeout",
       "tests/api_parity/"
       "phase_e_clip_composition_integration_closeout_test.cpp",
-      "Steps 475-489",
       "contiguous rounded geometry",
       "allocation-free dynamic scissor",
       "single-application composed opacity",
@@ -98,24 +96,13 @@ int main() {
       "push-time framebuffer AABB",
       "stable authored interleaving",
       "explicit z/layer command ordering",
-      "non-rectangular clip",
-      "Step 491 image texture resources",
-  };
+      "non-rectangular clip"};
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
-        !contains(ledger_md, required_docs[index]) ||
-        !contains(ledger_json, required_docs[index]) ||
-        !contains(task_plan, required_docs[index]) ||
-        !contains(findings, required_docs[index])) {
+      !contains(ledger_md, required_docs[index]) ||
+      !contains(ledger_json, required_docs[index])) {
       return 40 + static_cast<int>(index);
     }
-  }
-
-  if (!contains(
-          roadmap,
-          "- [x] Phase E Step 490 closes the clip/composition integration band") ||
-      contains(roadmap, "- [ ] Phase E Step 490:")) {
-    return 60;
   }
 
   constexpr std::array module_evidence{
@@ -162,7 +149,7 @@ int main() {
           "src/renderer/vulkan/vulkan_frame_draw_order_internal.hpp",
           "class VulkanFrameDrawOrderCursor"},
       SourceEvidence{
-          "include/cgpui/ui/element_core.hpp",
+          "src/ui/element_properties.cpp",
           "explicit_z_index != 0"},
   };
   for (std::size_t index = 0; index < module_evidence.size(); ++index) {

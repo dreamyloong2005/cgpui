@@ -1,5 +1,5 @@
+#include <array>
 #include <cstdlib>
-#include <filesystem>
 #include <fstream>
 #include <iterator>
 #include <string>
@@ -55,7 +55,7 @@ int main() {
       !contains(manifest, "phase_j_performance_baseline_structure_test")) {
     return 3;
   }
-  if (line_count(runner) > 320 || line_count(read_source("tests/performance/mcpp.toml")) > 40 ||
+  if (line_count(runner) > 80 || line_count(read_source("tests/performance/mcpp.toml")) > 40 ||
       line_count(audit) > 100) return 4;
   if (macos.empty() || !contains(macos, "CGPUI_EXPECTED_ARCH") ||
       !contains(macos, "MACOSX_DEPLOYMENT_TARGET") ||
@@ -63,5 +63,26 @@ int main() {
       line_count(macos) > 100) {
     return 5;
   }
+  constexpr std::array owners{
+      "baseline_sample.cpp", "baseline_window_workloads.cpp",
+      "baseline_content_workloads.cpp", "baseline_scheduling_workloads.cpp"};
+  const auto performance_module = read_source("tests/performance/mcpp.toml");
+  for (const auto* owner : owners) {
+    const auto source = read_source((std::string{"tests/performance/"} + owner).c_str());
+    if (source.empty() || line_count(source) > 120 ||
+        !contains(performance_module, owner)) return 6;
+  }
+  constexpr std::array headers{
+      "baseline_sample.hpp", "baseline_measure.hpp", "baseline_workloads.hpp"};
+  for (const auto* header : headers) {
+    const auto source = read_source((std::string{"tests/performance/"} + header).c_str());
+    if (source.empty() || line_count(source) > 60) return 7;
+  }
+  if (!contains(runner, "append_window_samples") ||
+      !contains(runner, "append_content_samples") ||
+      !contains(runner, "append_scheduling_samples") ||
+      contains(runner, "cgpui::TestApp") || contains(runner, "metric_sink")) return 8;
+  const auto measure = read_source("tests/performance/baseline_measure.hpp");
+  if (!contains(measure, "template <typename Work, typename Observe>")) return 9;
   return 0;
 }

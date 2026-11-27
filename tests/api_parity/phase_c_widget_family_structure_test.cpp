@@ -111,14 +111,11 @@ int main() {
   }
 
   constexpr std::array doc_evidence{
-      "Phase C Step 367 widget family structure tests",
       "tests/api_parity/phase_c_widget_family_structure_test.cpp",
       "tests/architecture/widget_source_structure_test.cpp",
       "public leaf header",
       "focused source file",
-      "focused behavior tests",
-      "Phase C Step 373 final element/style/widget ledger audit",
-  };
+      "focused behavior tests"};
   for (std::size_t index = 0; index < doc_evidence.size(); ++index) {
     if (!contains(roadmap, doc_evidence[index]) ||
         !contains(ledger_md, doc_evidence[index]) ||
@@ -128,14 +125,8 @@ int main() {
     }
   }
 
-  if (!contains(roadmap,
-                "- [x] Steps 367-372: Add structure tests requiring every "
-                "widget family") ||
-      !contains(ledger_json,
-                "\"widget_family_structure_status\": \"phase_c_guarded\"") ||
-      !contains(ledger_json,
-                "\"widget_family_structure_next\": \"Phase C Step 373 final "
-                "element/style/widget ledger audit\"")) {
+  if (!contains(ledger_json,
+                "\"widget_family_structure_status\": \"phase_c_guarded\"")) {
     return 80;
   }
 

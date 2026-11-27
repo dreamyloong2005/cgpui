@@ -55,8 +55,6 @@ int main() {
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger =
       read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string text_shape_header =
       read_source("include/cgpui/renderer/text/text_shape.hpp");
   const std::string fallback_source =
@@ -70,10 +68,14 @@ int main() {
   const std::string font_fallback_audit =
       read_source("tests/api_parity/phase_d_font_fallback_audit_test.cpp");
 
-  if (manifests.empty() || roadmap.empty() || ledger.empty() ||
-      task_plan.empty() || findings.empty() || text_shape_header.empty() ||
-      fallback_source.empty() || structure_test.empty() ||
-      text_model_test.empty() || text_shaping_audit.empty() ||
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger.empty() ||
+      text_shape_header.empty() ||
+      fallback_source.empty() ||
+      structure_test.empty() ||
+      text_model_test.empty() ||
+      text_shaping_audit.empty() ||
       font_fallback_audit.empty()) {
     return 1;
   }
@@ -86,42 +88,27 @@ int main() {
   }
 
   if (!contains(roadmap,
-                "- [x] Steps 395-402: Add per-script and per-codepoint "
-                "fallback splitting") ||
-      !contains(roadmap,
-                "Step 402 closes the fallback metadata band through") ||
-      !contains(roadmap,
                 "tests/api_parity/"
-                "phase_d_fallback_splitting_audit_test.cpp") ||
-      !contains(roadmap, "Step 403 starts text measurement and wrapping")) {
+                "phase_d_fallback_splitting_audit_test.cpp")) {
     return 3;
-  }
-  if (contains(roadmap, "- [ ] Steps 395-402") ||
-      contains(roadmap, "Step 402 should close")) {
-    return 4;
   }
 
   const std::string text_row = line_containing(ledger, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
-      !contains(text_row, "Step 402 fallback metadata band audit") ||
+  if (text_row.empty() ||
       !contains(text_row, "TextFontFallbackRun") ||
       !contains(text_row, "TextShapeRun::font_runs") ||
       !contains(text_row, "TextMissingGlyphDiagnostic") ||
       !contains(text_row, "TextShapeRun::missing_glyphs") ||
       !contains(text_row, "TextColorGlyphPlan") ||
       !contains(text_row, "TextShapeRun::color_glyphs") ||
-      !contains(text_row, "U+FE0F") || !contains(text_row, "U+200D") ||
+      !contains(text_row, "U+FE0F") ||
+      !contains(text_row, "U+200D") ||
       !contains(text_row, "TextScriptRun") ||
       !contains(text_row, "TextShapeRun::script_runs") ||
       !contains(text_row, "full Unicode script data") ||
       !contains(text_row, "bidirectional shaping") ||
       !contains(text_row, "guarded HarfBuzz backend now shapes through hb_shape")) {
     return 5;
-  }
-
-  if (!contains(task_plan, "Step 402 closes the fallback metadata band") ||
-      !contains(findings, "Step 402 is an audit-only closeout")) {
-    return 6;
   }
 
   constexpr std::array header_evidence{

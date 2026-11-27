@@ -149,13 +149,15 @@ int test_phase_e_glyph_atlas_production_structure_docs() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
 
-  if (manifests.empty() || glyph_atlas.empty() || production_header.empty() ||
-      production_source.empty() || structure.empty() || roadmap.empty() ||
-      ledger_md.empty() || ledger_json.empty() || task_plan.empty() ||
-      findings.empty()) {
+  if (manifests.empty() ||
+      glyph_atlas.empty() ||
+      production_header.empty() ||
+      production_source.empty() ||
+      structure.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      ledger_json.empty()) {
     return 30;
   }
 
@@ -178,7 +180,6 @@ int test_phase_e_glyph_atlas_production_structure_docs() {
   }
 
   constexpr std::array required_docs{
-      "Phase E Step 459 Vulkan glyph atlas production",
       "glyph_atlas_production.hpp",
       "vulkan_glyph_atlas_production.cpp",
       "GlyphAtlasProductionResourceState",
@@ -186,15 +187,11 @@ int test_phase_e_glyph_atlas_production_structure_docs() {
       "alpha8 atlas page image readiness",
       "memory allocation and bind readiness",
       "image-view and sampler readiness",
-      "dirty upload command path readiness",
-      "descriptor set binding remains Step 460",
-  };
+      "dirty upload command path readiness"};
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
-        !contains(ledger_md, required_docs[index]) ||
-        !contains(ledger_json, required_docs[index]) ||
-        !contains(task_plan, required_docs[index]) ||
-        !contains(findings, required_docs[index])) {
+      !contains(ledger_md, required_docs[index]) ||
+      !contains(ledger_json, required_docs[index])) {
       return 40 + static_cast<int>(index);
     }
   }

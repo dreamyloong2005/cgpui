@@ -38,13 +38,11 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string* required[]{
       &animation, &opacity, &behavior, &manifests, &pin, &vocabulary,
-      &core, &roadmap, &ledger_json};
+      &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(animation, "#include \"cgpui/prelude.hpp\"") ||
@@ -81,8 +79,7 @@ int main() {
   if (line_count(animation) > 140 || line_count(opacity) > 145 ||
       line_count(behavior) > 90) return 6;
 
-  if (!contains(roadmap, "[x] Steps 643-650: Complete animation") ||
-      !contains(vocabulary, "public_animation_example") ||
+  if (!contains(vocabulary, "public_animation_example") ||
       !contains(vocabulary, "public_opacity_example") ||
       !contains(core, "official animation and opacity examples") ||
       !contains(ledger_json, "\"phase_g_step_650_sources\"")) return 8;

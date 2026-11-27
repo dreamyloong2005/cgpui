@@ -170,7 +170,7 @@ int test_draw_data_module_structure() {
   const std::string state =
       read_source("src/renderer/vulkan/vulkan_state_internal.hpp");
   const std::string command_header = read_source(
-      "src/renderer/vulkan/vulkan_command_recording_internal.hpp");
+      "src/renderer/vulkan/vulkan_frame_recording_input_internal.hpp");
   const std::string command_source =
       read_source("src/renderer/vulkan/vulkan_command_recording.cpp");
   if (internal.empty() || draw_data.empty() || bindings.empty() ||

@@ -14,6 +14,7 @@ void pump_messages() {
 RendererPixelTestWindow::RendererPixelTestWindow(
     const wchar_t* class_name, const wchar_t* title)
     : instance_(GetModuleHandleW(nullptr)) {
+  if (!desktop_.ready()) return;
   WNDCLASSEXW window_class{};
   window_class.cbSize = sizeof(WNDCLASSEXW);
   window_class.lpfnWndProc = DefWindowProcW;

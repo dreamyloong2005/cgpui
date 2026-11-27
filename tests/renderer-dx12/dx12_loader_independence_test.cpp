@@ -1,4 +1,5 @@
 #include "../support/frame_wait_test_support.hpp"
+#include "../support/win32_desktop_test_support.hpp"
 #include "dx12_test_support.hpp"
 
 #include <cstdlib>
@@ -13,6 +14,8 @@ int main() {
     return dx12_fail(1, "Vulkan loader was imported before DX12 selection");
   if (_putenv_s("CGPUI_RENDERER", "dx12") || _putenv_s("CGPUI_DX12_ADAPTER", "warp"))
     return dx12_fail(2, "cannot select explicit DX12/WARP");
+  Win32DesktopTestLease desktop;
+  if (!desktop.ready()) return dx12_fail(13, "exclusive desktop fixture unavailable");
   {
     Dx12Window window;
     if (!window.hwnd) return dx12_fail(3, "native opaque window unavailable");

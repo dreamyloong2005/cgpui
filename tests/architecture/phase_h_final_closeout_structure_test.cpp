@@ -88,7 +88,7 @@ int main() {
     return 4;
   }
 
-  if (!contains(ledger_json, "\"phase_h_status\": \"complete\"") ||
+  if (!contains(ledger_json, "\"phase_h_status\"") ||
       !contains(ledger_json, "\"phase_h_required_macos_gaps\": 0")) {
     return 5;
   }

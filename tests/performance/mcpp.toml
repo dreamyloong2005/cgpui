@@ -7,6 +7,9 @@ namespace = "cgpui"
 name = "tests-performance"
 version = "0.1.0"
 
+[targets.cgpui_performance_baseline_support]
+kind = "lib"
+
 [dependencies]
 cgpui.core = { path = "../../packages/core" }
 cgpui.platform = { path = "../../packages/platform" }
@@ -17,7 +20,12 @@ cgpui.ui = { path = "../../packages/ui" }
 cgpui.build-support = { path = "../../tools/mcpp" }
 
 [build]
-sources = []
+sources = [
+    "baseline_sample.cpp",
+    "baseline_window_workloads.cpp",
+    "baseline_content_workloads.cpp",
+    "baseline_scheduling_workloads.cpp",
+]
 
 [test]
 discover = [

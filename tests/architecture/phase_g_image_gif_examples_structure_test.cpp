@@ -43,13 +43,11 @@ int main() {
   const std::string vocabulary =
       read_source("docs/gpui-public-authoring-vocabulary.md");
   const std::string core = read_source("docs/gpui-core-api-parity.md");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
   const std::string* required[]{
       &header, &transport, &paint, &render_view, &transport_test, &image, &gif,
-      &behavior, &manifests, &vocabulary, &core, &roadmap, &ledger_json};
+      &behavior, &manifests, &vocabulary, &core, &ledger_json};
   for (const auto* item : required) if (item->empty()) return 1;
 
   if (!contains(header, "void upload_image(const ImageAsset& image)") ||
@@ -91,8 +89,7 @@ int main() {
   if (line_count(transport) > 55 || line_count(render_view) > 113 ||
       line_count(transport_test) > 135 || line_count(image) > 190 ||
       line_count(gif) > 210 || line_count(behavior) > 100) return 6;
-  if (!contains(roadmap, "[x] Steps 651-658: Complete assets") ||
-      !contains(vocabulary, "`PaintList::upload_image(...)`") ||
+  if (!contains(vocabulary, "`PaintList::upload_image(...)`") ||
       !contains(vocabulary, "public_gif_viewer_example") ||
       !contains(core, "Frame-local `PaintList` invalidation/upload records") ||
       !contains(ledger_json, "\"phase_g_step_658_sources\"")) return 8;

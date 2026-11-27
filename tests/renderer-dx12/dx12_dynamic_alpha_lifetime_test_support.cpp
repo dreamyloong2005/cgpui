@@ -4,7 +4,7 @@
 namespace cgpui_test {
 int dynamic_alpha_lifetime_case() {
   using namespace cgpui;
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   OrdinaryDesktop desktop;
   auto app = create_platform_application();
   if (!deadline.done || !desktop.valid() || !app) return 1;

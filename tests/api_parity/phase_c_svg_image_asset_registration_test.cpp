@@ -118,8 +118,6 @@ int test_step_362_docs_and_structure_are_recorded() {
       read_source("src/ui/image_asset_registry.cpp");
   const std::string widget_aggregate =
       read_source("include/cgpui/ui/widget_builders.hpp");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger_md =
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
@@ -135,9 +133,7 @@ int test_step_362_docs_and_structure_are_recorded() {
                 "#include \"cgpui/ui/image_asset_registry.hpp\"")) {
     return 20;
   }
-  if (!contains(roadmap,
-                "Phase C Step 362 SVG/image asset registration") ||
-      !contains(ledger_md, "ImageAssetRegistry") ||
+  if (!contains(ledger_md, "ImageAssetRegistry") ||
       !contains(ledger_json, "\"step_362\"") ||
       !contains(vocabulary, "`ImageAssetRegistry`") ||
       !contains(vocabulary, "`register_svg(...)`")) {

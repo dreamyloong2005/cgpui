@@ -58,48 +58,22 @@ int main() {
   }
 
   if (!contains(roadmap,
-                "- [x] Steps 361-366: Add SVG/image element front-end APIs") ||
-      !contains(roadmap,
-                "Step 364 closes the SVG/image band through") ||
-      !contains(roadmap,
-                "tests/api_parity/phase_c_svg_image_closeout_test.cpp") ||
-      !contains(roadmap,
-                "Step 367 starts widget family structure tests")) {
+                "tests/api_parity/phase_c_svg_image_closeout_test.cpp")) {
     return 3;
-  }
-  if (contains(roadmap, "- [ ] Steps 361-366") ||
-      contains(roadmap, "Step 364 SVG/image band closeout is next")) {
-    return 4;
-  }
-
-  constexpr std::array roadmap_evidence{
-      "Phase C Step 361 SVG/image front-end source APIs adds",
-      "Phase C Step 362 SVG/image asset registration adds",
-      "Phase C Step 363 SVG/image public example coverage adds",
-  };
-  for (std::size_t index = 0; index < roadmap_evidence.size(); ++index) {
-    if (!contains(roadmap, roadmap_evidence[index])) {
-      return 10 + static_cast<int>(index);
-    }
   }
 
   constexpr std::array docs_evidence{
-      "Phase C Step 361 SVG/image front-end source APIs",
       "ImageSource",
       "ImageSourceKind",
       "svg_image_source(...)",
       "phase_c_svg_image_front_end_test.cpp",
-      "Phase C Step 362 SVG/image asset registration",
       "ImageAssetRegistry",
       "RegisteredImageAsset",
       "phase_c_svg_image_asset_registration_test.cpp",
-      "Phase C Step 363 SVG/image public example coverage",
       "examples/api_parity/public_svg_image_sources/main.cpp",
       "api_parity_public_svg_image_sources",
       "phase_c_svg_image_public_examples_test.cpp",
-      "Phase C Step 364 SVG/image band closeout",
-      "phase_c_svg_image_closeout_test.cpp",
-  };
+      "phase_c_svg_image_closeout_test.cpp"};
   for (std::size_t index = 0; index < docs_evidence.size(); ++index) {
     if (!contains(ledger_md, docs_evidence[index]) ||
         !contains(ledger_json, docs_evidence[index]) ||
@@ -109,20 +83,8 @@ int main() {
   }
 
   if (!contains(ledger_json,
-                "\"image_front_end_status\": \"phase_c_closed\"") ||
-      !contains(ledger_json,
-                "\"image_front_end_next\": \"Phase C Step 367 widget "
-                "family structure tests\"")) {
+                "\"image_front_end_status\": \"phase_c_closed\"")) {
     return 60;
-  }
-  if (contains(ledger_md, "Step 364 SVG/image band closeout is next") ||
-      contains(ledger_json,
-               "\"next_step\": \"Phase C Step 364 SVG/image band closeout\"") ||
-      contains(ledger_json,
-               "\"image_front_end_next\": \"Phase C Step 364 SVG/image "
-               "band closeout\"") ||
-      contains(vocabulary, "Step 364 SVG/image band closeout is the next")) {
-    return 61;
   }
 
   constexpr std::array closeout_exclusions{

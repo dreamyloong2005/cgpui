@@ -1,4 +1,5 @@
 #include "cgpui/renderer/renderer.hpp"
+#include "../support/win32_desktop_test_support.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -1384,6 +1385,8 @@ int test_renderer_frame_report_summarizes_frame_snapshot() {
 } // namespace
 
 int main() {
+  cgpui_test::Win32DesktopTestLease desktop;
+  if (!desktop.ready()) return 100;
   // Asserts fixed deterministic advances; native shaping is covered by
   // native_text_shaping_test.
   cgpui::set_default_text_shaping_backend(

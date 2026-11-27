@@ -29,6 +29,7 @@ Result<void> WindowRuntime::try_draw_frame_for_record(
     const StaticElementTreeView rendered = view.render_static(render_context);
     if (!record.active) return {};
     if (!rendered.empty() && rendered.valid()) {
+      install_static_tree_for_record(record, rendered);
       rendered_root_id = rendered.root_id();
       static_node_count = rendered.size();
       tree_kind = RenderTreeKind::static_element_tree;

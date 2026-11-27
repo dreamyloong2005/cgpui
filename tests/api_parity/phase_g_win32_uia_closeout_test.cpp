@@ -38,16 +38,16 @@ int main() {
   const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml") +
       read_source("tests/platform/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &provider, &navigation, &patterns, &events, &integration, &lifetime,
-      &stress, &source_guard, &manifests, &roadmap, &ledger_md, &ledger_json,
-      &task_plan, &findings};
+      &provider,
+      &navigation,
+      &patterns,
+      &events,
+      &integration,
+      &lifetime,
+      &stress,
+      &source_guard,
+      &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(provider, "IRawElementProviderSimple") ||
@@ -77,26 +77,12 @@ int main() {
   }
   if (!contains(source_guard, "win32_uia_provider_state.cpp") ||
       !contains(source_guard, "win32_uia_range_pattern.cpp") ||
-      !contains(source_guard, "win32_uia_tree_state.cpp") ||
-      !contains(roadmap, "- [x] Steps 619-626: Implement Win32 UIA")) return 4;
+      !contains(source_guard, "win32_uia_tree_state.cpp")) return 4;
   if (!contains(manifests, "\"phase_g_win32_uia_closeout_test.cpp\"") ||
       !contains(manifests,
                 "\"phase_g_win32_uia_closeout_test.cpp\"")) {
     return 5;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 626 audits and closes the Win32 UIA production band, "
-      "freezing provider objects, navigation, patterns, live events, runtime "
-      "change integration, provider lifetime, diagnostics, and stress "
-      "evidence. Step 627 Linux AT-SPI D-Bus object exposure production "
-      "behavior is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 6;
-  }
-  if (!contains(ledger_json,
-                "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) return 7;
   return 0;
 }

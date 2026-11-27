@@ -11,6 +11,7 @@
 #include <windows.h>
 
 #include "cgpui/renderer/renderer_frame_pixels.hpp"
+#include "../support/win32_desktop_test_support.hpp"
 
 #include <array>
 #include <cstdlib>
@@ -82,6 +83,7 @@ inline POINT work_area_point(int x, int y) {
 class CompositionTestWindows {
  public:
   CompositionTestWindows(int x, int y) : origin_(work_area_point(x, y)) {
+    if (!desktop_.ready()) return;
     const HINSTANCE instance = GetModuleHandleW(nullptr);
     WNDCLASSEXW backdrop_class{.cbSize = sizeof(WNDCLASSEXW), .lpfnWndProc = DefWindowProcW,
                                .hInstance = instance,
@@ -120,6 +122,7 @@ class CompositionTestWindows {
   }
 
  private:
+  Win32DesktopTestLease desktop_;
   POINT origin_{};
   HWND backdrop_ = nullptr;
   HWND popup_ = nullptr;

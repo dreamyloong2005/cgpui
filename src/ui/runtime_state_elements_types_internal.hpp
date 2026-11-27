@@ -12,6 +12,7 @@ struct WindowRuntime::StaticRenderInstallResult {
 
 struct WindowRuntime::WindowElementHost {
   std::unique_ptr<ElementTree> tree;
+  StaticElementTreeView static_tree;
   bool view_rendered = false;
   std::unordered_map<std::uint64_t, CursorShape> cursors;
 };

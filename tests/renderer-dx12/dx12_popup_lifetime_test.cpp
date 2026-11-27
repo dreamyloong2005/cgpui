@@ -9,7 +9,7 @@ using namespace cgpui;
 using namespace cgpui_test;
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   if (!deadline.done || !dx12_popup_desktop_ready())
     return dx12_fail(1, "popup lifetime desktop/DPI/watchdog unavailable");
   CompositionTestWindows windows(48, 48);

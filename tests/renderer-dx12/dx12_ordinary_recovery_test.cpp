@@ -26,7 +26,7 @@ bool menu_matches(const MenuLoopObservation& expected, const MenuLoopObservation
 } // namespace
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   OrdinaryDesktop desktop;
   if (!deadline.done || !desktop.valid()) return dx12_fail(1, "ordinary recovery desktop unavailable");
   auto app = create_platform_application();

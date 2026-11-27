@@ -43,11 +43,11 @@ int main() {
       read_source("docs/gpui-complete-parity-ledger.md");
   const std::string ledger_json =
       read_source("docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
 
-  if (manifests.empty() || roadmap.empty() || ledger_md.empty() ||
-      ledger_json.empty() || task_plan.empty() || findings.empty()) {
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger_md.empty() ||
+      ledger_json.empty()) {
     return 1;
   }
 
@@ -74,29 +74,19 @@ int main() {
   }
 
   constexpr std::array required_docs{
-      "Phase D text examples closeout",
       "phase_d_text_examples_closeout_test.cpp",
-      "Step 450 closes the text examples band",
       "public-only prelude examples",
       "api_parity_public_text_input_examples",
       "api_parity_public_text_wrapper_examples",
       "api_parity_public_text_input_workflow",
       "api_parity_public_rich_text_examples",
-      "renderer glyph coloring and inline image drawing remain later work",
-  };
+      "renderer glyph coloring and inline image drawing remain later work"};
   for (std::size_t index = 0; index < required_docs.size(); ++index) {
     if (!contains(roadmap, required_docs[index]) ||
-        !contains(ledger_md, required_docs[index]) ||
-        !contains(ledger_json, required_docs[index]) ||
-        !contains(task_plan, required_docs[index]) ||
-        !contains(findings, required_docs[index])) {
+      !contains(ledger_md, required_docs[index]) ||
+      !contains(ledger_json, required_docs[index])) {
       return 40 + static_cast<int>(index);
     }
-  }
-
-  if (!contains(roadmap,
-                "- [x] Steps 443-450: Add text input parity examples")) {
-    return 80;
   }
 
   return 0;

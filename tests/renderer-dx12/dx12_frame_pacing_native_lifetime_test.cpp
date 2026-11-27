@@ -7,7 +7,7 @@ using namespace cgpui;
 using namespace cgpui_test;
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   Dx12PacingNativeFixture fixture;
   if (!deadline.done || !fixture.initialize()) return dx12_fail(1, "pacing lifetime fixture unavailable");
   auto first = fixture.begin_admitted();

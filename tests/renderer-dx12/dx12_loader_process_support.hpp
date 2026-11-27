@@ -1,6 +1,8 @@
 #pragma once
 
 #include "dx12_test_support.hpp"
+#include "dx12_loader_desktop_test_support.hpp"
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -89,6 +91,9 @@ inline bool loader_run_child(const loader_fs::path& executable, const wchar_t* m
   LoaderHandle input{CreateFileW(L"NUL", GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
       &security, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr)};
   if (!output.valid() || !input.valid()) return false;
+  const bool visible_child = std::wstring_view(mode) == L"checked-fallback";
+  LoaderHandle desktop_ready{visible_child ? CreateEventW(&security, TRUE, FALSE, nullptr) : nullptr};
+  if (visible_child && !desktop_ready.valid()) return false;
   SIZE_T bytes = 0;
   InitializeProcThreadAttributeList(nullptr, 1, 0, &bytes);
   std::vector<unsigned char> storage(bytes);
@@ -98,9 +103,9 @@ inline bool loader_run_child(const loader_fs::path& executable, const wchar_t* m
     LPPROC_THREAD_ATTRIBUTE_LIST value;
     ~AttributeOwner() { DeleteProcThreadAttributeList(value); }
   } attributes_owner{attributes};
-  HANDLE inherited[]{output.value, input.value};
+  HANDLE inherited[]{output.value, input.value, desktop_ready.value};
   if (!UpdateProcThreadAttribute(attributes, 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST,
-      inherited, sizeof(inherited), nullptr, nullptr)) return false;
+      inherited, sizeof(HANDLE) * (visible_child ? 3 : 2), nullptr, nullptr)) return false;
   STARTUPINFOEXW startup{};
   startup.StartupInfo.cb = sizeof(startup);
   startup.StartupInfo.dwFlags = STARTF_USESTDHANDLES;
@@ -109,6 +114,7 @@ inline bool loader_run_child(const loader_fs::path& executable, const wchar_t* m
   startup.lpAttributeList = attributes;
   PROCESS_INFORMATION process{};
   std::wstring command = L"\"" + executable.wstring() + L"\" --loader-case " + mode;
+  if (visible_child) command += L" " + std::to_wstring(reinterpret_cast<std::uintptr_t>(desktop_ready.value));
   if (!CreateProcessW(executable.c_str(), command.data(), nullptr, nullptr, TRUE,
       CREATE_NO_WINDOW | EXTENDED_STARTUPINFO_PRESENT, nullptr, working_directory.c_str(),
       &startup.StartupInfo, &process)) {
@@ -116,7 +122,7 @@ inline bool loader_run_child(const loader_fs::path& executable, const wchar_t* m
     return false;
   }
   LoaderHandle child{process.hProcess}, thread{process.hThread};
-  const DWORD waited = WaitForSingleObject(child.value, 20000);
+  const DWORD waited = loader_wait_for_child(child.value, desktop_ready.value);
   if (waited != WAIT_OBJECT_0) {
     // Only the process handle returned by our own successful CreateProcess.
     TerminateProcess(child.value, 90);

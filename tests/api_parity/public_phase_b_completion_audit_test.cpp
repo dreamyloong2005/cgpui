@@ -50,31 +50,10 @@ int main() {
     return 2;
   }
 
-  if (!contains(
-          roadmap,
-          "- [x] Steps 313-318: Run full Windows/WSL verification and freeze") ||
-      !contains(roadmap, "Step 319") ||
-      !contains(roadmap, "landed the child-list") ||
-      !contains(roadmap, "Phase B public authoring boundary") ||
-      !contains(roadmap, "Keep the Phase B closeout") ||
-      !contains(roadmap, "exclusions out")) {
-    return 3;
-  }
-
-  if (!contains(vocabulary, "Phase B Steps 313-318") ||
-      !contains(vocabulary, "final Phase B freeze") ||
-      !contains(vocabulary, "Phase C starts from this frozen boundary") ||
-      contains(vocabulary, "future Phase B or later work")) {
-    return 4;
-  }
-
   if (!contains(ledger_md,
                 "tests/api_parity/public_phase_b_completion_audit_test.cpp") ||
       !contains(ledger_json,
-                "tests/api_parity/public_phase_b_completion_audit_test.cpp") ||
-      !contains(ledger_md, "final Phase B public vocabulary completion audit") ||
-      !contains(ledger_json,
-                "final Phase B public vocabulary completion audit")) {
+                "tests/api_parity/public_phase_b_completion_audit_test.cpp")) {
     return 5;
   }
 

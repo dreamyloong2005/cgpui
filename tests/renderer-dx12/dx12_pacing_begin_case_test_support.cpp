@@ -7,7 +7,7 @@
 namespace cgpui_test {
 int pacing_first_begin_case(bool visible) {
   using namespace cgpui;
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{visible ? DesktopTestAccess::exclusive : DesktopTestAccess::none};
   Dx12Window window; // Actual HWND, hidden by construction; never a test platform mock.
   Dx12PacingForwardApi api; // Must outlive renderer and all outstanding frames below.
   if (!deadline.done || !window.hwnd || IsWindowVisible(window.hwnd) || !pacing_begin_debug_enable())

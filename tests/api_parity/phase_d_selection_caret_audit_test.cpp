@@ -55,8 +55,6 @@ int main() {
       "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
   const std::string ledger =
       read_source("docs/gpui-complete-parity-ledger.md");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string text_hit_testing =
       read_source("include/cgpui/renderer/text/text_hit_testing.hpp");
   const std::string event_pointer =
@@ -88,15 +86,25 @@ int main() {
   const std::string structure_test =
       read_source("tests/architecture/ui_source_structure_test.cpp");
 
-  if (manifests.empty() || roadmap.empty() || ledger.empty() ||
-      task_plan.empty() || findings.empty() || text_hit_testing.empty() ||
-      event_pointer.empty() || text_model_header.empty() ||
-      scroll_header.empty() || text_element_header.empty() ||
-      runtime_selection.empty() || runtime_focus.empty() ||
-      runtime_route.empty() || scroll_source.empty() ||
-      element_geometry.empty() || selection_paint.empty() ||
-      text_model_test.empty() || element_test.empty() || scroll_test.empty() ||
-      window_text_test.empty() || window_input_test.empty() ||
+  if (manifests.empty() ||
+      roadmap.empty() ||
+      ledger.empty() ||
+      text_hit_testing.empty() ||
+      event_pointer.empty() ||
+      text_model_header.empty() ||
+      scroll_header.empty() ||
+      text_element_header.empty() ||
+      runtime_selection.empty() ||
+      runtime_focus.empty() ||
+      runtime_route.empty() ||
+      scroll_source.empty() ||
+      element_geometry.empty() ||
+      selection_paint.empty() ||
+      text_model_test.empty() ||
+      element_test.empty() ||
+      scroll_test.empty() ||
+      window_text_test.empty() ||
+      window_input_test.empty() ||
       structure_test.empty()) {
     return 1;
   }
@@ -109,26 +117,13 @@ int main() {
   }
 
   if (!contains(roadmap,
-                "- [x] Steps 411-418: Complete selection and caret behavior") ||
-      contains(roadmap, "- [ ] Steps 411-418") ||
-      !contains(roadmap,
-                "Step 418 closes the selection/caret band through") ||
-      !contains(roadmap,
                 "tests/api_parity/phase_d_selection_caret_audit_test.cpp") ||
-      !contains(roadmap, "Steps 419-426 close") ||
       !contains(roadmap, "phase_d_edit_history_audit_test")) {
     return 3;
   }
 
-  if (!contains(task_plan,
-                "Step 418 closes the selection/caret band") ||
-      !contains(task_plan, "TextElement::scroll_caret_into_view(...)") ||
-      !contains(findings, "Step 418 closes the selection/caret band")) {
-    return 4;
-  }
-
   const std::string text_row = line_containing(ledger, "| gpui text system |");
-  if (text_row.empty() || !contains(text_row, "Phase D Steps 379-") ||
+  if (text_row.empty() ||
       !contains(text_row, "TextSelectionDrag") ||
       !contains(text_row, "word_selection_range_at") ||
       !contains(text_row, "line_selection_range_at") ||

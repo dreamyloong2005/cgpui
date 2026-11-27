@@ -21,7 +21,7 @@ bool opaque_frame(Renderer& renderer, DpiScale scale) {
 } // namespace
 
 int main() {
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   OrdinaryDesktop desktop;
   auto app = create_platform_application();
   if (!deadline.done || !desktop.valid() || !app) return dx12_fail(1, "opaque worker fixture unavailable");

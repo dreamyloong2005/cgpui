@@ -17,6 +17,7 @@ void WindowRuntime::set_element_tree_for_window(
   }
   WindowElementHost& host = state_->elements.window_element_hosts_[runtime_id.value];
   host.tree = std::move(tree);
+  host.static_tree = {};
   host.view_rendered = false;
 }
 
@@ -47,6 +48,12 @@ AccessibilityTreeSnapshot WindowRuntime::accessibility_snapshot_for_window(
     return accessibility_snapshot();
   }
   const WindowRuntimeRecord* record = find_window_runtime_record(runtime_id);
+  if (record != nullptr) {
+    if (const auto* tree = static_tree_for_record(*record)) {
+      return static_accessibility_snapshot_for(*tree, AccessibilitySnapshotOptions{
+          .focused_element_id = record->input.keyboard_focus_element_owner});
+    }
+  }
   const ElementTree* tree =
       record == nullptr ? nullptr : element_tree_for_record(*record);
   if (tree == nullptr) {
@@ -69,6 +76,7 @@ void WindowRuntime::install_rendered_element_for_record(
   if (const auto found = state_->elements.window_element_hosts_.find(record.runtime_id.value);
       found != state_->elements.window_element_hosts_.end()) {
     host = &found->second;
+    host->static_tree = {};
   }
   if (rendered != nullptr) {
     auto tree = std::make_unique<ElementTree>();

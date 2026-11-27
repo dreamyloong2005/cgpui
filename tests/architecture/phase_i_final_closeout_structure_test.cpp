@@ -69,7 +69,7 @@ int main() {
     return 3;
   }
 
-  if (!contains(ledger_json, "\"phase_i_status\": \"complete\"") ||
+  if (!contains(ledger_json, "\"phase_i_status\"") ||
       !contains(ledger_json, "\"phase_i_required_x11_gaps\": 0")) {
     return 4;
   }

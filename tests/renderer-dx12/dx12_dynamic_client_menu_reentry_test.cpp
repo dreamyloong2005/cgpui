@@ -5,7 +5,7 @@
 int main() {
   using namespace cgpui;
   using namespace cgpui_test;
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{DesktopTestAccess::exclusive};
   OrdinaryDesktop desktop;
   auto app = create_platform_application();
   if (!deadline.done || !desktop.valid() || !app) return 1;

@@ -252,6 +252,8 @@ int test_ui_z_order_reaches_vulkan_cursor() {
 int test_structure() {
   const std::string element_core =
       read_source("include/cgpui/ui/element_core.hpp");
+  const std::string element_properties =
+      read_source("src/ui/element_properties.cpp");
   const std::string tree_paint = read_source("src/ui/element_tree_paint.cpp");
   const std::string child_ordering =
       read_source("src/ui/element_layer_ordering.cpp");
@@ -265,12 +267,14 @@ int test_structure() {
       read_source("tests/architecture/ui_source_structure_test.cpp");
   const std::string renderer_structure =
       read_source("tests/architecture/renderer_source_structure_test.cpp");
-  if (element_core.empty() || tree_paint.empty() || child_ordering.empty() ||
+  if (element_core.empty() || element_properties.empty() ||
+      tree_paint.empty() || child_ordering.empty() ||
       render_view.empty() || submission.empty() || renderer.empty() ||
       cursor.empty() || ui_structure.empty() || renderer_structure.empty()) {
     return 30;
   }
-  if (!contains(element_core, "explicit_z_index != 0") ||
+  if (!contains(element_core, "int z_order() const;") ||
+      !contains(element_properties, "explicit_z_index != 0") ||
       !contains(tree_paint, "std::stable_sort(") ||
       !contains(tree_paint, "element->z_order()") ||
       !contains(child_ordering, "return lhs.index < rhs.index;") ||

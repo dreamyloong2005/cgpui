@@ -8,7 +8,7 @@
 namespace cgpui_test {
 int composition_first_begin_case(bool visible) {
   using namespace cgpui;
-  Dx12RecoveryDeadline deadline;
+  Dx12RecoveryDeadline deadline{visible ? DesktopTestAccess::exclusive : DesktopTestAccess::none};
   if (!deadline.done || !dx12_popup_desktop_ready() || !pacing_begin_debug_enable())
     return dx12_fail(1, "composition first-begin desktop/debug/watchdog unavailable");
   Dx12CompositionFirstBeginWindows windows;

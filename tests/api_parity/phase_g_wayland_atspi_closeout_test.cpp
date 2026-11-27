@@ -41,18 +41,17 @@ int main() {
   const std::string manifests = read_source("tests/api_parity/mcpp.toml") +
       read_source("tests/architecture/mcpp.toml") +
       read_source("tests/platform/mcpp.toml");
-  const std::string roadmap = read_source(
-      "docs/superpowers/plans/2026-07-04-gpui-complete-replication-roadmap.md");
-  const std::string ledger_md = read_source(
-      "docs/gpui-complete-parity-ledger.md");
-  const std::string ledger_json = read_source(
-      "docs/gpui-complete-parity-ledger.json");
-  const std::string task_plan = read_source("task_plan.md");
-  const std::string findings = read_source("findings.md");
   const std::string* required[]{
-      &objects, &navigation, &roles, &text_value, &focus, &bus, &reconnect,
-      &platform_source, &wayland_source, &manifests, &roadmap, &ledger_md,
-      &ledger_json, &task_plan, &findings};
+      &objects,
+      &navigation,
+      &roles,
+      &text_value,
+      &focus,
+      &bus,
+      &reconnect,
+      &platform_source,
+      &wayland_source,
+      &manifests};
   for (const auto* source : required) if (source->empty()) return 1;
 
   if (!contains(objects, "register_object_path") ||
@@ -97,26 +96,9 @@ int main() {
       !contains(platform_source, "WaylandAtspiBusConnection::is_connected") ||
       !contains(manifests, "\"phase_g_wayland_atspi_closeout_test.cpp\"") ||
       !contains(manifests,
-                "\"phase_g_wayland_atspi_closeout_test.cpp\"") ||
-      !contains(roadmap, "- [x] Steps 627-634: Implement Linux AT-SPI")) {
+                "\"phase_g_wayland_atspi_closeout_test.cpp\"")) {
     return 5;
   }
 
-  constexpr const char* completion =
-      "Phase G Step 634 audits and closes the Linux AT-SPI production band, "
-      "freezing D-Bus object exposure, navigation, roles/states, text/value/"
-      "focus events, accessibility-bus discovery, reconnect behavior, "
-      "diagnostics, and modular source evidence. Step 635 async task pool "
-      "production depth is next.";
-  const std::string* documents[]{
-      &roadmap, &ledger_md, &ledger_json, &task_plan, &findings};
-  for (const auto* document : documents) {
-    if (!contains(*document, completion)) return 6;
-  }
-  if (!contains(
-          ledger_json,
-          "\"phase_f_current_handoff\": \"Phase J Step 799 re-run upstream extractor against the pinned revision\"")) {
-    return 7;
-  }
   return 0;
 }

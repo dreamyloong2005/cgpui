@@ -71,52 +71,15 @@ struct RendererClipStackRecord {
   bool truncated = false;
   std::optional<Rect> current_clip_rect;
 
-  [[nodiscard]] bool empty() const { return full_depth == 0; }
+  [[nodiscard]] bool empty() const;
 
   friend bool operator==(
       const RendererClipStackRecord& lhs,
-      const RendererClipStackRecord& rhs) {
-    const auto same_rect = [](Rect left, Rect right) {
-      return left.origin.x == right.origin.x && left.origin.y == right.origin.y &&
-             left.size.width == right.size.width &&
-             left.size.height == right.size.height;
-    };
-    const auto same_optional_rect =
-        [&](const std::optional<Rect>& left, const std::optional<Rect>& right) {
-          if (left.has_value() != right.has_value()) {
-            return false;
-          }
-          return !left.has_value() || same_rect(*left, *right);
-        };
-    if (lhs.full_depth != rhs.full_depth || lhs.truncated != rhs.truncated ||
-        !same_optional_rect(lhs.current_clip_rect, rhs.current_clip_rect) ||
-        lhs.clips.size() != rhs.clips.size()) {
-      return false;
-    }
-    for (std::size_t index = 0; index < lhs.clips.size(); ++index) {
-      if (!same_rect(lhs.clips[index], rhs.clips[index])) {
-        return false;
-      }
-    }
-    return true;
-  }
+      const RendererClipStackRecord& rhs);
 };
 
-[[nodiscard]] inline RendererClipStackRecord renderer_clip_stack_record(
-    std::span<const Rect> clips) {
-  RendererClipStackRecord record;
-  record.full_depth = clips.size();
-  if (clips.empty()) {
-    return record;
-  }
-
-  record.current_clip_rect = clips.back();
-  record.truncated = clips.size() > kRendererClipStackMaxDepth;
-  const std::size_t first_kept =
-      record.truncated ? clips.size() - kRendererClipStackMaxDepth : 0;
-  record.clips.assign(clips.begin() + first_kept, clips.end());
-  return record;
-}
+[[nodiscard]] RendererClipStackRecord renderer_clip_stack_record(
+    std::span<const Rect> clips);
 
 inline constexpr std::size_t kRendererCompositionStackMaxDepth = 8;
 
@@ -126,28 +89,15 @@ struct RendererCompositionStackRecord {
   bool truncated = false;
   PaintMetadata current_metadata;
 
-  [[nodiscard]] bool empty() const { return full_depth == 0; }
+  [[nodiscard]] bool empty() const;
 
   friend bool operator==(
       const RendererCompositionStackRecord&,
       const RendererCompositionStackRecord&) = default;
 };
 
-[[nodiscard]] inline RendererCompositionStackRecord
-renderer_composition_stack_record(std::span<const PaintMetadata> entries) {
-  RendererCompositionStackRecord record;
-  record.full_depth = entries.size();
-  if (entries.empty()) {
-    return record;
-  }
-
-  record.current_metadata = entries.back();
-  record.truncated = entries.size() > kRendererCompositionStackMaxDepth;
-  const std::size_t first_kept =
-      record.truncated ? entries.size() - kRendererCompositionStackMaxDepth : 0;
-  record.entries.assign(entries.begin() + first_kept, entries.end());
-  return record;
-}
+[[nodiscard]] RendererCompositionStackRecord renderer_composition_stack_record(
+    std::span<const PaintMetadata> entries);
 
 enum class ImageFormat {
   rgba8_unorm,
@@ -187,24 +137,7 @@ struct ImageAssetDescriptor {
       const ImageAssetDescriptor&) = default;
 };
 
-[[nodiscard]] inline ImageAssetDescriptor describe_image_asset(
-    const ImageAsset& asset) {
-  const Size logical_size =
-      asset.logical_size.width > 0.0F && asset.logical_size.height > 0.0F
-          ? asset.logical_size
-          : Size{
-                .width = static_cast<float>(asset.bitmap.width),
-                .height = static_cast<float>(asset.bitmap.height),
-            };
-  return ImageAssetDescriptor{
-      .id = asset.id,
-      .logical_size = logical_size,
-      .pixel_width = asset.bitmap.width,
-      .pixel_height = asset.bitmap.height,
-      .stride = asset.bitmap.stride,
-      .format = asset.bitmap.format,
-      .byte_size = asset.bitmap.pixels.size(),
-  };
-}
+[[nodiscard]] ImageAssetDescriptor describe_image_asset(
+    const ImageAsset& asset);
 
 } // namespace cgpui
